@@ -1,0 +1,461 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto+Mono');
+
+body {
+  padding-top: 100px;
+
+}
+.ui-autocomplete {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  float: left;
+  min-width: 160px;
+  padding: 5px 0;
+  margin: 1px 0 0;
+  list-style: none;
+  font-size: 14px;
+  text-align: left;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+
+  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  background-clip: padding-box;
+}
+
+.ui-autocomplete > li > div {
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: normal;
+  line-height: 1.42857143;
+  color: #333333;
+  white-space: nowrap;
+}
+
+.ui-state-hover,
+.ui-state-active,
+.ui-state-focus {
+  text-decoration: none;
+  color: #262626;
+  background-color: #c9c9c9;
+  cursor: pointer;
+}
+
+.ui-helper-hidden-accessible {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+.archived{
+
+    background-color: #2b3e50 !important;
+
+}
+
+.focusedInput {
+    border-color: rgba(82,168,236,.8);
+    outline: 0;
+    outline: thin dotted \9;
+    -moz-box-shadow: 0 0 8px rgba(82,168,236,.6);
+    box-shadow: 0 0 8px rgba(82,168,236,.6) !important;
+}
+
+/*.table tr.row_selected td {*/
+/*background-color: #2b3e50 !important;*/
+/*}*/
+
+.even.selected td {
+           background-color: #2b3e50; !important; /* Add !important to make sure override datables base styles */
+  }
+
+ .odd.selected td {
+          background-color: #2b3e50; !important; /* Add !important to make sure override datables base styles */
+   }
+
+.strong{
+     font-weight: 700; !important;
+ }
+
+.margin-top {
+     margin-top: 5px; !important;
+ }
+
+div#loading {
+    width: 230px;
+    height: 35px;
+    display: none;
+    cursor: wait;
+    position: absolute;
+left: 50%;
+top: 50%;
+-webkit-transform: translate(-50%, -50%);
+-ms-transform: translate(-50%, -50%);
+transform: translate(-50%, -50%);
+    }
+
+.ui-accordion-header.ui-state-active {
+    border: 1px solid #17967d;
+    background: #18bc9c;
+}
+
+.sequence {
+font-family: 'Roboto Mono';
+    background-color:#4e5d6c;
+    font-size: 22px;
+    text-align: center;
+    padding: 5px;
+    margin: 30px;
+    margin-top: 1px;
+}
+
+.starter-template {
+  padding: 40px 15px;
+  text-align: center;
+}
+.jumbotron{
+  /*margin-top: 100px;*/
+  /*background-color: #69B5EC;*/
+  /*color: #ffffff;*/
+}
+
+.btngene{
+  margin-bottom: 5px;
+}
+
+.hide
+{
+    display:none;
+}
+
+table{
+    table-layout: fixed;
+}
+
+/*.table-nonfluid {*/
+   /*width: auto !important;*/
+    /*word-wrap: break-word;*/
+/*}*/
+
+td{
+    word-wrap: break-word;
+}
+
+h3
+{
+  display: inline;
+}
+
+.test{
+  display: inline-block;
+}
+
+.label
+{
+  margin-right:5px;
+}
+
+.panel{
+  margin-top: 10px;
+}
+.addhere{
+  white-space:normal;
+}
+
+.wrapper {
+	margin-top: 80px;
+  margin-bottom: 80px;
+  background-color: #FFFFFF;
+}
+
+.white-bk {
+  background-color: #FFFFFF;
+  padding: 10px 10px 1px;
+  border: 1px solid #ebebeb;
+}
+
+
+
+.form-signin {
+  max-width: 400px;
+  padding: 10px 35px 35px;
+  margin: 0 auto;
+  background-color: #f6f6f6;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.form-create {
+  max-width: 500px;
+  padding: 10px 35px 35px;
+  margin: 0 auto;
+  background-color: #f6f6f6;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.form-permissions{
+  max-width: 800px;
+  padding: 10px 35px 35px;
+  margin: 0 auto;
+  background-color: #f6f6f6;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.form-vpgenes {
+    padding: 100px 35px 35px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    /*border: 1px solid rgba(0, 0, 0, 0.1);*/
+}
+
+.top-buffer { margin-top:20px; }
+.bttm-buffer { margin-bottom:20px; }
+.centerdiv{margin: 0 auto; text-align: center;}
+
+
+
+.material-switch > input[type="checkbox"] {
+    display: none;
+}
+
+.material-switch > label {
+    cursor: pointer;
+    height: 0px;
+    position: relative;
+    width: 40px;
+}
+
+.material-switch > label::before {
+    background: rgb(0, 0, 0);
+    box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    content: '';
+    height: 16px;
+    margin-top: -8px;
+    position:absolute;
+    opacity: 0.3;
+    transition: all 0.4s ease-in-out;
+    width: 40px;
+}
+.material-switch > label::after {
+    background: rgb(255, 255, 255);
+    border-radius: 16px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    content: '';
+    height: 24px;
+    left: -4px;
+    margin-top: -8px;
+    position: absolute;
+    top: -4px;
+    transition: all 0.3s ease-in-out;
+    width: 24px;
+}
+.material-switch > input[type="checkbox"]:checked + label::before {
+    background: inherit;
+    opacity: 0.5;
+}
+.material-switch > input[type="checkbox"]:checked + label::after {
+    background: inherit;
+    left: 20px;
+}
+
+/*Now the CSS*/
+/** {margin: 0; padding: 0;}*/
+
+.tree ul {
+	padding-top: 20px; position: relative;
+
+	transition: all 0.5s;
+	-webkit-transition: all 0.5s;
+	-moz-transition: all 0.5s;
+}
+
+.tree li {
+	float: left; text-align: center;
+	list-style-type: none;
+	position: relative;
+	padding: 20px 5px 0 5px;
+
+	transition: all 0.5s;
+	-webkit-transition: all 0.5s;
+	-moz-transition: all 0.5s;
+}
+
+/*We will use ::before and ::after to draw the connectors*/
+
+.tree li::before, .tree li::after{
+	content: '';
+	position: absolute; top: 0; right: 50%;
+	border-top: 1px solid #ccc;
+	width: 50%; height: 20px;
+}
+.tree li::after{
+	right: auto; left: 50%;
+	border-left: 1px solid #ccc;
+}
+
+/*We need to remove left-right connectors from elements without
+any siblings*/
+.tree li:only-child::after, .tree li:only-child::before {
+	display: none;
+}
+
+/*Remove space from the top of single children*/
+.tree li:only-child{ padding-top: 0;}
+
+/*Remove left connector from first child and
+right connector from last child*/
+.tree li:first-child::before, .tree li:last-child::after{
+	border: 0 none;
+}
+/*Adding back the vertical connector to the last nodes*/
+.tree li:last-child::before{
+	border-right: 1px solid #ccc;
+	border-radius: 0 5px 0 0;
+	-webkit-border-radius: 0 5px 0 0;
+	-moz-border-radius: 0 5px 0 0;
+}
+.tree li:first-child::after{
+	border-radius: 5px 0 0 0;
+	-webkit-border-radius: 5px 0 0 0;
+	-moz-border-radius: 5px 0 0 0;
+}
+
+/*Time to add downward connectors from parents*/
+.tree ul ul::before{
+	content: '';
+	position: absolute; top: 0; left: 50%;
+	border-left: 1px solid #ccc;
+	width: 0; height: 20px;
+}
+
+.tree li a{
+	border: 1px solid #ccc;
+	padding: 5px 10px;
+	text-decoration: none;
+	color: #666;
+	font-family: arial, verdana, tahoma;
+	font-size: 11px;
+	display: inline-block;
+
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+
+	transition: all 0.5s;
+	-webkit-transition: all 0.5s;
+	-moz-transition: all 0.5s;
+}
+
+/*Time for some hover effects*/
+/*We will apply the hover effect the the lineage of the element also*/
+.tree li a:hover, .tree li a:hover+ul li a {
+	background: #c8e4f8; color: #000; border: 1px solid #94a0b4;
+}
+/*Connector styles on hover*/
+.tree li a:hover+ul li::after,
+.tree li a:hover+ul li::before,
+.tree li a:hover+ul::before,
+.tree li a:hover+ul ul::before{
+	border-color:  #94a0b4;
+}
+
+
+.logs{
+    font-family: Consolas,monaco,monospace;
+    /*max-width: 1000px;*/
+    max-height: 1000px;
+      padding: 10px 35px 35px;
+      margin: 0 auto;
+      background-color: #f6f6f6;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.bolden{font-weight: bold;
+font-style: oblique}
+
+.red{color: red}
+
+.label-gene{}
+.label-region{}
+.label-selectall{}
+.label-added{background-color: #999}
+.label-custom{}
+
+
+
+.line {
+  width:580px;
+  min-height:2px;
+  background-color: #ddd;
+  margin-top:50px;
+  margin-bottom:-35px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.loader {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #18bc9c;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+
+input[type=checkbox].permissions_checkbox {
+     cursor: pointer;
+  }
+
+ input[type=checkbox].permissions_checkbox:after {
+  content: " ";
+  background-color: #D7B1D7;
+  display: inline-block;
+  visibility: visible;
+ }
+
+ input[type=checkbox].permissions_checkbox:checked:after {
+   content: "\2714";
+ }
+
+ .inline{
+    display:inline-block;
+     width: 100px;
+}
+
+.dataTable>td{
+    word-wrap: break-word;
+}
+.top-buffer { margin-top:30px; }
+.vertical { vertical-align: middle;}
+.no-margin-heading { margin-top: 0px}
+.no-padding-left {padding-left: 0px}
+.xtra-padding-right {padding-right: 30px}
+
+/*#browsebutton {*/
+    /*background-color: white;*/
+/*}*/
+
+#my-file-selector {
+    display: none;
+}
