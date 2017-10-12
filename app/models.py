@@ -147,5 +147,34 @@ class Section(db.Model):
         return '<Section %r>' % self.name
 
 
+class Assessments (db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    status = db.Column(db.String(), unique=False, nullable=False)
+    ss_id = db.Column(db.Integer, db.ForeignKey("Subsection.id"), unique=False, nullable=False)
+    signoff_id = db.Column(db.Integer, db.ForeignKey("Users.id"), unique=False, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("Users.id"), unique=False, nullable=False)
+    date_completed = db.Columns(db.DATE, unique=False, nullable=False)
+    date_expiry = db.Columns(db.DATE, unique=False, nullable=False)
+    comments = db.Columns(db.String(), unique=False, nullable=False)
+    reassessment_id = db.Columns(db.Integer, db.ForeignKey("Reassessment.id"), unique=False, nullable=False)
+
+    ss_id_rel = db.relationship("Subsection", lazy='joined', foreign_key=[ss_id])
+    signoff_id_rel = db.relationship("Users", lazy='joined', foreign_key=[signoff_id])
+    user_id_rel = db.relationship("Users", lazy='joined', foreign_key=[user_id])
+    reassessment_id_rel = db.relationship("Reassessment", lazy='joined', foreign_key=[reassessment_id])
+
+    def __init__(self, status, date_completed, date_expiry,comments ):
+        self.status=status
+        self.date_completed=date_completed
+        self.date_expiry=date_expiry
+        self.comments=comments
 
 
+    def __repr__(self):
+        return '<Assessment %r>' % self.status
+
+
+
+
+class Reassessment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
