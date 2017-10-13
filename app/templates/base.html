@@ -42,6 +42,10 @@
         $(function () {
             $("#accordion").accordion();
         });
+
+        $(document).ready(function () {
+            var table = $('#users').DataTable({})
+        });
     </script>
     {% if not current_user.id %}
     <style>

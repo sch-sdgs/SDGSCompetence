@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request, url_for, session, current_app
+from flask import Flask, render_template, redirect, request, url_for, session, current_app, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_required, login_user, logout_user, LoginManager, UserMixin, \
     current_user
@@ -6,9 +6,12 @@ from activedirectory import UserAuthentication
 from forms import Login
 from flask.ext.principal import Principal, Identity, AnonymousIdentity, \
     identity_changed, Permission, RoleNeed, UserNeed,identity_loaded
-from competence import app
+
 
 import os
+
+from app.competence import app, s, db
+from app.models import *
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -85,6 +88,19 @@ def internal_server_error(e):
 def page_not_found(e):
     session['redirected_from'] = request.url
     return redirect(url_for('login'))
+
+@app.route('/autocomplete_user',methods=['GET'])
+def autocomplete():
+    search = request.args.get('linemanager')
+
+    users = s.query(Users.first_name,Users.last_name).all()
+    user_list = []
+    for i in users:
+        print i
+        name = i[0] + " " + i[1]
+        user_list.append(name)
+
+    return jsonify(json_list=user_list)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

@@ -1,12 +1,14 @@
 from collections import OrderedDict
-
+from sqlalchemy.orm import load_only
 from flask import Blueprint
 from flask import render_template, request, url_for, redirect, Blueprint
 from flask.ext.login import login_required, current_user
 from app.views import admin_permission
-from forms import UserRoleForm
+from forms import UserRoleForm, UserForm, UserEditForm
 from app.models import *
 from app.competence import s
+import datetime
+import time
 
 admin = Blueprint('admin', __name__, template_folder='templates')
 
@@ -15,6 +17,126 @@ admin = Blueprint('admin', __name__, template_folder='templates')
 def index():
     return render_template("admin.html")
 
+def convertTimestampToSQLDateTime(value):
+    return time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(value))
+
+
+
+@admin.route('/users/view', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def users_view():
+
+    users = s.query(Users).all()
+    data = []
+    for user in users:
+
+        jobs = s.query(UserJobRelationship).join(JobRoles).filter(UserJobRelationship.user_id==user.id).all()
+        roles = s.query(UserRoleRelationship).join(UserRolesRef).filter(UserRoleRelationship.user_id == user.id).all()
+        line_manager_result = s.query(Users.first_name,Users.last_name).filter_by(id=user.line_managerid).first()
+        print line_manager_result
+        user_dict = dict(user)
+        user_dict["jobs"] = []
+        for i in jobs:
+            user_dict["jobs"].append(i.jobroles_id_rel.job)
+
+        user_dict["roles"] = []
+        for i in roles:
+            user_dict["roles"].append(i.userrole_id_rel.role)
+        if line_manager_result is not None:
+            user_dict["line_manager_name"] = line_manager_result[0] + " " + line_manager_result[1]
+        else:
+            user_dict["line_manager_name"] = None
+
+        data.append(user_dict)
+
+
+
+    return render_template("users_view.html",data=data)
+
+@admin.route('/users/toggle_active/<id>', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def users_toggle_active(id=None):
+
+    user = s.query(Users).filter_by(id=id).first()
+    if user.active == True:
+        s.query(Users).filter_by(id=id).update({'active': False})
+    elif user.active == False:
+        s.query(Users).filter_by(id=id).update({'active': True})
+    s.commit()
+    return redirect(url_for('admin.users_view'))
+
+
+@admin.route('/users/add', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def users_add():
+    form = UserForm()
+    if request.method == 'POST':
+        now = datetime.datetime.now()
+
+
+        if request.form["linemanager"] != "":
+            firstname,surname = request.form["linemanager"].split(" ")
+            line_manager_id = int(s.query(Users).filter_by(first_name=firstname,last_name=surname).first().id)
+        else:
+            line_manager_id=None
+
+
+        u = Users(login=request.form["username"],
+                  first_name = request.form["firstname"],
+                  last_name = request.form["surname"],
+                  email=request.form["email"],
+                  active=True,
+                  line_managerid=line_manager_id)
+
+        s.add(u)
+        s.commit()
+        print request.form.getlist('userrole')
+        for role_id in request.form.getlist('userrole'):
+            urr = UserRoleRelationship(userrole_id=int(role_id),user_id=u.id)
+            s.add(urr)
+
+        for job_id in request.form.getlist('jobrole'):
+            urr = UserJobRelationship(jobrole_id=int(job_id), user_id=u.id)
+            s.add(urr)
+        s.commit()
+        s.commit()
+
+
+
+
+    return redirect(url_for('users_view'))
+
+@admin.route('/users/edit/<id>', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def users_edit(id=None):
+    form = UserEditForm()
+
+    user = s.query(Users).filter_by(id=id).first()
+    form.username.data = user.login
+    form.firstname.data = user.first_name
+    form.surname.data = user.last_name
+    form.email.data = user.email
+
+    line_manager_result = s.query(Users.first_name, Users.last_name).filter_by(id=user.line_managerid).first()
+    if line_manager_result is not None:
+        form.linemanager.data = line_manager_result[0] + " " + line_manager_result[1]
+    else:
+        form.linemanager.data = None
+
+
+    jobrole_ids = [name for (name,) in s.query(UserJobRelationship.jobrole_id).filter_by(user_id=id).all()]
+
+    form.jobrole.choices = s.query(JobRoles.id,JobRoles.job).all()
+    form.jobrole.process_data(jobrole_ids)
+
+    userrole_ids = [name for (name,) in s.query(UserRoleRelationship.userrole_id).filter_by(user_id=id).all()]
+
+    form.userrole.choices = s.query(UserRolesRef.id,UserRolesRef.role).all()
+    form.userrole.process_data(userrole_ids)
+
+
+
+    return render_template("users_add.html", form=form)
 
 @admin.route('/userroles', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)

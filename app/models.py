@@ -136,20 +136,34 @@ class Users (db.Model):
     login = db.Column(db.String(1000), unique = True, nullable=False)
     first_name = db.Column(db.String(1000), unique=False, nullable=False)
     last_name = db.Column(db.String(1000), unique = False, nullable=False)
+    email = db.Column(db.String(1000), unique=False, nullable=False)
     date_created = db.Column(db.DATE, unique = False, nullable=False)
     last_login = db.Column(db.DATE, unique=False, nullable=True)
     active = db.Column(db.BOOLEAN, unique =False, default=True, nullable=False)
-    line_managerid = db.Column(db.Integer, db.ForeignKey("users.id"), unique = False, nullable=False)
+    line_managerid = db.Column(db.Integer, db.ForeignKey("users.id"), unique = False, nullable=True)
 
     linemanager_rel = db.relationship("Users", lazy='joined', foreign_keys=[line_managerid])
 
-    def __init__(self, login, first_name, last_name, active, line_managerid):
+    def __init__(self, login, first_name, last_name, email, active, line_managerid):
         self.login=login
         self.first_name=first_name
         self.last_name=last_name
+        self.email =email
         self.active=active
         self.line_managerid=line_managerid
         self.date_created = str(datetime.datetime.now().strftime("%Y%m%d"))
+
+    def __iter__(self):
+        yield 'id', self.id
+        yield 'login', self.login
+        yield 'first_name', self.first_name
+        yield 'last_name', self.last_name
+        yield 'email', self.email
+        yield 'date_created', self.date_created
+        yield 'last_login', self.last_login
+        yield 'active', self.active
+        yield 'line_managerid', self.line_managerid
+        yield 'line_managerrel', self.linemanager_rel
 
     def __repr__(self):
         return '<Users %r>' % self.login
@@ -162,9 +176,9 @@ class UserRoleRelationship(db.Model):
     user_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[user_id])
     userrole_id_rel = db.relationship("UserRolesRef", lazy='joined', foreign_keys=[userrole_id])
 
-    def __init__(self, user_id, userrole_id_rel):
+    def __init__(self, user_id, userrole_id):
         self.user_id=user_id
-        self.userrole_id_rel=userrole_id_rel
+        self.userrole_id=userrole_id
 
     def __repr(self):
         return '<UserRolesRelationship % r>' % self.user_id
