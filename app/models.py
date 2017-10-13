@@ -47,20 +47,38 @@ class EvidenceTypeRef(db.Model):
         return '<EvidenceTypeRef %r>' % self.type
 
 
-class Coshh(db.Model):
+class CoshhRef(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     coshhitem = db.Column(db.String(), unique=True, nullable=False)
+
+
+    def __init__(self, coshhitem):
+        self.coshhitem = coshhitem
+
+    def __repr__(self):
+        return '<CoshhRef %r>' % self.coshhitem
 
 
 class HealthSafetyRef(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     question = db.Column(db.String(), unique=False, nullable=False)
 
+    def __init__(self, question):
+        self.question = question
+
+    def __repr__(self):
+        return '<HealthSafetyRef %r>' % self.question
 
 class AssessmentStatusRef(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     status = db.Column(db.String(), unique=True, nullable=False)
 
+
+    def __init__(self, status):
+        self.status = status
+
+    def __repr__(self):
+        return '<AssessmentStatusRef %r>' % self.status
 
 class Competence (db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -93,22 +111,37 @@ class Users (db.Model):
     last_login = db.Column(db.DATE, unique=False, nullable=True)
     active = db.Column(db.BOOLEAN, unique =False, default=True, nullable=False)
     line_managerid = db.Column(db.Integer, db.ForeignKey("Users.id"), unique = False, nullable=False)
-    role_id = db.Column(db.Integer, db.ForeignKey("UserRolesRef.id"), unique=False, nullable=False)
 
     linemanager_rel = db.relationship("Users", lazy='joined', foreign_keys=[line_managerid])
-    roleid_rel = db.relationship("UserRolesRef", lazy='joined', foreign_keys=[role_id])
 
-    def __init__(self, login, first_name, last_name, active, line_managerid, role_id):
+    def __init__(self, login, first_name, last_name, active, line_managerid):
         self.login=login
         self.first_name=first_name
         self.last_name=last_name
         self.active=active
         self.line_managerid=line_managerid
-        self.role_id=role_id
         self.date_created = str(datetime.datetime.now().strftime("%Y%m%d"))
 
     def __repr__(self):
         return '<Users %r>' % self.login
+
+class UserRoleRelationship(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("Users.id"), unique=False, nullable=False)
+    userrole_id=db.Column(db.Integer, db.ForeignKey("UserRolesRef.id"), unique=False, nullable=False)
+
+    user_id_rel = db.relationship("Users", lazy='joined', foreign_key=[user_id])
+    userrole_id_rel = db.relationship("UserRolesRef", lazy='joined', foreign_key=[userrole_id])
+
+    def __init__(self, user_id, userrole_id_rel):
+        self.user_id=user_id
+        self.userrole_id_rel=userrole_id_rel
+
+    def __repr(self):
+        return '<UserRolesRelationship % r>' % self.user_id
+
+
+
 
 
 class Subsection(db.Model):
@@ -124,8 +157,10 @@ class Subsection(db.Model):
     c_id_rel = db.relationship("Competence", lazy='joined', foreign_key=[id])
     s_id_rel = db.relationship("Section", lazy='joined', foreign_key=[id])
 
-    def __init__(self, name, evidence, comments):
+    def __init__(self,c_id, s_id, name, evidence,  comments):
         self.name=name
+        self.c_id=c_id
+        self.s_id=s_id
         self.evidence=evidence
         self.comments=comments
 
@@ -163,18 +198,77 @@ class Assessments (db.Model):
     user_id_rel = db.relationship("Users", lazy='joined', foreign_key=[user_id])
     reassessment_id_rel = db.relationship("Reassessment", lazy='joined', foreign_key=[reassessment_id])
 
-    def __init__(self, status, date_completed, date_expiry,comments ):
+    def __init__(self, status, ss_id,user_id,  date_completed, date_expiry,comments,reassessment_id ):
         self.status=status
+        self.ss_id=ss_id
+        self.user_id=user_id
         self.date_completed=date_completed
         self.date_expiry=date_expiry
         self.comments=comments
+        self.reassessment_id=reassessment_id
 
 
     def __repr__(self):
         return '<Assessment %r>' % self.status
 
-
+########### CPH
 
 
 class Reassessment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    assess_id = db.Column(db.Integer, db.ForeignKey("Assessments.id"), unique=False, nullable=False)
+    question_id = db.Column(db.Integer, db.ForeignKey("QuestionsRef.id"), unique=False, nullable=False)
+    signoff_id = db.Column(db.Integer, db.ForeignKey("Users.id"), unique=False, nullable=True)
+    date_completed = db.Columns(db.DATE, unique=False, nullable=True)
+
+    assess_id_rel = db.relationship("Assessments", lazy='joined', foreign_key=[assess_id])
+    question_id_rel = db.relationship("QuestionsRef", lazy='joined', foreign_key=[question_id])
+    signoff_id_rel = db.relationship("Users", lazy='joined', foreign_key=[signoff_id])
+
+    def __init__(self, assess_id, question_id):
+
+        self.assess_id=assess_id
+        self.question_id=question_id
+
+    def __repr__(self):
+        return '<Reassessment %r>' % self.assess_id
+
+class CaseBased(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    assessment_id = db.Column (db.Integer, db.ForeignKey("Assessments.id"), unique=False, nullable=False)
+    case = db.Column(db.String(), unique=False, nullable=False)
+    result = db.Column(db.String(), unique=False, nullable=False)
+    is_correct = db.Column(db.BOOLEAN, unique=False, nullable=False)
+    signoff_id = db.Column(db.Integer, db.ForeignKey("Users.id"), unique=False, nullable=False)
+
+    assess_id_rel = db.relationship("Assessments", lazy='joined', foreign_key=[assessment_id])
+    signoff_id_rel = db.relationship("Users", lazy='joined', foreign_key=[signoff_id])
+
+    def __init__(self, case, result, is_correct):
+        self.case=case
+        self.result=result
+        self.is_correct=is_correct
+
+    def __repr__(self):
+        return '<CaseBased> %r' % self.assessment_id
+
+class Obx(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    assessment_id = db.Column(db.Integer, db.ForeignKey("Assessments.id"), unique=False, nullable=False)
+    name = db.Column(db.String(), unique=False, nullable=False)
+    signoff_id = db.Column(db.Integer, db.ForeignKey("Users.id"), unique=False, nullable=False)
+    is_correct = db.Column(db.BOOLEAN, unique=False, nullable=False)
+
+    assess_id_rel = db.relationship("Assessments", lazy='joined', foreign_key=[assessment_id])
+    signoff_id_rel = db.relationship("Users", lazy='joined', foreign_key=[signoff_id])
+
+    def __init__(self, name, is_correct):
+        self.name=name
+        self.is_correct =is_correct
+
+    def __repr__(self):
+        return '<CaseBased> %r' % self.assessment_id
+
+class Upload(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    assessment_id = db
