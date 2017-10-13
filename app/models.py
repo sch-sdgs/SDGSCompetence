@@ -15,7 +15,7 @@ class UserRolesRef(db.Model):
 
 class ValidityRef(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    months = db.Column(db.Integer, unique=False, nullable=False)
+    months = db.Column(db.Integer, unique=True, nullable=False)
 
     def __init__(self, months):
         self.months = months
@@ -26,7 +26,7 @@ class ValidityRef(db.Model):
 
 class QuestionsRef(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    question = db.Column(db.String(), unique=False, nullable=False)
+    question = db.Column(db.String(), unique=True, nullable=False)
     active = db.Column(db.BOOLEAN, unique=False, default=True, nullable=False, )
 
     def __init__(self, question):
@@ -61,13 +61,23 @@ class CoshhRef(db.Model):
 
 class HealthSafetyRef(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    question = db.Column(db.String(), unique=False, nullable=False)
+    question = db.Column(db.String(), unique=True, nullable=False)
 
     def __init__(self, question):
         self.question = question
 
     def __repr__(self):
         return '<HealthSafetyRef %r>' % self.question
+
+class ReagentRef(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    reagent = db.Column(db.String(), unique=True, nullable=False)
+
+    def __init__(self, reagent):
+        self.reagent = reagent
+
+    def __repr__(self):
+        return '<HealthSafetyRef %r>' % self.reagent
 
 class AssessmentStatusRef(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -80,14 +90,15 @@ class AssessmentStatusRef(db.Model):
     def __repr__(self):
         return '<AssessmentStatusRef %r>' % self.status
 
+
 class Competence (db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(), unique=False)
-    scope =  db.Column(db.String(), unique=False)
-    qpulsenum = db.Column(db.String(), unique=True)
-    creator_id = db.Column(db.Integer, db.ForeignKey("Users.id"), unique = False)
-    validity_period = db.Column(db.Integer,db.ForeignKey("ValidityRef"), unique =False )
-    current_version = db.Column(db.Integer, unique =False, default=0)
+    title = db.Column(db.String(), unique=False,  nullable=False)
+    scope =  db.Column(db.String(), unique=False, nullable=False)
+    qpulsenum = db.Column(db.String(), unique=True, nullable=False)
+    creator_id = db.Column(db.Integer, db.ForeignKey("Users.id"), unique = False, nullable=False)
+    validity_period = db.Column(db.Integer,db.ForeignKey("ValidityRef"), unique =False, nullable=False )
+    current_version = db.Column(db.Integer, unique =False, default=0, nullable=False)
 
 
     creator_rel = db.relationship("Users", lazy = 'joined', foreign_keys=[creator_id])
@@ -101,6 +112,21 @@ class Competence (db.Model):
 
     def __repr__(self):
         return '<Competence %r>' % self.title
+
+class CompetenceJobRelationship(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    competence_id = db.Column(db.Integer, db.ForeignKey("Competence.id"),  unique = False, nullable=False)
+    jobrole_id = db.Column(db.Integer, db.ForeignKey("JobRoles.id"),  unique = False, nullable=False)
+
+    jobroles_id_rel=db.relationship("JobRoles", lazy = 'joined', foreign_keys=[jobrole_id])
+    competence_id_rel=db.relationship("Competence", lazy = 'joined', foreign_keys=[competence_id])
+
+    def __init__(self, competence_id, jobrole_id):
+        self.competence_id=competence_id
+        self.jobrole_id=jobrole_id
+
+    def __repr__(self):
+        return '<CompetenceJobRelationship %r>' % self.id
 
 class Users (db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -140,9 +166,20 @@ class UserRoleRelationship(db.Model):
     def __repr(self):
         return '<UserRolesRelationship % r>' % self.user_id
 
+class UserJobRelationship(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("Users.id"), unique=False, nullable=False)
+    jobrole_id = db.Column(db.Integer, db.ForeignKey("JobRoles.id"), unique=False, nullable=False)
 
+    user_id_rel = db.relationship("Users", lazy='joined', foreign_key=[user_id])
+    jobroles_id_rel = db.relationship("JobRoles", lazy='joined', foreign_keys=[jobrole_id])
 
+    def __init__(self, user_id, jobrole_id):
+        self.user_id=user_id
+        self.jobrole_id=jobrole_id
 
+    def __repr__(self):
+        return '<UserJobRelationship %r>' % self.id
 
 class Subsection(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -211,7 +248,6 @@ class Assessments (db.Model):
     def __repr__(self):
         return '<Assessment %r>' % self.status
 
-########### CPH
 
 
 class Reassessment(db.Model):
@@ -271,4 +307,101 @@ class Obx(db.Model):
 
 class Upload(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    assessment_id = db
+    assessment_id = db.Column(db.Integer, db.ForeignKey("Assessments.id"), unique=False, nullable=False)
+    file = db.Column(db.BLOB,unique=False, nullabl=False)
+    is_correct = db.Column(db.BOOLEAN, unique=False, nullable=False)
+    signoff_id = db.Column(db.Integer, db.ForeignKey("Users.id"), unique=False, nullable=False)
+
+    assess_id_rel = db.relationship("Assessments", lazy='joined', foreign_key=[assessment_id])
+    signoff_id_rel = db.relationship("Users", lazy='joined', foreign_key=[signoff_id])
+
+    def __init__(self, assessment_id, file, is_correct, signoff_id):
+        self.assessment_id=assessment_id
+        self.file=file
+        self.is_correct=is_correct
+        self.signoff_id=signoff_id
+
+    def __repr__(self):
+        return '<Upload %r>' % self.assessment_id
+
+class AssessmentUploadRelationship(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    assessment_id=db.Column(db.Integer, db.ForeignKey("Assessments.id"), unique=False, nullable=False)
+    upload_id = db.Column(db.Integer, db.ForeignKey("Upload.id"), unique=False, nullable=False)
+
+    assess_id_rel = db.relationship("Assessments", lazy='joined', foreign_key=[assessment_id])
+    upload_id_rel = db.relationship("Upload", lazy='joined', foreign_key=[upload_id])
+
+    def __init__(self, assessment_id, upload_id):
+        self.assessment_id=assessment_id
+        self.upload_id=upload_id
+
+    def __repr__(self):
+        return '<AssessmentUploadRelationship %r>' % self.id
+
+class AssessmentCaseBasedRelationship(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    assessment_id=db.Column(db.Integer, db.ForeignKey("Assessments.id"), unique=False, nullable=False)
+    casebased_id = db.Column(db.Integer, db.ForeignKey("CaseBased.id"), unique=False, nullable=False)
+
+    assess_id_rel = db.relationship("Assessments", lazy='joined', foreign_key=[assessment_id])
+    casebased_id_rel = db.relationship("CaseBased", lazy='joined', foreign_key=[casebased_id])
+
+    def __init__(self, assessment_id, casebased_id):
+        self.assessment_id=assessment_id
+        self.casebased_id=casebased_id
+
+    def __repr__(self):
+        return '<AssessmentCaseBasedRelationship %r>' % self.id
+
+class AssessmentObxRelationship(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    assessment_id=db.Column(db.Integer, db.ForeignKey("Assessments.id"), unique=False, nullable=False)
+    obx_id = db.Column(db.Integer, db.ForeignKey("Obx.id"), unique=False, nullable=False)
+
+    assess_id_rel = db.relationship("Assessments", lazy='joined', foreign_key=[assessment_id])
+    obx_id_rel = db.relationship("Obx", lazy='joined', foreign_key=[obx_id])
+
+    def __init__(self, assessment_id, obx_id):
+        self.assessment_id=assessment_id
+        self.obx_id=obx_id
+
+    def __repr__(self):
+        return '<AssessmentObxRelationship %r>' % self.id
+
+class Service(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(), unique=True, nullable=False)
+
+    def __init__(self, name):
+        self.name=name
+
+    def __repr__(self):
+        return '<Service %r>' % self.name
+
+
+class JobRoles(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    job = db.Column(db.String(), unique=True, nullable=False)
+
+    def __init__(self, job):
+        self.job = job
+
+    def __repr__(self):
+        return '<Service %r>' % self.job
+
+class JobServiceRelationship(db.model):
+    id = db.Column(db.Integer, primary_key=True)
+    jobrole_id = db.Column(db.Integer, db.ForeignKey("JobRoles.id"), unique=False, nullable=False)
+    service_id = db.Column(db.Integer, db.ForeignKey("Service.id"), unique=False, nullable=False)
+
+    jobrole_id_rel = db.relationship("JobRoles", lazy='joined', foreign_key=[jobrole_id])
+    service_id_rel = db.relationship("Service", lazy='joined', foreign_key=[service_id])
+
+    def __init__(self, jobrole_id, service_id):
+        self.jobrole_id=jobrole_id
+        self.service_id=service_id
+
+    def __repr__(self):
+        return '<JobServiceRelationship % r>' % self.id
+
