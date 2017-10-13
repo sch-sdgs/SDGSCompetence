@@ -18,18 +18,20 @@ class AddCompetence(Form):
     val_periods = ['6 Months', '1 Year', '2 Years']
     validity_period = QuerySelectField("Validity Period", query_factory=lambda:s.query(ValidityRef).all(), get_label="months")
     documents = QuerySelectMultipleField("Associated Documents",query_factory=lambda:s.query(Documents).all(), get_label="qpulse_no")
+    add_document = TextField("Add Document", [Required("Enter a Q-Pulse Document Number")])
+
+    h_and_s = QuerySelectMultipleField("Relevant Health and Safety", query_factory=lambda:s.query(HealthSafetyRef).all(), get_label="question") #This needs to be then added as a (constant) subsection to the competence
+    add_h_and_s = TextField("Add Health and Safety Hazard")
+    coshh = QuerySelectMultipleField("Related COSHH", query_factory=lambda: s.query(CoshhRef).all(),get_label="coshhitem") #This needs to be then added as a (constant) subsection to the competence
+    add_coshh = TextField("Add COSHH Item")
+    reagent_handling = QuerySelectMultipleField("Relevant reagent handling and storage", query_factory=lambda: s.query(ReagentRef).all(), get_label="reagent") #This needs to be then added as a (constant) subsection to the competence
+    add_reagent = TextField("Add Reagent Handling or Storage Item")
 
     section = QuerySelectField("Add Section" ,query_factory=lambda:s.query(Section).all(), get_label="name")
     subsection_name = TextField("Name")
-    subsection_evidencetype = QuerySelectField("Evidence Type", query_factory=lambda:s.query(EvidenceTypeRef).all(), get_label="type")
+    #subsection_evidencetype = QuerySelectField("Evidence Type", query_factory=lambda:s.query(EvidenceTypeRef).all(), get_label="type") #This belongs to a subsection
     subsection_comments = TextAreaField("Comment")
+
     submit = SubmitField()
-    h_and_s = QuerySelectMultipleField("Relevant Health and Safety", query_factory=lambda:s.query(HealthSafetyRef).all(), get_label="question") #This needs to be then added as a (constant) subsection to the competence
-    coshh = QuerySelectMultipleField("Related COSHH", query_factory=lambda: s.query(CoshhRef).all(),get_label="coshhitem") #This needs to be then added as a (constant) subsection to the competence
-    reagent_handling = QuerySelectMultipleField("Relevant reagent handling and storage", query_factory=lambda: s.query(ReagentRef).all(), get_label="reagent") #This needs to be then added as a (constant) subsection to the competence
-
-
-
-
 
 
