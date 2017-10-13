@@ -151,17 +151,19 @@ class Users (db.Model):
     login = db.Column(db.String(1000), unique = True, nullable=False)
     first_name = db.Column(db.String(1000), unique=False, nullable=False)
     last_name = db.Column(db.String(1000), unique = False, nullable=False)
+    email = db.Column(db.String(100), unique = False, nullable=True)
     date_created = db.Column(db.DATE, unique = False, nullable=False)
     last_login = db.Column(db.DATE, unique=False, nullable=True)
     active = db.Column(db.BOOLEAN, unique =False, default=True, nullable=False)
-    line_managerid = db.Column(db.Integer, db.ForeignKey("users.id"), unique = False, nullable=False)
+    line_managerid = db.Column(db.Integer, db.ForeignKey("users.id"), unique = False, nullable=True)
 
     linemanager_rel = db.relationship("Users", lazy='joined', foreign_keys=[line_managerid])
 
-    def __init__(self, login, first_name, last_name, active, line_managerid):
+    def __init__(self, login, first_name, last_name, email, active, line_managerid):
         self.login=login
         self.first_name=first_name
         self.last_name=last_name
+        self.email=email
         self.active=active
         self.line_managerid=line_managerid
         self.date_created = str(datetime.datetime.now().strftime("%Y%m%d"))
@@ -242,12 +244,14 @@ class Assessments(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     status = db.Column(db.String(1000), unique=False, nullable=False)
     ss_id = db.Column(db.Integer, db.ForeignKey("subsection.id"), unique=False, nullable=False)
-    signoff_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=False)
+    signoff_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=False)
-    date_completed = db.Column(db.DATE, unique=False, nullable=False)
-    date_expiry = db.Column(db.DATE, unique=False, nullable=False)
-    comments = db.Column(db.String(1000), unique=False, nullable=False)
-    is_reassessment = db.Column(db.BOOLEAN,  unique=False, nullable=False)
+    date_completed = db.Column(db.DATE, unique=False, nullable=True)
+    date_expiry = db.Column(db.DATE, unique=False, nullable=True)
+    date_assigned = db.Column(db.DATE, unique=False, nullable=False)
+    date_activated = db.Column(db.DATE, unique=False, nullable=True)
+    comments = db.Column(db.String(1000), unique=False, nullable=True)
+    is_reassessment = db.Column(db.BOOLEAN,  unique=False, default=False, nullable=False)
 
     ss_id_rel = db.relationship("Subsection", lazy='joined', foreign_keys=[ss_id])
     signoff_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[signoff_id])
@@ -262,6 +266,7 @@ class Assessments(db.Model):
         self.date_expiry=date_expiry
         self.comments=comments
         self.is_reassessment=is_reassessment
+        self.date_assigned = str(datetime.datetime.now().strftime("%Y%m%d"))
 
 
     def __repr__(self):
