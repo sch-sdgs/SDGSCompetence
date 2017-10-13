@@ -6,12 +6,9 @@ from activedirectory import UserAuthentication
 from forms import Login
 from flask.ext.principal import Principal, Identity, AnonymousIdentity, \
     identity_changed, Permission, RoleNeed, UserNeed,identity_loaded
+from competence import app
 
 import os
-
-app = Flask(__name__)
-app.config['DEBUG'] = True
-app.config['SECRET_KEY'] = 'super-secret'
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -36,7 +33,7 @@ class User(UserMixin):
     def __init__(self, id, password=None, roles=None):
         self.id = id
         self.password = password
-        self.roles = ['admin']
+        self.roles = ['admin','linemanager']
 
     def is_authenticated(self, id, password):
         # validuser = get_user_by_username(s, id)
@@ -130,13 +127,7 @@ def logout():
 def index():
     return render_template("index.html")
 
-@app.route('/admin')
-@admin_permission.require(http_exception=403)
-def admin():
-
-    return render_template("admin.html")
-
 if __name__ == '__main__':
-    app.run(debug=True,host='10.182.131.21',port=5006)
+    app.run(debug=True,host='10.182.131.21',port=5007)
 
 
