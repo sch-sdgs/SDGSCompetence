@@ -4,7 +4,7 @@ import datetime
 
 class UserRolesRef(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    role = db.Column(db.String(), unique=True, nullable=False)
+    role = db.Column(db.String(1000), unique=True, nullable=False)
 
     def __init__(self, role):
         self.role = role
@@ -26,7 +26,7 @@ class ValidityRef(db.Model):
 
 class QuestionsRef(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    question = db.Column(db.String(), unique=True, nullable=False)
+    question = db.Column(db.String(1000), unique=True, nullable=False)
     active = db.Column(db.BOOLEAN, unique=False, default=True, nullable=False, )
 
     def __init__(self, question):
@@ -38,7 +38,7 @@ class QuestionsRef(db.Model):
 
 class EvidenceTypeRef(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    type = db.Column(db.String(), unique=True, nullable=False)
+    type = db.Column(db.String(1000), unique=True, nullable=False)
 
     def __init__(self, type):
         self.type = type
@@ -49,7 +49,7 @@ class EvidenceTypeRef(db.Model):
 
 class CoshhRef(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    coshhitem = db.Column(db.String(), unique=True, nullable=False)
+    coshhitem = db.Column(db.String(1000), unique=True, nullable=False)
 
 
     def __init__(self, coshhitem):
@@ -61,7 +61,7 @@ class CoshhRef(db.Model):
 
 class HealthSafetyRef(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    question = db.Column(db.String(), unique=True, nullable=False)
+    question = db.Column(db.String(1000), unique=True, nullable=False)
 
     def __init__(self, question):
         self.question = question
@@ -71,7 +71,7 @@ class HealthSafetyRef(db.Model):
 
 class ReagentRef(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    reagent = db.Column(db.String(), unique=True, nullable=False)
+    reagent = db.Column(db.String(1000), unique=True, nullable=False)
 
     def __init__(self, reagent):
         self.reagent = reagent
@@ -81,7 +81,7 @@ class ReagentRef(db.Model):
 
 class AssessmentStatusRef(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    status = db.Column(db.String(), unique=True, nullable=False)
+    status = db.Column(db.String(1000), unique=True, nullable=False)
 
 
     def __init__(self, status):
@@ -93,9 +93,9 @@ class AssessmentStatusRef(db.Model):
 
 class Competence (db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(), unique=False,  nullable=False)
-    scope =  db.Column(db.String(), unique=False, nullable=False)
-    qpulsenum = db.Column(db.String(), unique=True, nullable=False)
+    title = db.Column(db.String(1000), unique=False,  nullable=False)
+    scope =  db.Column(db.String(1000), unique=False, nullable=False)
+    qpulsenum = db.Column(db.String(1000), unique=True, nullable=False)
     creator_id = db.Column(db.Integer, db.ForeignKey("Users.id"), unique = False, nullable=False)
     validity_period = db.Column(db.Integer,db.ForeignKey("ValidityRef"), unique =False, nullable=False )
     current_version = db.Column(db.Integer, unique =False, default=0, nullable=False)
@@ -130,9 +130,9 @@ class CompetenceJobRelationship(db.Model):
 
 class Users (db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    login = db.Column(db.String(), unique = True, nullable=False)
-    first_name = db.Column(db.String(), unique=False, nullable=False)
-    last_name = db.Column(db.String(), unique = False, nullable=False)
+    login = db.Column(db.String(1000), unique = True, nullable=False)
+    first_name = db.Column(db.String(1000), unique=False, nullable=False)
+    last_name = db.Column(db.String(1000), unique = False, nullable=False)
     date_created = db.Column(db.DATE, unique = False, nullable=False)
     last_login = db.Column(db.DATE, unique=False, nullable=True)
     active = db.Column(db.BOOLEAN, unique =False, default=True, nullable=False)
@@ -185,9 +185,9 @@ class Subsection(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     c_id = db.Column(db.Integer, db.ForeignKey("Competence.id"), unique=False, nullable=False)
     s_id = db.Column(db.Integer, db.ForeignKey("Section.id"), unique=False, nullable=False)
-    name = db.Column(db.String(), unique= False, nullable=False)
-    evidence = db.Column(db.String(), unique=False, nullable=False)
-    comments =db.Column( db.String(), unique=False, nullable=False)
+    name = db.Column(db.String(1000), unique= False, nullable=False)
+    evidence = db.Column(db.String(1000), unique=False, nullable=False)
+    comments =db.Column( db.String(1000), unique=False, nullable=False)
     intro = db.Column(db.Integer, unique=False, nullable = False, default=1)
     last = db.Column(db.Integer, unique=False, nullable = False, default=0)
 
@@ -208,7 +208,7 @@ class Subsection(db.Model):
 
 class Section(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(), unique=False, nullable=False)
+    name = db.Column(db.String(1000), unique=False, nullable=False)
     constant = db.Column(db.BOOLEAN,  unique=False, nullable=False, default=True)
 
     def __init__(self, name):
@@ -221,13 +221,13 @@ class Section(db.Model):
 
 class Assessments (db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    status = db.Column(db.String(), unique=False, nullable=False)
+    status = db.Column(db.String(1000), unique=False, nullable=False)
     ss_id = db.Column(db.Integer, db.ForeignKey("Subsection.id"), unique=False, nullable=False)
     signoff_id = db.Column(db.Integer, db.ForeignKey("Users.id"), unique=False, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("Users.id"), unique=False, nullable=False)
     date_completed = db.Columns(db.DATE, unique=False, nullable=False)
     date_expiry = db.Columns(db.DATE, unique=False, nullable=False)
-    comments = db.Columns(db.String(), unique=False, nullable=False)
+    comments = db.Columns(db.String(1000), unique=False, nullable=False)
     reassessment_id = db.Columns(db.Integer, db.ForeignKey("Reassessment.id"), unique=False, nullable=False)
 
     ss_id_rel = db.relationship("Subsection", lazy='joined', foreign_key=[ss_id])
@@ -272,8 +272,8 @@ class Reassessment(db.Model):
 class CaseBased(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     assessment_id = db.Column (db.Integer, db.ForeignKey("Assessments.id"), unique=False, nullable=False)
-    case = db.Column(db.String(), unique=False, nullable=False)
-    result = db.Column(db.String(), unique=False, nullable=False)
+    case = db.Column(db.String(1000), unique=False, nullable=False)
+    result = db.Column(db.String(1000), unique=False, nullable=False)
     is_correct = db.Column(db.BOOLEAN, unique=False, nullable=False)
     signoff_id = db.Column(db.Integer, db.ForeignKey("Users.id"), unique=False, nullable=False)
 
@@ -291,7 +291,7 @@ class CaseBased(db.Model):
 class Obx(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     assessment_id = db.Column(db.Integer, db.ForeignKey("Assessments.id"), unique=False, nullable=False)
-    name = db.Column(db.String(), unique=False, nullable=False)
+    name = db.Column(db.String(1000), unique=False, nullable=False)
     signoff_id = db.Column(db.Integer, db.ForeignKey("Users.id"), unique=False, nullable=False)
     is_correct = db.Column(db.BOOLEAN, unique=False, nullable=False)
 
@@ -308,7 +308,7 @@ class Obx(db.Model):
 class Upload(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     assessment_id = db.Column(db.Integer, db.ForeignKey("Assessments.id"), unique=False, nullable=False)
-    file = db.Column(db.BLOB,unique=False, nullabl=False)
+    file = db.Column(db.String(1000),unique=False, nullabl=False)
     is_correct = db.Column(db.BOOLEAN, unique=False, nullable=False)
     signoff_id = db.Column(db.Integer, db.ForeignKey("Users.id"), unique=False, nullable=False)
 
@@ -371,7 +371,7 @@ class AssessmentObxRelationship(db.Model):
 
 class Service(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(), unique=True, nullable=False)
+    name = db.Column(db.String(1000), unique=True, nullable=False)
 
     def __init__(self, name):
         self.name=name
@@ -382,7 +382,7 @@ class Service(db.Model):
 
 class JobRoles(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    job = db.Column(db.String(), unique=True, nullable=False)
+    job = db.Column(db.String(1000), unique=True, nullable=False)
 
     def __init__(self, job):
         self.job = job
