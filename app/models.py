@@ -104,8 +104,8 @@ class Competence (db.Model):
     current_version = db.Column(db.Integer, unique =False, default=0, nullable=False)
 
 
-    creator_rel = db.relationship("users", lazy = 'joined', foreign_keys=[creator_id])
-    validity_rel = db.relationship("validity_ref", lazy = 'joined', foreign_keys=[validity_period])
+    creator_rel = db.relationship("Users", lazy = 'joined', foreign_keys=[creator_id])
+    validity_rel = db.relationship("ValidityRef", lazy = 'joined', foreign_keys=[validity_period])
 
     def __init__(self, title, scope, creator_id, validity_period):
         self.title=title
@@ -121,8 +121,8 @@ class CompetenceJobRelationship(db.Model):
     competence_id = db.Column(db.Integer, db.ForeignKey("competence.id"),  unique = False, nullable=False)
     jobrole_id = db.Column(db.Integer, db.ForeignKey("job_roles.id"),  unique = False, nullable=False)
 
-    jobroles_id_rel=db.relationship("job_roles", lazy = 'joined', foreign_keys=[jobrole_id])
-    competence_id_rel=db.relationship("competence", lazy = 'joined', foreign_keys=[competence_id])
+    jobroles_id_rel=db.relationship("JobRoles", lazy = 'joined', foreign_keys=[jobrole_id])
+    competence_id_rel=db.relationship("Competence", lazy = 'joined', foreign_keys=[competence_id])
 
     def __init__(self, competence_id, jobrole_id):
         self.competence_id=competence_id
@@ -141,7 +141,7 @@ class Users (db.Model):
     active = db.Column(db.BOOLEAN, unique =False, default=True, nullable=False)
     line_managerid = db.Column(db.Integer, db.ForeignKey("users.id"), unique = False, nullable=False)
 
-    linemanager_rel = db.relationship("users", lazy='joined', foreign_keys=[line_managerid])
+    linemanager_rel = db.relationship("Users", lazy='joined', foreign_keys=[line_managerid])
 
     def __init__(self, login, first_name, last_name, active, line_managerid):
         self.login=login
@@ -159,8 +159,8 @@ class UserRoleRelationship(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=False)
     userrole_id=db.Column(db.Integer, db.ForeignKey("user_roles_ref.id"), unique=False, nullable=False)
 
-    user_id_rel = db.relationship("users", lazy='joined', foreign_keys=[user_id])
-    userrole_id_rel = db.relationship("user_roles_ref", lazy='joined', foreign_keys=[userrole_id])
+    user_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[user_id])
+    userrole_id_rel = db.relationship("UserRolesRef", lazy='joined', foreign_keys=[userrole_id])
 
     def __init__(self, user_id, userrole_id_rel):
         self.user_id=user_id
@@ -174,8 +174,8 @@ class UserJobRelationship(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=False)
     jobrole_id = db.Column(db.Integer, db.ForeignKey("job_roles.id"), unique=False, nullable=False)
 
-    user_id_rel = db.relationship("users", lazy='joined', foreign_keys=[user_id])
-    jobroles_id_rel = db.relationship("job_roles", lazy='joined', foreign_keys=[jobrole_id])
+    user_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[user_id])
+    jobroles_id_rel = db.relationship("JobRoles", lazy='joined', foreign_keys=[jobrole_id])
 
     def __init__(self, user_id, jobrole_id):
         self.user_id=user_id
@@ -194,8 +194,8 @@ class Subsection(db.Model):
     intro = db.Column(db.Integer, unique=False, nullable = False, default=1)
     last = db.Column(db.Integer, unique=False, nullable = False, default=0)
 
-    c_id_rel = db.relationship("competence", lazy='joined', foreign_keys=[id])
-    s_id_rel = db.relationship("section", lazy='joined', foreign_keys=[id])
+    c_id_rel = db.relationship("Competence", lazy='joined', foreign_keys=[c_id])
+    s_id_rel = db.relationship("Section", lazy='joined', foreign_keys=[s_id])
 
     def __init__(self,c_id, s_id, name, evidence,  comments):
         self.name=name
@@ -234,9 +234,9 @@ class Assessments(db.Model):
     comments = db.Column(db.String(1000), unique=False, nullable=False)
     is_reassessment = db.Column(db.BOOLEAN,  unique=False, nullable=False)
 
-    ss_id_rel = db.relationship("subsection", lazy='joined', foreign_keys=[ss_id])
-    signoff_id_rel = db.relationship("users", lazy='joined', foreign_keys=[signoff_id])
-    user_id_rel = db.relationship("users", lazy='joined', foreign_keys=[user_id])
+    ss_id_rel = db.relationship("Subsection", lazy='joined', foreign_keys=[ss_id])
+    signoff_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[signoff_id])
+    user_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[user_id])
 
 
     def __init__(self, status, ss_id,user_id,  date_completed, date_expiry,comments,is_reassessment ):
@@ -261,9 +261,9 @@ class Reassessment(db.Model):
     signoff_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=True)
     date_completed = db.Column(db.DATE, unique=False, nullable=True)
 
-    assess_id_rel = db.relationship("assessments", lazy='joined', foreign_keys=[assess_id])
-    question_id_rel = db.relationship("questions_ref", lazy='joined', foreign_keys=[question_id])
-    signoff_id_rel = db.relationship("users", lazy='joined', foreign_keys=[signoff_id])
+    assess_id_rel = db.relationship("Assessments", lazy='joined', foreign_keys=[assess_id])
+    question_id_rel = db.relationship("QuestionsRef", lazy='joined', foreign_keys=[question_id])
+    signoff_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[signoff_id])
 
     def __init__(self, assess_id, question_id):
 
@@ -281,7 +281,7 @@ class CaseBased(db.Model):
     is_correct = db.Column(db.BOOLEAN, unique=False, nullable=False)
 
 
-    assess_id_rel = db.relationship("assessments", lazy='joined', foreign_keys=[assessment_id])
+    assess_id_rel = db.relationship("Assessments", lazy='joined', foreign_keys=[assessment_id])
 
 
     def __init__(self, assessment_id, case, result, is_correct):
@@ -299,7 +299,7 @@ class Obx(db.Model):
     name = db.Column(db.String(1000), unique=False, nullable=False)
     is_correct = db.Column(db.BOOLEAN, unique=False, nullable=False)
 
-    assess_id_rel = db.relationship("assessments", lazy='joined', foreign_keys=[assessment_id])
+    assess_id_rel = db.relationship("Assessments", lazy='joined', foreign_keys=[assessment_id])
 
 
     def __init__(self,assessment_id , name, is_correct):
@@ -317,7 +317,7 @@ class Upload(db.Model):
     is_correct = db.Column(db.BOOLEAN, unique=False, nullable=False)
 
 
-    assess_id_rel = db.relationship("assessments", lazy='joined', foreign_keys=[assessment_id])
+    assess_id_rel = db.relationship("Assessments", lazy='joined', foreign_keys=[assessment_id])
 
 
     def __init__(self, assessment_id, file, is_correct):
@@ -334,8 +334,8 @@ class AssessmentUploadRelationship(db.Model):
     assessment_id=db.Column(db.Integer, db.ForeignKey("assessments.id"), unique=False, nullable=False)
     upload_id = db.Column(db.Integer, db.ForeignKey("upload.id"), unique=False, nullable=False)
 
-    assess_id_rel = db.relationship("assessments", lazy='joined', foreign_keys=[assessment_id])
-    upload_id_rel = db.relationship("upload", lazy='joined', foreign_keys=[upload_id])
+    assess_id_rel = db.relationship("Assessments", lazy='joined', foreign_keys=[assessment_id])
+    upload_id_rel = db.relationship("Upload", lazy='joined', foreign_keys=[upload_id])
 
     def __init__(self, assessment_id, upload_id):
         self.assessment_id=assessment_id
@@ -349,8 +349,8 @@ class AssessmentCaseBasedRelationship(db.Model):
     assessment_id=db.Column(db.Integer, db.ForeignKey("assessments.id"), unique=False, nullable=False)
     casebased_id = db.Column(db.Integer, db.ForeignKey("case_based.id"), unique=False, nullable=False)
 
-    assess_id_rel = db.relationship("assessments", lazy='joined', foreign_keys=[assessment_id])
-    casebased_id_rel = db.relationship("case_based", lazy='joined', foreign_keys=[casebased_id])
+    assess_id_rel = db.relationship("Assessments", lazy='joined', foreign_keys=[assessment_id])
+    casebased_id_rel = db.relationship("CaseBased", lazy='joined', foreign_keys=[casebased_id])
 
     def __init__(self, assessment_id, casebased_id):
         self.assessment_id=assessment_id
@@ -364,8 +364,8 @@ class AssessmentObxRelationship(db.Model):
     assessment_id=db.Column(db.Integer, db.ForeignKey("assessments.id"), unique=False, nullable=False)
     obx_id = db.Column(db.Integer, db.ForeignKey("obx.id"), unique=False, nullable=False)
 
-    assess_id_rel = db.relationship("assessments", lazy='joined', foreign_keys=[assessment_id])
-    obx_id_rel = db.relationship("obx", lazy='joined', foreign_keys=[obx_id])
+    assess_id_rel = db.relationship("Assessments", lazy='joined', foreign_keys=[assessment_id])
+    obx_id_rel = db.relationship("Obx", lazy='joined', foreign_keys=[obx_id])
 
     def __init__(self, assessment_id, obx_id):
         self.assessment_id=assessment_id
@@ -393,15 +393,15 @@ class JobRoles(db.Model):
         self.job = job
 
     def __repr__(self):
-        return '<Service %r>' % self.job
+        return '<JobRole %r>' % self.job
 
 class JobServiceRelationship(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     jobrole_id = db.Column(db.Integer, db.ForeignKey("job_roles.id"), unique=False, nullable=False)
     service_id = db.Column(db.Integer, db.ForeignKey("service.id"), unique=False, nullable=False)
 
-    jobrole_id_rel = db.relationship("job_roles", lazy='joined', foreign_keys=[jobrole_id])
-    service_id_rel = db.relationship("service", lazy='joined', foreign_keys=[service_id])
+    jobrole_id_rel = db.relationship("JobRoles", lazy='joined', foreign_keys=[jobrole_id])
+    service_id_rel = db.relationship("Service", lazy='joined', foreign_keys=[service_id])
 
     def __init__(self, jobrole_id, service_id):
         self.jobrole_id=jobrole_id
