@@ -48,6 +48,7 @@ def message(f):
 #import modules and and register blueprints
 
 from mod_admin.views import admin
+from mod_training.views import training
 
 app.register_blueprint(admin,url_prefix='/admin')
-
+app.register_blueprint(training,url_prefix='/training')
