@@ -6,9 +6,9 @@
     <div class="col-md-3"></div>
     <div class="col-md-6">
         <div class="well bs-component">
-            <form action="{{ url_for('admin.user_role_add') }}" method="POST" class="form-horizontal">
+            <form action="{{ url_for('admin.userroles_edit', id=id) }}" method="POST" class="form-horizontal">
                 <fieldset>
-                    <legend>Add Role</legend>
+                    <legend>Edit Role</legend>
                     <div class="form-group">
                         {{ form.role.label(class_="col-lg-2 control-label") }}
                         <div class="col-lg-10">
