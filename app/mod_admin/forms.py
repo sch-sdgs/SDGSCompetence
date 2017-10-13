@@ -9,4 +9,4 @@ from app.models import *
 
 class UserRoleForm(Form):
     role = TextField("Role",  [Required("Enter a Username")])
-    submit = SubmitField("Add Role")
+    submit = SubmitField()
