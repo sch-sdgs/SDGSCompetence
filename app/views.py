@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request, url_for, session, current_app
+from flask import Flask, render_template, request, redirect, request, url_for, session, current_app, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_required, login_user, logout_user, LoginManager, UserMixin, \
     current_user
@@ -7,6 +7,7 @@ from forms import Login
 from flask.ext.principal import Principal, Identity, AnonymousIdentity, \
     identity_changed, Permission, RoleNeed, UserNeed,identity_loaded
 from competence import app
+from werkzeug.utils import secure_filename
 
 import os
 
@@ -23,7 +24,6 @@ user_permission = Permission(RoleNeed('user'))
 linemanager_permission = Permission(RoleNeed('linemanager'))
 admin_permission = Permission(RoleNeed('admin'))
 superadmin_permission = Permission(RoleNeed('superadmin'))
-
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -126,6 +126,46 @@ def logout():
 @login_required
 def index():
     return render_template("index.html")
+
+# Uploads - CPH
+
+def allowed_file(filename):
+    return '.' in filename \
+        and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+@app.route('/uploads', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'GET':
+        return render_template('upload.html')
+
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            print "no file part"
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        print file
+
+        # if user does not select file, browser also
+        # submit a empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            print "no selected file"
+            return redirect(request.url)
+
+        if not allowed_file(file.filename):
+            flash('Invalid file type')
+            print "invalid file type"
+            return redirect(request.url)
+
+        if file and allowed_file(file.filename):
+            print "here3"
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            print "test"
+            flash('File uploaded successfully')
+            return redirect(request.url)
 
 if __name__ == '__main__':
     app.run(debug=True,host='10.182.131.21',port=5007)
