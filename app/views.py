@@ -4,7 +4,7 @@ from flask_login import login_required, login_user, logout_user, LoginManager, U
     current_user
 from activedirectory import UserAuthentication
 from forms import Login
-from flask.ext.principal import Principal, Identity, AnonymousIdentity, \
+from flask_principal import Principal, Identity, AnonymousIdentity, \
     identity_changed, Permission, RoleNeed, UserNeed,identity_loaded
 from competence import app
 

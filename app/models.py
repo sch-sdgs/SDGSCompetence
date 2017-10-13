@@ -214,8 +214,9 @@ class Section(db.Model):
     name = db.Column(db.String(1000), unique=False, nullable=False)
     constant = db.Column(db.BOOLEAN,  unique=False, nullable=False, default=True)
 
-    def __init__(self, name):
+    def __init__(self, name, constant):
         self.name = name
+        self.constant = constant
 
 
     def __repr__(self):
