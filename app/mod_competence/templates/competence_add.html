@@ -41,10 +41,19 @@
                         </div>
                     </div>
 
-                     <div class="form-group">
-                        {{ form.section.label(class_="col-lg-2 control-label") }}
+                    <div class="form-group">
+                        {{ form.documents.label(class_="col-lg-2 control-label") }}
                         <div class="col-lg-10">
-                            {{ form.section(class_="form-control") }}
+                            {{ form.documents(class_="form-control") }}
+                        </div>
+                    </div>
+
+
+
+                     <div class="form-group">
+                        {{ form.subsection_evidencetype.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.subsection_evidencetype(class_="form-control") }}
                         </div>
                     </div>
 
@@ -55,7 +64,26 @@
                         </div>
                     </div>
 
+                     <div class="form-group">
+                        {{ form.reagent_handling.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.reagent_handling(class_="form-control") }}
+                        </div>
+                    </div>
 
+                     <div class="form-group">
+                        {{ form.coshh.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.coshh(class_="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.section.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-6">
+                            {{ form.section(class_="form-control") }}
+                        </div>
+                    </div>
 
                     <div class="form-group">
                         <div class="col-lg-10 col-lg-offset-2">
