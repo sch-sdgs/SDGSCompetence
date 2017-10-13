@@ -16,23 +16,44 @@ def index():
     return render_template("admin.html")
 
 
-@admin.route('/userrole/add', methods=['GET', 'POST'])
+@admin.route('/userroles', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
-def user_role_add():
-    if request.method == 'GET':
+def userroles():
+    form = UserRoleForm()
 
-        form = UserRoleForm()
-
-        return render_template("add_user_role.html",form=form)
-
-    elif request.method == 'POST':
+    if request.method == 'POST':
 
         u = UserRolesRef(role=request.form["role"])
         s.add(u)
         s.commit()
 
+    user_roles = s.query(UserRolesRef).all()
 
+    return render_template("userroles.html", form=form, data=user_roles)
 
+@admin.route('/userroles/edit/<id>', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def userroles_edit(id=None):
+    form = UserRoleForm()
+    user_role = s.query(UserRolesRef).filter_by(id=id).first()
+    form.role.data = user_role.role
+
+    if request.method == 'POST':
+        s.query(UserRolesRef).filter_by(id=id).update({'role': request.form["role"]})
+        s.commit()
+        return redirect(url_for('admin.userroles'))
+
+    return render_template("userroles_edit.html", form=form, id=id)
+
+@admin.route('/userroles/delete/<id>', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def deleterole(id=None):
+
+    s.query(UserRolesRef).filter_by(id=id).delete()
+
+    s.commit()
+
+    return redirect(url_for('admin.userroles'))
 
 
 @admin.route('/user', methods=['GET', 'POST'])
