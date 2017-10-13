@@ -23,3 +23,11 @@ class SectionForm(Form):
 class ValidityPeriodForm(Form):
     months=TextField("Validity period (months)",  [Required("Enter a Duration in months")])
     submit = SubmitField()
+
+class AssessmentStatusForm(Form):
+    status=TextField("Assessment Status",  [Required("Enter an Assessment Status")])
+    submit = SubmitField()
+
+class ServiceForm(Form):
+    name=TextField("Service",  [Required("Enter a service")])
+    submit = SubmitField()

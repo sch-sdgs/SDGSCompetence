@@ -15,6 +15,76 @@ admin = Blueprint('admin', __name__, template_folder='templates')
 def index():
     return render_template("admin.html")
 
+@admin.route('/service',methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def service():
+    form = ServiceForm()
+
+    if request.method == 'POST':
+        n =Service(name=request.form['name'])
+        s.add(n)
+        s.commit()
+
+    services = s.query(Service).all()
+
+    return render_template("service.html",form=form,data=services)
+
+@admin.route('/service/edit/<id>', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def service_edit(id=None):
+    form=ServiceForm()
+    service = s.query(Service).filter_by(id=id).first()
+    form.name.data = service.name
+
+    if request.method == 'POST':
+        s.query(Service).filter_by(id=id).update({'name': request.form["name"]})
+        s.commit()
+        return redirect(url_for('admin.service'))
+
+    return render_template("service_edit.html", form=form, id=id)
+
+@admin.route('/service/delete/<id>', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def deleteservice(id=None):
+    s.query(Service).filter_by(id=id).delete()
+    s.commit()
+    return redirect(url_for('admin.service'))
+
+@admin.route('/assessmentstatus',methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def assessmentstatus():
+    form = AssessmentStatusForm()
+
+    if request.method == 'POST':
+        a = AssessmentStatusRef(status=request.form['status'])
+        s.add(a)
+        s.commit()
+
+    assessment_status = s.query(AssessmentStatusRef).all()
+
+    return render_template("assessmentstatus.html",form=form,data=assessment_status)
+
+@admin.route('/assessmentstatus/edit/<id>', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def assessmentstatus_edit(id=None):
+    form=AssessmentStatusForm()
+    status = s.query(AssessmentStatusRef).filter_by(id=id).first()
+    form.status.data = status.status
+
+    if request.method == 'POST':
+        s.query(AssessmentStatusRef).filter_by(id=id).update({'status': request.form["status"]})
+        s.commit()
+        return redirect(url_for('admin.assessmentstatus'))
+
+    return render_template("assessmentstatus_edit.html", form=form, id=id)
+
+@admin.route('/assessmentstatus/delete/<id>', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def deleteassessmentstatus(id=None):
+    s.query(AssessmentStatusRef).filter_by(id=id).delete()
+    s.commit()
+    return redirect(url_for('admin.assessmentstatus'))
+
 @admin.route('/validityperiods',methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def validityperiods():
