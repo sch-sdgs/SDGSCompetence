@@ -7,7 +7,6 @@ from functools import wraps
 from flask_login import current_user
 import app.config as config
 
-
 #define app and db session
 
 app = Flask(__name__)
