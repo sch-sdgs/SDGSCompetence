@@ -116,6 +116,21 @@ class Competence (db.Model):
     def __repr__(self):
         return '<Competence %r>' % self.title
 
+class Documents(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    c_id = db.Column(db.Integer, db.ForeignKey("competence.id"),unique=False,  nullable=False)
+    qpulse_no = db.Column(db.String(20),unique=False,  nullable=False)
+
+    c_id_rel = db.relationship("Competence", lazy = 'joined', foreign_keys=[c_id])
+
+    def __init__(self, c_id, qpulse_no):
+        self.c_id=c_id
+        self.qpulse_no=qpulse_no
+
+
+    def __repr__(self):
+        return '<Documents %r>' % self.qpulse_no
+
 class CompetenceJobRelationship(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     competence_id = db.Column(db.Integer, db.ForeignKey("competence.id"),  unique = False, nullable=False)
