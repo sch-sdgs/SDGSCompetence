@@ -1,5 +1,4 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import inspect
@@ -8,14 +7,18 @@ from functools import wraps
 from flask_login import current_user
 import app.config as config
 
+
 #define app and db session
 
 app = Flask(__name__)
-app.config.from_object(config)
 app.secret_key = 'development key'
-db = SQLAlchemy(app)
-s = db.session
+app.config.from_object(config)
 
+from models import db
+
+print app.config
+
+s = db.session
 
 handler = TimedRotatingFileHandler('PerformanceSummary.log', when="d", interval=1, backupCount=30)
 handler.setLevel(logging.INFO)

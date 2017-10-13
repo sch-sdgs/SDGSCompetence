@@ -1,6 +1,9 @@
-from app.views import db
 import datetime
+from flask_sqlalchemy import SQLAlchemy
+from competence import app
 
+
+db = SQLAlchemy(app)
 
 class UserRolesRef(db.Model):
     id = db.Column(db.Integer, primary_key=True)
