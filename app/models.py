@@ -98,7 +98,7 @@ class Competence (db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(1000), unique=False,  nullable=False)
     scope =  db.Column(db.String(1000), unique=False, nullable=False)
-    qpulsenum = db.Column(db.String(1000), unique=True, nullable=False)
+    qpulsenum = db.Column(db.String(1000), unique=True, nullable=True)
     creator_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique = False, nullable=False)
     validity_period = db.Column(db.Integer,db.ForeignKey("validity_ref.id"), unique =False, nullable=False )
     current_version = db.Column(db.Integer, unique =False, default=0, nullable=False)
@@ -206,13 +206,14 @@ class Subsection(db.Model):
     c_id = db.Column(db.Integer, db.ForeignKey("competence.id"), unique=False, nullable=False)
     s_id = db.Column(db.Integer, db.ForeignKey("section.id"), unique=False, nullable=False)
     name = db.Column(db.String(1000), unique= False, nullable=False)
-    evidence = db.Column(db.String(1000), unique=False, nullable=False)
+    evidence = db.Column(db.Integer, db.ForeignKey("evidence_type_ref.id"), unique=False, nullable=False)
     comments =db.Column( db.String(1000), unique=False, nullable=False)
     intro = db.Column(db.Integer, unique=False, nullable = False, default=1)
-    last = db.Column(db.Integer, unique=False, nullable = False, default=0)
+    last = db.Column(db.Integer, unique=False, nullable = True)
 
     c_id_rel = db.relationship("Competence", lazy='joined', foreign_keys=[c_id])
     s_id_rel = db.relationship("Section", lazy='joined', foreign_keys=[s_id])
+    evidence_rel =db.relationship("EvidenceTypeRef", lazy='joined', foreign_keys =[evidence])
 
     def __init__(self,c_id, s_id, name, evidence,  comments):
         self.name=name

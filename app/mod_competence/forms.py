@@ -7,7 +7,12 @@ from app.competence import s
 from app.models import *
 
 
-
+class SectionForm(Form):
+    subsection_name = TextField("Name")
+    subsection_evidencetype = QuerySelectField("Evidence Type", query_factory=lambda: s.query(EvidenceTypeRef).all(),
+                                               get_label="type")  # This belongs to a subsection
+    subsection_comments = TextAreaField("Comment")
+    # add = SubmitField()
 
 
 class AddCompetence(Form):
@@ -27,10 +32,8 @@ class AddCompetence(Form):
     reagent_handling = QuerySelectMultipleField("Relevant reagent handling and storage", query_factory=lambda: s.query(ReagentRef).all(), get_label="reagent") #This needs to be then added as a (constant) subsection to the competence
     add_reagent = TextField("Add Reagent Handling or Storage Item")
 
-    section = QuerySelectField("Add Section" ,query_factory=lambda:s.query(Section).all(), get_label="name")
-    subsection_name = TextField("Name")
-    #subsection_evidencetype = QuerySelectField("Evidence Type", query_factory=lambda:s.query(EvidenceTypeRef).all(), get_label="type") #This belongs to a subsection
-    subsection_comments = TextAreaField("Comment")
+    choose_section = QuerySelectField("Add Section" ,query_factory=lambda:s.query(Section).all(), get_label="name") #All sections in database
+    competence_sections = QuerySelectField("Add Section" ,query_factory=lambda:s.query(Section).all(), get_label="name") #All sections that are added for that specific competency
 
     submit = SubmitField()
 
