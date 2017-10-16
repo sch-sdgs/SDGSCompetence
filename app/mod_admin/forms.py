@@ -31,3 +31,24 @@ class UserEditForm(Form):
     jobrole = SelectMultipleField("Job Role")
     userrole = SelectMultipleField("User Role")
     submit = SubmitField()
+
+class EvidenceTypeForm(Form):
+    type=TextField("Evidence Type",  [Required("Enter an Evidence Type")])
+    submit = SubmitField()
+
+class SectionForm(Form):
+    name=TextField("Section Name",  [Required("Enter a Section Name")])
+    constant=BooleanField("Applicable to all competencies?")
+    submit = SubmitField()
+
+class ValidityPeriodForm(Form):
+    months=TextField("Validity period (months)",  [Required("Enter a Duration in months")])
+    submit = SubmitField()
+
+class AssessmentStatusForm(Form):
+    status=TextField("Assessment Status",  [Required("Enter an Assessment Status")])
+    submit = SubmitField()
+
+class ServiceForm(Form):
+    name=TextField("Service",  [Required("Enter a service")])
+    submit = SubmitField()
