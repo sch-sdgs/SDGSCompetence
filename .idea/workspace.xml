@@ -2,18 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4783f288-aaa5-4ace-9f51-c82da759ae56" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.gitignore.txt" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_section.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/competence.py" afterPath="$PROJECT_DIR$/app/competence.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_competence/forms.py" afterPath="$PROJECT_DIR$/app/mod_competence/forms.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_add.html" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_add.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_section.html" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_section.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_competence/templates/section.html" afterPath="$PROJECT_DIR$/app/mod_competence/templates/section.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_competence/views.py" afterPath="$PROJECT_DIR$/app/mod_competence/views.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/models.py" afterPath="$PROJECT_DIR$/app/models.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/run.py" afterPath="$PROJECT_DIR$/app/run.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/templates/base.html" afterPath="$PROJECT_DIR$/app/templates/base.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.py" afterPath="$PROJECT_DIR$/build.py" />
     </list>
     <ignored path="SDGSCompetence.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -883,7 +879,14 @@
       <option name="project" value="LOCAL" />
       <updated>1508173107787</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Merge branch 'develop_Nichola' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;app/templates/base.html&#10;">
+      <created>1508176672078</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1508176672078</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -933,7 +936,8 @@
     <MESSAGE value="working on users in admin module" />
     <MESSAGE value="Merge branch 'develop_Nichola' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;app/models.py&#10;" />
     <MESSAGE value="Merge branch 'develop_lizzy' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;.idea/deployment.xml&#10;#&#9;app/mod_admin/forms.py&#10;#&#9;app/mod_admin/views.py&#10;#&#9;app/run.py&#10;" />
-    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'develop_lizzy' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;.idea/deployment.xml&#10;#&#9;app/mod_admin/forms.py&#10;#&#9;app/mod_admin/views.py&#10;#&#9;app/run.py&#10;" />
+    <MESSAGE value="Merge branch 'develop_Nichola' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;app/templates/base.html&#10;" />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'develop_Nichola' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;app/templates/base.html&#10;" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
