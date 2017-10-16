@@ -249,7 +249,7 @@ class Subsection(db.Model):
 
     c_id_rel = db.relationship("Competence", lazy='joined', foreign_keys=[c_id])
     s_id_rel = db.relationship("Section", lazy='joined', foreign_keys=[s_id])
-    evidence_rel =db.relationship("EvidenceTypeRef", lazy='joined', foreign_keys =[evidence])
+    evidence_rel =db.relationship("EvidenceTypeRef",  lazy='joined', foreign_keys =[evidence])
 
     def __init__(self,c_id, s_id, name, evidence,  comments):
         self.name=name

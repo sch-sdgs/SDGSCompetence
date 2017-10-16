@@ -40,9 +40,8 @@ def add_sections_to_db():
     sub = Subsection(name=name,evidence=evidence_id,comments=comments,c_id=c_id,s_id=s_id)
     s.add(sub)
     s.commit()
-    result = s.query(Subsection).join(Competence).join(Section).filter(
-        and_(Competence.id == c_id, Section.id == s_id)).values(Subsection.name, EvidenceTypeRef.type,
-                                                               Subsection.comments)
+    result = s.query(Subsection).join(Competence).join(Section).join(EvidenceTypeRef).filter(Competence.id == c_id).filter(Section.id == s_id). \
+        values(Subsection.name, EvidenceTypeRef.type, Subsection.comments)
 
     table = ItemTableSubsections(result, classes=['table', 'table-striped', 'section'])
     return jsonify(table)
@@ -65,6 +64,6 @@ def get_section():
 
     form = SectionForm()
     subsection_form = AddSubsection()
-    result = s.query(Subsection).join(Competence).join(Section).filter(and_(Competence.id==c_id, Section.id==val)).values(Subsection.name, EvidenceTypeRef.type, Subsection.comments)
+    result = s.query(Subsection).join(Competence).join(Section).join(EvidenceTypeRef).filter(and_(Competence.id==c_id, Section.id==val)).values(Subsection.name, EvidenceTypeRef.type, Subsection.comments)
     table = ItemTableSubsections(result, classes=['table', 'table-striped', 'section'])
     return jsonify(render_template('section.html',c_id=c_id, form=form, val=val, text=text, table=table, subsection_form=subsection_form))
