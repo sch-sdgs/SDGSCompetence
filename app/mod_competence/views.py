@@ -25,10 +25,15 @@ def add_competence():
 
 @competence.route('/section', methods=['GET', 'POST'])
 def get_section():
+    """
+
+
+    :return:
+    """
     if request.method == 'POST':
         # add subsection section database
         pass
-    text = request.args.get('text')
+    text = request.json['text']
     val = request.json['val']
     c_id = request.json['c_id']
 
