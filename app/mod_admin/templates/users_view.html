@@ -38,7 +38,7 @@
                         <td><a href="{{ url_for('admin.users_toggle_active',id=user["id"]) }}" class="btn btn-sm btn-success"><span class="glyphicon glyphicon-ok"></span></a></td>
                         {% endif %}
                         {% if user["active"] == False %}
-                        <td><a href="{{ url_for('admin.users_toggle_active',id=user["id"]) }}" class="btn btn-sm btn-warning"><span class="glyphicon glyphicon-remove"></span></a></td>
+                        <td><a href="{{ url_for('admin.users_toggle_active',id=user["id"]) }}" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-remove"></span></a></td>
                         {% endif %}
                     </tr>
                 {% endfor %}

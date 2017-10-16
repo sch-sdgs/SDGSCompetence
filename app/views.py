@@ -22,32 +22,56 @@ principals = Principal(app)
 
 #permission levels
 
-user_permission = Permission(RoleNeed('user'))
-linemanager_permission = Permission(RoleNeed('linemanager'))
-admin_permission = Permission(RoleNeed('admin'))
-superadmin_permission = Permission(RoleNeed('superadmin'))
-
+user_permission = Permission(RoleNeed('USER'))
+linemanager_permission = Permission(RoleNeed('LINEMANAGER'))
+admin_permission = Permission(RoleNeed('ADMIN'))
 
 @login_manager.user_loader
 def load_user(user_id):
     return User(user_id)
 
+
 class User(UserMixin):
-    def __init__(self, id, password=None, roles=None):
+    def __init__(self, id, password=None):
         self.id = id
+        self.database_id = self.get_database_id()
         self.password = password
-        self.roles = ['admin','linemanager']
+        self.roles = self.get_user_roles()
+        print self.roles
+
+    def get_database_id(self):
+        query= s.query(Users).filter_by(login=self.id).first()
+        if query:
+            database_id = query.id
+        else:
+            database_id = None
+        return database_id
+
+    def get_user_roles(self):
+        result = []
+        roles = s.query(UserRolesRef).join(UserRoleRelationship).join(Users).filter(Users.login == self.id).all()
+        for role in roles:
+            result.append(role.role)
+        return result
 
     def is_authenticated(self, id, password):
-        # validuser = get_user_by_username(s, id)
-        #
-        # if len(list(validuser)) == 0:
-        #     return False
-        # else:
-        check_activdir = UserAuthentication().authenticate(id, password)
 
+        user = s.query(Users).filter_by(login=id).all()
+
+        if len(list(user)) == 0:
+            return False
+        else:
+            check_activdir = UserAuthentication().authenticate(id, password)
+
+        self.roles = []
         if check_activdir != "False":
+            roles = s.query(UserRolesRef).join(UserRoleRelationship).join(Users).filter(Users.login == id).all()
+            for role in roles:
+                self.roles.append(role.role)
+            print self.roles
             return True
+
+
         else:
             return False
 
@@ -141,5 +165,12 @@ def logout():
 @app.route('/')
 @login_required
 def index():
-    return render_template("index.html")
+
+    with admin_permission.require():
+        linereports = s.query(Users).filter_by(line_managerid=int(current_user.database_id)).filter_by(active=True).all()
+        linereports_inactive = s.query(Users).filter_by(line_managerid=int(current_user.database_id)).filter_by(
+            active=False).count()
+    print linereports
+
+    return render_template("index.html",linereports=linereports,linereports_inactive=linereports_inactive)
 

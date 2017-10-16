@@ -13,37 +13,45 @@
         {% for role in current_user.roles %}
         {{ role }}
         {% endfor %}
-        Line Manager:
     </div>
 </div>
 
-{% if "linemanager" in current_user.roles %}
+{% if "LINEMANAGER" in current_user.roles %}
 
 <div class="panel panel-default">
-    <div class="panel-heading"><span class="glyphicon glyphicon-user"></span>
+    <div class="panel-heading">
+        <span class="glyphicon glyphicon-user"></span>
         <a class="collapsed" data-toggle="collapse" data-target="#collapseOne"
-           href="#collapseOne">Line Reports (1)</a>
+           href="#collapseOne">Line Reports <span class="badge">{{ linereports|length }}</span></a>
     </div>
     <div id="collapseOne" class="panel-collapse collapse">
         <div class="panel-body">
             Click your line reports name to view their dashboard.
-
-            <table class="table table-striped">
-                <thead>
-                <th>Name</th>
-                <th>Position</th>
-                <th>Ongoing</th>
-                <th>Close to Expiry</th>
-                <th>Expired</th>
-                </thead>
-                <tr>
-                    <td><a href="#">Joe Bloggs</a></td>
-                    <td>Lead Bioionformatician</td>
-                    <td>5</td>
-                    <td>2</td>
-                    <td>5</td>
-                </tr>
-            </table>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <table class="table table-striped">
+                        <thead>
+                        <th>Name</th>
+                        <th>Ongoing</th>
+                        <th>Close to Expiry</th>
+                        <th>Expired</th>
+                        </thead>
+                        {% for report in linereports %}
+                        <tr>
+                            <td>{{ report.first_name }} {{ report.last_name }}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+            {% if linereports_inactive > 0 %}
+            <div class="alert alert alert-warning">
+                You have {{ linereports_inactive }} inactive line reports. Click here to view.
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -141,19 +149,21 @@
                     <strong>Incomplete</strong>
 
                     <table class="table table-striped">
-                <thead>
-                <th>Competence</th>
-                <th>Q-Pulse Doc Number</th>
-                <th>Continue Editing</th>
-                <th>Mark Complete</th>
-                </thead>
-                <tr>
-                    <td>Sysadmin</td>
-                    <td>401.058</td>
-                    <td><a href="" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-pencil"></span></a>
-                    <td><a href="" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-ok"></span></a>
-                </tr>
-            </table>
+                        <thead>
+                        <th>Competence</th>
+                        <th>Q-Pulse Doc Number</th>
+                        <th>Continue Editing</th>
+                        <th>Mark Complete</th>
+                        </thead>
+                        <tr>
+                            <td>Sysadmin</td>
+                            <td>401.058</td>
+                            <td><a href="" class="btn btn-sm btn-default"><span
+                                    class="glyphicon glyphicon-pencil"></span></a>
+                            <td><a href="" class="btn btn-sm btn-default"><span
+                                    class="glyphicon glyphicon-ok"></span></a>
+                        </tr>
+                    </table>
 
                 </div>
             </div>
