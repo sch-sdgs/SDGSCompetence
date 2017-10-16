@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from sqlalchemy.orm import load_only
 from flask import Blueprint
-from flask import render_template, request, url_for, redirect, Blueprint
+from flask import render_template, request, url_for, redirect, Blueprint, jsonify
 from flask.ext.login import login_required, current_user
 from app.views import admin_permission
 from forms import *
@@ -9,8 +9,48 @@ from app.models import *
 from app.competence import s
 import datetime
 import time
+from app.activedirectory import UserAuthentication
 
 admin = Blueprint('admin', __name__, template_folder='templates')
+
+
+#ajax methods
+@admin.route('/get_user_details', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def get_user_details():
+    """
+    gets user details form active directory based on the username
+    :return: json of the results
+    """
+    username = request.args["username"]
+    u = UserAuthentication().get_user_detail_from_username(username)
+    return jsonify(u);
+
+@admin.route('/check_line_manager', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def check_line_manager():
+    """
+    gets user details form active directory based on the username
+    :return: json of the results
+    """
+    linemanager = request.args["linemanager"]
+    if " " in linemanager:
+        firstname, surname = linemanager.split(" ")
+        line_manager_query = s.query(Users).filter_by(first_name=firstname, last_name=surname).first()
+        if line_manager_query is not None:
+            role_id = int(s.query(UserRolesRef).filter_by(role="LINEMANAGER").first().id)
+            check_if_line_manager = s.query(UserRoleRelationship).filter_by(userrole_id=role_id).filter_by(user_id=line_manager_query.id).count()
+            if check_if_line_manager > 0:
+                return jsonify(True)
+            else:
+                return jsonify(False)
+        else:
+            return jsonify(False)
+    elif linemanager == "":
+        return jsonify(False)
+    else:
+        return jsonify(False)
+
 
 @admin.route('/')
 @admin_permission.require(http_exception=403)
@@ -168,6 +208,8 @@ def users_edit(id=None):
         }
 
         s.query(Users).filter_by(id=id).update(data)
+
+        s.commit()
 
         return redirect(url_for('admin.users_view'))
 

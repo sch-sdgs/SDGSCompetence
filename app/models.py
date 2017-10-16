@@ -5,6 +5,13 @@ from competence import app
 
 db = SQLAlchemy(app)
 
+import sys
+if sys.version_info >= (3, 0):
+    enable_search = False
+else:
+    enable_search = True
+    import flask_whooshalchemy as whooshalchemy
+
 class UserRolesRef(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     role = db.Column(db.String(1000), unique=True, nullable=False)
@@ -147,6 +154,8 @@ class CompetenceJobRelationship(db.Model):
         return '<CompetenceJobRelationship %r>' % self.id
 
 class Users (db.Model):
+    __searchable__ = ['first_name','last_name']
+
     id = db.Column(db.Integer, primary_key=True)
     login = db.Column(db.String(1000), unique = True, nullable=False)
     first_name = db.Column(db.String(1000), unique=False, nullable=False)
@@ -444,3 +453,5 @@ class JobServiceRelationship(db.Model):
     def __repr__(self):
         return '<JobServiceRelationship % r>' % self.id
 
+if enable_search:
+    whooshalchemy.whoosh_index(app, Users)
