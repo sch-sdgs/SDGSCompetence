@@ -106,6 +106,14 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
             <ul class="nav navbar-nav">
                 <li><a href="#">Link <span class="sr-only">(current)</span></a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"  aria-expanded="false">Competences
+                       <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/competence/create">Add Competency</a></li>
+
+                    </ul>
+                </li>
                 {% if "ADMIN" in current_user.roles %}
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Admin
@@ -166,18 +174,6 @@
     </div>
 </div>
 
-<script>
-    (function($){
-	$(document).ready(function(){
-		$('ul.dropdown-menu [data-toggle=dropdown]').on('click', function(event) {
-			event.preventDefault();
-			event.stopPropagation();
-			$(this).parent().siblings().removeClass('open');
-			$(this).parent().toggleClass('open');
-		});
-	});
-})(jQuery);
-</script>
 
 </body>
 </html>
