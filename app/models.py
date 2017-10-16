@@ -72,6 +72,21 @@ class HealthSafetyRef(db.Model):
     def __repr__(self):
         return '<HealthSafetyRef %r>' % self.question
 
+class ConstantSubsections(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    s_id = db.Column(db.Integer, db.ForeignKey("subsection.id"), unique=False, nullable=True)
+    item = db.Column(db.String(1000), unique=True, nullable=False)
+
+    s_id_rel = db.relationship("Subsection", lazy='joined', foreign_keys=[s_id])
+
+    def __init__(self, s_id, item):
+        self.s_id=s_id
+        self.item=item
+
+    def __repr__(self):
+        return '<ConstantSubsections %r>' % self.s_id
+
+
 class ReagentRef(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     reagent = db.Column(db.String(1000), unique=True, nullable=False)
