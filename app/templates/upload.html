@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-md-3"></div>
+    <div class="col-md-6">
+        <div class="well bs-component">
+            <h1>Upload new File</h1>
+            <form action="{{ url_for("upload_file")}}" method=post enctype=multipart/form-data>
+                <p><input type=file name=file>
+                <input type=submit value=Upload>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
