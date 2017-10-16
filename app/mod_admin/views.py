@@ -99,44 +99,77 @@ def users_add():
             urr = UserJobRelationship(jobrole_id=int(job_id), user_id=u.id)
             s.add(urr)
         s.commit()
-        s.commit()
+        return redirect(url_for('admin.users_view'))
 
 
 
 
-    return redirect(url_for('users_view'))
+    return render_template("users_add.html",form=form)
 
 @admin.route('/users/edit/<id>', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def users_edit(id=None):
-    form = UserEditForm()
+    if request.method == 'GET':
+        form = UserEditForm()
 
-    user = s.query(Users).filter_by(id=id).first()
-    form.username.data = user.login
-    form.firstname.data = user.first_name
-    form.surname.data = user.last_name
-    form.email.data = user.email
+        user = s.query(Users).filter_by(id=id).first()
+        form.username.data = user.login
+        form.firstname.data = user.first_name
+        form.surname.data = user.last_name
+        form.email.data = user.email
 
-    line_manager_result = s.query(Users.first_name, Users.last_name).filter_by(id=user.line_managerid).first()
-    if line_manager_result is not None:
-        form.linemanager.data = line_manager_result[0] + " " + line_manager_result[1]
-    else:
-        form.linemanager.data = None
-
-
-    jobrole_ids = [name for (name,) in s.query(UserJobRelationship.jobrole_id).filter_by(user_id=id).all()]
-
-    form.jobrole.choices = s.query(JobRoles.id,JobRoles.job).all()
-    form.jobrole.process_data(jobrole_ids)
-
-    userrole_ids = [name for (name,) in s.query(UserRoleRelationship.userrole_id).filter_by(user_id=id).all()]
-
-    form.userrole.choices = s.query(UserRolesRef.id,UserRolesRef.role).all()
-    form.userrole.process_data(userrole_ids)
+        line_manager_result = s.query(Users.first_name, Users.last_name).filter_by(id=user.line_managerid).first()
+        if line_manager_result is not None:
+            form.linemanager.data = line_manager_result[0] + " " + line_manager_result[1]
+        else:
+            form.linemanager.data = None
 
 
+        jobrole_ids = [name for (name,) in s.query(UserJobRelationship.jobrole_id).filter_by(user_id=id).all()]
 
-    return render_template("users_add.html", form=form)
+        form.jobrole.choices = s.query(JobRoles.id,JobRoles.job).all()
+        form.jobrole.process_data(jobrole_ids)
+
+        userrole_ids = [name for (name,) in s.query(UserRoleRelationship.userrole_id).filter_by(user_id=id).all()]
+
+        form.userrole.choices = s.query(UserRolesRef.id,UserRolesRef.role).all()
+        form.userrole.process_data(userrole_ids)
+
+
+
+        return render_template("users_edit.html", id=id, form=form)
+
+    if request.method == 'POST':
+
+        if request.form["linemanager"] != "":
+            firstname, surname = request.form["linemanager"].split(" ")
+            line_manager_id = int(s.query(Users).filter_by(first_name=firstname, last_name=surname).first().id)
+        else:
+            line_manager_id = None
+
+        s.query(UserJobRelationship).filter_by(user_id=id).delete()
+        s.query(UserRoleRelationship).filter_by(user_id=id).delete()
+
+        for role_id in request.form.getlist('userrole'):
+            urr = UserRoleRelationship(userrole_id=int(role_id), user_id=id)
+            s.add(urr)
+
+        for job_id in request.form.getlist('jobrole'):
+            urr = UserJobRelationship(jobrole_id=int(job_id), user_id=id)
+            s.add(urr)
+        s.commit()
+
+        data = {
+            'login': request.form["username"],
+            'first_name': request.form["firstname"],
+            'last_name': request.form["surname"],
+            'email': request.form["email"],
+            'line_managerid': line_manager_id
+        }
+
+        s.query(Users).filter_by(id=id).update(data)
+
+        return redirect(url_for('admin.users_view'))
 
 @admin.route('/userroles', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)

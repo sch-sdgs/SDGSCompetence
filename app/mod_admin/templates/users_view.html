@@ -10,13 +10,13 @@
         <div class="well bs-component">
             <table class="table table-striped" id="users">
                 <thead>
-                <th>Username</th>
-                <th>Name</th>
-                <th>Line Manager</th>
-                <th>Job Roles</th>
-                <th>User Roles</th>
-                <th>Edit</th>
-                <th>Toggle Active</th>
+                <th class="col-md-1">Login</th>
+                <th class="col-md-2">Name</th>
+                <th class="col-md-2">Line Manager</th>
+                <th class="col-md-2">User Roles</th>
+                <th class="col-md-3">Job Roles</th>
+                <th class="col-md-1">Edit</th>
+                <th class="col-md-1">Active</th>
                 </thead>
                 {% for user in data %}
                     <tr>
@@ -35,10 +35,10 @@
                         </td>
                         <td><a href="{{ url_for('admin.users_edit',id=user["id"]) }}" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-pencil"></span></a></td>
                         {% if user["active"] == True %}
-                        <td><a href="{{ url_for('admin.users_toggle_active',id=user["id"]) }}" class="btn btn-sm btn-warning"><span class="glyphicon glyphicon-remove"></span> Make Inactive</a></td>
+                        <td><a href="{{ url_for('admin.users_toggle_active',id=user["id"]) }}" class="btn btn-sm btn-success"><span class="glyphicon glyphicon-ok"></span></a></td>
                         {% endif %}
                         {% if user["active"] == False %}
-                        <td><a href="{{ url_for('admin.users_toggle_active',id=user["id"]) }}" class="btn btn-sm btn-success"><span class="glyphicon glyphicon-ok"></span> Make Active</a></td>
+                        <td><a href="{{ url_for('admin.users_toggle_active',id=user["id"]) }}" class="btn btn-sm btn-warning"><span class="glyphicon glyphicon-remove"></span></a></td>
                         {% endif %}
                     </tr>
                 {% endfor %}
