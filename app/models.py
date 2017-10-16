@@ -262,6 +262,8 @@ class Assessments(db.Model):
     ss_id = db.Column(db.Integer, db.ForeignKey("subsection.id"), unique=False, nullable=False)
     signoff_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=False)
+    date_of_training=db.Column(db.DATE, unique=False, nullable=True)
+    trainer_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=True)
     date_completed = db.Column(db.DATE, unique=False, nullable=True)
     date_expiry = db.Column(db.DATE, unique=False, nullable=True)
     date_assigned = db.Column(db.DATE, unique=False, nullable=False)
@@ -271,6 +273,7 @@ class Assessments(db.Model):
 
     ss_id_rel = db.relationship("Subsection", lazy='joined', foreign_keys=[ss_id])
     status_rel = db.relationship("AssessmentStatusRef", lazy='joined', foreign_keys=[status])
+    trainer_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[trainer_id])
     signoff_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[signoff_id])
     user_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[user_id])
 
