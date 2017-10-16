@@ -1,23 +1,33 @@
-<div class="panel-heading" id={{ val }}><span class="glyphicon glyphicon-th-list"></span>
-    <a class="collapsed" data-toggle="collapse" data-target="#collapseOne"
-       href="#collapseOne">{{ text }}</a>
-</div>
-<div class="panel-body">
-    <div class="row">
-        <div class="col-lg-1"></div>
-        <div class="col-lg-10">
-            {{ table }}
-        </div>
-        <div class="col-lg-1"></div>
-    </div>
-    <div class="row">
-        <div class="col-lg-1"></div>
-        <div class="col-lg-10">
-            <button class="btn btn-default" id="add_subsection"><span class="glyphicon glyphicon-plus-sign"></span> Add</button>
-        </div>
-        <div class="col-lg-1"></div>
-    </div>
-    <div class="form-group" id="subsection_form" hidden>
+<div class="form-group">
+    <label class="col-lg-2 control-label">{{ text }}</label>
+    <div class="col-lg-10">
+        {{ table }}
+
 
     </div>
 </div>
+
+<div class="form-group">
+    <label class="col-lg-2 control-label"></label>
+    <div class="col-lg-10">
+        <a href="#" class="btn btn-primary" id="add_subsection"><span
+                class="glyphicon glyphicon-plus-sign"></span> Add</a>
+
+    </div>
+</div>
+
+
+<div class="form-group" id="subsection_form" hidden>
+    <label class="col-lg-2 control-label"></label>
+     <div class="col-lg-10">
+        Add Subsection
+         </div>
+</div>
+
+    <script>
+        $("#add_subsection").click(function (e) {
+            e.preventDefault();
+            $('#subsection_form').show()
+        });
+
+    </script>
