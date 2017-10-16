@@ -79,6 +79,21 @@ class HealthSafetyRef(db.Model):
     def __repr__(self):
         return '<HealthSafetyRef %r>' % self.question
 
+class ConstantSubsections(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    s_id = db.Column(db.Integer, db.ForeignKey("section.id"), unique=False, nullable=False)
+    item = db.Column(db.String(1000), unique=True, nullable=False)
+
+    s_id_rel = db.relationship("Section", lazy='joined', foreign_keys=[s_id])
+
+    def __init__(self, s_id, item):
+        self.s_id=s_id
+        self.item=item
+
+    def __repr__(self):
+        return '<ConstantSubsections %r>' % self.item
+
+
 class ReagentRef(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     reagent = db.Column(db.String(1000), unique=True, nullable=False)
@@ -265,10 +280,12 @@ class Section(db.Model):
 class Assessments(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
-    status = db.Column(db.String(1000), unique=False, nullable=False)
+    status = db.Column(db.Integer, db.ForeignKey("assessment_status_ref.id"), unique=False, nullable=False)
     ss_id = db.Column(db.Integer, db.ForeignKey("subsection.id"), unique=False, nullable=False)
     signoff_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=False)
+    date_of_training=db.Column(db.DATE, unique=False, nullable=True)
+    trainer_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=True)
     date_completed = db.Column(db.DATE, unique=False, nullable=True)
     date_expiry = db.Column(db.DATE, unique=False, nullable=True)
     date_assigned = db.Column(db.DATE, unique=False, nullable=False)
@@ -277,6 +294,8 @@ class Assessments(db.Model):
     is_reassessment = db.Column(db.BOOLEAN,  unique=False, default=False, nullable=False)
 
     ss_id_rel = db.relationship("Subsection", lazy='joined', foreign_keys=[ss_id])
+    status_rel = db.relationship("AssessmentStatusRef", lazy='joined', foreign_keys=[status])
+    trainer_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[trainer_id])
     signoff_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[signoff_id])
     user_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[user_id])
 
@@ -303,15 +322,17 @@ class Reassessment(db.Model):
     question_id = db.Column(db.Integer, db.ForeignKey("questions_ref.id"), unique=False, nullable=False)
     signoff_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=True)
     date_completed = db.Column(db.DATE, unique=False, nullable=True)
+    answer = db.Column(db.String(1000), unique=False, nullable=False)
 
     assess_id_rel = db.relationship("Assessments", lazy='joined', foreign_keys=[assess_id])
     question_id_rel = db.relationship("QuestionsRef", lazy='joined', foreign_keys=[question_id])
     signoff_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[signoff_id])
 
-    def __init__(self, assess_id, question_id):
+    def __init__(self, assess_id, question_id, answer):
 
         self.assess_id=assess_id
         self.question_id=question_id
+        self.answer=answer
 
     def __repr__(self):
         return '<Reassessment %r>' % self.assess_id

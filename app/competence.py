@@ -53,3 +53,4 @@ from mod_competence.views import competence
 app.register_blueprint(admin,url_prefix='/admin')
 app.register_blueprint(competence,url_prefix='/competence')
 
+

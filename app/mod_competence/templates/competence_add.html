@@ -61,120 +61,120 @@
                         </div>
 
 
-                        <div class="form-group">
-                            {{ form.h_and_s.label(class_="col-lg-2 control-label") }}
-                            <div class="col-lg-10">
-                                {{ form.h_and_s(class_="form-control") }}
-                            </div>
-                        </div>
+{#                        <div class="form-group">#}
+{#                            {{ form.h_and_s.label(class_="col-lg-2 control-label") }}#}
+{#                            <div class="col-lg-10">#}
+{#                                {{ form.h_and_s(class_="form-control") }}#}
+{#                            </div>#}
+{#                        </div>#}
+{##}
+{#                        <div class="form-group">#}
+{#                            {{ form.add_h_and_s.label(class_="col-lg-2 control-label") }}#}
+{#                            <div class="col-lg-10">#}
+{#                                <div class="input-group">#}
+{#                                    {{ form.add_h_and_s(class_="form-control") }}#}
+{#                                    <span class="input-group-btn"><button class="btn btn-primary"#}
+{#                                                                          type="button">Update</button></span>#}
+{#                                </div>#}
+{#                                <span class="help-block">Please enter a new hazard</span>#}
+{#                            </div>#}
+{#                        </div>#}
+{##}
+{#                        <div class="form-group">#}
+{#                            {{ form.reagent_handling.label(class_="col-lg-2 control-label") }}#}
+{#                            <div class="col-lg-10">#}
+{#                                {{ form.reagent_handling(class_="form-control") }}#}
+{#                            </div>#}
+{#                        </div>#}
+{##}
+{#                        <div class="form-group">#}
+{#                            {{ form.add_reagent.label(class_="col-lg-2 control-label") }}#}
+{#                            <div class="col-lg-10">#}
+{#                                <div class="input-group">#}
+{#                                    {{ form.add_reagent(class_="form-control") }}#}
+{#                                    <span class="input-group-btn"><button class="btn btn-primary"#}
+{#                                                                          type="button">Update</button></span>#}
+{#                                </div>#}
+{#                                <span class="help-block">Please enter a relevant reagent handling or storage item</span>#}
+{#                            </div>#}
+{#                        </div>#}
+{##}
+{#                        <div class="form-group">#}
+{#                            {{ form.coshh.label(class_="col-lg-2 control-label") }}#}
+{#                            <div class="col-lg-10">#}
+{#                                {{ form.coshh(class_="form-control") }}#}
+{#                            </div>#}
+{#                        </div>#}
+{##}
+{#                        <div class="form-group">#}
+{#                            {{ form.add_coshh.label(class_="col-lg-2 control-label") }}#}
+{#                            <div class="col-lg-10">#}
+{#                                <div class="input-group">#}
+{#                                    {{ form.add_coshh(class_="form-control") }}#}
+{#                                    <span class="input-group-btn"><button class="btn btn-primary"#}
+{#                                                                          type="button">Update</button></span>#}
+{#                                </div>#}
+{#                                <span class="help-block">Please enter a new COSHH item</span>#}
+{#                            </div>#}
+{#                        </div>#}
+{##}
+{#                        <div class="form-group">#}
+{#                            {{ form.choose_section.label(class_="col-lg-2 control-label") }}#}
+{#                            <div class="col-lg-4">#}
+{#                                <div class="input-group">#}
+{#                                    {{ form.choose_section(class_="form-control") }}#}
+{#                                    <span class="input-group-btn"><button class="btn btn-primary" id="add_section"#}
+{#                                                                          type="button">Add</button></span>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        </div>#}
+{##}
+{#                        <div id="section_list"></div>#}
+{##}
+{##}
+{##}
+{#                        <script>#}
+{##}
+{#                            $(document).on('click', '#add_section', function () {#}
+{#                                var section = $('#choose_section option:selected');#}
+{#                                var text = $(section).text();#}
+{#                                var val = $(section).val();#}
+{#                                var c_id = 1;#}
+{#                                console.log(section);#}
+{##}
+{#                                var url = "{{ url_for('competence.get_section') }}";#}
+{#                                var dict = {'text': text, 'val': val, 'c_id':c_id};#}
+{#                                var data = JSON.stringify(dict);#}
+{##}
+{#                                $.ajax({#}
+{#                                    type: "POST",#}
+{#                                    url: url,#}
+{#                                    data: data,#}
+{#                                    dataType: "json",#}
+{#                                    contentType: "application/json",#}
+{#                                    success: function (response) {#}
+{#                                        console.log(response);#}
+{#                                        $('#section_list').append(response);#}
+{#                                    },#}
+{#                                    error: function (xhr, status, error) {#}
+{#                                        $('#trace').append("<p>" + error + "</p>");#}
+{#                                        $('#ajaxModal').modal('show');#}
+{#                                        return false;#}
+{#                                    }#}
+{##}
+{#                                });#}
+{##}
+{##}
+{#                            });#}
 
-                        <div class="form-group">
-                            {{ form.add_h_and_s.label(class_="col-lg-2 control-label") }}
-                            <div class="col-lg-10">
-                                <div class="input-group">
-                                    {{ form.add_h_and_s(class_="form-control") }}
-                                    <span class="input-group-btn"><button class="btn btn-primary"
-                                                                          type="button">Update</button></span>
-                                </div>
-                                <span class="help-block">Please enter a new hazard</span>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            {{ form.reagent_handling.label(class_="col-lg-2 control-label") }}
-                            <div class="col-lg-10">
-                                {{ form.reagent_handling(class_="form-control") }}
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            {{ form.add_reagent.label(class_="col-lg-2 control-label") }}
-                            <div class="col-lg-10">
-                                <div class="input-group">
-                                    {{ form.add_reagent(class_="form-control") }}
-                                    <span class="input-group-btn"><button class="btn btn-primary"
-                                                                          type="button">Update</button></span>
-                                </div>
-                                <span class="help-block">Please enter a relevant reagent handling or storage item</span>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            {{ form.coshh.label(class_="col-lg-2 control-label") }}
-                            <div class="col-lg-10">
-                                {{ form.coshh(class_="form-control") }}
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            {{ form.add_coshh.label(class_="col-lg-2 control-label") }}
-                            <div class="col-lg-10">
-                                <div class="input-group">
-                                    {{ form.add_coshh(class_="form-control") }}
-                                    <span class="input-group-btn"><button class="btn btn-primary"
-                                                                          type="button">Update</button></span>
-                                </div>
-                                <span class="help-block">Please enter a new COSHH item</span>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            {{ form.choose_section.label(class_="col-lg-2 control-label") }}
-                            <div class="col-lg-4">
-                                <div class="input-group">
-                                    {{ form.choose_section(class_="form-control") }}
-                                    <span class="input-group-btn"><button class="btn btn-primary" id="add_section"
-                                                                          type="button">Add</button></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group" id="section_list">
-
-                        </div>
-
-
-                        <script>
-                            $(document).on('click', '#add_section', function () {
-                                var section = $('#choose_section option:selected');
-                                var text = $(section).text();
-                                var val = $(section).val();
-                                var c_id = 1;
-                                console.log(section);
-
-                                var url = "{{ url_for('competence.get_section') }}";
-                                var dict = {'text': text, 'val': val, 'c_id':c_id};
-                                var data = JSON.stringify(dict);
-
-                                $.ajax({
-                                    type: "POST",
-                                    url: url,
-                                    data: data,
-                                    dataType: "json",
-                                    contentType: "application/json",
-                                    success: function (response) {
-                                        console.log(response);
-                                        $('#section_list').append(response);
-                                    },
-                                    error: function (xhr, status, error) {
-                                        $('#trace').append("<p>" + error + "</p>");
-                                        $('#ajaxModal').modal('show');
-                                        return false;
-                                    }
-
-                                });
-
-
-                            });
-
-                            $(document).on('click', '#add_subsection', function () {
-                                $('#subsection_form').removeAttr("hidden");
-                            });
-
-                            $(document).on('click', '#submit_subsection', function () {
-                                $('#subsection_form').attr("hidden", "hidden");
-                            })
-                        </script>
+{#                            $(document).on('click', '#add_subsection', function () {#}
+{#                                $('#subsection_form').removeAttr("hidden");#}
+{#                            });#}
+{##}
+{#                            $(document).on('click', '#submit_subsection', function () {#}
+{#                                $('#subsection_form').attr("hidden", "hidden");#}
+{#                            })#}
+{#                        </script>#}
 
 
                         <div class="form-group">
