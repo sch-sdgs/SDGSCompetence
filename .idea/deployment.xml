@@ -6,14 +6,6 @@
         <serverdata>
           <mappings>
             <mapping deploy="/SDGSCompetence" local="$PROJECT_DIR$" web="/" />
-            <mapping local="" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="pinky">
-        <serverdata>
-          <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
