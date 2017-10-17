@@ -98,8 +98,8 @@
                     var section = $('#choose_section option:selected');
                     var text = $(section).text();
                     var val = $(section).val();
-                    var c_id = 1;
-                    console.log(section);
+                    var c_id = {{ c_id }};
+                    console.log(c_id);
 
                     var url = "{{ url_for('competence.get_section') }}";
                     var dict = {'text': text, 'val': val, 'c_id': c_id};
