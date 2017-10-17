@@ -1,10 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block content %}
+
+    <!--- This will contain queries to the database for looking
+    at how many competences have been left incomplete, time
+    taken to complete competences, number of expired competences
+    (inc list of users). This will be for admin or uberuser, if
+    it's actually useful--->
+
+    <div class="panel panel-default">
+    <div class="panel-heading"><span class="glyphicon glyphicon-user"></span> Departmental stats</div>
+    <div class="panel-body">
+        Number of users:
+        {% for users in id.users %}
+        {{ sum(users) }}
+        {% endfor %}
+        Number of active competences:
+        Number of incomplete competences:
+    </div>
+</div>
+
+
+
+{% endblock %}

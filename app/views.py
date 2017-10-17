@@ -167,6 +167,11 @@ def upload_file():
             flash('File uploaded successfully')
             return redirect(request.url)
 
+@app.route('/audit', methods=['GET', 'POST'])
+def audit_department():
+    if request.method == 'GET':
+        return render_template('audit.html')
+
 if __name__ == '__main__':
     app.run(debug=True,host='10.182.131.21',port=5007)
 
