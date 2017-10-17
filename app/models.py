@@ -5,6 +5,13 @@ from competence import app
 
 db = SQLAlchemy(app)
 
+import sys
+if sys.version_info >= (3, 0):
+    enable_search = False
+else:
+    enable_search = True
+    import flask_whooshalchemy as whooshalchemy
+
 class UserRolesRef(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     role = db.Column(db.String(1000), unique=True, nullable=False)
@@ -72,6 +79,21 @@ class HealthSafetyRef(db.Model):
     def __repr__(self):
         return '<HealthSafetyRef %r>' % self.question
 
+class ConstantSubsections(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    s_id = db.Column(db.Integer, db.ForeignKey("section.id"), unique=False, nullable=False)
+    item = db.Column(db.String(1000), unique=True, nullable=False)
+
+    s_id_rel = db.relationship("Section", lazy='joined', foreign_keys=[s_id])
+
+    def __init__(self, s_id, item):
+        self.s_id=s_id
+        self.item=item
+
+    def __repr__(self):
+        return '<ConstantSubsections %r>' % self.item
+
+
 class ReagentRef(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     reagent = db.Column(db.String(1000), unique=True, nullable=False)
@@ -98,7 +120,7 @@ class Competence (db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(1000), unique=False,  nullable=False)
     scope =  db.Column(db.String(1000), unique=False, nullable=False)
-    qpulsenum = db.Column(db.String(1000), unique=True, nullable=False)
+    qpulsenum = db.Column(db.String(1000), unique=True, nullable=True)
     creator_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique = False, nullable=False)
     validity_period = db.Column(db.Integer,db.ForeignKey("validity_ref.id"), unique =False, nullable=False )
     current_version = db.Column(db.Integer, unique =False, default=0, nullable=False)
@@ -116,6 +138,21 @@ class Competence (db.Model):
     def __repr__(self):
         return '<Competence %r>' % self.title
 
+class Documents(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    c_id = db.Column(db.Integer, db.ForeignKey("competence.id"),unique=False,  nullable=False)
+    qpulse_no = db.Column(db.String(20),unique=False,  nullable=False)
+
+    c_id_rel = db.relationship("Competence", lazy = 'joined', foreign_keys=[c_id])
+
+    def __init__(self, c_id, qpulse_no):
+        self.c_id=c_id
+        self.qpulse_no=qpulse_no
+
+
+    def __repr__(self):
+        return '<Documents %r>' % self.qpulse_no
+
 class CompetenceJobRelationship(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     competence_id = db.Column(db.Integer, db.ForeignKey("competence.id"),  unique = False, nullable=False)
@@ -132,24 +169,40 @@ class CompetenceJobRelationship(db.Model):
         return '<CompetenceJobRelationship %r>' % self.id
 
 class Users (db.Model):
+    __searchable__ = ['first_name','last_name']
+
     id = db.Column(db.Integer, primary_key=True)
     login = db.Column(db.String(1000), unique = True, nullable=False)
     first_name = db.Column(db.String(1000), unique=False, nullable=False)
     last_name = db.Column(db.String(1000), unique = False, nullable=False)
+    email = db.Column(db.String(1000), unique=False, nullable=False)
     date_created = db.Column(db.DATE, unique = False, nullable=False)
     last_login = db.Column(db.DATE, unique=False, nullable=True)
     active = db.Column(db.BOOLEAN, unique =False, default=True, nullable=False)
-    line_managerid = db.Column(db.Integer, db.ForeignKey("users.id"), unique = False, nullable=False)
+    line_managerid = db.Column(db.Integer, db.ForeignKey("users.id"), unique = False, nullable=True)
 
     linemanager_rel = db.relationship("Users", lazy='joined', foreign_keys=[line_managerid])
 
-    def __init__(self, login, first_name, last_name, active, line_managerid):
+    def __init__(self, login, first_name, last_name, email, active, line_managerid):
         self.login=login
         self.first_name=first_name
         self.last_name=last_name
+        self.email =email
         self.active=active
         self.line_managerid=line_managerid
         self.date_created = str(datetime.datetime.now().strftime("%Y%m%d"))
+
+    def __iter__(self):
+        yield 'id', self.id
+        yield 'login', self.login
+        yield 'first_name', self.first_name
+        yield 'last_name', self.last_name
+        yield 'email', self.email
+        yield 'date_created', self.date_created
+        yield 'last_login', self.last_login
+        yield 'active', self.active
+        yield 'line_managerid', self.line_managerid
+        yield 'line_managerrel', self.linemanager_rel
 
     def __repr__(self):
         return '<Users %r>' % self.login
@@ -162,9 +215,9 @@ class UserRoleRelationship(db.Model):
     user_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[user_id])
     userrole_id_rel = db.relationship("UserRolesRef", lazy='joined', foreign_keys=[userrole_id])
 
-    def __init__(self, user_id, userrole_id_rel):
+    def __init__(self, user_id, userrole_id):
         self.user_id=user_id
-        self.userrole_id_rel=userrole_id_rel
+        self.userrole_id=userrole_id
 
     def __repr(self):
         return '<UserRolesRelationship % r>' % self.user_id
@@ -189,13 +242,14 @@ class Subsection(db.Model):
     c_id = db.Column(db.Integer, db.ForeignKey("competence.id"), unique=False, nullable=False)
     s_id = db.Column(db.Integer, db.ForeignKey("section.id"), unique=False, nullable=False)
     name = db.Column(db.String(1000), unique= False, nullable=False)
-    evidence = db.Column(db.String(1000), unique=False, nullable=False)
+    evidence = db.Column(db.Integer, db.ForeignKey("evidence_type_ref.id"), unique=False, nullable=False)
     comments =db.Column( db.String(1000), unique=False, nullable=False)
     intro = db.Column(db.Integer, unique=False, nullable = False, default=1)
-    last = db.Column(db.Integer, unique=False, nullable = False, default=0)
+    last = db.Column(db.Integer, unique=False, nullable = True)
 
     c_id_rel = db.relationship("Competence", lazy='joined', foreign_keys=[c_id])
     s_id_rel = db.relationship("Section", lazy='joined', foreign_keys=[s_id])
+    evidence_rel =db.relationship("EvidenceTypeRef",  lazy='joined', foreign_keys =[evidence])
 
     def __init__(self,c_id, s_id, name, evidence,  comments):
         self.name=name
@@ -214,8 +268,9 @@ class Section(db.Model):
     name = db.Column(db.String(1000), unique=False, nullable=False)
     constant = db.Column(db.BOOLEAN,  unique=False, nullable=False, default=True)
 
-    def __init__(self, name):
+    def __init__(self, name, constant):
         self.name = name
+        self.constant = constant
 
 
     def __repr__(self):
@@ -225,16 +280,22 @@ class Section(db.Model):
 class Assessments(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
-    status = db.Column(db.String(1000), unique=False, nullable=False)
+    status = db.Column(db.Integer, db.ForeignKey("assessment_status_ref.id"), unique=False, nullable=False)
     ss_id = db.Column(db.Integer, db.ForeignKey("subsection.id"), unique=False, nullable=False)
-    signoff_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=False)
+    signoff_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=False)
-    date_completed = db.Column(db.DATE, unique=False, nullable=False)
-    date_expiry = db.Column(db.DATE, unique=False, nullable=False)
-    comments = db.Column(db.String(1000), unique=False, nullable=False)
-    is_reassessment = db.Column(db.BOOLEAN,  unique=False, nullable=False)
+    date_of_training=db.Column(db.DATE, unique=False, nullable=True)
+    trainer_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=True)
+    date_completed = db.Column(db.DATE, unique=False, nullable=True)
+    date_expiry = db.Column(db.DATE, unique=False, nullable=True)
+    date_assigned = db.Column(db.DATE, unique=False, nullable=False)
+    date_activated = db.Column(db.DATE, unique=False, nullable=True)
+    comments = db.Column(db.String(1000), unique=False, nullable=True)
+    is_reassessment = db.Column(db.BOOLEAN,  unique=False, default=False, nullable=False)
 
     ss_id_rel = db.relationship("Subsection", lazy='joined', foreign_keys=[ss_id])
+    status_rel = db.relationship("AssessmentStatusRef", lazy='joined', foreign_keys=[status])
+    trainer_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[trainer_id])
     signoff_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[signoff_id])
     user_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[user_id])
 
@@ -247,6 +308,7 @@ class Assessments(db.Model):
         self.date_expiry=date_expiry
         self.comments=comments
         self.is_reassessment=is_reassessment
+        self.date_assigned = str(datetime.datetime.now().strftime("%Y%m%d"))
 
 
     def __repr__(self):
@@ -260,15 +322,17 @@ class Reassessment(db.Model):
     question_id = db.Column(db.Integer, db.ForeignKey("questions_ref.id"), unique=False, nullable=False)
     signoff_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=True)
     date_completed = db.Column(db.DATE, unique=False, nullable=True)
+    answer = db.Column(db.String(1000), unique=False, nullable=False)
 
     assess_id_rel = db.relationship("Assessments", lazy='joined', foreign_keys=[assess_id])
     question_id_rel = db.relationship("QuestionsRef", lazy='joined', foreign_keys=[question_id])
     signoff_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[signoff_id])
 
-    def __init__(self, assess_id, question_id):
+    def __init__(self, assess_id, question_id, answer):
 
         self.assess_id=assess_id
         self.question_id=question_id
+        self.answer=answer
 
     def __repr__(self):
         return '<Reassessment %r>' % self.assess_id
@@ -410,3 +474,5 @@ class JobServiceRelationship(db.Model):
     def __repr__(self):
         return '<JobServiceRelationship % r>' % self.id
 
+if enable_search:
+    whooshalchemy.whoosh_index(app, Users)

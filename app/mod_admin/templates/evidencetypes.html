@@ -1,20 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="page-header">
-<h1>User Roles</h1>
+<h1>Evidence Types</h1>
 </div>
+
 
 <div class="row">
     <div class="col-md-3"></div>
     <div class="col-md-6">
         <div class="well bs-component">
-            <form action="{{ url_for('admin.userroles') }}" method="POST" class="form-horizontal">
+            <form action="{{ url_for('admin.evidencetypes') }}" method="POST" class="form-horizontal">
                 <fieldset>
-                    <legend>Add Role</legend>
+                    <legend>Add Evidence Type</legend>
                     <div class="form-group">
-                        {{ form.role.label(class_="col-lg-2 control-label") }}
+                        {{ form.type.label(class_="col-lg-2 control-label") }}
                         <div class="col-lg-10">
-                            {{ form.role(class_="form-control") }}
+                            {{ form.type(required="required",class_="form-control") }}
                         </div>
                     </div>
                     <div class="form-group">
@@ -34,19 +35,19 @@
     <div class="col-md-3"></div>
     <div class="col-md-6">
         <div class="well bs-component">
-            <legend>Roles</legend>
+            <legend>Evidence Types</legend>
             <table class="table table-striped">
                 <thead>
-                    <th>Role</th>
+                    <th>Evidence</th>
                     <th>Edit</th>
                     <th>Delete</th>
                 </thead>
 
-            {% for role_object in data %}
+            {% for evidence_object in data %}
                 <tr>
-                    <td>{{ role_object.role }}</td>
-                    <td><a href="{{ url_for('admin.userroles_edit', id=role_object.id) }}"><span class="label label-primary"><span class="glyphicon glyphicon-pencil"></span></span></a></td>
-                    <td><a href="{{ url_for('admin.deleterole', id=role_object.id) }}"><span class="label label-danger"><span class="glyphicon glyphicon-remove"></span></span></a></td>
+                    <td>{{ evidence_object.type }}</td>
+                    <td><a href="{{ url_for('admin.evidencetypes_edit', id=evidence_object.id) }}"><span class="label label-primary"><span class="glyphicon glyphicon-pencil"></span></span></a></td>
+                    <td><a href="{{ url_for('admin.deleteevidencetype', id=evidence_object.id) }}"><span class="label label-danger"><span class="glyphicon glyphicon-remove"></span></span></a></td>
                 </tr>
             {% endfor %}
 
