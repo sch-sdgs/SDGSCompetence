@@ -38,7 +38,7 @@ def add_competence():
         for doc in doclist:
             add_doc = Documents(c_id=c_id, qpulse_no=doc)
             s.add(add_doc)
-            s.commit()
+        s.commit()
         add_section_form = AddSection()
         return render_template('competence_section.html', form=add_section_form, c_id=c_id)
 
@@ -62,8 +62,15 @@ def get_section():
     form = SectionForm()
     subsection_form = AddSubsection()
     #method below gets the subsections for the section_id selected in the form
-    result = s.query(Subsection).join(Competence).join(Section).join(EvidenceTypeRef).filter(and_(Competence.id==c_id, Section.id==val)).values(Subsection.name, EvidenceTypeRef.type, Subsection.comments)
-    table = ItemTableSubsections(result, classes=['table', 'table-striped', 'section_'+str(val)])
+    result_count = s.query(Subsection).join(Competence).join(Section).join(EvidenceTypeRef).filter(
+        and_(Competence.id == c_id, Section.id == val)).count()
+    if result_count != 0:
+        result = s.query(Subsection).join(Competence).join(Section).join(EvidenceTypeRef).filter(and_(Competence.id==c_id, Section.id==val)).values(Subsection.name, EvidenceTypeRef.type, Subsection.comments)
+
+        table = ItemTableSubsections(result, classes=['table', 'table-striped', 'section_'+str(val)])
+    else:
+        table = '<table class="section_'+str(val)+'"></table>'
+
     print str(c_id) + ' ' + str(val) + ' ' + 'should get subsections for selected section'
     return jsonify(render_template('section.html',c_id=c_id, form=form, val=val, text=text, table=table, subsection_form=subsection_form))
 
@@ -77,8 +84,8 @@ def add_sections_to_db():
     c_id = request.json['c_id']
     s_id = request.json['s_id']
     sub = Subsection(name=name,evidence=int(evidence_id),comments=comments,c_id=c_id,s_id=s_id)
-    s.add(sub)
-    s.commit()
+    print s.add(sub)
+    print s.commit()
     result = s.query(Subsection).join(Competence).join(Section).join(EvidenceTypeRef).filter(Competence.id == c_id).filter(Section.id == s_id). \
         values(Subsection.name, EvidenceTypeRef.type, Subsection.comments)
 

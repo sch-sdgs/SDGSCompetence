@@ -78,7 +78,6 @@ def users_view():
         jobs = s.query(UserJobRelationship).join(JobRoles).filter(UserJobRelationship.user_id==user.id).all()
         roles = s.query(UserRoleRelationship).join(UserRolesRef).filter(UserRoleRelationship.user_id == user.id).all()
         line_manager_result = s.query(Users.first_name,Users.last_name).filter_by(id=user.line_managerid).first()
-        print line_manager_result
         user_dict = dict(user)
         user_dict["jobs"] = []
         for i in jobs:
