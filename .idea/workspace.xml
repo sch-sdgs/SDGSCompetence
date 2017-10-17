@@ -2,12 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4783f288-aaa5-4ace-9f51-c82da759ae56" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.gitignore" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.gitignore.txt" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_competence/forms.py" afterPath="$PROJECT_DIR$/app/mod_competence/forms.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_add.html" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_add.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_competence/templates/section.html" afterPath="$PROJECT_DIR$/app/mod_competence/templates/section.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_competence/views.py" afterPath="$PROJECT_DIR$/app/mod_competence/views.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/run.py" afterPath="$PROJECT_DIR$/app/run.py" />
     </list>
     <ignored path="SDGSCompetence.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -98,11 +95,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="competence_add.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="competence_add.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/mod_competence/templates/competence_add.html">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="372">
               <caret line="73" column="112" selection-start-line="73" selection-start-column="112" selection-end-line="73" selection-end-column="112" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="17">
+              <caret line="1" column="2" selection-start-line="1" selection-start-column="2" selection-end-line="1" selection-end-column="2" />
               <folding />
             </state>
           </provider>
@@ -186,6 +193,7 @@
         <option value="$PROJECT_DIR$/app/mod_competence/forms.py" />
         <option value="$PROJECT_DIR$/app/mod_competence/views.py" />
         <option value="$PROJECT_DIR$/app/mod_competence/templates/competence_add.html" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -802,7 +810,14 @@
       <option name="project" value="LOCAL" />
       <updated>1508176672078</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Added new methods">
+      <created>1508243425763</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1508243425763</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -853,7 +868,8 @@
     <MESSAGE value="Merge branch 'develop_Nichola' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;app/models.py&#10;" />
     <MESSAGE value="Merge branch 'develop_lizzy' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;.idea/deployment.xml&#10;#&#9;app/mod_admin/forms.py&#10;#&#9;app/mod_admin/views.py&#10;#&#9;app/run.py&#10;" />
     <MESSAGE value="Merge branch 'develop_Nichola' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;app/templates/base.html&#10;" />
-    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'develop_Nichola' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;app/templates/base.html&#10;" />
+    <MESSAGE value="Added new methods" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added new methods" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -868,23 +884,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/app/static/js/jquery.min.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/static/css/bootstrap.css.map">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-      <provider editor-type-id="sourcemapFileViewerProvider">
-        <state />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/static/css/bootstrap.css">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="392">
@@ -1214,6 +1213,22 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="372">
           <caret line="73" column="112" selection-start-line="73" selection-start-column="112" selection-end-line="73" selection-end-column="112" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="1" column="2" selection-start-line="1" selection-start-column="2" selection-end-line="1" selection-end-column="2" />
           <folding />
         </state>
       </provider>
