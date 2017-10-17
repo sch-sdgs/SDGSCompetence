@@ -23,7 +23,7 @@ class AddCompetence(Form):
     validity_period = QuerySelectField("Validity Period", query_factory=lambda:s.query(ValidityRef).all(), get_label="months")
 
     documents = QuerySelectMultipleField("Associated Documents",query_factory=lambda:s.query(Documents).all(), get_label="qpulse_no")
-    add_document = TextField("Add Document", [Required("Enter a Q-Pulse Document Number")])
+    add_document = TextField("Add Related Document", [Required("Enter a Q-Pulse Document Number")])
 
     submit = SubmitField()
 
