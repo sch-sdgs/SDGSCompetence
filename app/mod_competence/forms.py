@@ -21,6 +21,7 @@ class AddCompetence(Form):
     #qpulsenum = TextField("QPulse Doc ID", [Required("Enter a QPulse ID")]) #This needs to be added after competency creation!
     creator_id = TextField("Author Name", [Required("Enter an Author Name")])
     validity_period = QuerySelectField("Validity Period", query_factory=lambda:s.query(ValidityRef).all(), get_label="months")
+
     documents = QuerySelectMultipleField("Associated Documents",query_factory=lambda:s.query(Documents).all(), get_label="qpulse_no")
     add_document = TextField("Add Document", [Required("Enter a Q-Pulse Document Number")])
 

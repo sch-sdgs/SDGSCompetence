@@ -1,86 +1,179 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="page-header">
-<h1>Add A Competency</h1>
+    <h1>Add A Competency</h1>
 </div>
 
-    <div class="row">
+<div class="row">
 
-        <div class="col-md-12">
-            <div class="well bs-component">
-                <form action="{{ url_for('competence.add_competence') }}" method="POST" class="form-horizontal">
-                    <fieldset>
-                        <legend>Basic Details</legend>
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <form action="{{ url_for('competence.add_competence') }}" method="POST" class="form-horizontal">
+                <fieldset>
+                    <legend>Basic Details</legend>
 
-                        <div class="form-group">
-                            {{ form.title.label(class_="col-lg-2 control-label") }}
-                            <div class="col-lg-10">
-                                {{ form.title(class_="form-control") }}
-                            </div>
+                    <div class="form-group">
+                        {{ form.title.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.title(class_="form-control") }}
                         </div>
+                    </div>
 
 
-                        <div class="form-group">
-                            {{ form.scope.label(class_="col-lg-2 control-label") }}
-                            <div class="col-lg-10">
-                                {{ form.scope(class_="form-control") }}
-                            </div>
+                    <div class="form-group">
+                        {{ form.scope.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.scope(class_="form-control") }}
                         </div>
+                    </div>
 
 
-                        <!--&lt;!&ndash;<div class="form-group">&ndash;&gt;-->
-                            <!--{{ form.creator_id.label(class_="col-lg-2 control-label") }}-->
-                            <!--<div class="col-lg-10">-->
-                                <!--{{ form.creator_id(class_="form-control") }}-->
-                            <!--</div>-->
-                        <!--</div>-->
+                    <!--&lt;!&ndash;<div class="form-group">&ndash;&gt;-->
+                    <!--{{ form.creator_id.label(class_="col-lg-2 control-label") }}-->
+                    <!--<div class="col-lg-10">-->
+                    <!--{{ form.creator_id(class_="form-control") }}-->
+                    <!--</div>-->
+                    <!--</div>-->
 
 
-                        <div class="form-group">
-                            {{ form.validity_period.label(class_="col-lg-2 control-label") }}
-                            <div class="col-lg-10">
-                                <div class="input-group">
+                    <div class="form-group">
+                        {{ form.validity_period.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            <div class="input-group">
                                 {{ form.validity_period(class_="form-control") }}<span class="input-group-btn">
                                  <button class="btn btn-default" type="button" disabled>Months</button>
                                  </span></div>
+                        </div>
+                    </div>
+
+                    <!--<div class="form-group">-->
+                    <!--{{ form.documents.label(class_="col-lg-2 control-label") }}-->
+                    <!--<div class="col-lg-10">-->
+                    <!--{{ form.documents(class_="form-control") }}-->
+                    <!--</div>-->
+                    <!--</div>-->
+
+                    <div class="form-group">
+                        {{ form.add_document.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            <div class="input-group">
+                                {{ form.add_document(class_="form-control") }}
+
+                                <span class="input-group-btn"><button class="btn btn-primary" id="submit_document"
+                                                                      type="button">Attach</button></span>
+
                             </div>
+                            <span class="help-block" id="add_document_text">Please enter a Q-Pulse Document ID</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-lg-2"></div>
+                        <div class="col-lg-10">
+                            <div id="selected_docs"></div>
+                        </div>
+                    </div>
+
+                    <input type="text" id="doc_list" name="doc_list" hidden>
+
+                    <div class="form-group">
+                        <div class="col-lg-10 col-lg-offset-2">
+                            {{ form.submit(class_="btn btn-primary") }}
+                            <span class="help-block">...move to add sections form when all are filled</span>
                         </div>
 
-                        <!--<div class="form-group">-->
-                            <!--{{ form.documents.label(class_="col-lg-2 control-label") }}-->
-                            <!--<div class="col-lg-10">-->
-                                <!--{{ form.documents(class_="form-control") }}-->
-                            <!--</div>-->
-                        <!--</div>-->
-
-                        <div class="form-group">
-                            {{ form.add_document.label(class_="col-lg-2 control-label") }}
-                            <div class="col-lg-10">
-                                <div class="input-group">
-                                    {{ form.add_document(class_="form-control") }}
-                                    <span class="input-group-btn"><button class="btn btn-primary"
-                                                                          type="button">Attach</button></span>
-                                </div>
-                                <span class="help-block">Please enter a Q-Pulse Document ID</span>
-                            </div>
-                        </div>
+                    </div>
 
 
-
-
-                        <div class="form-group">
-                            <div class="col-lg-10 col-lg-offset-2">
-                                {{ form.submit(class_="btn btn-primary") }}
-                                <span class="help-block">...move to add sections form when all are filled</span>
-                            </div>
-
-                        </div>
-
-
-                    </fieldset>
-                </form>
-            </div>
+                </fieldset>
+            </form>
         </div>
     </div>
+</div>
+<div id="document_list"></div>
+
+<script>
+    //this function does autocomplete for line managers name
+    $(function () {
+        $.ajax({
+            url: '{{ url_for("competence.document_autocomplete") }}'
+        }).done(function (data) {
+            $('#add_document').autocomplete({
+                source: data.json_list,
+                minLength: 2
+
+            });
+        });
+    });
+
+    $('#submit_document').click(function () {
+        previous_value = $('#doc_list').val()
+        if (previous_value == "") {
+            sep = ''
+        } else {
+            sep = ','
+        }
+
+        $('#doc_list').val(previous_value + sep + $('#add_document').val())
+        $('#selected_docs').append('<a href="#" class="btn btn-primary remove" id="remove_document" doc_number="'+ $('#add_document').val()+'">' + $('#add_document').val() + ' <span class="glyphicon glyphicon-remove"></span> </a> ')
+        $('#add_document').val('')
+    });
+
+    $(document).on("click", '.remove' ,function(){
+        console.log("HELLO");
+        var docs = $('#doc_list').val().split(',');
+        console.log(docs);
+        docs.splice( $.inArray($(this).attr('doc_number'), docs),1  );
+        console.log(docs);
+        $('#doc_list').val(docs.join());
+        $(this).remove();
+    });
+
+
+    //     $('#submit_document').click(function () {
+    //
+    //         if (localStorage.getItem("docs") === null) {
+    //             var docs = []
+    //             docs.push($('#add_document').val())
+    //             localStorage.setItem('docs', JSON.stringify(docs));
+    //         }else {
+    //             var docs = JSON.parse(localStorage.getItem('docs'));
+    //             docs.push($('#add_document').val());
+    //             localStorage.setItem('docs', JSON.stringify(docs));
+    //         }
+    //
+    //     });
+
+
+    //     $(document).on('click', '#submit_document', function () {
+    //                    var doc_id = $('#add_document option:selected');
+    //                    var c_id = 1;
+    //
+    //                    console.log(doc_id);
+    //
+    //                    var url = "{{ url_for('competence.get_documents') }}";
+    //                    var dict = {'doc_id': text, 'c_id': c_id};
+    //                    var data = JSON.stringify(dict);
+    //
+    //                    $.ajax({
+    //                        type: "POST",
+    //                        url: url,
+    //                        data: data,
+    //                        dataType: "json",
+    //                        contentType: "application/json",
+    //                        success: function (response) {
+    //                            console.log(response);
+    //                            $('#document_list').append(response);
+    //                        },
+    //                        error: function (xhr, status, error) {
+    //                            $('#trace').append("<p>" + error + "</p>");
+    //                            $('#ajaxModal').modal('show');
+    //                            return false;
+    //                        }
+    //
+    //                    });
+    //
+    //
+    //                });
+</script>
 
 {% endblock %}
