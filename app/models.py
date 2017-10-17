@@ -183,7 +183,7 @@ class Users (db.Model):
 
     linemanager_rel = db.relationship("Users", lazy='joined', foreign_keys=[line_managerid])
 
-    def __init__(self, login, first_name, last_name, email, active, line_managerid):
+    def __init__(self, login, first_name, last_name, email, active, line_managerid=None):
         self.login=login
         self.first_name=first_name
         self.last_name=last_name

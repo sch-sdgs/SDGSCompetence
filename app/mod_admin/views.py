@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from sqlalchemy.orm import load_only
 from flask import Blueprint
-from flask import render_template, request, url_for, redirect, Blueprint, jsonify
+from flask import render_template, request, url_for, redirect, Blueprint, jsonify, make_response
 from flask.ext.login import login_required, current_user
 from app.views import admin_permission
 from forms import *
@@ -9,7 +9,12 @@ from app.models import *
 from app.competence import s
 import datetime
 import time
+import io
+import os
+import csv
 from app.activedirectory import UserAuthentication
+import codecs
+import json
 
 admin = Blueprint('admin', __name__, template_folder='templates')
 
@@ -456,3 +461,106 @@ def view_logs():
 @admin_permission.require(http_exception=403)
 def application_admin():
     pass
+
+
+
+def transform(text_file_contents):
+    return text_file_contents.replace("=", ",")
+
+
+@admin.route('/bulk_user_upload')
+@admin_permission.require(http_exception=403)
+def form():
+    return render_template('bulk_upload_users.html')
+
+@app.route('/transform', methods=["POST"])
+@admin_permission.require(http_exception=403)
+def transform_view():
+    f = request.files['data_file']
+    f.save(os.path.join(app.config['UPLOAD_FOLDER'], f.filename))
+
+    with codecs.open(os.path.join(app.config['UPLOAD_FOLDER'], f.filename), "r", encoding='utf-8', errors='ignore') as csv_input:
+        for row in csv_input.readlines():
+            clean_row=row.rstrip()
+            last,first,staffno,job,linemanager,band = clean_row.split(",")
+
+            line_manager_id = None
+            if len(linemanager) == 2:
+                one,two=list(linemanager)
+                line_manager_query = s.query(Users).filter(Users.first_name.like(one+"%")).filter(Users.last_name.like(two+"%")).first()
+                if line_manager_query:
+                    line_manager_id = line_manager_query.id
+                    print "linemanage_id " + str(line_manager_id)
+                    line_manager_role_id = s.query(UserRolesRef).filter_by(role="LINEMANAGER").first().id
+                    count = s.query(UserRoleRelationship).filter_by(user_id=line_manager_id).filter_by(userrole_id=line_manager_role_id).count()
+                    if count == 0:
+                        ur = UserRoleRelationship(user_id=line_manager_id,userrole_id=line_manager_role_id)
+                        s.add(ur)
+                        s.commit()
+
+
+            #print s.query(User).filter_by(first)
+
+            result =UserAuthentication().get_username_from_user_detail(first.replace(" ",""),last)
+            if result == "False":
+                print first + " " + last
+            else:
+                result = json.loads(result)
+                users = s.query(Users).filter_by(login=result["Username"]).count()
+                jobs = s.query(JobRoles).filter_by(job=job).count()
+                if jobs == 0:
+                    j = JobRoles(job=job.upper())
+                    s.add(j)
+                    s.flush()
+                    s.refresh(j)
+                    job_id = j.id
+                else:
+                    job_id = s.query(JobRoles).filter_by(job=job).first().id
+
+                if users == 0:
+                    u = Users(login=result["Username"],first_name=result["Forename"],last_name=result["Surname"],email=result["Email"].lower(),active=True)
+                    s.add(u)
+                    s.flush()
+                    s.refresh(u)
+                    user_id = u.id
+                else:
+                    user_id = s.query(Users).filter_by(login=result["Username"]).first().id
+                    if s.query(Users).filter_by(login=result["Username"]).first().line_managerid == None:
+                        data = {'line_managerid':line_manager_id}
+                        s.query(Users).filter_by(id=user_id).update(data)
+                        s.commit()
+
+
+
+
+                job_roles_user = s.query(UserJobRelationship).filter_by(user_id=user_id).count()
+                if job_roles_user == 0:
+
+                    ujr = UserJobRelationship(user_id=user_id,jobrole_id=job_id)
+                    s.add(ujr)
+                    s.flush()
+                    s.refresh(ujr)
+
+                db_roles = s.query(UserRoleRelationship).filter_by(user_id=user_id).count()
+                if db_roles == 0:
+                    role_id = s.query(UserRolesRef).filter_by(role="USER").first().id
+                    ur = UserRoleRelationship(user_id=user_id,userrole_id=role_id)
+                    s.add(ur)
+                    s.flush()
+                    s.refresh(ur)
+
+
+
+
+    print s.commit()
+
+
+
+
+
+    # stream.seek(0)
+    # result = transform(stream.read())
+
+    # response = make_response(result)
+    # response.headers["Content-Disposition"] = "attachment; filename=result.csv"
+    # return response
