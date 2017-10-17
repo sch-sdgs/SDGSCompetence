@@ -1,15 +1,17 @@
-from flask import Flask, render_template, request, redirect, request, url_for, session, current_app, flash
+from flask import Flask, render_template, redirect, request, url_for, session, current_app, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_required, login_user, logout_user, LoginManager, UserMixin, \
     current_user
 from activedirectory import UserAuthentication
 from forms import Login
-from flask.ext.principal import Principal, Identity, AnonymousIdentity, \
+from flask_principal import Principal, Identity, AnonymousIdentity, \
     identity_changed, Permission, RoleNeed, UserNeed,identity_loaded
-from competence import app
-from werkzeug.utils import secure_filename
+
 
 import os
+
+from app.competence import app, s, db
+from app.models import *
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -20,31 +22,56 @@ principals = Principal(app)
 
 #permission levels
 
-user_permission = Permission(RoleNeed('user'))
-linemanager_permission = Permission(RoleNeed('linemanager'))
-admin_permission = Permission(RoleNeed('admin'))
-superadmin_permission = Permission(RoleNeed('superadmin'))
+user_permission = Permission(RoleNeed('USER'))
+linemanager_permission = Permission(RoleNeed('LINEMANAGER'))
+admin_permission = Permission(RoleNeed('ADMIN'))
 
 @login_manager.user_loader
 def load_user(user_id):
     return User(user_id)
 
+
 class User(UserMixin):
-    def __init__(self, id, password=None, roles=None):
+    def __init__(self, id, password=None):
         self.id = id
+        self.database_id = self.get_database_id()
         self.password = password
-        self.roles = ['admin','linemanager']
+        self.roles = self.get_user_roles()
+        print self.roles
+
+    def get_database_id(self):
+        query= s.query(Users).filter_by(login=self.id).first()
+        if query:
+            database_id = query.id
+        else:
+            database_id = None
+        return database_id
+
+    def get_user_roles(self):
+        result = []
+        roles = s.query(UserRolesRef).join(UserRoleRelationship).join(Users).filter(Users.login == self.id).all()
+        for role in roles:
+            result.append(role.role)
+        return result
 
     def is_authenticated(self, id, password):
-        # validuser = get_user_by_username(s, id)
-        #
-        # if len(list(validuser)) == 0:
-        #     return False
-        # else:
-        check_activdir = UserAuthentication().authenticate(id, password)
 
+        user = s.query(Users).filter_by(login=id).all()
+
+        if len(list(user)) == 0:
+            return False
+        else:
+            check_activdir = UserAuthentication().authenticate(id, password)
+
+        self.roles = []
         if check_activdir != "False":
+            roles = s.query(UserRolesRef).join(UserRoleRelationship).join(Users).filter(Users.login == id).all()
+            for role in roles:
+                self.roles.append(role.role)
+            print self.roles
             return True
+
+
         else:
             return False
 
@@ -86,6 +113,19 @@ def page_not_found(e):
     session['redirected_from'] = request.url
     return redirect(url_for('login'))
 
+@app.route('/autocomplete_user',methods=['GET'])
+def autocomplete():
+    search = request.args.get('linemanager')
+
+    users = s.query(Users.first_name,Users.last_name).all()
+    user_list = []
+    for i in users:
+        print i
+        name = i[0] + " " + i[1]
+        user_list.append(name)
+
+    return jsonify(json_list=user_list)
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = Login(next=request.args.get('next'))
@@ -125,56 +165,12 @@ def logout():
 @app.route('/')
 @login_required
 def index():
-    return render_template("index.html")
 
-# Uploads - CPH
+    with admin_permission.require():
+        linereports = s.query(Users).filter_by(line_managerid=int(current_user.database_id)).filter_by(active=True).all()
+        linereports_inactive = s.query(Users).filter_by(line_managerid=int(current_user.database_id)).filter_by(
+            active=False).count()
+    print linereports
 
-def allowed_file(filename):
-    return '.' in filename \
-        and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
-
-@app.route('/uploads', methods=['GET', 'POST'])
-def upload_file():
-    if request.method == 'GET':
-        return render_template('upload.html')
-
-    if request.method == 'POST':
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            print "no file part"
-            flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        print file
-
-        # if user does not select file, browser also
-        # submit a empty part without filename
-        if file.filename == '':
-            flash('No selected file')
-            print "no selected file"
-            return redirect(request.url)
-
-        if not allowed_file(file.filename):
-            flash('Invalid file type')
-            print "invalid file type"
-            return redirect(request.url)
-
-        if file and allowed_file(file.filename):
-            print "here3"
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            print "test"
-            flash('File uploaded successfully')
-            return redirect(request.url)
-
-@app.route('/audit', methods=['GET', 'POST'])
-def audit_department():
-    if request.method == 'GET':
-        return render_template('audit.html')
-
-if __name__ == '__main__':
-    app.run(debug=True,host='10.182.131.21',port=5007)
-
-
-
+    return render_template("index.html",linereports=linereports,linereports_inactive=linereports_inactive)
 
