@@ -172,5 +172,7 @@ def index():
             active=False).count()
     print linereports
 
-    return render_template("index.html",linereports=linereports,linereports_inactive=linereports_inactive)
+    competences = s.query(Competence).filter_by(creator_id=current_user.database_id).filter_by(current_version=0).all()
+
+    return render_template("index.html",linereports=linereports,linereports_inactive=linereports_inactive,competences=competences)
 

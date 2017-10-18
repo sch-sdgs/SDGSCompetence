@@ -57,28 +57,6 @@ class EvidenceTypeRef(db.Model):
         return '<EvidenceTypeRef %r>' % self.type
 
 
-class CoshhRef(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    coshhitem = db.Column(db.String(1000), unique=True, nullable=False)
-
-
-    def __init__(self, coshhitem):
-        self.coshhitem = coshhitem
-
-    def __repr__(self):
-        return '<CoshhRef %r>' % self.coshhitem
-
-
-class HealthSafetyRef(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    question = db.Column(db.String(1000), unique=True, nullable=False)
-
-    def __init__(self, question):
-        self.question = question
-
-    def __repr__(self):
-        return '<HealthSafetyRef %r>' % self.question
-
 class ConstantSubsections(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     s_id = db.Column(db.Integer, db.ForeignKey("section.id"), unique=False, nullable=False)
@@ -94,16 +72,6 @@ class ConstantSubsections(db.Model):
         return '<ConstantSubsections %r>' % self.item
 
 
-class ReagentRef(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    reagent = db.Column(db.String(1000), unique=True, nullable=False)
-
-    def __init__(self, reagent):
-        self.reagent = reagent
-
-    def __repr__(self):
-        return '<HealthSafetyRef %r>' % self.reagent
-
 class AssessmentStatusRef(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     status = db.Column(db.String(1000), unique=True, nullable=False)
@@ -115,6 +83,15 @@ class AssessmentStatusRef(db.Model):
     def __repr__(self):
         return '<AssessmentStatusRef %r>' % self.status
 
+class CompetenceCategory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    category = db.Column(db.String(1000), unique=False,  nullable=False)
+
+    def __init__(self, category):
+        self.category = category
+
+    def __repr__(self):
+        return '<CompetenceCategory %r>' % self.category
 
 class Competence (db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -124,16 +101,18 @@ class Competence (db.Model):
     creator_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique = False, nullable=False)
     validity_period = db.Column(db.Integer,db.ForeignKey("validity_ref.id"), unique =False, nullable=False )
     current_version = db.Column(db.Integer, unique =False, default=0, nullable=False)
-
+    catergory_id = db.Column(db.Integer,db.ForeignKey("competence_category.id"), unique =False, nullable=False )
 
     creator_rel = db.relationship("Users", lazy = 'joined', foreign_keys=[creator_id])
     validity_rel = db.relationship("ValidityRef", lazy = 'joined', foreign_keys=[validity_period])
+    category_rel = db.relationship("CompetenceCategory", lazy='joined', foreign_keys=[catergory_id])
 
-    def __init__(self, title, scope, creator_id, validity_period):
+    def __init__(self, title, scope, creator_id, validity_period, category_id):
         self.title=title
         self.scope=scope
         self.creator_id=creator_id
         self.validity_period=validity_period
+        self.catergory_id = category_id
 
     def __repr__(self):
         return '<Competence %r>' % self.title
@@ -176,20 +155,25 @@ class Users (db.Model):
     first_name = db.Column(db.String(1000), unique=False, nullable=False)
     last_name = db.Column(db.String(1000), unique = False, nullable=False)
     email = db.Column(db.String(1000), unique=False, nullable=False)
+    staff_no = db.Column(db.String(1000), unique=False, nullable=False)
     date_created = db.Column(db.DATE, unique = False, nullable=False)
     last_login = db.Column(db.DATE, unique=False, nullable=True)
     active = db.Column(db.BOOLEAN, unique =False, default=True, nullable=False)
     line_managerid = db.Column(db.Integer, db.ForeignKey("users.id"), unique = False, nullable=True)
+    serviceid = db.Column(db.Integer, db.ForeignKey("service.id"), unique=False, nullable=True)
 
     linemanager_rel = db.relationship("Users", lazy='joined', foreign_keys=[line_managerid])
+    service_rel = db.relationship("Service", lazy='joined', foreign_keys=[serviceid])
 
-    def __init__(self, login, first_name, last_name, email, active, line_managerid):
+    def __init__(self, login, first_name, last_name, email, serviceid, active, line_managerid=None, staff_no=None):
         self.login=login
         self.first_name=first_name
         self.last_name=last_name
         self.email =email
+        self.staff_no=staff_no
         self.active=active
         self.line_managerid=line_managerid
+        self.serviceid = serviceid
         self.date_created = str(datetime.datetime.now().strftime("%Y%m%d"))
 
     def __iter__(self):
@@ -458,21 +442,6 @@ class JobRoles(db.Model):
 
     def __repr__(self):
         return '<JobRole %r>' % self.job
-
-class JobServiceRelationship(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    jobrole_id = db.Column(db.Integer, db.ForeignKey("job_roles.id"), unique=False, nullable=False)
-    service_id = db.Column(db.Integer, db.ForeignKey("service.id"), unique=False, nullable=False)
-
-    jobrole_id_rel = db.relationship("JobRoles", lazy='joined', foreign_keys=[jobrole_id])
-    service_id_rel = db.relationship("Service", lazy='joined', foreign_keys=[service_id])
-
-    def __init__(self, jobrole_id, service_id):
-        self.jobrole_id=jobrole_id
-        self.service_id=service_id
-
-    def __repr__(self):
-        return '<JobServiceRelationship % r>' % self.id
 
 if enable_search:
     whooshalchemy.whoosh_index(app, Users)

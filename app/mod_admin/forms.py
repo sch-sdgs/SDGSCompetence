@@ -16,9 +16,12 @@ class UserForm(Form):
     firstname = TextField("First Name", [Required("Enter a Username")])
     surname = TextField("Surname", [Required("Enter a Username")])
     email = TextField("Email", [Required("Enter a Username")])
+    staff_no = TextField("Staff Number", [Required("Enter a Username")])
     linemanager = TextField("Line Manager")
     jobrole = QuerySelectMultipleField("Job Role", query_factory=lambda: s.query(JobRoles).all(), get_label="job")
     userrole = QuerySelectMultipleField("User Role", query_factory=lambda: s.query(UserRolesRef).all(), get_label="role")
+    section = QuerySelectField("Section", query_factory=lambda: s.query(Service).all(),
+                                        get_label="name")
     submit = SubmitField()
 
 
@@ -27,9 +30,11 @@ class UserEditForm(Form):
     firstname = TextField("First Name", [Required("Enter a Username")])
     surname = TextField("Surname", [Required("Enter a Username")])
     email = TextField("Email", [Required("Enter a Username")])
+    staff_no = TextField("Staff Number", [Required("Enter a Username")])
     linemanager = TextField("Line Manager")
     jobrole = SelectMultipleField("Job Role")
     userrole = SelectMultipleField("User Role")
+    section = QuerySelectField("Section")
     submit = SubmitField()
 
 class EvidenceTypeForm(Form):
@@ -51,4 +56,8 @@ class AssessmentStatusForm(Form):
 
 class ServiceForm(Form):
     name=TextField("Service",  [Required("Enter a service")])
+    submit = SubmitField()
+
+class JobRoleForm(Form):
+    job=TextField("Job Role",  [Required("Enter a job role")])
     submit = SubmitField()

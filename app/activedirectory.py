@@ -42,3 +42,15 @@ class UserAuthentication:
         response = client.service.GetUserDetailFromUsername(**username)
         return response
 
+    def get_username_from_user_detail(self, firstname,lastname):
+        """
+        get user information from username
+
+        :param username: active directory username
+        :return: dictionary containing forename,surname and email
+        """
+        username = {"firstName": firstname, "lastName": lastname}
+        client = self._get_client()
+        response = client.service.GetUserDetailFromFullName(**username)
+        return response
+
