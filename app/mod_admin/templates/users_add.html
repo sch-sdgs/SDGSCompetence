@@ -35,21 +35,28 @@
                     <div class="form-group">
                         {{ form.firstname.label(class_="col-lg-2 control-label") }}
                         <div class="col-lg-10">
-                            {{ form.firstname(class_="form-control", disabled="disabled") }}
+                            {{ form.firstname(class_="form-control") }}
                         </div>
                     </div>
 
                     <div class="form-group">
                         {{ form.surname.label(class_="col-lg-2 control-label") }}
                         <div class="col-lg-10">
-                            {{ form.surname(class_="form-control", disabled="disabled") }}
+                            {{ form.surname(class_="form-control") }}
                         </div>
                     </div>
 
                     <div class="form-group">
                         {{ form.email.label(class_="col-lg-2 control-label") }}
                         <div class="col-lg-10">
-                            {{ form.email(class_="form-control", disabled="disabled") }}
+                            {{ form.email(class_="form-control") }}
+                        </div>
+                    </div>
+
+                     <div class="form-group">
+                        {{ form.staff_no.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.staff_no(class_="form-control") }}
                         </div>
                     </div>
 
@@ -74,6 +81,13 @@
                         <div class="col-lg-10">
                             {{ form.userrole(class_="form-control") }}
                             <span class="help-block">This is the users role on stardb.  <strong>You can select multiple - ctrl + click.</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.section.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.section(class_="form-control") }}
                         </div>
                     </div>
 

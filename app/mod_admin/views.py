@@ -129,6 +129,8 @@ def users_add():
                   first_name = request.form["firstname"],
                   last_name = request.form["surname"],
                   email=request.form["email"],
+                  staff_no=request.form["staff_no"],
+                  serviceid=request.form["section"],
                   active=True,
                   line_managerid=line_manager_id)
 
@@ -161,6 +163,8 @@ def users_edit(id=None):
         form.firstname.data = user.first_name
         form.surname.data = user.last_name
         form.email.data = user.email
+        form.staff_no.data = user.staff_no
+
 
         line_manager_result = s.query(Users.first_name, Users.last_name).filter_by(id=user.line_managerid).first()
         if line_manager_result is not None:
@@ -179,6 +183,9 @@ def users_edit(id=None):
         form.userrole.choices = s.query(UserRolesRef.id,UserRolesRef.role).all()
         form.userrole.process_data(userrole_ids)
 
+        form.section.choices = s.query(Service.id,Service.name).all()
+        print form.section.choices
+        form.section.process_data(user.serviceid)
 
 
         return render_template("users_edit.html", id=id, form=form)
