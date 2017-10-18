@@ -156,6 +156,7 @@ class Users (db.Model):
     last_name = db.Column(db.String(1000), unique = False, nullable=False)
     email = db.Column(db.String(1000), unique=False, nullable=False)
     staff_no = db.Column(db.String(1000), unique=False, nullable=False)
+    band = db.Column(db.String(3), unique=False, nullable=False)
     date_created = db.Column(db.DATE, unique = False, nullable=False)
     last_login = db.Column(db.DATE, unique=False, nullable=True)
     active = db.Column(db.BOOLEAN, unique =False, default=True, nullable=False)
