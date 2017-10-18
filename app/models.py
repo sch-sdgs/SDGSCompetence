@@ -82,7 +82,7 @@ class HealthSafetyRef(db.Model):
 class ConstantSubsections(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     s_id = db.Column(db.Integer, db.ForeignKey("section.id"), unique=False, nullable=False)
-    item = db.Column(db.String(1000), unique=True, nullable=False)
+    item = db.Column(db.String(1000), unique=False, nullable=False)
 
     s_id_rel = db.relationship("Section", lazy='joined', foreign_keys=[s_id])
 
@@ -183,7 +183,7 @@ class Users (db.Model):
 
     linemanager_rel = db.relationship("Users", lazy='joined', foreign_keys=[line_managerid])
 
-    def __init__(self, login, first_name, last_name, email, active, line_managerid):
+    def __init__(self, login, first_name, last_name, email, active, line_managerid=None):
         self.login=login
         self.first_name=first_name
         self.last_name=last_name

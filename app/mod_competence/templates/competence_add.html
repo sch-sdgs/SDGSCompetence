@@ -92,7 +92,7 @@
 <div id="document_list"></div>
 
 <script>
-    //this function does autocomplete for line managers name
+    //this function does autocomplete for existing documents in the database
     $(function () {
         $.ajax({
             url: '{{ url_for("competence.document_autocomplete") }}'
@@ -114,7 +114,7 @@
         }
 
         $('#doc_list').val(previous_value + sep + $('#add_document').val())
-        $('#selected_docs').append('<a href="#" class="btn btn-primary remove" id="remove_document" doc_number="'+ $('#add_document').val()+'">' + $('#add_document').val() + ' <span class="glyphicon glyphicon-remove"></span> </a> ')
+        $('#selected_docs').append('<a href="#" class="btn btn-success remove" id="remove_document" doc_number="'+ $('#add_document').val()+'">' + $('#add_document').val() + ' <span class="glyphicon glyphicon-remove"></span> </a> ')
         $('#add_document').val('')
     });
 
