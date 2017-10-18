@@ -217,6 +217,42 @@ def users_edit(id=None):
 
         return redirect(url_for('admin.users_view'))
 
+@admin.route('/jobroles',methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def jobroles():
+    form = JobRoleForm()
+
+    if request.method == 'POST':
+        j =JobRoles(job=request.form['job'])
+        s.add(j)
+        s.commit()
+
+    jobs = s.query(JobRoles).all()
+
+    return render_template("jobroles.html",form=form,data=jobs)
+
+@admin.route('/jobroles/edit/<id>', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def jobroles_edit(id=None):
+    form=JobRoleForm()
+    jobrole = s.query(JobRoles).filter_by(id=id).first()
+    form.job.data = jobrole.job
+
+    if request.method == 'POST':
+        s.query(JobRoles).filter_by(id=id).update({'job': request.form["job"]})
+        s.commit()
+        return redirect(url_for('admin.jobroles'))
+
+    return render_template("jobroles_edit.html", form=form, id=id)
+
+@admin.route('/service/delete/<id>', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def deletejobrole(id=None):
+    s.query(JobRoles).filter_by(id=id).delete()
+    s.commit()
+    return redirect(url_for('admin.jobroles'))
+
+
 @admin.route('/service',methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def service():
@@ -407,7 +443,6 @@ def deleteevidencetype(id=None):
     s.query(EvidenceTypeRef).filter_by(id=id).delete()
     s.commit()
     return redirect(url_for('admin.evidencetypes'))
-
 
 
 @admin.route('/userroles', methods=['GET', 'POST'])
