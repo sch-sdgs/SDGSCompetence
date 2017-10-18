@@ -4,7 +4,7 @@ from flask import Blueprint, jsonify
 from flask_table import Table, Col
 from sqlalchemy import and_, or_, case
 from flask import render_template, request, url_for, redirect, Blueprint
-from flask.ext.login import login_required, current_user
+from flask_login import login_required, current_user
 from app.views import admin_permission
 from app.models import *
 from app.competence import s

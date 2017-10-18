@@ -2,7 +2,7 @@ from collections import OrderedDict
 from sqlalchemy.orm import load_only
 from flask import Blueprint
 from flask import render_template, request, url_for, redirect, Blueprint
-from flask.ext.login import login_required, current_user
+from flask_login import login_required, current_user
 from app.views import admin_permission
 from forms import *
 from app.models import *
@@ -20,9 +20,7 @@ def index():
 def convertTimestampToSQLDateTime(value):
     return time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(value))
 
-
-
-@admin.route('/users/view', methods=['GET', 'POST'])
+@admin.route('/userrole/add', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def users_view():
 
