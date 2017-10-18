@@ -21,7 +21,7 @@
                     <div class="col-lg-10">
 
                             {% for section_id in result[section] %}
-                        <select class="form-control" name="{{ section_id}}_{{ section }}_subsections" id="{{ section_id}}_{{ section }}_subsections" multiple>
+                        <select class="form-control" name="{{ section_id}}_subsections" id="{{ section_id}}_subsections" multiple>
                             {% for subsections in result[section][section_id] %}
                             {% for subsection in subsections %}
                             <option value="{{subsection.id}}">{{subsection.item}}</option>
@@ -36,7 +36,7 @@
                     {{ form.add_h_and_s.label(class_="col-lg-2 control-label") }}
                     <div class="col-lg-10">
                         <div class="input-group">
-                            {{ form.add_h_and_s(class_="form-control") }}
+                            {{ form.add_h_and_s(class_="form-control new_item_"+section_id) }}
                             <span class="input-group-btn"><button class="btn btn-primary"
                                                                   type="button" id="update_{{ section_id }}">Update</button></span>
                         </div>
@@ -48,14 +48,19 @@
             <script>
 
                  $("#update_{{ section_id }}").click(function (e) {
-                     console.log("hello")
+                     console.log("hello1")
                      var s_id = {{ section_id }};
-                     var item = $("#add_h_and_s").val()
-                     console.log(s_id);
+                     var item = $(".new_item_{{ section_id }}").val()
 
-                    var url = "{{ url_for('competence.get_section') }}";
+                     console.log(s_id);
+                     console.log("hello2");
+                     console.log(item);
+                     console.log("hello3");
+
+                    var url = "{{ url_for('competence.add_constant_subsection') }}";
                     var dict = {'s_id': s_id, 'item': item };
                     var data = JSON.stringify(dict);
+                     console.log(data);
 
                     $.ajax({
                         type: "POST",
@@ -64,8 +69,11 @@
                         dataType: "json",
                         contentType: "application/json",
                         success: function (response) {
-                            console.log(response);
-                            $('#section_list').append(response);
+                            var o = new Option(item, response);
+                            // $(o).html(item);
+                            $("#{{ section_id}}_subsections").append(o);
+
+
                         },
                         error: function (xhr, status, error) {
                             $('#trace').append("<p>" + error + "</p>");
@@ -75,8 +83,8 @@
                     });
 
 
-                     var o = new Option("option text", "value");
-                     $("{{ section_id}}_{{ section }}_subsections").append(item);
+//                     var o = new Option("option text", "value");
+//                     $("{{ section_id}}_{{ section }}_subsections").append(item);
                  });
 
 
@@ -125,6 +133,7 @@
                         contentType: "application/json",
                         success: function (response) {
                             console.log(response);
+
                             $('#section_list').append(response);
                         },
                         error: function (xhr, status, error) {

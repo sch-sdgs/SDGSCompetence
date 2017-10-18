@@ -30,7 +30,8 @@ def add_competence():
         title = request.form['title']
         scope = request.form['scope']
         val_period = request.form['validity_period']
-        c = Competence(title=title, creator_id=current_user.database_id, scope=scope, validity_period=val_period)
+        comp_category=request.form['competency_type']
+        c = Competence(title, scope, current_user.database_id, val_period, comp_category)
         s.add(c)
         s.commit()
         c_id = c.id
@@ -46,9 +47,9 @@ def add_competence():
         for section in constants:
             if section.name not in result:
                 result[section.name]={}
-                result[section.name][section.id]=[]
+                result[section.name][str(section.id)]=[]
             subsections = s.query(ConstantSubsections).filter_by(s_id=section.id).all()
-            result[section.name][section.id].append(subsections)
+            result[section.name][str(section.id)].append(subsections)
 
        # print request.form(dir())
         return render_template('competence_section.html', form=add_section_form, c_id=c_id, result=result)
@@ -77,7 +78,7 @@ def add_sections():
                 s.add(add_constant)
                 s.commit()
 
-    return s_id
+
 
 
 @competence.route('/section', methods=['GET', 'POST'])
@@ -157,12 +158,14 @@ def get_documents(c_id):
 
 @competence.route('/add_constant',methods=['GET','POST'])
 def add_constant_subsection():
-        s_id=request.args.get('section_id')
-        item=request.args.get('add_h_and_s')
-        add_constant=ConstantSubsections(s_id=s_id, item=item)
-        s.add(add_constant)
-        s.submit()
-        return True
+    s_id=request.json['s_id']
+    print s_id
+    item=request.json['item']
+    print item
+    add_constant=ConstantSubsections(s_id=s_id, item=item)
+    s.add(add_constant)
+    s.commit()
+    return jsonify(add_constant.id)
 
 
 
