@@ -32,13 +32,20 @@
 
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/static/css/panel_pal.css">
 
-    <script type="text/javascript" language="javascript"
-            src="https://cdn.datatables.net/1.10.13/js/dataTables.bootstrap.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap.min.css">
+
+    <!--<script type="text/javascript" language="javascript"-->
+            <!--src="https://cdn.datatables.net/1.10.13/js/dataTables.bootstrap.min.js"></script>-->
+    <!---->
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/dt-1.10.16/sl-1.2.3/datatables.min.css"/>
+
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.16/sl-1.2.3/datatables.min.js"></script>
+
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap.min.css">-->
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
-
+    <link rel="stylesheet" href="/static/css/panel_pal.css">
     <script>
         $(function () {
             $("#accordion").accordion();
@@ -47,6 +54,12 @@
         $(document).ready(function () {
             var table = $('#users').DataTable({
                 "pageLength": 10
+            })
+        });
+        $(document).ready(function () {
+            var table = $('#competencies').DataTable({
+                "pageLength": 10,
+                select: true
             })
         });
     </script>
@@ -113,6 +126,7 @@
                        <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="{{ url_for('competence.add_competence') }}">Add Competency</a></li>
+                        <li><a href="{{ url_for('competence.list_comptencies') }}">List Competencies</a></li>
 
                     </ul>
                 </li>
@@ -129,6 +143,7 @@
                                 <li><a href="{{ url_for('admin.users_view') }}">View Users</a></li>
                                 <li><a href="{{ url_for('admin.users_add') }}">Add User</a></li>
                                 <li><a href="{{ url_for('admin.userroles') }}">User Roles</a></li>
+                                <li><a href="{{ url_for('admin.jobroles') }}">Job Roles</a></li>
                             </ul>
                         </li>
                         <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Reference Tables</a>
@@ -138,7 +153,6 @@
                                 <li><a href="{{ url_for('admin.validityperiods') }}">Validity Periods</a></li>
                                 <li><a href="{{ url_for('admin.assessmentstatus') }}">Assessment Status</a></li>
                                 <li><a href="{{ url_for('admin.service') }}">Service</a></li>
-                                <li><a href="{{ url_for('admin.jobroles') }}">Job Roles</a></li>
                                 <li><a href="{{ url_for('admin.competencetypes') }}">Competence Types</a></li>
                             </ul>
                         </li>
