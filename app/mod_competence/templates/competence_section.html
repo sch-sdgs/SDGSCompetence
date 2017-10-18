@@ -3,16 +3,14 @@
 
 
 <div class="page-header">
-    <h1>Add Competency Sections</h1>
+    <h1>Add Competency Sections:</h1>
 </div>
 
 <div class="row">
 
     <div class="col-md-12">
         <form action="{{ url_for('competence.add_sections') }}?c_id={{ c_id }}" method="POST" class="form-horizontal">
-            <legend>Competence:</legend>
-
-
+            <h2>Permanent Sections</h2>
             {% for section in result %}
             <div class="well bs-component">
                 <legend>{{section }}</legend>
@@ -95,9 +93,8 @@
 
             {% endfor %}
 
-
+            <h2>Custom Sections</h2>
             <div class="well bs-component">
-                <legend>Custom Sections</legend>
                 <div class="form-group">
                     {{ form.choose_section.label(class_="col-lg-2 control-label") }}
                     <div class="col-lg-4">
