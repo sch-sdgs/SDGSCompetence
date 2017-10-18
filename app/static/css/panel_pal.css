@@ -135,13 +135,13 @@ body {
 /*background-color: #2b3e50 !important;*/
 /*}*/
 
-.even.selected td {
-           background-color: #2b3e50; !important; /* Add !important to make sure override datables base styles */
-  }
+/*.even.selected td {*/
+           /*background-color: #2b3e50; !important; !* Add !important to make sure override datables base styles *!*/
+  /*}*/
 
- .odd.selected td {
-          background-color: #2b3e50; !important; /* Add !important to make sure override datables base styles */
-   }
+ /*.odd.selected td {*/
+          /*background-color: #2b3e50; !important; !* Add !important to make sure override datables base styles *!*/
+   /*}*/
 
 .strong{
      font-weight: 700; !important;
