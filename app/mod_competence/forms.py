@@ -20,10 +20,15 @@ class AddCompetence(Form):
     scope = TextField("Scope", [Required("Enter a Scope")])
     #qpulsenum = TextField("QPulse Doc ID", [Required("Enter a QPulse ID")]) #This needs to be added after competency creation!
     creator_id = TextField("Author Name", [Required("Enter an Author Name")])
-    val_periods = ['6 Months', '1 Year', '2 Years']
     validity_period = QuerySelectField("Validity Period", query_factory=lambda:s.query(ValidityRef).all(), get_label="months")
+
     documents = QuerySelectMultipleField("Associated Documents",query_factory=lambda:s.query(Documents).all(), get_label="qpulse_no")
-    add_document = TextField("Add Document", [Required("Enter a Q-Pulse Document Number")])
+    add_document = TextField("Add Related Document", [Required("Enter a Q-Pulse Document Number")])
+
+    submit = SubmitField()
+
+
+class AddSection(Form):
 
     h_and_s = QuerySelectMultipleField("Relevant Health and Safety", query_factory=lambda:s.query(HealthSafetyRef).all(), get_label="question") #This needs to be then added as a (constant) subsection to the competence
     add_h_and_s = TextField("Add Health and Safety Hazard")
@@ -34,7 +39,9 @@ class AddCompetence(Form):
 
     choose_section = QuerySelectField("Add Section" ,query_factory=lambda:s.query(Section).all(), get_label="name") #All sections in database
     competence_sections = QuerySelectField("Add Section" ,query_factory=lambda:s.query(Section).all(), get_label="name") #All sections that are added for that specific competency
-
     submit = SubmitField()
 
-
+class AddSubsection(Form):
+    name = TextField("Area of Competence")
+    evidence = QuerySelectField("Evidence type", query_factory=lambda:s.query(EvidenceTypeRef).all(), get_label="type")
+    comments =TextField("Comments")

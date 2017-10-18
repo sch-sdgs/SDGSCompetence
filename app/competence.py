@@ -60,3 +60,4 @@ app.register_blueprint(admin,url_prefix='/admin')
 app.register_blueprint(training,url_prefix='/training')
 app.register_blueprint(competence,url_prefix='/competence')
 
+
