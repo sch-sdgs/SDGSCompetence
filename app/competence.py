@@ -19,6 +19,11 @@ print app.config
 
 s = db.session
 
+logging.basicConfig()
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+
 handler = TimedRotatingFileHandler('PerformanceSummary.log', when="d", interval=1, backupCount=30)
 handler.setLevel(logging.INFO)
 
@@ -49,8 +54,10 @@ def message(f):
 
 from mod_admin.views import admin
 from mod_competence.views import competence
+from mod_document.views import document
 
 app.register_blueprint(admin,url_prefix='/admin')
 app.register_blueprint(competence,url_prefix='/competence')
+app.register_blueprint(document, url_prefix='/document')
 
 

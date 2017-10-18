@@ -67,17 +67,14 @@ def add_sections():
         if "subsections" in key:
             for value in f.getlist(key):
                 print key, ":", value
-                #c_id=request.args.get('c_id')
                 s_id = key[0]
                 item_add=s.query(ConstantSubsections.item).filter_by(id=value).all()
                 evidence = s.query(EvidenceTypeRef.id).filter_by(type='Discussion').all()
-                print s_id
-                print item_add
-                print evidence
+
                 add_constant=Subsection(c_id=c_id, s_id=s_id, name=item_add, evidence=evidence, comments=None)
                 s.add(add_constant)
                 s.commit()
-
+    return render_template('competence_view.html', c_id=c_id)
 
 
 
@@ -116,8 +113,8 @@ def add_sections_to_db():
     c_id = request.json['c_id']
     s_id = request.json['s_id']
     sub = Subsection(name=name,evidence=int(evidence_id),comments=comments,c_id=c_id,s_id=s_id)
-    print s.add(sub)
-    print s.commit()
+    s.add(sub)
+    s.commit()
     result = s.query(Subsection).join(Competence).join(Section).join(EvidenceTypeRef).filter(Competence.id == c_id).filter(Section.id == s_id). \
         values(Subsection.name, EvidenceTypeRef.type, Subsection.comments)
 
@@ -125,17 +122,6 @@ def add_sections_to_db():
     #print str(c_id) + ' ' + str(s_id) + ' ' + 'should add new subsection to selected section'
     return jsonify(table)
 
-# @competence.route('/get_constants',methods=['GET', 'POST'])
-# def get_constant_sections():
-#     #Method to get all subsections that have a constant flag in the database
-#     constants = s.query(Subsection).filter(Section.constant == 1).values(Section.id, Section.name)
-#     for constant in constants:
-#         s_id=constant.id
-#         name=constant.name
-#         print s_id, name
-#
-#         return jsonify(render_template('section.html', c_id=c_id, form=form, val=val, text=text, table=table,
-#                                        subsection_form=subsection_form))
 
 @competence.route('/autocomplete_docs',methods=['GET'])
 def document_autocomplete():
@@ -159,13 +145,29 @@ def get_documents(c_id):
 @competence.route('/add_constant',methods=['GET','POST'])
 def add_constant_subsection():
     s_id=request.json['s_id']
-    print s_id
     item=request.json['item']
-    print item
     add_constant=ConstantSubsections(s_id=s_id, item=item)
     s.add(add_constant)
     s.commit()
     return jsonify(add_constant.id)
 
+@competence.route('/view_competence',methods=['POST'])
+def view_competence():
+        print "this method is being called"
+        c_id = request.args.get('c_id')
+        print c_id
+
+
+
+    # competence_info= s.query(Competence).join(Users).filter_by(Competence.id==c_id).all()
+    # print competence_info
+    # subsection_list = s.query(Subsection). \
+    #     join(Section). \
+    #     join(Competence). \
+    #     join(Documents). \
+    #     filter(Subsection.c_id == c_id). \
+    #     values(Subsection.name, Subsection.comments, Documents.qpulse_no, Section.constant, Subsection.evidence)
+    # for subsection in subsection_list:
+    #     print subsection
 
 
