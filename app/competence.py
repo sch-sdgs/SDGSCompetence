@@ -19,6 +19,11 @@ print app.config
 
 s = db.session
 
+logging.basicConfig()
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+
 handler = TimedRotatingFileHandler('PerformanceSummary.log', when="d", interval=1, backupCount=30)
 handler.setLevel(logging.INFO)
 

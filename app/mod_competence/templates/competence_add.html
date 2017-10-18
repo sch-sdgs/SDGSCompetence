@@ -4,49 +4,49 @@
 
     <div class="row">
 
-        <div class="col-md-12">
-            <div class="well bs-component">
-                <form action="{{ url_for('competence.add_competence') }}" method="POST" class="form-horizontal">
-                    <fieldset>
-                        <legend>Add Competence</legend>
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <form action="{{ url_for('competence.add_competence') }}" method="POST" class="form-horizontal">
+                <fieldset>
+                    <legend>Add Competence</legend>
 
-                        <div class="form-group">
-                            {{ form.title.label(class_="col-lg-2 control-label") }}
-                            <div class="col-lg-10">
-                                {{ form.scope(class_="form-control") }}
-                            </div>
+                    <div class="form-group">
+                        {{ form.title.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.scope(class_="form-control") }}
                         </div>
+                    </div>
 
 
-                        <div class="form-group">
-                            {{ form.scope.label(class_="col-lg-2 control-label") }}
-                            <div class="col-lg-10">
-                                {{ form.scope(class_="form-control") }}
-                            </div>
+                    <div class="form-group">
+                        {{ form.scope.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.scope(class_="form-control") }}
                         </div>
+                    </div>
 
 
-                        <div class="form-group">
-                            {{ form.creator_id.label(class_="col-lg-2 control-label") }}
-                            <div class="col-lg-10">
-                                {{ form.creator_id(class_="form-control") }}
-                            </div>
+                    <div class="form-group">
+                        {{ form.creator_id.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.creator_id(class_="form-control") }}
                         </div>
+                    </div>
 
 
-                        <div class="form-group">
-                            {{ form.validity_period.label(class_="col-lg-2 control-label") }}
-                            <div class="col-lg-10">
-                                {{ form.validity_period(class_="form-control") }}
-                            </div>
+                    <div class="form-group">
+                        {{ form.validity_period.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.validity_period(class_="form-control") }}
                         </div>
+                    </div>
 
-                        <div class="form-group">
-                            {{ form.documents.label(class_="col-lg-2 control-label") }}
-                            <div class="col-lg-10">
-                                {{ form.documents(class_="form-control") }}
-                            </div>
+                    <div class="form-group">
+                        {{ form.documents.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.documents(class_="form-control") }}
                         </div>
+                    </div>
 
                         <div class="form-group">
                             {{ form.add_document.label(class_="col-lg-2 control-label") }}
