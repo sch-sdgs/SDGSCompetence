@@ -12,6 +12,10 @@
                 <thead>
                 <th class="col-md-1">Login</th>
                 <th class="col-md-2">Name</th>
+                {% if 'PRIVILEGE' in current_user.roles %}
+                    <th class="col-md-2">Staff No</th>
+                {% endif %}
+                <th class="col-md-2">Section</th>
                 <th class="col-md-2">Line Manager</th>
                 <th class="col-md-2">User Roles</th>
                 <th class="col-md-3">Job Roles</th>
@@ -22,6 +26,10 @@
                     <tr>
                         <td>{{ user["login"] }}</td>
                         <td>{{ user["first_name"] }} {{ user["last_name"] }}</td>
+                        {% if 'PRIVILEGE' in current_user.roles %}
+                            <td>{{ user["staff_no"] }}</td>
+                        {% endif %}
+                        <td>{{ user["sectionname"] }}</td>
                         <td>{{ user["line_manager_name"] }}</td>
                         <td>
                             {% for role in user["roles"] %}

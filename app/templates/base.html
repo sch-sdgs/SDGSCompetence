@@ -45,7 +45,9 @@
         });
 
         $(document).ready(function () {
-            var table = $('#users').DataTable({})
+            var table = $('#users').DataTable({
+                "pageLength": 10
+            })
         });
     </script>
     {% if not current_user.id %}
@@ -137,6 +139,7 @@
                                 <li><a href="{{ url_for('admin.assessmentstatus') }}">Assessment Status</a></li>
                                 <li><a href="{{ url_for('admin.service') }}">Service</a></li>
                                 <li><a href="{{ url_for('admin.jobroles') }}">Job Roles</a></li>
+                                <li><a href="{{ url_for('admin.competencetypes') }}">Competence Types</a></li>
                             </ul>
                         </li>
                     </ul>

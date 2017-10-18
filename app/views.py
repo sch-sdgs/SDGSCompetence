@@ -25,6 +25,7 @@ principals = Principal(app)
 user_permission = Permission(RoleNeed('USER'))
 linemanager_permission = Permission(RoleNeed('LINEMANAGER'))
 admin_permission = Permission(RoleNeed('ADMIN'))
+privilege_perminssion = Permission(RoleNeed('PRIVILEGE'))
 
 @login_manager.user_loader
 def load_user(user_id):
