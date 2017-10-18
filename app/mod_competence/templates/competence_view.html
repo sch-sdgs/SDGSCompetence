@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+    <h1>View Completed Competency</h1>
+</div>
+
+<div class="row">
+
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <form action="{{ url_for('competence.view_competence') }}?c_id={{ c_id }}" method="POST" class="form-horizontal">
+
+                {{ c_id }}
+
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+{% endblock %}
