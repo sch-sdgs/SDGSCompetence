@@ -27,18 +27,13 @@
             <td><h2><strong>SOPs and documents used within this Competency Training:</strong></h2></td>
             <td><h2><strong>QPulse no:</strong></h2></td>
         </tr>
+        {%for sub in subsec %}
+            {% for qpulse_no in sub %}
         <tr>
-            <td><p>Training and competency management</p></td>
-            <td><p>410.005</p></td>
+            <td><p>{{ qpulse_no }}</p></td>
         </tr>
-        <tr>
-            <td><p>e.g. Constitutional Analysis Protocol</p></td>
-            <td><p>410.014</p></td>
-        </tr>
-        <tr>
-            <td><p>This will have to be dynamic</p></td>
-            <td><p>410.014</p></td>
-        </tr>
+            {% endfor %}
+        {% endfor %}
     </table>
 </div>
 <br/>
