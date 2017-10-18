@@ -35,21 +35,28 @@
                     <div class="form-group">
                         {{ form.firstname.label(class_="col-lg-2 control-label") }}
                         <div class="col-lg-10">
-                            {{ form.firstname(class_="form-control", disabled="disabled") }}
+                            {{ form.firstname(class_="form-control") }}
                         </div>
                     </div>
 
                     <div class="form-group">
                         {{ form.surname.label(class_="col-lg-2 control-label") }}
                         <div class="col-lg-10">
-                            {{ form.surname(class_="form-control", disabled="disabled") }}
+                            {{ form.surname(class_="form-control") }}
                         </div>
                     </div>
 
                     <div class="form-group">
                         {{ form.email.label(class_="col-lg-2 control-label") }}
                         <div class="col-lg-10">
-                            {{ form.email(class_="form-control", disabled="disabled") }}
+                            {{ form.email(class_="form-control") }}
+                        </div>
+                    </div>
+
+                     <div class="form-group">
+                        {{ form.staff_no.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.staff_no(class_="form-control") }}
                         </div>
                     </div>
 
@@ -78,6 +85,13 @@
                     </div>
 
                     <div class="form-group">
+                        {{ form.section.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.section(class_="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <div class="col-lg-10 col-lg-offset-2">
                             {{ form.submit(class_="btn btn-primary") }}
 
@@ -101,7 +115,9 @@
             $('#linemanager').autocomplete({
                 source: data.json_list,
                 minLength: 2
+
             });
+            console.log(data.json_list)
         });
     });
     //this function autofills the fist name, surname and email fileds based on the inputed usersname
