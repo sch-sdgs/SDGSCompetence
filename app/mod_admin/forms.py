@@ -52,3 +52,7 @@ class AssessmentStatusForm(Form):
 class ServiceForm(Form):
     name=TextField("Service",  [Required("Enter a service")])
     submit = SubmitField()
+
+class JobRoleForm(Form):
+    job=TextField("Job Role",  [Required("Enter a job role")])
+    submit = SubmitField()
