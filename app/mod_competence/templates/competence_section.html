@@ -3,91 +3,111 @@
 
 
 <div class="page-header">
-<h1>Add Competency Sections</h1>
+    <h1>Add Competency Sections</h1>
 </div>
 
 <div class="row">
 
     <div class="col-md-12">
-        <form action="{{ url_for('competence.add_sections') }}" method="POST" class="form-horizontal">
-            <legend>Competence: </legend>
+        <form action="{{ url_for('competence.add_sections') }}?c_id={{ c_id }}" method="POST" class="form-horizontal">
+            <legend>Competence:</legend>
+
+
+            {% for section in result %}
             <div class="well bs-component">
-                <legend>Health & Safety</legend>
+                <legend>{{section }}</legend>
                 <div class="form-group">
-                    {{ form.h_and_s.label(class_="col-lg-2 control-label") }}
+                    <label class="col-md-2"> Relevant {{ section }}</label>
                     <div class="col-lg-10">
-                        {{ form.h_and_s(class_="form-control") }}
-                    </div>
+
+                            {% for section_id in result[section] %}
+                        <select class="form-control" name="{{ section_id}}_subsections" id="{{ section_id}}_subsections" multiple>
+                            {% for subsections in result[section][section_id] %}
+                            {% for subsection in subsections %}
+                            <option value="{{subsection.id}}">{{subsection.item}}</option>
+
+
+                            {% endfor %}
+                            {% endfor %}
+                            </select>
+                               </div>
                 </div>
-
-
                 <div class="form-group">
                     {{ form.add_h_and_s.label(class_="col-lg-2 control-label") }}
                     <div class="col-lg-10">
                         <div class="input-group">
-                            {{ form.add_h_and_s(class_="form-control") }}
-                                    <span class="input-group-btn"><button class="btn btn-primary"
-                                                                          type="button">Update</button></span>
+                            {{ form.add_h_and_s(class_="form-control new_item_"+section_id) }}
+                            <span class="input-group-btn"><button class="btn btn-primary"
+                                                                  type="button" id="update_{{ section_id }}">Update</button></span>
                         </div>
-                        <span class="help-block">Please enter a new hazard</span>
+                        <span class="help-block">Please enter a new item</span>
                     </div>
                 </div>
             </div>
-            <div class="well bs-component">
-                <legend>Reagent Handling</legend>
-                <div class="form-group">
-                    {{ form.reagent_handling.label(class_="col-lg-2 control-label") }}
-                    <div class="col-lg-10">
-                        {{ form.reagent_handling(class_="form-control") }}
-                    </div>
-                </div>
 
-                <div class="form-group">
-                    {{ form.add_reagent.label(class_="col-lg-2 control-label") }}
-                    <div class="col-lg-10">
-                        <div class="input-group">
-                            {{ form.add_reagent(class_="form-control") }}
-                                    <span class="input-group-btn"><button class="btn btn-primary"
-                                                                          type="button">Update</button></span>
-                        </div>
-                        <span class="help-block">Please enter a relevant reagent handling or storage item</span>
-                    </div>
-                </div>
-            </div>
-            <div class="well bs-component">
-                <legend>COSHH</legend>
-                <div class="form-group">
-                    {{ form.coshh.label(class_="col-lg-2 control-label") }}
-                    <div class="col-lg-10">
-                        {{ form.coshh(class_="form-control") }}
-                    </div>
-                </div>
+            <script>
 
-                <div class="form-group">
-                    {{ form.add_coshh.label(class_="col-lg-2 control-label") }}
-                    <div class="col-lg-10">
-                        <div class="input-group">
-                            {{ form.add_coshh(class_="form-control") }}
-                                    <span class="input-group-btn"><button class="btn btn-primary"
-                                                                          type="button">Update</button></span>
-                        </div>
-                        <span class="help-block">Please enter a new COSHH item</span>
-                    </div>
-                </div>
-            </div>
+                 $("#update_{{ section_id }}").click(function (e) {
+                     console.log("hello1")
+                     var s_id = {{ section_id }};
+                     var item = $(".new_item_{{ section_id }}").val()
+
+                     console.log(s_id);
+                     console.log("hello2");
+                     console.log(item);
+                     console.log("hello3");
+
+                    var url = "{{ url_for('competence.add_constant_subsection') }}";
+                    var dict = {'s_id': s_id, 'item': item };
+                    var data = JSON.stringify(dict);
+                     console.log(data);
+
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: data,
+                        dataType: "json",
+                        contentType: "application/json",
+                        success: function (response) {
+                            var o = new Option(item, response);
+                            // $(o).html(item);
+                            $("#{{ section_id}}_subsections").append(o);
+
+
+                        },
+                        error: function (xhr, status, error) {
+                            $('#trace').append("<p>" + error + "</p>");
+                            $('#ajaxModal').modal('show');
+                            return false;
+                        }
+                    });
+
+
+//                     var o = new Option("option text", "value");
+//                     $("{{ section_id}}_{{ section }}_subsections").append(item);
+                 });
+
+
+            </script>
+
+                            {% endfor %}
+
+
+            {% endfor %}
+
 
             <div class="well bs-component">
                 <legend>Custom Sections</legend>
-            <div class="form-group">
-                {{ form.choose_section.label(class_="col-lg-2 control-label") }}
-                <div class="col-lg-4">
-                    <div class="input-group">
-                        {{ form.choose_section(class_="form-control") }}
-                                    <span class="input-group-btn"><button class="btn btn-primary" id="add_section"
-                                                                          type="button">Add</button></span>
+                <div class="form-group">
+                    {{ form.choose_section.label(class_="col-lg-2 control-label") }}
+                    <div class="col-lg-4">
+                        <div class="input-group">
+                            {{ form.choose_section(class_="form-control") }}
+                            <span class="input-group-btn"><button class="btn btn-primary" id="add_section"
+                                                                  type="button">Add</button></span>
+                        </div>
                     </div>
                 </div>
-            </div>
             </div>
             <div id="section_list"></div>
 
@@ -113,6 +133,7 @@
                         contentType: "application/json",
                         success: function (response) {
                             console.log(response);
+
                             $('#section_list').append(response);
                         },
                         error: function (xhr, status, error) {
@@ -120,10 +141,7 @@
                             $('#ajaxModal').modal('show');
                             return false;
                         }
-
                     });
-
-
                 });
 
 
