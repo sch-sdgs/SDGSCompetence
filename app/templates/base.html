@@ -52,16 +52,38 @@
         });
 
         $(document).ready(function () {
-            var table = $('#users').DataTable({
-                "pageLength": 10
+            var users = $('#users').DataTable({
+                "pageLength": 10,
+                "columnDefs": [
+                {
+                    "targets": [0],
+                    "visible": false,
+                    "searchable": false
+                }],
+                select: true
             })
-        });
-        $(document).ready(function () {
-            var table = $('#competencies').DataTable({
+            var competencies = $('#competencies').DataTable({
                 "pageLength": 10,
                 select: true
             })
-        });
+
+        $("#action").click(function () {
+            console.log("hello")
+            var func = $(this).attr("name")
+            console.log(func)
+            var ids = []
+            var data = users.rows({selected: true}).data()
+            var arrayLength = data.length;
+            for (var i = 0; i < arrayLength; i++) {
+                ids.push(data[i][0])
+            }
+            if (func == "assign_user_to_competence") {
+                console.log("assign_user_to_competence");
+                window.location.assign("{{url_for('competence.assign_user_to_competence')}}?ids=" + ids.join(','));
+            }
+        })
+    });
+
     </script>
     {% if not current_user.id %}
     <style>

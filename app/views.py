@@ -114,6 +114,13 @@ def page_not_found(e):
     session['redirected_from'] = request.url
     return redirect(url_for('login'))
 
+def get_competence_from_subsections(subsection_ids):
+
+    subsections = s.query(Competence).join(Subsection).filter(Subsection.id.in_(subsection_ids)).all()
+
+    return subsections
+
+
 @app.route('/autocomplete_user',methods=['GET'])
 def autocomplete():
     search = request.args.get('linemanager')
@@ -177,6 +184,7 @@ def index():
     counts = {}
     for i in linereports:
         counts[i.id] = {}
+        #TODO get competence because assessments is all subsections
         counts[i.id]["assigned"] = s.query(Assessments).filter_by(user_id=i.id).filter_by(status=2).count()
         counts[i.id]["active"] = s.query(Assessments).filter_by(user_id=i.id).filter_by(status=1).count()
         counts[i.id]["complete"] = s.query(Assessments).filter_by(user_id=i.id).filter_by(status=3).count()

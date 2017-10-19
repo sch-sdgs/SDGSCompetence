@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-header">
+<h1>Assign Competence</h1>
+</div>
+
+
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <div class="well bs-component">
+            <form action="{{ url_for('competence.assign_user_to_competence') }}?ids={{ ids }}" method="POST" class="form-horizontal">
+                <fieldset>
+                    <legend>Choose Competence</legend>
+
+                    <div class="form-group">
+                    <div class="col-lg-12">
+                    <strong>Assigning to:</strong> {{assignees}}
+                    </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form.name.label(class_="col-lg-2 control-label") }}
+
+                        <div class="col-lg-10">
+                            {{ form.name(required="required",class_="form-control") }}
+                             <span class="help-block"><strong>Start typing and competencies will appear.</strong></span>
+                            <span class="help-block">This competence will be <strong>Assigned</strong>, but not <strong>Activated</strong>. Once the staff member commences this competence it will become active.</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-lg-10 col-lg-offset-2">
+                            {{ form.submit(class_="btn btn-primary") }}
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-2"></div>
+</div>
+
+<script>
+    $(function () {
+        $.ajax({
+            url: '{{ url_for("competence.competence_name_autocomplete") }}'
+        }).done(function (data) {
+            $('#name').autocomplete({
+                source: data.json_list,
+                minLength: 2
+
+            });
+        });
+    });
+</script>
+
+{% endblock %}

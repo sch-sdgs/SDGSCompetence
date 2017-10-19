@@ -49,3 +49,7 @@ class AddSubsection(Form):
     name = TextField("Area of Competence")
     evidence = QuerySelectField("Evidence type", query_factory=lambda:s.query(EvidenceTypeRef).all(), get_label="type")
     comments =TextField("Comments")
+
+class AssignForm(Form):
+    name = TextField("Area of Competence")
+    submit = SubmitField()
