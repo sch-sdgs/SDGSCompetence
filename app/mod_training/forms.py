@@ -6,7 +6,8 @@ from wtforms.validators import Required
 from app.competence import s
 from app.models import *
 
-class ViewTraining(Form):
+class UploadEvidence(Form):
     """
-
+    For to submit evidence for a competence
     """
+    
