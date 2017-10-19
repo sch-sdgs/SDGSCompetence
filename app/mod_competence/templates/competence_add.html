@@ -121,9 +121,17 @@
             sep = ','
         }
 
-        $('#doc_list').val(previous_value + sep + $('#add_document').val())
-        $('#selected_docs').append('<a href="#" class="btn btn-success remove" id="remove_document" doc_number="'+ $('#add_document').val()+'">' + $('#add_document').val() + ' <span class="glyphicon glyphicon-remove"></span> </a> ')
-        $('#add_document').val('')
+//        $.ajax({
+//            type: "POST",
+//            url: '{{ url_for("competence.get_doc_name") }}',
+//            data: $('#add_document').val(),
+//            dataType: "json",
+//            contentType: "application/json",
+//            success: function(response) {
+                $('#doc_list').val(previous_value + sep + $('#add_document').val())
+                $('#selected_docs').append('<a href="#" class="btn btn-success remove" id="remove_document" doc_number="' + $('#add_document').val() + '">' + $('#add_document').val() + ' <span class="glyphicon glyphicon-remove"></span> </a> ')
+                $('#add_document').val('')
+            //}
     });
 
     $(document).on("click", '.remove' ,function(){
