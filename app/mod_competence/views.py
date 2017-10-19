@@ -38,7 +38,8 @@ class ItemTableDocuments(Table):
 @competence.route('/list', methods=['GET', 'POST'])
 def list_comptencies():
 
-    data = s.query(Competence).all()
+    data = s.query(CompetenceDetails).join(Competence).filter(Competence.current_version==CompetenceDetails).all()
+    print data
     return render_template('competences_list.html',data=data)
 
 @competence.route('/add', methods=['GET', 'POST'])
@@ -49,7 +50,11 @@ def add_competence():
         scope = request.form['scope']
         val_period = request.form['validity_period']
         comp_category=request.form['competency_type']
-        c = Competence(title, scope, current_user.database_id, val_period, comp_category)
+        com = Competence()
+        s.add(com)
+        s.commit()
+
+        c = CompetenceDetails(com.id, title, scope, current_user.database_id, val_period, comp_category)
         s.add(c)
         s.commit()
         c_id = c.id
