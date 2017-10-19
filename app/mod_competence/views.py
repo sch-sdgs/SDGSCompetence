@@ -78,6 +78,7 @@ def add_sections():
 
 
 
+
 @competence.route('/section', methods=['GET', 'POST'])
 def get_section():
 
