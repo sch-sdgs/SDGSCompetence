@@ -10,6 +10,7 @@ from app.models import *
 from app.competence import s
 from forms import *
 import json
+from app.qpulseweb import *
 
 competence = Blueprint('competence', __name__, template_folder='templates')
 
@@ -187,6 +188,17 @@ def get_documents(c_id):
      documents=s.query(Documents).join(Competence).filter(competence.id == c_id)
      table =  ItemTableDocuments(documents, classes=['table', 'table-striped', docid])
      return jsonify(table)
+
+@competence.route('/get_doc_name',methods=['GET'])
+def get_doc_name():
+    doc_id = request.json('add_document')
+    q=QPulseWeb()
+    doc_name=q.get_doc_by_id(username="PM Website", password="1234", docNumber=doc_id)
+    print doc_name
+    return jsonify(doc_name)
+
+#in jquery - if doc_name is not null, add doc name to list associated documents
+# -if doc name is null, state "This is not an existing document in Qpulse"
 
 @competence.route('/add_constant',methods=['GET','POST'])
 def add_constant_subsection():
