@@ -95,27 +95,44 @@ class CompetenceCategory(db.Model):
 
 class Competence (db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(1000), unique=False,  nullable=False)
-    scope =  db.Column(db.String(1000), unique=False, nullable=False)
-    qpulsenum = db.Column(db.String(1000), unique=True, nullable=True)
-    creator_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique = False, nullable=False)
-    validity_period = db.Column(db.Integer,db.ForeignKey("validity_ref.id"), unique =False, nullable=False )
     current_version = db.Column(db.Integer, unique =False, default=0, nullable=False)
-    catergory_id = db.Column(db.Integer,db.ForeignKey("competence_category.id"), unique =False, nullable=False )
+    obsolete = db.Column(db.BOOLEAN, unique=False, default=False, nullable=False)
 
-    creator_rel = db.relationship("Users", lazy = 'joined', foreign_keys=[creator_id])
-    validity_rel = db.relationship("ValidityRef", lazy = 'joined', foreign_keys=[validity_period])
-    category_rel = db.relationship("CompetenceCategory", lazy='joined', foreign_keys=[catergory_id])
+    def __init__(self, current_version=0, obsolete=False):
+        self.current_version = current_version
+        self.obsolete = obsolete
 
-    def __init__(self, title, scope, creator_id, validity_period, category_id):
+    def __repr__(self):
+        return '<Competence %r>' % self.title
+
+class CompetenceDetails(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    c_id = db.Column(db.Integer, db.ForeignKey("competence.id"), unique=False, nullable=False)
+    title = db.Column(db.String(1000), unique=False, nullable=False)
+    scope = db.Column(db.String(1000), unique=False, nullable=False)
+    qpulsenum = db.Column(db.String(1000), unique=True, nullable=True)
+    creator_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=False)
+    validity_period = db.Column(db.Integer, db.ForeignKey("validity_ref.id"), unique=False, nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey("competence_category.id"), unique=False, nullable=False)
+    intro = db.Column(db.Integer, unique=False, nullable=False, default=1)
+    last = db.Column(db.Integer, unique=False, nullable=True)
+
+    creator_rel = db.relationship("Users", lazy='joined', foreign_keys=[creator_id])
+    validity_rel = db.relationship("ValidityRef", lazy='joined', foreign_keys=[validity_period])
+    category_rel = db.relationship("CompetenceCategory", lazy='joined', foreign_keys=[category_id])
+    c_id_rel = db.relationship("Competence", lazy='joined', foreign_keys=[c_id])
+
+    def __init__(self, c_id, title, scope, creator_id, validity_period, category_id, intro):
+        self.c_id = c_id
         self.title=title
         self.scope=scope
         self.creator_id=creator_id
         self.validity_period=validity_period
-        self.catergory_id = category_id
+        self.category_id = category_id
+        self.intro = intro
 
     def __repr__(self):
-        return '<Competence %r>' % self.title
+        return '<CompetenceDetails %r>' % self.title
 
 class Documents(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -322,106 +339,43 @@ class Reassessment(db.Model):
     def __repr__(self):
         return '<Reassessment %r>' % self.assess_id
 
-class CaseBased(db.Model):
+class Evidence(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    assessment_id = db.Column (db.Integer, db.ForeignKey("assessments.id"), unique=False, nullable=False)
-    case = db.Column(db.String(1000), unique=False, nullable=False)
-    result = db.Column(db.String(1000), unique=False, nullable=False)
+    evidence = db.Column(db.String(1000), unique=False, nullable=True)
+    result = db.Column(db.String(1000), unique=False, nullable=True)
     is_correct = db.Column(db.BOOLEAN, unique=False, nullable=False)
+    signoff_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=False)
+    comments = db.Column(db.String(1000), unique=False, nullable=True)
+    date_completed = db.Column(db.DATE, unique=False, nullable=True)
 
+    signoff_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[signoff_id])
 
-    assess_id_rel = db.relationship("Assessments", lazy='joined', foreign_keys=[assessment_id])
-
-
-    def __init__(self, assessment_id, case, result, is_correct):
-        self.assessment_id=assessment_id
-        self.case=case
-        self.result=result
-        self.is_correct=is_correct
+    def __init__(self, is_correct, signoff_id, date, evidence=None, result=None, comments=None):
+        self.is_correct = is_correct
+        self.signoff_id = signoff_id
+        self.date_completed = date
+        self.evidence = evidence
+        self.result = result
+        self.comments = comments
 
     def __repr__(self):
-        return '<CaseBased> %r' % self.assessment_id
-
-class Obx(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    assessment_id = db.Column(db.Integer, db.ForeignKey("assessments.id"), unique=False, nullable=False)
-    name = db.Column(db.String(1000), unique=False, nullable=False)
-    is_correct = db.Column(db.BOOLEAN, unique=False, nullable=False)
-
-    assess_id_rel = db.relationship("Assessments", lazy='joined', foreign_keys=[assessment_id])
+        return '<Evidence %r>' % self.id
 
 
-    def __init__(self,assessment_id , name, is_correct):
-        self.assessment_id=assessment_id
-        self.name=name
-        self.is_correct =is_correct
-
-    def __repr__(self):
-        return '<CaseBased> %r' % self.assessment_id
-
-class Upload(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    assessment_id = db.Column(db.Integer, db.ForeignKey("assessments.id"), unique=False, nullable=False)
-    file = db.Column(db.String(1000),unique=False, nullable=False)
-    is_correct = db.Column(db.BOOLEAN, unique=False, nullable=False)
-
-
-    assess_id_rel = db.relationship("Assessments", lazy='joined', foreign_keys=[assessment_id])
-
-
-    def __init__(self, assessment_id, file, is_correct):
-        self.assessment_id=assessment_id
-        self.file=file
-        self.is_correct=is_correct
-
-
-    def __repr__(self):
-        return '<Upload %r>' % self.assessment_id
-
-class AssessmentUploadRelationship(db.Model):
+class AssessmentEvidenceRelationship(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     assessment_id=db.Column(db.Integer, db.ForeignKey("assessments.id"), unique=False, nullable=False)
-    upload_id = db.Column(db.Integer, db.ForeignKey("upload.id"), unique=False, nullable=False)
+    evidence_id = db.Column(db.Integer, db.ForeignKey("evidence.id"), unique=False, nullable=False)
 
     assess_id_rel = db.relationship("Assessments", lazy='joined', foreign_keys=[assessment_id])
-    upload_id_rel = db.relationship("Upload", lazy='joined', foreign_keys=[upload_id])
+    evidence_id_rel = db.relationship("Evidence", lazy='joined', foreign_keys=[evidence_id])
 
-    def __init__(self, assessment_id, upload_id):
+    def __init__(self, assessment_id, evidence_id):
         self.assessment_id=assessment_id
-        self.upload_id=upload_id
+        self.evidence_id=evidence_id
 
     def __repr__(self):
-        return '<AssessmentUploadRelationship %r>' % self.id
-
-class AssessmentCaseBasedRelationship(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    assessment_id=db.Column(db.Integer, db.ForeignKey("assessments.id"), unique=False, nullable=False)
-    casebased_id = db.Column(db.Integer, db.ForeignKey("case_based.id"), unique=False, nullable=False)
-
-    assess_id_rel = db.relationship("Assessments", lazy='joined', foreign_keys=[assessment_id])
-    casebased_id_rel = db.relationship("CaseBased", lazy='joined', foreign_keys=[casebased_id])
-
-    def __init__(self, assessment_id, casebased_id):
-        self.assessment_id=assessment_id
-        self.casebased_id=casebased_id
-
-    def __repr__(self):
-        return '<AssessmentCaseBasedRelationship %r>' % self.id
-
-class AssessmentObxRelationship(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    assessment_id=db.Column(db.Integer, db.ForeignKey("assessments.id"), unique=False, nullable=False)
-    obx_id = db.Column(db.Integer, db.ForeignKey("obx.id"), unique=False, nullable=False)
-
-    assess_id_rel = db.relationship("Assessments", lazy='joined', foreign_keys=[assessment_id])
-    obx_id_rel = db.relationship("Obx", lazy='joined', foreign_keys=[obx_id])
-
-    def __init__(self, assessment_id, obx_id):
-        self.assessment_id=assessment_id
-        self.obx_id=obx_id
-
-    def __repr__(self):
-        return '<AssessmentObxRelationship %r>' % self.id
+        return '<AssessmentEvidenceRelationship %r>' % self.id
 
 class Service(db.Model):
     id = db.Column(db.Integer, primary_key=True)
