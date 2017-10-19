@@ -194,9 +194,10 @@ def index():
         counts[i.id]["abandoned"] = len(s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id==i.id).filter(Assessments.status==4).all())
 
 
-    print counts
-
     competences = s.query(CompetenceDetails).join(Competence).filter(CompetenceDetails.creator_id==current_user.database_id).filter(Competence.current_version==0).all()
 
-    return render_template("index.html",linereports=linereports,linereports_inactive=linereports_inactive,competences=competences,counts=counts)
+    assigned = s.query(Assessments).join(Subsection).join(Competence).join(CompetenceDetails).group_by(CompetenceDetails.id).filter(Assessments.user_id==current_user.database_id).filter(Assessments.status==2).all()
+
+
+    return render_template("index.html",linereports=linereports,linereports_inactive=linereports_inactive,competences=competences,counts=counts,assigned=assigned)
 

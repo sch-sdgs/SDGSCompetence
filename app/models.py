@@ -98,6 +98,10 @@ class Competence (db.Model):
     current_version = db.Column(db.Integer, unique =False, default=0, nullable=False)
     obsolete = db.Column(db.BOOLEAN, unique=False, default=False, nullable=False)
 
+
+    #competence_detail = db.relationship("CompetenceDetails", back_populates="competence")
+    competence_detail = db.relationship("CompetenceDetails", lazy='joined', back_populates="competence")
+
     def __init__(self, current_version=0, obsolete=False):
         self.current_version = current_version
         self.obsolete = obsolete
@@ -125,7 +129,8 @@ class CompetenceDetails(db.Model):
     approve_rel = db.relationship("Users", lazy='joined', foreign_keys=[approve_id])
     validity_rel = db.relationship("ValidityRef", lazy='joined', foreign_keys=[validity_period])
     category_rel = db.relationship("CompetenceCategory", lazy='joined', foreign_keys=[category_id])
-    c_id_rel = db.relationship("Competence", lazy='joined', foreign_keys=[c_id])
+    #c_id_rel = db.relationship("Competence", lazy='joined', foreign_keys=[c_id])
+    competence = db.relationship("Competence", back_populates="competence_detail", lazy='joined')
 
     def __init__(self, c_id, title, scope, creator_id, validity_period, category_id, intro=1, approve_id=None, approved=False):
         self.c_id = c_id
