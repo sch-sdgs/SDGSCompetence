@@ -28,4 +28,5 @@ class QPulseWeb:
         params = {"username":username, "password":password, "docNumber":docNumber }
         client = self._get_client()
         response = client.service.GetDocByID(**params)
+        print response
         return response
