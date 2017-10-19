@@ -1,2 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
+
 .idea
+
+qpulse_details.py
+
+app/qpulse_details.py
