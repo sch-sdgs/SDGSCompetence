@@ -1,4 +1,4 @@
-from flask.ext.wtf import Form
+from flask_wtf import Form
 from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
 from wtforms.fields import TextField, SubmitField, HiddenField, BooleanField, SelectMultipleField, SelectField
 from wtforms.validators import Required
@@ -9,7 +9,7 @@ from app.models import *
 
 class UserRoleForm(Form):
     role = TextField("Role",  [Required("Enter a Username")])
-    submit = SubmitField()
+    submit = SubmitField("Add Role")
 
 class UserForm(Form):
     username = TextField("User Name", [Required("Enter a Username")])
