@@ -1,6 +1,6 @@
 from flask.ext.wtf import Form
 from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
-from wtforms.fields import TextField, SubmitField, HiddenField, BooleanField, SelectMultipleField
+from wtforms.fields import TextField, SubmitField, HiddenField, BooleanField, SelectMultipleField, SelectField
 from wtforms.validators import Required
 
 from app.competence import s
@@ -34,12 +34,18 @@ class UserEditForm(Form):
     linemanager = TextField("Line Manager")
     jobrole = SelectMultipleField("Job Role")
     userrole = SelectMultipleField("User Role")
-    section = QuerySelectField("Section")
+    section = SelectField("Section")
     submit = SubmitField()
 
 class EvidenceTypeForm(Form):
     type=TextField("Evidence Type",  [Required("Enter an Evidence Type")])
     submit = SubmitField()
+
+
+class CompetenceCategoryForm(Form):
+    category=TextField("Competence Type",  [Required("Enter an Evidence Type")])
+    submit = SubmitField()
+
 
 class SectionForm(Form):
     name=TextField("Section Name",  [Required("Enter a Section Name")])

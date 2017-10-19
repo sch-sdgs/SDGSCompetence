@@ -156,6 +156,7 @@ class Users (db.Model):
     last_name = db.Column(db.String(1000), unique = False, nullable=False)
     email = db.Column(db.String(1000), unique=False, nullable=False)
     staff_no = db.Column(db.String(1000), unique=False, nullable=False)
+    band = db.Column(db.String(3), unique=False, nullable=False)
     date_created = db.Column(db.DATE, unique = False, nullable=False)
     last_login = db.Column(db.DATE, unique=False, nullable=True)
     active = db.Column(db.BOOLEAN, unique =False, default=True, nullable=False)
@@ -284,7 +285,7 @@ class Assessments(db.Model):
     user_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[user_id])
 
 
-    def __init__(self, status, ss_id,user_id,  date_completed, date_expiry,comments,is_reassessment ):
+    def __init__(self, status, ss_id,user_id,  date_completed=None, date_expiry=None,comments=None,is_reassessment=0 ):
         self.status=status
         self.ss_id=ss_id
         self.user_id=user_id

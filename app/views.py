@@ -25,6 +25,7 @@ principals = Principal(app)
 user_permission = Permission(RoleNeed('USER'))
 linemanager_permission = Permission(RoleNeed('LINEMANAGER'))
 admin_permission = Permission(RoleNeed('ADMIN'))
+privilege_perminssion = Permission(RoleNeed('PRIVILEGE'))
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -166,13 +167,27 @@ def logout():
 @login_required
 def index():
 
+
+
     with admin_permission.require():
         linereports = s.query(Users).filter_by(line_managerid=int(current_user.database_id)).filter_by(active=True).all()
         linereports_inactive = s.query(Users).filter_by(line_managerid=int(current_user.database_id)).filter_by(
             active=False).count()
     print linereports
+    counts = {}
+    for i in linereports:
+        counts[i.id] = {}
+        counts[i.id]["assigned"] = s.query(Assessments).filter_by(user_id=i.id).filter_by(status=2).count()
+        counts[i.id]["active"] = s.query(Assessments).filter_by(user_id=i.id).filter_by(status=1).count()
+        counts[i.id]["complete"] = s.query(Assessments).filter_by(user_id=i.id).filter_by(status=3).count()
+        counts[i.id]["failed"] = s.query(Assessments).filter_by(user_id=i.id).filter_by(status=5).count()
+        counts[i.id]["obsolete"] = s.query(Assessments).filter_by(user_id=i.id).filter_by(status=6).count()
+        counts[i.id]["abandoned"] = s.query(Assessments).filter_by(user_id=i.id).filter_by(status=4).count()
+
+
+    print counts
 
     competences = s.query(Competence).filter_by(creator_id=current_user.database_id).filter_by(current_version=0).all()
 
-    return render_template("index.html",linereports=linereports,linereports_inactive=linereports_inactive,competences=competences)
+    return render_template("index.html",linereports=linereports,linereports_inactive=linereports_inactive,competences=competences,counts=counts)
 

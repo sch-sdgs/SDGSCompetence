@@ -43,13 +43,14 @@
                             {{ form.email(class_="form-control") }}
                         </div>
                     </div>
-
+                    {% if 'PRIVILEGE' in current_user.roles %}
                       <div class="form-group">
                         {{ form.staff_no.label(class_="col-lg-2 control-label") }}
                         <div class="col-lg-10">
                             {{ form.staff_no(class_="form-control") }}
                         </div>
                     </div>
+                    {% endif %}
 
                     <div class="form-group">
                         {{ form.linemanager.label(class_="col-lg-2 control-label") }}

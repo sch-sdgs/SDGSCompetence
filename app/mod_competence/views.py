@@ -1,7 +1,7 @@
 from collections import OrderedDict
 
 from flask import Blueprint, jsonify
-from flask_table import Table, Col
+from flask_table import Table, Col, ButtonCol
 from sqlalchemy import and_, or_, case
 from flask import render_template, request, url_for, redirect, Blueprint
 from flask.ext.login import login_required, current_user
@@ -13,15 +13,33 @@ import json
 
 competence = Blueprint('competence', __name__, template_folder='templates')
 
+class DeleteCol(Col):
+    def __init__(self, name, attr=None, attr_list=None, **kwargs):
+        super(DeleteCol, self).__init__(
+            name,
+            attr=attr,
+            attr_list=attr_list,
+            **kwargs)
+
+    def td_contents(self, item, attr_list):
+        print item
+        return '<a href="#" class="remove btn btn-sm btn-danger" id="'+str(item.id)+'"><span class="glyphicon glyphicon-remove"></span></a>'
+
 class ItemTableSubsections(Table):
     name = Col('Area of Competence')
     type = Col('Evidence Type')
     comments = Col('Comments')
+    id = DeleteCol('Remove')
 
 class ItemTableDocuments(Table):
     qpulseno = Col('QPulse ID')
     title = Col('QPulse Document Title')
 
+@competence.route('/list', methods=['GET', 'POST'])
+def list_comptencies():
+
+    data = s.query(Competence).all()
+    return render_template('competences_list.html',data=data)
 
 @competence.route('/add', methods=['GET', 'POST'])
 def add_competence():
@@ -77,8 +95,6 @@ def add_sections():
     return render_template('competence_view.html', c_id=c_id)
 
 
-
-
 @competence.route('/section', methods=['GET', 'POST'])
 def get_section():
 
@@ -86,9 +102,9 @@ def get_section():
         # add subsection section database
         pass
     text = request.json['text']
-    val = request.json['val']
-    c_id = request.json['c_id']
 
+    c_id = request.json['c_id']
+    val = request.json['val']
     form = SectionForm()
     subsection_form = AddSubsection()
     #method below gets the subsections for the section_id selected in the form
@@ -97,12 +113,31 @@ def get_section():
     if result_count != 0:
         result = s.query(Subsection).join(Competence).join(Section).join(EvidenceTypeRef).filter(and_(Competence.id==c_id, Section.id==val)).values(Subsection.name, EvidenceTypeRef.type, Subsection.comments)
 
-        table = ItemTableSubsections(result, classes=['table', 'table-striped', 'section_'+str(val)])
+        table = ItemTableSubsections(result, classes=['table', 'table-striped', 'table-bordered' ,'section_'+str(val)])
     else:
         table = '<table class="section_'+str(val)+'"></table>'
 
     #print str(c_id) + ' ' + str(val) + ' ' + 'should get subsections for selected section'
     return jsonify(render_template('section.html',c_id=c_id, form=form, val=val, text=text, table=table, subsection_form=subsection_form))
+
+@competence.route('/delete_subsection', methods=['GET', 'POST'])
+def delete_subsection():
+    print request.json
+    c_id = request.json['c_id']
+    s_id = request.json['s_id']
+    s.query(Subsection).filter_by(c_id = request.json['c_id']).filter_by(id=request.json["id"]).delete()
+    s.commit()
+    result_count = s.query(Subsection).join(Competence).join(Section).join(EvidenceTypeRef).filter(
+        and_(Competence.id == c_id, Section.id == s_id)).count()
+    if result_count != 0:
+        result = s.query(Subsection).join(Competence).join(Section).join(EvidenceTypeRef).filter(
+            and_(Competence.id == c_id, Section.id == s_id)).values(Subsection.id, Subsection.name, EvidenceTypeRef.type,
+                                                                   Subsection.comments)
+
+        table = ItemTableSubsections(result, classes=['table', 'table-striped', 'table-bordered', 'section_' + str(s_id)])
+    else:
+        table = '<table class="section_' + str(s_id) + '"></table>'
+    return jsonify(table)
 
 
 @competence.route('/add_subsection_to_db', methods=['GET', 'POST'])
@@ -117,23 +152,33 @@ def add_sections_to_db():
     s.add(sub)
     s.commit()
     result = s.query(Subsection).join(Competence).join(Section).join(EvidenceTypeRef).filter(Competence.id == c_id).filter(Section.id == s_id). \
-        values(Subsection.name, EvidenceTypeRef.type, Subsection.comments)
+        values(Subsection.id, Subsection.name, EvidenceTypeRef.type, Subsection.comments)
 
-    table = ItemTableSubsections(result, classes=['table', 'table-striped', 'section_'+str(s_id)])
+    table = ItemTableSubsections(result, classes=['table', 'table-bordered', 'table-striped', 'section_'+str(s_id)])
     #print str(c_id) + ' ' + str(s_id) + ' ' + 'should add new subsection to selected section'
     return jsonify(table)
 
 
 @competence.route('/autocomplete_docs',methods=['GET'])
 def document_autocomplete():
- doc_id = request.args.get('add_document')
+    doc_id = request.args.get('add_document')
 
- docs = s.query(Documents.qpulse_no).all()
- doc_list = []
- for i in docs:
-     doc_list.append(i.qpulse_no)
+    docs = s.query(Documents.qpulse_no).all()
+    doc_list = []
+    for i in docs:
+        doc_list.append(i.qpulse_no)
 
- return jsonify(json_list=doc_list)
+    return jsonify(json_list=doc_list)
+
+
+@competence.route('/autocomplete_competence', methods=['GET'])
+def competence_name_autocomplete():
+    competencies = s.query(Competence).all()
+    competence_list = []
+    for i in competencies:
+        competence_list.append(i.category_rel.category + ": "+  i.title)
+
+    return jsonify(json_list=competence_list)
 
 @competence.route('/get_docs',methods=['GET'])
 def get_documents(c_id):
@@ -171,4 +216,32 @@ def view_competence():
     # for subsection in subsection_list:
     #     print subsection
 
+@competence.route('/assign_user_to_competence', methods=['GET', 'POST'])
+def assign_user_to_competence():
+    form = AssignForm()
 
+    ids = request.args["ids"].split(",")
+
+    if request.method == 'POST':
+        category,competence = request.form["name"].split(": ")
+        cat_id = s.query(CompetenceCategory).filter_by(category=category).first().id
+        c_query = s.query(Competence).filter_by(title=competence).filter_by(catergory_id=cat_id).first()
+        c_id = c_query.id
+        status_id = s.query(AssessmentStatusRef).filter_by(status="Assigned").first().id
+        #need to add versions here
+        sub_sections = s.query(Subsection).filter_by(c_id=c_id).all()
+
+        for user_id in ids:
+            for sub_section in sub_sections:
+                a = Assessments(status=status_id,ss_id=sub_section.id,user_id=int(user_id))
+                s.add(a)
+                s.commit()
+
+    else:
+        query = s.query(Users).filter(Users.id.in_(ids)).values(Users.first_name,Users.last_name)
+        assignees = []
+        for i in query:
+            assignees.append(i.first_name + " " + i.last_name)
+
+
+        return render_template('competence_assign.html',form=form,assignees=", ".join(assignees),ids=request.args["ids"])
