@@ -24,7 +24,7 @@
                             </div>
                         {% elif activated == '-' %}
                             <div class="col-lg-3">
-                                <button class="btn btn-success pull-right">Activate</button>
+                                <a class="btn btn-success pull-right" role="button" href="{{ url_for('training.activate_competence') }}?c_id={{ competence }}&u_id={{ u_id }}">Activate</a>
                             </div>
                         {% else %}
                             <div class="col-lg-3">
