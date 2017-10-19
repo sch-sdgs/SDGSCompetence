@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+<div class="well bs-component">
+<div class="row">
+    <div class="col-lg-6"><h3>All Competencies</h3></div>
+<div class="col-lg-6">
+    {% include "with_selected.html" %}
+    </div>
+</div>
+    </div>
+    </div>
+
+<div class="well bs-component">
+<table class="table table-striped" id="competencies">
+    <thead>
+    <th>Category</th>
+    <th>Title</th>
+    <th>Creator</th>
+    <th>Version</th>
+    </thead>
+    {% for competence in data %}
+        <tr>
+            <td>{{ competence.category_rel.category }}</td>
+            <td>{{ competence.title }}</td>
+            <td>{{ competence.creator_rel.first_name }} {{ competence.creator_rel.last_name }}</td>
+            <td>{{ competence.current_version }}</td>
+        </tr>
+    {% endfor %}
+
+
+
+</table>
+    </div>
+
+
+
+{% endblock %}}

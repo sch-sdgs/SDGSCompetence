@@ -79,6 +79,11 @@ def users_view():
         roles = s.query(UserRoleRelationship).join(UserRolesRef).filter(UserRoleRelationship.user_id == user.id).all()
         line_manager_result = s.query(Users.first_name,Users.last_name).filter_by(id=user.line_managerid).first()
         user_dict = dict(user)
+        user_dict["staff_no"]=user.staff_no
+        if user.service_rel:
+            user_dict["sectionname"] =user.service_rel.name
+        else:
+            user_dict["sectionname"] = None
         user_dict["jobs"] = []
         for i in jobs:
             user_dict["jobs"].append(i.jobroles_id_rel.job)
@@ -188,6 +193,7 @@ def users_edit(id=None):
         form.section.process_data(user.serviceid)
 
 
+
         return render_template("users_edit.html", id=id, form=form)
 
     if request.method == 'POST':
@@ -210,12 +216,20 @@ def users_edit(id=None):
             s.add(urr)
         s.commit()
 
+        if "staff_no" in request.form:
+            staff_no = request.form["staff_no"]
+            print "HELLO"
+        else:
+            staff_no = s.query(Users).filter_by(id=id).first().staff_no
+
         data = {
             'login': request.form["username"],
             'first_name': request.form["firstname"],
             'last_name': request.form["surname"],
             'email': request.form["email"],
-            'line_managerid': line_manager_id
+            'line_managerid': line_manager_id,
+            'serviceid': request.form["section"],
+            'staff_no': staff_no
         }
 
         s.query(Users).filter_by(id=id).update(data)
@@ -452,6 +466,41 @@ def deleteevidencetype(id=None):
     return redirect(url_for('admin.evidencetypes'))
 
 
+@admin.route('/competencetypes',methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def competencetypes():
+    form = CompetenceCategoryForm()
+
+    if request.method == 'POST':
+        e = CompetenceCategory(category=request.form['category'])
+        s.add(e)
+        s.commit()
+
+    competencetypes = s.query(CompetenceCategory).all()
+
+    return render_template("competencetypes.html",form=form,data=competencetypes)
+
+@admin.route('/competencetypes/edit/<id>', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def competencetypes_edit(id=None):
+    form=CompetenceCategoryForm()
+    competencetypes = s.query(CompetenceCategory).filter_by(id=id).first()
+    form.category.data = competencetypes.category
+
+    if request.method == 'POST':
+        s.query(CompetenceCategory).filter_by(id=id).update({'category': request.form["category"]})
+        s.commit()
+        return redirect(url_for('admin.competencetypes'))
+
+    return render_template("competencetypes_edit.html", form=form, id=id)
+
+@admin.route('/competencetypes/delete/<id>', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def deletecompetencetypes(id=None):
+    s.query(CompetenceCategory).filter_by(id=id).delete()
+    s.commit()
+    return redirect(url_for('admin.competencetypes'))
+
 @admin.route('/userroles', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def userroles():
@@ -559,7 +608,7 @@ def transform_view():
                     job_id = s.query(JobRoles).filter_by(job=job).first().id
 
                 if users == 0:
-                    u = Users(login=result["Username"],first_name=result["Forename"],last_name=result["Surname"],email=result["Email"].lower(),active=True)
+                    u = Users(login=result["Username"],first_name=result["Forename"],last_name=result["Surname"],email=result["Email"].lower(),staff_no=staffno,serviceid=None,active=True)
                     s.add(u)
                     s.flush()
                     s.refresh(u)
@@ -589,6 +638,11 @@ def transform_view():
                     s.add(ur)
                     s.flush()
                     s.refresh(ur)
+
+                band_db = s.query(Users).filter_by(id=user_id).first().band
+                print band
+                if not band_db:
+                    s.query(Users).filter_by(id=user_id).update({'band':band})
 
 
 
