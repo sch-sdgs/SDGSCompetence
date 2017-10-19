@@ -75,7 +75,8 @@ def add_competence():
             result[section.name][str(section.id)].append(subsections)
 
        # print request.form(dir())
-        return render_template('competence_section.html', form=add_section_form, c_id=c_id, result=result)
+        #return render_template('competence_section.html', form=add_section_form, c_id=c_id, result=result)
+        return render_template('competence_section.html', form=add_section_form, c_id=com.id, result=result)
 
     return render_template('competence_add.html', form=form)
 
@@ -191,7 +192,7 @@ def document_autocomplete():
 
 @competence.route('/autocomplete_competence', methods=['GET'])
 def competence_name_autocomplete():
-    competencies = s.query(Competence).all()
+    competencies = s.query(CompetenceDetails).all()
     competence_list = []
     for i in competencies:
         competence_list.append(i.category_rel.category + ": "+  i.title)
@@ -227,7 +228,7 @@ def assign_user_to_competence():
     if request.method == 'POST':
         category,competence = request.form["name"].split(": ")
         cat_id = s.query(CompetenceCategory).filter_by(category=category).first().id
-        c_query = s.query(Competence).filter_by(title=competence).filter_by(catergory_id=cat_id).first()
+        c_query = s.query(Competence).join(CompetenceDetails).filter(CompetenceDetails.title==competence).filter(CompetenceDetails.category_id==cat_id).first()
         c_id = c_query.id
 
         for user_id in ids:
@@ -261,7 +262,7 @@ def assign_competence_to_user(user_id,competence_id):
     if check == 0:
         for sub_section in sub_sections:
             print sub_section
-            a = Assessments(status=status_id, ss_id=sub_section.id, user_id=int(user_id))
+            a = Assessments(status=status_id, ss_id=sub_section.id, user_id=int(user_id), assign_id=current_user.database_id)
             s.add(a)
             s.commit()
 
