@@ -5,7 +5,7 @@ from flask_table import Table, Col, ButtonCol
 from sqlalchemy import and_, or_, case
 from flask import render_template, request, url_for, redirect, Blueprint
 from flask.ext.login import login_required, current_user
-from app.views import admin_permission
+from app.views import get_competence_from_subsections
 from app.models import *
 from app.competence import s
 from forms import *
@@ -224,15 +224,9 @@ def assign_user_to_competence():
         cat_id = s.query(CompetenceCategory).filter_by(category=category).first().id
         c_query = s.query(Competence).filter_by(title=competence).filter_by(catergory_id=cat_id).first()
         c_id = c_query.id
-        status_id = s.query(AssessmentStatusRef).filter_by(status="Assigned").first().id
-        #need to add versions here
-        sub_sections = s.query(Subsection).filter_by(c_id=c_id).all()
 
         for user_id in ids:
-            for sub_section in sub_sections:
-                a = Assessments(status=status_id,ss_id=sub_section.id,user_id=int(user_id))
-                s.add(a)
-                s.commit()
+            assign_competence_to_user(int(user_id),int(c_id))
 
     else:
         query = s.query(Users).filter(Users.id.in_(ids)).values(Users.first_name,Users.last_name)
@@ -242,3 +236,28 @@ def assign_user_to_competence():
 
 
         return render_template('competence_assign.html',form=form,assignees=", ".join(assignees),ids=request.args["ids"])
+
+
+
+def assign_competence_to_user(user_id,competence_id):
+    status_id = s.query(AssessmentStatusRef).filter_by(status="Assigned").first().id
+    # TODO Not Working
+    sub_sections = s.query(Subsection).filter_by(c_id=competence_id).all()
+    sub_list = []
+    print "hello"
+    print sub_sections
+    # TODO Check if competence is already assigned, if it is skip user and display warning
+    # TODO Need to add competence constant subsections
+
+    for sub_section in sub_sections:
+        sub_list.append(sub_section.id)
+
+    check = s.query(Assessments).filter(Assessments.ss_id.in_(sub_list)).filter_by(user_id=user_id).count()
+    if check == 0:
+        for sub_section in sub_sections:
+            print sub_section
+            a = Assessments(status=status_id, ss_id=sub_section.id, user_id=int(user_id))
+            s.add(a)
+            s.commit()
+
+    return competence_id
