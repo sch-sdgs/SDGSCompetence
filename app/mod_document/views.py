@@ -75,17 +75,19 @@ def export_document(c_id):
     document = Document()
 
     # Get variables using queries
-    print "Going to list stuff in comp_list"
     comp = get_doc_info(c_id)
+    subsec = get_subsections(c_id)
 
-
-    subsec_list = get_subsections(c_id)
-    print "Going to list stuff in subsec_list"
-    for sub in subsec_list:
-        print(sub)
+    for sub in subsec:
+        name = sub.name
+        comments = sub.comments
+        qpulse_no = sub.qpulse_no
+        constant = sub.constant
+        evidence = sub.evidence
+        # I'm not sure if this is right
+        return sub
 
     # Header
-
     title = comp.title
     docid = comp.qpulsenum
 
@@ -97,11 +99,11 @@ def export_document(c_id):
     scope = comp.scope
 
 
-    # pagination
+
 
 
     # Make main document
-    html_out = render_template('export_to_pdf.html', title=title, docid=docid, scope=scope)
+    html_out = render_template('export_to_pdf.html', title=title, docid=docid, scope=scope, sub=sub)
     html = HTML(string=html_out)
 
     main_doc = html.render(stylesheets=[CSS('static/css/simple_report.css')])
