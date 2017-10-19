@@ -112,24 +112,32 @@ class CompetenceDetails(db.Model):
     scope = db.Column(db.String(1000), unique=False, nullable=False)
     qpulsenum = db.Column(db.String(1000), unique=True, nullable=True)
     creator_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=False)
+    date_created = db.Column(db.DATE, unique = False, nullable=False)
+    approve_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=True)
+    approved = db.Column(db.BOOLEAN, unique=False, default=False, nullable=True)
+    date_of_approval = db.Column(db.DATE, unique = False, nullable=True)
     validity_period = db.Column(db.Integer, db.ForeignKey("validity_ref.id"), unique=False, nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey("competence_category.id"), unique=False, nullable=False)
     intro = db.Column(db.Integer, unique=False, nullable=False, default=1)
     last = db.Column(db.Integer, unique=False, nullable=True)
 
     creator_rel = db.relationship("Users", lazy='joined', foreign_keys=[creator_id])
+    approve_rel = db.relationship("Users", lazy='joined', foreign_keys=[approve_id])
     validity_rel = db.relationship("ValidityRef", lazy='joined', foreign_keys=[validity_period])
     category_rel = db.relationship("CompetenceCategory", lazy='joined', foreign_keys=[category_id])
     c_id_rel = db.relationship("Competence", lazy='joined', foreign_keys=[c_id])
 
-    def __init__(self, c_id, title, scope, creator_id, validity_period, category_id, intro):
+    def __init__(self, c_id, title, scope, creator_id, validity_period, category_id, intro, approve_id, approved=False):
         self.c_id = c_id
         self.title=title
         self.scope=scope
         self.creator_id=creator_id
+        self.date_created = datetime.date.today()
         self.validity_period=validity_period
         self.category_id = category_id
         self.intro = intro
+        self.approve_id = approve_id
+        self.approved = approved
 
     def __repr__(self):
         return '<CompetenceDetails %r>' % self.title
@@ -291,6 +299,7 @@ class Assessments(db.Model):
     date_completed = db.Column(db.DATE, unique=False, nullable=True)
     date_expiry = db.Column(db.DATE, unique=False, nullable=True)
     date_assigned = db.Column(db.DATE, unique=False, nullable=False)
+    assign_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=True)
     date_activated = db.Column(db.DATE, unique=False, nullable=True)
     comments = db.Column(db.String(1000), unique=False, nullable=True)
     is_reassessment = db.Column(db.BOOLEAN,  unique=False, default=False, nullable=False)
@@ -300,9 +309,10 @@ class Assessments(db.Model):
     trainer_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[trainer_id])
     signoff_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[signoff_id])
     user_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[user_id])
+    assign_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[assign_id])
 
 
-    def __init__(self, status, ss_id,user_id,  date_completed, date_expiry,comments,is_reassessment ):
+    def __init__(self, status, ss_id,user_id,  date_completed, date_expiry,comments,is_reassessment, assign_id ):
         self.status=status
         self.ss_id=ss_id
         self.user_id=user_id
@@ -311,6 +321,7 @@ class Assessments(db.Model):
         self.comments=comments
         self.is_reassessment=is_reassessment
         self.date_assigned = str(datetime.datetime.now().strftime("%Y%m%d"))
+        self.assign_id = assign_id
 
 
     def __repr__(self):
