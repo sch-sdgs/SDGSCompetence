@@ -31,6 +31,13 @@ privilege_perminssion = Permission(RoleNeed('PRIVILEGE'))
 def load_user(user_id):
     return User(user_id)
 
+@app.context_processor
+def utility_processor():
+    def get_percent():
+        percent = 60
+        return percent
+    return dict(get_percent=get_percent)
+
 
 class User(UserMixin):
     def __init__(self, id, password=None):
@@ -182,22 +189,31 @@ def index():
             active=False).count()
     print linereports
     counts = {}
+    active_count=0
+    assigned_count=0
     for i in linereports:
         counts[i.id] = {}
         #TODO get competence because assessments is all subsections
 
         counts[i.id]["assigned"] = len(s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id==i.id).filter(Assessments.status==2).all())
+        assigned_count += counts[i.id]["assigned"]
         counts[i.id]["active"] = len(s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id==i.id).filter(Assessments.status==1).all())
+        active_count += counts[i.id]["active"]
         counts[i.id]["complete"] = len(s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id==i.id).filter(Assessments.status==3).all())
         counts[i.id]["failed"] = len(s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id==i.id).filter(Assessments.status==5).all())
         counts[i.id]["obsolete"] = len(s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id==i.id).filter(Assessments.status==6).all())
         counts[i.id]["abandoned"] = len(s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id==i.id).filter(Assessments.status==4).all())
 
 
-    competences = s.query(CompetenceDetails).join(Competence).filter(CompetenceDetails.creator_id==current_user.database_id).filter(Competence.current_version==0).all()
+    competences_incomlete = s.query(CompetenceDetails).join(Competence).filter(CompetenceDetails.creator_id==current_user.database_id).filter(Competence.current_version==0).all()
+    competences_complete = s.query(CompetenceDetails).join(Competence).filter(
+        CompetenceDetails.creator_id == current_user.database_id).filter(Competence.current_version == 1).all()
 
     assigned = s.query(Assessments).join(Subsection).join(Competence).join(CompetenceDetails).group_by(CompetenceDetails.id).filter(Assessments.user_id==current_user.database_id).filter(Assessments.status==2).all()
+    active = s.query(Assessments).join(Subsection).join(Competence).join(CompetenceDetails).group_by(
+        CompetenceDetails.id).filter(Assessments.user_id == current_user.database_id).filter(
+        Assessments.status == 1).all()
 
 
-    return render_template("index.html",linereports=linereports,linereports_inactive=linereports_inactive,competences=competences,counts=counts,assigned=assigned)
+    return render_template("index.html",assigned_count=assigned_count,active_count=active_count,linereports=linereports,linereports_inactive=linereports_inactive,competences_incomplete=competences_incomlete, competences_complete=competences_complete,counts=counts,assigned=assigned,active=active)
 

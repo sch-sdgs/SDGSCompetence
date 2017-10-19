@@ -22,7 +22,7 @@
     <div class="panel-heading">
         <span class="glyphicon glyphicon-user"></span>
         <a class="collapsed" data-toggle="collapse" data-target="#collapseOne"
-           href="#collapseOne">Line Reports <span class="badge">{{ linereports|length }}</span></a>
+           href="#collapseOne">Line Reports </a> (Assigned:  <span class="badge">{{ assigned_count }}</span> Active: <span class="badge">{{ active_count }}</span> Expiring: <span class="badge">0</span> Expired: <span class="badge">0</span>)
     </div>
     <div id="collapseOne" class="panel-collapse collapse">
         <div class="panel-body">
@@ -69,12 +69,13 @@
 <div class="panel panel-default">
     <div class="panel-heading"><span class="glyphicon glyphicon-apple"></span>
         <a class="collapsed" data-toggle="collapse" data-target="#collapseTwo"
-           href="#collapseTwo">Ongoing Training (1)</a>
+           href="#collapseTwo">Ongoing Training</a> (Assigned: <span class="badge">{{ assigned|length }}</span> Active: <span class="badge">{{ active|length }}</span>)
     </div>
     <div id="collapseTwo" class="panel-collapse collapse">
         <div class="panel-body">
-            This section provides a list of your ongoing training. Click to see details of an individual competence.
+            This section provides a list of your assigned and ongoing training.
 
+            {% if assigned|length !=0 %}
             <h2>Assigned</h2>
 
             <table class="table table-striped">
@@ -89,29 +90,38 @@
                 {%  for assessment in assigned %}
                     {% for details in assessment.ss_id_rel.c_id_rel.competence_detail %}
                     <td>{{ details.title }}</td>
-                    <td>{{ assessment.user_id_rel.first_name }} {{ assessment.user_id_rel.last_name }}</td>
+                    <td>{{ assessment.assign_id_rel.first_name }} {{ assessment.assign_id_rel.last_name }}</td>
                     <td>{{ assessment.date_assigned }}</td>
-                    <td><a href="#" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-play"></span> Start Training</a></td>
+                    <td><a href="{{ url_for('training.activate_competence') }}?u_id={{ current_user.database_id }}&c_id={{ details.c_id }}" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-play"></span> Start Training</a></td>
                     {% endfor %}
                 {%  endfor %}
             </table>
-
+            {% endif %}
+            {% if active|length !=0 %}
             <h2>Ongoing</h2>
 
             <table class="table table-striped">
                 <thead>
                 <th>Competence</th>
-                <th>Date Started</th>
-                <th>Date Due</th>
+                <th>Assigned By</th>
+                <th>Date Activated</th>
                 <th>Percent Complete</th>
+                <th>Continue Training</th>
                 </thead>
-                {%  for competence in assigned %}
-                    <td>{{ competence.title }}</td>
+
+
+                {%  for assessment in active %}
+                    {% for details in assessment.ss_id_rel.c_id_rel.competence_detail %}
+                    <td>{{ details.title }}</td>
+                    <td>{{ assessment.assign_id_rel.first_name }} {{ assessment.assign_id_rel.last_name }}</td>
+                    <td>{{ assessment.date_activated }}</td>
                     <td></td>
-                    <td></td>
-                    <td></td>
+                    <td><a href="{{ url_for('training.view_current_competence') }}?user={{ current_user.database_id }}&c_id={{ details.c_id }}" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-eye-open"></span> View Training</a></td>
+                    {% endfor %}
                 {%  endfor %}
+
             </table>
+        {% endif %}
         </div>
     </div>
 </div>
@@ -163,10 +173,11 @@
 <div class="panel panel-default">
     <div class="panel-heading"><span class="glyphicon glyphicon-education"></span>
         <a class="collapsed" data-toggle="collapse" data-target="#collapseFive"
-           href="#collapseFive">Your Owned Competencies (32)</a>
+           href="#collapseFive">Your Owned Competencies</a> (Incomplete: <span class="badge">{{ competences_incomplete|length }}</span> Complete: <span class="badge">{{ competences_complete|length }}</span>)
     </div>
     <div id="collapseFive" class="panel-collapse collapse">
         <div class="panel-body">
+        {% if competences_incomplete|length != 0 %}
             <div class="row">
                 <div class="col-lg-12">
 
@@ -180,7 +191,7 @@
                         <th>Continue Editing</th>
                         <th>Mark Complete</th>
                         </thead>
-                         {% for i in competences %}
+                         {% for i in competences_incomplete %}
                         <tr>
                             <td>{{ i.title }}</td>
                             <td>{{ i.category_rel.category }}</td>
@@ -196,9 +207,31 @@
 
                 </div>
             </div>
+            {% endif %}
+
+
+
             <div class="row">
                 <div class="col-lg-12">
-                    <strong>Complete</strong>
+                    <h2>Complete</h2>
+
+                    <table class="table table-striped">
+                        <thead>
+                        <th>Competence</th>
+                        <th>Category</th>
+                        <th>Q-Pulse Doc Number</th>
+                        </thead>
+                         {% for i in competences_complete %}
+                        <tr>
+                            <td>{{ i.title }}</td>
+                            <td>{{ i.category_rel.category }}</td>
+                            <td>{{ i.qpulsenum }}</td>
+
+                        </tr>
+                        {% endfor %}
+
+                    </table>
+
                 </div>
             </div>
         </div>

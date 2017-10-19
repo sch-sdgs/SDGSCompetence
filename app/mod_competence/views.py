@@ -38,7 +38,7 @@ class ItemTableDocuments(Table):
 @competence.route('/list', methods=['GET', 'POST'])
 def list_comptencies():
 
-    data = s.query(CompetenceDetails).join(Competence).filter(Competence.current_version==CompetenceDetails).all()
+    data = s.query(CompetenceDetails).join(Competence).filter(Competence.current_version==CompetenceDetails.intro).all()
     print data
     return render_template('competences_list.html',data=data)
 
