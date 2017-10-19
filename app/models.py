@@ -311,7 +311,7 @@ class Assessments(db.Model):
     user_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[user_id])
     assign_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[assign_id])
 
-    def __init__(self, status, ss_id,user_id,  date_completed, date_expiry,comments,is_reassessment=0, assign_id ):
+    def __init__(self, status, ss_id,user_id, assign_id, date_completed, date_expiry,comments,is_reassessment=0):
         self.status=status
         self.ss_id=ss_id
         self.user_id=user_id

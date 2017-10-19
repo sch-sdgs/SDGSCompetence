@@ -85,25 +85,27 @@ def get_competence_summary_by_user(c_id, u_id):
     """
     competence_result = s.query(Assessments).outerjoin(Users, Users.id == Assessments.user_id).outerjoin(Subsection).\
         outerjoin(Section).outerjoin(Competence, Subsection.c_id == Competence.id).\
-        outerjoin(ValidityRef, Competence.validity_period==ValidityRef.id).\
+        outerjoin(CompetenceDetails, and_(CompetenceDetails.c_id == Competence.id, CompetenceDetails.intro == Competence.current_version)).\
+        outerjoin(ValidityRef, CompetenceDetails.validity_period==ValidityRef.id).\
         filter(and_(Users.id == u_id, Competence.id == c_id)). \
+        group_by(CompetenceDetails.id).\
         values((Users.first_name + ' ' +  Users.last_name).label('user'),
-               Competence.title,
-               Competence.qpulsenum,
-               Competence.scope,
+               CompetenceDetails.title,
+               CompetenceDetails.qpulsenum,
+               CompetenceDetails.scope,
                ValidityRef.months,
                func.max(Assessments.date_assigned).label('assigned'),
                func.max(Assessments.date_activated).label('activated'),
                case([
                    (s.query(Assessments).\
-                       join(Subsection, Subsection.id == Assessments.ss_id).\
+                       outerjoin(Subsection, Subsection.id == Assessments.ss_id).\
                        filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id,
                                    Assessments.date_completed == None)).exists(),
                     None)],
                    else_=func.max(Assessments.date_completed)).label('completed'),
                case([
                    (s.query(Assessments).\
-                       join(Subsection, Subsection.id == Assessments.ss_id).\
+                       outerjoin(Subsection, Subsection.id == Assessments.ss_id).\
                        filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id,
                                    Assessments.date_expiry == None)).exists(),
                     None)],
@@ -159,7 +161,7 @@ def view_current_competence():
     if request.method == 'GET':
         # todo change this to get from URL
         # c_id = request.args.get('c_id')
-        c_id = 4
+        c_id = 8
         user = request.args.get('user')
         if not user:
             user = current_user.id
