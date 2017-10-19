@@ -98,14 +98,14 @@ def get_competence_summary_by_user(c_id, u_id):
                func.max(Assessments.date_activated).label('activated'),
                case([
                    (s.query(Assessments).\
-                       outerjoin(Subsection, Subsection.id == Assessments.ss_id).\
+                       # outerjoin(Subsection, Subsection.id == Assessments.ss_id).\
                        filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id,
                                    Assessments.date_completed == None)).exists(),
                     None)],
                    else_=func.max(Assessments.date_completed)).label('completed'),
                case([
                    (s.query(Assessments).\
-                       outerjoin(Subsection, Subsection.id == Assessments.ss_id).\
+                       # outerjoin(Subsection, Subsection.id == Assessments.ss_id).\
                        filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id,
                                    Assessments.date_expiry == None)).exists(),
                     None)],
@@ -159,15 +159,14 @@ def view_current_competence():
     :return:
     """
     if request.method == 'GET':
-        # todo change this to get from URL
-        # c_id = request.args.get('c_id')
-        c_id = 8
+        c_id = request.args.get('c_id')
+        # c_id = 8
         user = request.args.get('user')
         if not user:
             user = current_user.id
 
         u_id = get_user(user)
-
+        print(u_id)
         competence_summary = get_competence_summary_by_user(c_id, u_id)
         section_list = get_competence_by_user(c_id, u_id)
 
@@ -203,9 +202,8 @@ def upload_evidence():
     :return: 
     """
     if request.method == 'GET':
-        # todo change this to get from URL
-        # c_id = request.args.get('c_id')
-        c_id = 4
+        c_id = request.args.get('c_id')
+        # c_id = 4
         user = request.args.get('user')
         if not user:
             user = current_user.id
