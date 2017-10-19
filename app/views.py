@@ -114,6 +114,13 @@ def page_not_found(e):
     session['redirected_from'] = request.url
     return redirect(url_for('login'))
 
+def get_competence_from_subsections(subsection_ids):
+
+    subsections = s.query(Competence).join(Subsection).filter(Subsection.id.in_(subsection_ids)).all()
+
+    return subsections
+
+
 @app.route('/autocomplete_user',methods=['GET'])
 def autocomplete():
     search = request.args.get('linemanager')
@@ -177,17 +184,19 @@ def index():
     counts = {}
     for i in linereports:
         counts[i.id] = {}
-        counts[i.id]["assigned"] = s.query(Assessments).filter_by(user_id=i.id).filter_by(status=2).count()
-        counts[i.id]["active"] = s.query(Assessments).filter_by(user_id=i.id).filter_by(status=1).count()
-        counts[i.id]["complete"] = s.query(Assessments).filter_by(user_id=i.id).filter_by(status=3).count()
-        counts[i.id]["failed"] = s.query(Assessments).filter_by(user_id=i.id).filter_by(status=5).count()
-        counts[i.id]["obsolete"] = s.query(Assessments).filter_by(user_id=i.id).filter_by(status=6).count()
-        counts[i.id]["abandoned"] = s.query(Assessments).filter_by(user_id=i.id).filter_by(status=4).count()
+        #TODO get competence because assessments is all subsections
+
+        counts[i.id]["assigned"] = len(s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id==i.id).filter(Assessments.status==2).all())
+        counts[i.id]["active"] = len(s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id==i.id).filter(Assessments.status==1).all())
+        counts[i.id]["complete"] = len(s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id==i.id).filter(Assessments.status==3).all())
+        counts[i.id]["failed"] = len(s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id==i.id).filter(Assessments.status==5).all())
+        counts[i.id]["obsolete"] = len(s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id==i.id).filter(Assessments.status==6).all())
+        counts[i.id]["abandoned"] = len(s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id==i.id).filter(Assessments.status==4).all())
 
 
     print counts
 
-    competences = s.query(Competence).filter_by(creator_id=current_user.database_id).filter_by(current_version=0).all()
+    competences = s.query(CompetenceDetails).join(Competence).filter(CompetenceDetails.creator_id==current_user.database_id).filter(Competence.current_version==0).all()
 
     return render_template("index.html",linereports=linereports,linereports_inactive=linereports_inactive,competences=competences,counts=counts)
 

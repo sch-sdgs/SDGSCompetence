@@ -103,7 +103,7 @@ class Competence (db.Model):
         self.obsolete = obsolete
 
     def __repr__(self):
-        return '<Competence %r>' % self.title
+        return '<Competence %r>' % self.id
 
 class CompetenceDetails(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -127,7 +127,7 @@ class CompetenceDetails(db.Model):
     category_rel = db.relationship("CompetenceCategory", lazy='joined', foreign_keys=[category_id])
     c_id_rel = db.relationship("Competence", lazy='joined', foreign_keys=[c_id])
 
-    def __init__(self, c_id, title, scope, creator_id, validity_period, category_id, intro, approve_id, approved=False):
+    def __init__(self, c_id, title, scope, creator_id, validity_period, category_id, intro=1, approve_id=None, approved=False):
         self.c_id = c_id
         self.title=title
         self.scope=scope
@@ -144,10 +144,10 @@ class CompetenceDetails(db.Model):
 
 class Documents(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    c_id = db.Column(db.Integer, db.ForeignKey("competence.id"),unique=False,  nullable=False)
+    c_id = db.Column(db.Integer, db.ForeignKey("competence_details.id"),unique=False,  nullable=False)
     qpulse_no = db.Column(db.String(20),unique=False,  nullable=False)
 
-    c_id_rel = db.relationship("Competence", lazy = 'joined', foreign_keys=[c_id])
+    c_id_rel = db.relationship("CompetenceDetails", lazy = 'joined', foreign_keys=[c_id])
 
     def __init__(self, c_id, qpulse_no):
         self.c_id=c_id
@@ -311,8 +311,7 @@ class Assessments(db.Model):
     user_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[user_id])
     assign_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[assign_id])
 
-
-    def __init__(self, status, ss_id,user_id,  date_completed, date_expiry,comments,is_reassessment, assign_id ):
+    def __init__(self, status, ss_id,user_id, assign_id, is_reassessment=0, date_completed=None, date_expiry=None, comments=None):
         self.status=status
         self.ss_id=ss_id
         self.user_id=user_id

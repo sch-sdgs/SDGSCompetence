@@ -4,8 +4,8 @@ from flask import Blueprint, jsonify
 from flask_table import Table, Col, ButtonCol
 from sqlalchemy import and_, or_, case
 from flask import render_template, request, url_for, redirect, Blueprint
-from flask_login import login_required, current_user
-from app.views import admin_permission
+from flask.ext.login import login_required, current_user
+from app.views import get_competence_from_subsections
 from app.models import *
 from app.competence import s
 from forms import *
@@ -38,7 +38,8 @@ class ItemTableDocuments(Table):
 @competence.route('/list', methods=['GET', 'POST'])
 def list_comptencies():
 
-    data = s.query(Competence).all()
+    data = s.query(CompetenceDetails).join(Competence).filter(Competence.current_version==CompetenceDetails).all()
+    print data
     return render_template('competences_list.html',data=data)
 
 @competence.route('/add', methods=['GET', 'POST'])
@@ -49,7 +50,11 @@ def add_competence():
         scope = request.form['scope']
         val_period = request.form['validity_period']
         comp_category=request.form['competency_type']
-        c = Competence(title, scope, current_user.database_id, val_period, comp_category)
+        com = Competence()
+        s.add(com)
+        s.commit()
+
+        c = CompetenceDetails(com.id, title, scope, current_user.database_id, val_period, comp_category)
         s.add(c)
         s.commit()
         c_id = c.id
@@ -70,7 +75,8 @@ def add_competence():
             result[section.name][str(section.id)].append(subsections)
 
        # print request.form(dir())
-        return render_template('competence_section.html', form=add_section_form, c_id=c_id, result=result)
+        #return render_template('competence_section.html', form=add_section_form, c_id=c_id, result=result)
+        return render_template('competence_section.html', form=add_section_form, c_id=com.id, result=result)
 
     return render_template('competence_add.html', form=form)
 
@@ -174,14 +180,24 @@ def add_sections_to_db():
 
 @competence.route('/autocomplete_docs',methods=['GET'])
 def document_autocomplete():
- doc_id = request.args.get('add_document')
+    doc_id = request.args.get('add_document')
 
- docs = s.query(Documents.qpulse_no).all()
- doc_list = []
- for i in docs:
-     doc_list.append(i.qpulse_no)
+    docs = s.query(Documents.qpulse_no).all()
+    doc_list = []
+    for i in docs:
+        doc_list.append(i.qpulse_no)
 
- return jsonify(json_list=doc_list)
+    return jsonify(json_list=doc_list)
+
+
+@competence.route('/autocomplete_competence', methods=['GET'])
+def competence_name_autocomplete():
+    competencies = s.query(CompetenceDetails).all()
+    competence_list = []
+    for i in competencies:
+        competence_list.append(i.category_rel.category + ": "+  i.title)
+
+    return jsonify(json_list=competence_list)
 
 @competence.route('/get_docs',methods=['GET'])
 def get_documents(c_id):
@@ -203,4 +219,51 @@ def add_constant_subsection():
     return jsonify(add_constant.id)
 
 
+@competence.route('/assign_user_to_competence', methods=['GET', 'POST'])
+def assign_user_to_competence():
+    form = AssignForm()
 
+    ids = request.args["ids"].split(",")
+
+    if request.method == 'POST':
+        category,competence = request.form["name"].split(": ")
+        cat_id = s.query(CompetenceCategory).filter_by(category=category).first().id
+        c_query = s.query(Competence).join(CompetenceDetails).filter(CompetenceDetails.title==competence).filter(CompetenceDetails.category_id==cat_id).first()
+        c_id = c_query.id
+
+        for user_id in ids:
+            assign_competence_to_user(int(user_id),int(c_id))
+
+    else:
+        query = s.query(Users).filter(Users.id.in_(ids)).values(Users.first_name,Users.last_name)
+        assignees = []
+        for i in query:
+            assignees.append(i.first_name + " " + i.last_name)
+
+
+        return render_template('competence_assign.html',form=form,assignees=", ".join(assignees),ids=request.args["ids"])
+
+
+
+def assign_competence_to_user(user_id,competence_id):
+    status_id = s.query(AssessmentStatusRef).filter_by(status="Assigned").first().id
+    # TODO Not Working
+    sub_sections = s.query(Subsection).filter_by(c_id=competence_id).all()
+    sub_list = []
+    print "hello"
+    print sub_sections
+    # TODO Check if competence is already assigned, if it is skip user and display warning
+    # TODO Need to add competence constant subsections
+
+    for sub_section in sub_sections:
+        sub_list.append(sub_section.id)
+
+    check = s.query(Assessments).filter(Assessments.ss_id.in_(sub_list)).filter_by(user_id=user_id).count()
+    if check == 0:
+        for sub_section in sub_sections:
+            print sub_section
+            a = Assessments(status=status_id, ss_id=sub_section.id, user_id=int(user_id), assign_id=current_user.database_id)
+            s.add(a)
+            s.commit()
+
+    return competence_id
