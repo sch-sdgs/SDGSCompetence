@@ -6,7 +6,7 @@ from activedirectory import UserAuthentication
 from forms import Login
 from flask_principal import Principal, Identity, AnonymousIdentity, \
     identity_changed, Permission, RoleNeed, UserNeed,identity_loaded
-
+from sqlalchemy.sql.expression import func, and_, case
 
 import os
 
@@ -120,7 +120,23 @@ def get_competence_from_subsections(subsection_ids):
 
     return subsections
 
+#####################
+# context processor #
+#####################
+@app.context_processor
+def utility_processor():
+    def get_percent(c_id, u_id):
+        print('case')
+        counts = s.query(Assessments).join(Subsection)\
+            .filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id))\
+            .values((func.sum(case([(Assessments.date_completed == None, 0)], else_=1)) / func.count(Assessments.id)).label('percentage'))
+        for c in counts:
+            return c.percentage
+    return dict(get_percent=get_percent)
 
+#########
+# views #
+#########
 @app.route('/autocomplete_user',methods=['GET'])
 def autocomplete():
     search = request.args.get('linemanager')
