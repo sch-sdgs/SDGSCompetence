@@ -26,27 +26,35 @@
     </div>
     <div id="collapseOne" class="panel-collapse collapse">
         <div class="panel-body">
-            Click your line reports name to view their dashboard.
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <table class="table table-striped">
+            Click your line reports name to view their dashboard.<br><br>
+                    <table class="table table-bordered table-striped">
                         <thead>
-                        <th>Name</th>
-                        <th>Ongoing</th>
-                        <th>Close to Expiry</th>
-                        <th>Expired</th>
+                        <th class="col-md-4">Name</th>
+                        <th class="col-md-1">Assigned</th>
+                        <th class="col-md-1">Active</th>
+                        <th class="col-md-1">Complete</th>
+                        <th class="col-md-1">Failed</th>
+                        <th class="col-md-1">Abandoned</th>
+                        <th class="col-md-1">Obsolete</th>
+                        <th class="col-md-1">Expiring</th>
+                        <th class="col-md-1">Expired</th>
                         </thead>
                         {% for report in linereports %}
                         <tr>
                             <td>{{ report.first_name }} {{ report.last_name }}</td>
+                            <td>{{ counts[report.id]["assigned"] }}</td>
+                            <td>{{ counts[report.id]["active"] }}</td>
+                            <td>{{ counts[report.id]["complete"] }}</td>
+                            <td>{{ counts[report.id]["failed"] }}</td>
+                            <td>{{ counts[report.id]["abandoned"] }}</td>
+                            <td>{{ counts[report.id]["obsolete"] }}</td>
                             <td></td>
                             <td></td>
-                            <td></td>
+
                         </tr>
                         {% endfor %}
                     </table>
-                </div>
-            </div>
+
             {% if linereports_inactive > 0 %}
             <div class="alert alert alert-warning">
                 You have {{ linereports_inactive }} inactive line reports. Click here to view.
@@ -146,23 +154,29 @@
         <div class="panel-body">
             <div class="row">
                 <div class="col-lg-12">
-                    <strong>Incomplete</strong>
+
+                    <h2>Incomplete</h2>
 
                     <table class="table table-striped">
                         <thead>
                         <th>Competence</th>
+                        <th>Category</th>
                         <th>Q-Pulse Doc Number</th>
                         <th>Continue Editing</th>
                         <th>Mark Complete</th>
                         </thead>
+                         {% for i in competences %}
                         <tr>
-                            <td>Sysadmin</td>
-                            <td>401.058</td>
+                            <td>{{ i.title }}</td>
+                            <td>{{ i.category_rel.category }}</td>
+                            <td>{{ i.qpulsenum }}</td>
                             <td><a href="" class="btn btn-sm btn-default"><span
                                     class="glyphicon glyphicon-pencil"></span></a>
                             <td><a href="" class="btn btn-sm btn-default"><span
                                     class="glyphicon glyphicon-ok"></span></a>
                         </tr>
+                        {% endfor %}
+
                     </table>
 
                 </div>
