@@ -174,14 +174,24 @@ def add_sections_to_db():
 
 @competence.route('/autocomplete_docs',methods=['GET'])
 def document_autocomplete():
- doc_id = request.args.get('add_document')
+    doc_id = request.args.get('add_document')
 
- docs = s.query(Documents.qpulse_no).all()
- doc_list = []
- for i in docs:
-     doc_list.append(i.qpulse_no)
+    docs = s.query(Documents.qpulse_no).all()
+    doc_list = []
+    for i in docs:
+        doc_list.append(i.qpulse_no)
 
- return jsonify(json_list=doc_list)
+    return jsonify(json_list=doc_list)
+
+
+@competence.route('/autocomplete_competence', methods=['GET'])
+def competence_name_autocomplete():
+    competencies = s.query(Competence).all()
+    competence_list = []
+    for i in competencies:
+        competence_list.append(i.category_rel.category + ": "+  i.title)
+
+    return jsonify(json_list=competence_list)
 
 @competence.route('/get_docs',methods=['GET'])
 def get_documents(c_id):
@@ -203,4 +213,32 @@ def add_constant_subsection():
     return jsonify(add_constant.id)
 
 
+@competence.route('/assign_user_to_competence', methods=['GET', 'POST'])
+def assign_user_to_competence():
+    form = AssignForm()
 
+    ids = request.args["ids"].split(",")
+
+    if request.method == 'POST':
+        category,competence = request.form["name"].split(": ")
+        cat_id = s.query(CompetenceCategory).filter_by(category=category).first().id
+        c_query = s.query(Competence).filter_by(title=competence).filter_by(catergory_id=cat_id).first()
+        c_id = c_query.id
+        status_id = s.query(AssessmentStatusRef).filter_by(status="Assigned").first().id
+        #need to add versions here
+        sub_sections = s.query(Subsection).filter_by(c_id=c_id).all()
+
+        for user_id in ids:
+            for sub_section in sub_sections:
+                a = Assessments(status=status_id,ss_id=sub_section.id,user_id=int(user_id))
+                s.add(a)
+                s.commit()
+
+    else:
+        query = s.query(Users).filter(Users.id.in_(ids)).values(Users.first_name,Users.last_name)
+        assignees = []
+        for i in query:
+            assignees.append(i.first_name + " " + i.last_name)
+
+
+        return render_template('competence_assign.html',form=form,assignees=", ".join(assignees),ids=request.args["ids"])
