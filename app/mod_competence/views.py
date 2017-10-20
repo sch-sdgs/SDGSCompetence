@@ -227,6 +227,9 @@ def add_constant_subsection():
     s.commit()
     return jsonify(add_constant.id)
 
+
+
+
 @competence.route('/view_competence',methods=['POST'])
 def view_competence():
         print "this method is being called"
@@ -294,3 +297,34 @@ def assign_competence_to_user(user_id,competence_id):
             s.commit()
 
     return competence_id
+
+@competence.route('/competence_edit', methods=['GET', 'POST'])
+def edit_competence():
+    #c_id = request.args.get('c_id')
+    test_id = '18'
+
+    form=EditCompetency()
+    #get basic details for competence
+
+
+
+    comp_title=s.query(CompetenceDetails.title).filter_by(c_id=test_id).first()
+    form.edit_title.data=comp_title[0]
+
+    comp_scope=s.query(CompetenceDetails.scope).filter_by(c_id=test_id).first()
+    form.edit_scope.data = comp_scope[0]
+    comp_category=s.query(CompetenceCategory.category).join(CompetenceDetails).filter_by(c_id=test_id).first()
+    #form.edit_competency_type.default = comp_category[0]
+    comp_val_period=s.query(ValidityRef.months).join(CompetenceDetails).filter_by(c_id=test_id).first()
+    form.edit_validity_period.data = comp_val_period[0]
+    print comp_val_period[0]
+    print comp_category[0]
+    print comp_scope[0]
+    print comp_title[0]
+    # documents=s.query(Documents.qpulse_no).filter_by(c_id=test_id).all()
+    # for i in documents:
+    #     print i[0]
+    #     form.ass_documents.data=i[0]
+
+
+    return render_template('competence_edit.html', form=form)
