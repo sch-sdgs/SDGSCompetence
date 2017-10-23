@@ -31,23 +31,26 @@ privilege_perminssion = Permission(RoleNeed('PRIVILEGE'))
 def load_user(user_id):
     return User(user_id)
 
-@app.context_processor
-def utility_processor():
-    def get_percent():
-        percent = 60
-        return percent
-    return dict(get_percent=get_percent)
-
-
 class User(UserMixin):
     def __init__(self, id, password=None):
+        """
+        user class to login the user and store useful information. Access attributes of this class with
+        "current_user"
+
+        :param id: user id
+        :param password: password
+        """
         self.id = id
         self.database_id = self.get_database_id()
         self.password = password
         self.roles = self.get_user_roles()
-        print self.roles
+        self.full_name = self.get_full_name()
 
     def get_database_id(self):
+        """
+        gets the id of the row in the database for the user.
+        :return: database id
+        """
         query= s.query(Users).filter_by(login=self.id).first()
         if query:
             database_id = query.id
@@ -56,16 +59,37 @@ class User(UserMixin):
         return database_id
 
     def get_user_roles(self):
+        """
+        gets the roles assigned to this user from the database i.e ADMIN, USER etc
+        :return: list of user roles
+        """
         result = []
         roles = s.query(UserRolesRef).join(UserRoleRelationship).join(Users).filter(Users.login == self.id).all()
         for role in roles:
             result.append(role.role)
         return result
 
+    def get_full_name(self):
+        """
+        gets user full name given username, helpful for putting name on welcome pages etc
+        :return: full name
+        """
+        user = s.query(Users).filter_by(login=self.id).first()
+        full_name = user.first_name + " " + user.last_name
+        return full_name
+
+
     def is_authenticated(self, id, password):
+        """
+        checks if user can authenticate with given user id and password. A user can authenticate if two conditions are met
+         1. user is in the stardb database
+         2. user credentils authenticate with active directory
 
+        :param id: username
+        :param password: password
+        :return: True/False user is authenticated
+        """
         user = s.query(Users).filter_by(login=id).all()
-
         if len(list(user)) == 0:
             return False
         else:
@@ -110,14 +134,29 @@ def on_identity_loaded(sender, identity):
 
 @app.errorhandler(404)
 def page_not_found(e):
+    """
+    handles 404 errors
+    :param e:
+    :return: template 404.html
+    """
     return render_template('404.html'), 404
 
 @app.errorhandler(500)
 def internal_server_error(e):
+    """
+    handles 500 errors
+    :param e:
+    :return: template 500.html
+    """
     return render_template('500.html'), 500
 
 @app.errorhandler(403)
 def page_not_found(e):
+    """
+    handles 403 errors (no permission i.e. if not admin)
+    :param e:
+    :return: template login.html
+    """
     session['redirected_from'] = request.url
     return redirect(url_for('login'))
 
@@ -133,10 +172,15 @@ def get_competence_from_subsections(subsection_ids):
 @app.context_processor
 def utility_processor():
     def get_percent(c_id, u_id):
-        print('case')
+        """
+        gets the percentage complete of any competence
+        :param c_id: competence id
+        :param u_id: user id
+        :return: percentage complete
+        """
         counts = s.query(Assessments).join(Subsection)\
             .filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id))\
-            .values((func.sum(case([(Assessments.date_completed == None, 0)], else_=1)) / func.count(Assessments.id)).label('percentage'))
+            .values((func.sum(case([(Assessments.date_completed == None, 0)], else_=1)) / func.count(Assessments.id)*100).label('percentage'))
         for c in counts:
             return c.percentage
     return dict(get_percent=get_percent)
@@ -146,6 +190,10 @@ def utility_processor():
 #########
 @app.route('/autocomplete_user',methods=['GET'])
 def autocomplete():
+    """
+    autocompletes a user once their name is being types
+    :return: jsonified list of users for ajax to use
+    """
     search = request.args.get('linemanager')
 
     users = s.query(Users.first_name,Users.last_name).all()
@@ -159,6 +207,10 @@ def autocomplete():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """
+    method to login user
+    :return: either login.html or if successful the page the user was trying to access
+    """
     form = Login(next=request.args.get('next'))
     if request.method == 'GET':
         return render_template("login.html", form=form)
@@ -180,7 +232,10 @@ def login():
 @app.route('/logout')
 @login_required
 def logout():
-    # Remove the user information from the session
+    """
+    method to logout the user
+    :return: the login page
+    """
     logout_user()
 
     # Remove session keys set by Flask-Principal
@@ -196,9 +251,10 @@ def logout():
 @app.route('/')
 @login_required
 def index():
-
-
-
+    """
+    displays the users dashboard
+    :return: template index.html
+    """
     with admin_permission.require():
         linereports = s.query(Users).filter_by(line_managerid=int(current_user.database_id)).filter_by(active=True).all()
         linereports_inactive = s.query(Users).filter_by(line_managerid=int(current_user.database_id)).filter_by(
