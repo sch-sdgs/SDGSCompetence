@@ -2,16 +2,34 @@
 {% block content %}
 
 <div class="page-header">
-    <h1>Users</h1>
+<div class="well bs-component">
+<div class="row">
+    <div class="col-lg-6"><h3>Users</h3></div>
+<div class="col-lg-6">
+   <div class="btn-group pull-right">
+    <a href="#" class="btn btn-primary btn-sm disabled">With Selected...</a>
+    <a href="#" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown"
+       aria-expanded="false"><span class="caret"></span></a>
+    <ul class="dropdown-menu">
+        <li><a href="#" id="action" name="assign_user_to_competence"><span class="glyphicon glyphicon-search"></span> Assign A Competence</a></li>
+    </ul>
 </div>
-
+    </div>
+</div>
+    </div>
+    </div>
 <div class="row">
     <div class="col-md-12">
         <div class="well bs-component">
             <table class="table table-striped" id="users">
                 <thead>
+                <th class="col-md-1">id</th>
                 <th class="col-md-1">Login</th>
                 <th class="col-md-2">Name</th>
+                {% if 'PRIVILEGE' in current_user.roles %}
+                    <th class="col-md-2">Staff No</th>
+                {% endif %}
+                <th class="col-md-2">Section</th>
                 <th class="col-md-2">Line Manager</th>
                 <th class="col-md-2">User Roles</th>
                 <th class="col-md-3">Job Roles</th>
@@ -20,8 +38,13 @@
                 </thead>
                 {% for user in data %}
                     <tr>
+                        <td>{{ user["id"] }}</td>
                         <td>{{ user["login"] }}</td>
                         <td>{{ user["first_name"] }} {{ user["last_name"] }}</td>
+                        {% if 'PRIVILEGE' in current_user.roles %}
+                            <td>{{ user["staff_no"] }}</td>
+                        {% endif %}
+                        <td>{{ user["sectionname"] }}</td>
                         <td>{{ user["line_manager_name"] }}</td>
                         <td>
                             {% for role in user["roles"] %}
@@ -38,7 +61,7 @@
                         <td><a href="{{ url_for('admin.users_toggle_active',id=user["id"]) }}" class="btn btn-sm btn-success"><span class="glyphicon glyphicon-ok"></span></a></td>
                         {% endif %}
                         {% if user["active"] == False %}
-                        <td><a href="{{ url_for('admin.users_toggle_active',id=user["id"]) }}" class="btn btn-sm btn-warning"><span class="glyphicon glyphicon-remove"></span></a></td>
+                        <td><a href="{{ url_for('admin.users_toggle_active',id=user["id"]) }}" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-remove"></span></a></td>
                         {% endif %}
                     </tr>
                 {% endfor %}

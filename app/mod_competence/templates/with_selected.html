@@ -1,0 +1,25 @@
+<div class="btn-group pull-right">
+    <a href="#" class="btn btn-primary btn-sm disabled">With Selected...</a>
+    <a href="#" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown"
+       aria-expanded="false"><span class="caret"></span></a>
+    <ul class="dropdown-menu">
+        <li><a href="#" id="action" name="bulk_check"><span class="glyphicon glyphicon-search"></span> View Competence</a></li>
+        <li><a href="#" id="action" name="bulk_check"><span class="glyphicon glyphicon-download-alt"></span> Download Competence</a></li>
+        <li><a href="#" id="action" name="bulk_check"><span class="glyphicon glyphicon-eye-open"></span> View Competent Staff</a></li>
+        <li class="divider"></li>
+        <li><a href="#" id="action" name="bulk_check"><span class="glyphicon glyphicon-user"></span> Assign to Someone</a></li>
+        <li class="divider"></li>
+        <li class="dropdown-header">Owner Functions</li>
+        <li><a href="#" id="action" name="bulk_check"><span class="glyphicon glyphicon-star"></span> Activate</a></li>
+        <li><a href="#" id="action" name="bulk_check"><span class="glyphicon glyphicon-star-empty"></span> De-Activate</a></li>
+        <li><a href="#" id="action" name="bulk_check"><span class="glyphicon glyphicon-pencil"></span> Edit</a></li>
+        {% if 'ADMIN' in current_user.roles %}
+        <li class="divider"></li>
+        <li class="dropdown-header">Admin Functions</li>
+        <li><a href="#" id="action" name="bulk_check"><span class="glyphicon glyphicon-hand-right"></span> Change Ownership</a></li>
+        {% endif %}
+
+
+    </ul>
+</div>
+

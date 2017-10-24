@@ -1,0 +1,21 @@
+<div class="row" hidden id="upload_file">
+    <div class="col-lg-6">
+        <form class="form-inline center-block" action="{{ url_for('training.file_uploader') }}"
+              method="POST"
+              enctype="multipart/form-data">
+            <div class="input-group">
+                <label id="browsebutton" class="btn btn-primary input-group-addon"
+                       for="my-file-selector">
+                    Browse...
+                    <input type="file" name="file" id="my-file-selector"/>
+                </label>
+                <input type="text" class="form-control" readonly>
+                <span class="input-group-btn">
+                        <button class="btn btn-primary" type="submit" id="upload">Upload</button>
+                    </span>
+            </div>
+
+        </form>
+    </div>
+    <div class="col-lg-6"></div>
+</div>

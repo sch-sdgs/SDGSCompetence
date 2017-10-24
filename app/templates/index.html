@@ -2,188 +2,367 @@
 {% block content %}
 
 
-<div class="page-header">
-    <h1>Dashboard: <strong>{{ current_user.id }}</strong></h1>
-</div>
+    <div class="page-header">
+        <h1>Dashboard: <strong>{{ current_user.full_name }}</strong></h1>
+    </div>
 
-<div class="panel panel-default">
-    <div class="panel-heading"><span class="glyphicon glyphicon-user"></span> About You</div>
+    {#<div class="panel panel-default">#}
+    {#    <div class="panel-heading"><span class="glyphicon glyphicon-user"></span> About You</div>#}
+    {#    <div class="panel-body">#}
+    {#        Roles:#}
+    {#        {% for role in current_user.roles %}#}
+    {#        {{ role }}#}
+    {#        {% endfor %}#}
+    {#    </div>#}
+    {#</div>#}
+<div class="panel panel-primary">
+  <div class="panel-heading">
+        <h3>Training</h3>
+  </div>
     <div class="panel-body">
-        Roles:
-        {% for role in current_user.roles %}
-        {{ role }}
-        {% endfor %}
-        Line Manager:
-    </div>
-</div>
 
-{% if "linemanager" in current_user.roles %}
 
-<div class="panel panel-default">
-    <div class="panel-heading"><span class="glyphicon glyphicon-user"></span>
-        <a class="collapsed" data-toggle="collapse" data-target="#collapseOne"
-           href="#collapseOne">Line Reports (1)</a>
-    </div>
-    <div id="collapseOne" class="panel-collapse collapse">
-        <div class="panel-body">
-            Click your line reports name to view their dashboard.
 
-            <table class="table table-striped">
-                <thead>
-                <th>Name</th>
-                <th>Position</th>
-                <th>Ongoing</th>
-                <th>Close to Expiry</th>
-                <th>Expired</th>
-                </thead>
-                <tr>
-                    <td><a href="#">Joe Bloggs</a></td>
-                    <td>Lead Bioionformatician</td>
-                    <td>5</td>
-                    <td>2</td>
-                    <td>5</td>
-                </tr>
-            </table>
+    <div class="row">
+        <div class="col-lg-6">
+
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <strong>Assigned</strong> <span class="badge pull-right">{{ assigned|length }}</span>
+                </div>
+                <div class="panel-body">
+
+
+                    <table class="table table-striped">
+                        <thead>
+                        <th>Competence</th>
+                        <th>Assigned By</th>
+                        <th>Date Assigned</th>
+                        <th>Start Training</th>
+                        </thead>
+
+
+                        {% for assessment in assigned %}
+                            {% for details in assessment.ss_id_rel.c_id_rel.competence_detail %}
+                                <tr>
+                                    <td>{{ details.title }}</td>
+                                    <td>{{ assessment.assign_id_rel.first_name }} {{ assessment.assign_id_rel.last_name }}</td>
+                                    <td>{{ assessment.date_assigned }}</td>
+                                    <td>
+                                        <a href="{{ url_for('training.activate_competence') }}?u_id={{ current_user.database_id }}&c_id={{ details.c_id }}"
+                                           class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-play"></span>
+                                            Start Training</a></td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    </table>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <strong>Assigned</strong><span class="badge pull-right">{{ active|length }}</span>
+                </div>
+                <div class="panel-body">
+
+
+                    <table class="table table-striped">
+                        <thead>
+                        <th class="col-lg-6">Competence</th>
+                        <th class="col-lg-3">Date Activated</th>
+                        <th class="col-lg-2">Progress</th>
+                        <th class="col-lg-1"></th>
+                        </thead>
+
+
+                        {% for assessment in active %}
+                            {% for details in assessment.ss_id_rel.c_id_rel.competence_detail %}
+                                <tr>
+                                    <td>{{ details.title }}</td>
+                                    <td>{{ assessment.date_activated }}</td>
+                                    <td>
+                                        <div class="progress">
+                                            <div class="progress-bar progress-bar-success progress-bar-striped"
+                                                 role="progressbar" aria-valuenow="60" aria-valuemin="0"
+                                                 aria-valuemax="100"
+                                                 style="width:  {{ get_percent(details.c_id,current_user.database_id) }}%;">
+                                                <span class="sr-only">60% Complete</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('training.view_current_competence') }}?user={{ current_user.database_id }}&c_id={{ details.c_id }}"
+                                           class="btn btn-xs btn-primary"><span
+                                                class="glyphicon glyphicon-eye-open"></span></a></td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+
+                    </table>
+                </div>
+            </div>
+
         </div>
     </div>
-</div>
+  </div></div>
+    {% if "LINEMANAGER" in current_user.roles %}
+        <div class="panel panel-primary">
+  <div class="panel-heading">
+        <h3>My Team</h3>
+  </div>
+    <div class="panel-body">
 
-{% endif %}
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <strong>Summary</strong>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table table-bordered">
+                            <thead>
+                            <th>Status</th>
+                            <th>Count</th>
+                            </thead>
+                            <tr>
+                                <td>Assigned</td>
+                                <td>{{ assigned_count }}</td>
+                            </tr>
+                            <tr>
+                                <td>Active</td>
+                                <td>{{ active_count }}</td>
+                            </tr>
+                            <tr>
+                                <td>Complete</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td>Failed</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td>Abandoned</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td>Obselete</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td>Expiring</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td>Expired</td>
+                                <td>0</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
 
-<div class="panel panel-default">
-    <div class="panel-heading"><span class="glyphicon glyphicon-apple"></span>
-        <a class="collapsed" data-toggle="collapse" data-target="#collapseTwo"
-           href="#collapseTwo">Ongoing Training (1)</a>
-    </div>
-    <div id="collapseTwo" class="panel-collapse collapse">
-        <div class="panel-body">
-            This section provides a list of your ongoing training. Click to see details of an individual competence.
-            <table class="table table-striped">
-                <thead>
-                <th>Competence</th>
-                <th>Date Started</th>
-                <th>Date Due</th>
-                <th>Percent Complete</th>
-                </thead>
-                <tr>
-                    <td>Sysadmin</td>
-                    <td>01/01/2017</td>
-                    <td>01/01/2017</td>
-                    <td>
+            </div>
+            <div class="col-lg-9">
 
-                        <div style="margin: auto;" class="progress">
-                            <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0"
-                                 aria-valuemax="100" style=" width: 60%;">
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <strong>Details</strong>
+                    </div>
+                    <div class="panel-body">
+                        Click your line reports name to view their dashboard.<br><br>
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                            <th class="col-md-3">Name</th>
+                            <th class="col-md-1">Assigned</th>
+                            <th class="col-md-1">Active</th>
+                            <th class="col-md-1">Complete</th>
+                            <th class="col-md-1">Failed</th>
+                            <th class="col-md-2">Abandoned</th>
+                            <th class="col-md-1">Obsolete</th>
+                            <th class="col-md-1">Expiring</th>
+                            <th class="col-md-1">Expired</th>
+                            </thead>
+                            {% for report in linereports %}
+                                <tr>
+                                    <td>{{ report.first_name }} {{ report.last_name }}</td>
+                                    <td>{{ counts[report.id]["assigned"] }}</td>
+                                    <td>{{ counts[report.id]["active"] }}</td>
+                                    <td>{{ counts[report.id]["complete"] }}</td>
+                                    <td>{{ counts[report.id]["failed"] }}</td>
+                                    <td>{{ counts[report.id]["abandoned"] }}</td>
+                                    <td>{{ counts[report.id]["obsolete"] }}</td>
+                                    <td></td>
+                                    <td></td>
+
+                                </tr>
+                            {% endfor %}
+                        </table>
+
+                        {% if linereports_inactive > 0 %}
+                            <div class="alert alert alert-warning">
+                                You have {{ linereports_inactive }} inactive line reports. Click here to view.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+        </div>
+        </div>
+
+    {% endif %}
+
+    <div class="panel panel-primary">
+  <div class="panel-heading">
+        <h3>Created Competencies</h3>
+  </div>
+    <div class="panel-body">
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>Incomplete <span class="badge pull-right">{{ competences_incomplete|length }}</span></h4>
+                </div>
+                <div class="panel-body">
+                    {% if competences_incomplete|length != 0 %}
+                        <div class="row">
+                            <div class="col-lg-12">
+
+
+                                <table class="table table-striped">
+                                    <thead>
+                                    <th>Competence</th>
+                                    <th>Category</th>
+                                    <th>Q-Pulse Doc Number</th>
+                                    <th>Continue Editing</th>
+                                    <th>Mark Complete</th>
+                                    </thead>
+                                    {% for i in competences_incomplete %}
+                                        <tr>
+                                            <td>{{ i.title }}</td>
+                                            <td>{{ i.category_rel.category }}</td>
+                                            <td>{{ i.qpulsenum }}</td>
+                                            <td><a href="" class="btn btn-sm btn-default"><span
+                                                    class="glyphicon glyphicon-pencil"></span></a>
+                                            <td><a href="" class="btn btn-sm btn-default"><span
+                                                    class="glyphicon glyphicon-ok"></span></a>
+                                        </tr>
+                                    {% endfor %}
+
+                                </table>
+
                             </div>
                         </div>
+                    {% endif %}
 
 
-                    </td>
-                </tr>
-            </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+
+                    <h4>Complete <span class="badge pull-right">{{ competences_complete|length }}</span></h4>
+                </div>
+                <div class="panel-body">
+
+
+                    <div class="row">
+                        <div class="col-lg-12">
+
+                            <table class="table table-striped">
+                                <thead>
+                                <th>Competence</th>
+                                <th>Category</th>
+                                <th>Q-Pulse Doc Number</th>
+                                </thead>
+                                {% for i in competences_complete %}
+                                    <tr>
+                                        <td>{{ i.title }}</td>
+                                        <td>{{ i.category_rel.category }}</td>
+                                        <td>{{ i.qpulsenum }}</td>
+
+                                    </tr>
+                                {% endfor %}
+
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
-</div>
-
-<div class="panel panel-default">
-    <div class="panel-heading"><span class="glyphicon glyphicon-pencil"></span>
-        <a class="collapsed" data-toggle="collapse" data-target="#collapseThree"
-           href="#collapseThree">Awaiting Sign-Off (1)</a>
     </div>
-    <div id="collapseThree" class="panel-collapse collapse">
-        <div class="panel-body">
-            This section provides a list of competences that you need to sign-off.
-            <table class="table table-striped">
-                <thead>
-                <th>Competence</th>
-                <th>Sub-Section</th>
-                <th>Evidence</th>
-                <th>Trainee</th>
-                <th>Date Completed</th>
-                <th>Click To Sign-Off</th>
-                </thead>
-                <tr>
-                    <td>Sysadmin</td>
-                    <td>Mounting a Drive</td>
-                    <td><a href="" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-eye-open"></span></a>
-                    </td>
-                    <td>Nichola Cooper</td>
-                    <td>01/01/2017</td>
-                    <td><a href="" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-pencil"></span></a>
-                    </td>
-                </tr>
-            </table>
+    </div></div>
+
+
+    <div class="panel panel-default">
+        <div class="panel-heading"><span class="glyphicon glyphicon-education"></span>
+            Your Competence
         </div>
-    </div>
-</div>
-
-<div class="panel panel-default">
-    <div class="panel-heading"><span class="glyphicon glyphicon-education"></span>
-        <a class="collapsed" data-toggle="collapse" data-target="#collapseFour"
-           href="#collapseFour">You Are Competent In... (50)</a>
-    </div>
-    <div id="collapseFour" class="panel-collapse collapse">
         <div class="panel-body">
             **list of completed competencies?**
         </div>
-    </div>
-</div>
 
-<div class="panel panel-default">
-    <div class="panel-heading"><span class="glyphicon glyphicon-education"></span>
-        <a class="collapsed" data-toggle="collapse" data-target="#collapseFive"
-           href="#collapseFive">Your Owned Competencies (32)</a>
-    </div>
-    <div id="collapseFive" class="panel-collapse collapse">
-        <div class="panel-body">
-            <div class="row">
-                <div class="col-lg-12">
-                    <strong>Incomplete</strong>
 
-                    <table class="table table-striped">
-                <thead>
-                <th>Competence</th>
-                <th>Q-Pulse Doc Number</th>
-                <th>Continue Editing</th>
-                <th>Mark Complete</th>
-                </thead>
-                <tr>
-                    <td>Sysadmin</td>
-                    <td>401.058</td>
-                    <td><a href="" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-pencil"></span></a>
-                    <td><a href="" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-ok"></span></a>
-                </tr>
-            </table>
-
-                </div>
+        <div class="panel panel-default">
+            <div class="panel-heading"><span class="glyphicon glyphicon-pencil"></span>
+                <a class="collapsed" data-toggle="collapse" data-target="#collapseThree"
+                   href="#collapseThree">Awaiting Sign-Off (1)</a>
             </div>
-            <div class="row">
-                <div class="col-lg-12">
-                    <strong>Complete</strong>
+            <div id="collapseThree" class="panel-collapse collapse">
+                <div class="panel-body">
+                    This section provides a list of competences that you need to sign-off.
+                    <table class="table table-striped">
+                        <thead>
+                        <th>Competence</th>
+                        <th>Sub-Section</th>
+                        <th>Evidence</th>
+                        <th>Trainee</th>
+                        <th>Date Completed</th>
+                        <th>Click To Sign-Off</th>
+                        </thead>
+                        <tr>
+                            <td>Sysadmin</td>
+                            <td>Mounting a Drive</td>
+                            <td><a href="" class="btn btn-sm btn-default"><span
+                                    class="glyphicon glyphicon-eye-open"></span></a>
+                            </td>
+                            <td>Nichola Cooper</td>
+                            <td>01/01/2017</td>
+                            <td><a href="" class="btn btn-sm btn-default"><span
+                                    class="glyphicon glyphicon-pencil"></span></a>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
 
-<!--<script>-->
-<!--$(function () {-->
-<!--$("#competence").accordion({-->
-<!--collapsible: true,-->
-<!--active: false,-->
-<!--heightStyle: 'content',-->
-<!--speed: 'fast'-->
-<!--});-->
-<!--});-->
-<!--$(function () {-->
-<!--$("#sections").accordion({-->
-<!--collapsible: true,-->
-<!--active: false,-->
-<!--heightStyle: 'content',-->
-<!--speed: 'fast'-->
-<!--});-->
-<!--});-->
-<!--</script>-->
+        <div class="panel panel-default">
+            <div class="panel-heading"><span class="glyphicon glyphicon-education"></span>
+                <a class="collapsed" data-toggle="collapse" data-target="#collapseFour"
+                   href="#collapseFour">You Are Competent In... (50)</a>
+            </div>
+            <div id="collapseFour" class="panel-collapse collapse">
+                <div class="panel-body">
+                    **list of completed competencies?**
+                </div>
+            </div>
+        </div>
+
 
 {% endblock %}
