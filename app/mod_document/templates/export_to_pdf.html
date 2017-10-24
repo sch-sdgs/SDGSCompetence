@@ -30,6 +30,8 @@
 
         {% for qpulse_no in qpulse_list %}
         <tr>
+            <td><p>{{ qpulse_list[qpulse_id] }}</p></td>
+            <td><p>{{ qpulse_list[qpulse_name] }}</p></td>
             <td><p>{{ qpulse_list[qpulse_no] }}</p></td>
             <td><p>{{ qpulse_no }}</p></td>
             <td><p>{{ qpulse_name }}</p></td>
@@ -53,11 +55,12 @@
         <tr>
             <td>[[ name ]]</td>
             <td> [[ subsec_list[name] ]]</td>
-            <td>bloop</td>
+
         </tr>
         {% else %}
         <tr>
             <td>None</td>
+        <td>bloop</td>
         </tr>
         {% endfor %}
         {% endif %}

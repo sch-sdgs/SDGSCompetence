@@ -117,7 +117,10 @@ def export_document(c_id):
 
     #associated qpulse documents
     qpulse_list = {}
-
+    print("*************************************************************")
+    print("qpulse pre dict")
+    print(qpulse)
+    print("*************************************************************")
     for qpulse_no in qpulse:
         qpulse_list['qpulse_id'] = qpulse_no
         d = QpulseDetails()
