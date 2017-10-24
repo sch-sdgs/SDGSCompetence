@@ -171,6 +171,41 @@ def users_edit(id=None):
 
         return redirect(url_for('admin.users_view'))
 
+@admin.route('/questions',methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def reassessment_questions():
+    form = QuestionsForm()
+
+    if request.method == 'POST':
+        q =QuestionsRef(question=request.form['question'])
+        s.add(q)
+        s.commit()
+
+    questions = s.query(QuestionsRef).all()
+
+    return render_template("questions.html",form=form,data=questions)
+
+@admin.route('/questions/edit/<id>', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def reassessment_questions_edit(id=None):
+    form=QuestionsForm()
+    question = s.query(QuestionsRef).filter_by(id=id).first()
+    form.question.data = question.question
+
+    if request.method == 'POST':
+        s.query(QuestionsRef).filter_by(id=id).update({'question': request.form["question"]})
+        s.commit()
+        return redirect(url_for('admin.reassessment_questions'))
+
+    return render_template("questions_edit.html", form=form, id=id)
+
+@admin.route('/questions/delete/<id>', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def delete_reassessment_question(id=None):
+    s.query(QuestionsRef).filter_by(id=id).delete()
+    s.commit()
+    return redirect(url_for('admin.reassessment_questions'))
+
 @admin.route('/jobroles',methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def jobroles():
