@@ -5,18 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4783f288-aaa5-4ace-9f51-c82da759ae56" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_document/__init__.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_document/forms.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_document/templates/export_to_pdf.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_document/templates/footer.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_document/templates/header.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/qpulseweb.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/static/css/simple_report.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/templates/audit.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/templates/upload.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_document/views.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/competence.py" afterPath="$PROJECT_DIR$/app/competence.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_document/templates/export_to_pdf.html" afterPath="$PROJECT_DIR$/app/mod_document/templates/export_to_pdf.html" />
     </list>
     <ignored path="SDGSCompetence.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -210,7 +202,6 @@
         <option value="$PROJECT_DIR$/app/mod_competence/templates/competence_assign.html" />
         <option value="$PROJECT_DIR$/app/mod_admin/templates/users_view.html" />
         <option value="$PROJECT_DIR$/app/models.py" />
-        <option value="$PROJECT_DIR$/app/run.py" />
         <option value="$PROJECT_DIR$/app/mod_competence/views.py" />
         <option value="$PROJECT_DIR$/app/mod_competence/templates/competences_list.html" />
         <option value="$PROJECT_DIR$/app/templates/base.html" />
@@ -219,6 +210,7 @@
         <option value="$PROJECT_DIR$/app/views.py" />
         <option value="$PROJECT_DIR$/app/mod_admin/templates/userroles.html" />
         <option value="$PROJECT_DIR$/app/mod_admin/views.py" />
+        <option value="$PROJECT_DIR$/app/run.py" />
       </list>
     </option>
   </component>
@@ -865,7 +857,14 @@
       <option name="project" value="LOCAL" />
       <updated>1508424077501</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="Merge branch 'ChristineDev' of https://github.com/sch-sdgs/SDGSCompetence into develop_Natalie&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml&#10;#&#9;app/run.py">
+      <created>1508851744113</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1508851744113</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -874,8 +873,8 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3265625" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3390625" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1780341" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3390625" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17734376" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32998997" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />

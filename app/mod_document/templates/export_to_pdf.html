@@ -27,17 +27,19 @@
             <td><h2><strong>SOPs and documents used within this Competency Training:</strong></h2></td>
             <td><h2><strong>QPulse no:</strong></h2></td>
         </tr>
-        {% for qpulse_no in doc_list %}
+
+        {% for qpulse_no in qpulse_list %}
         <tr>
-            <td><p>{{ doc_list[qpulse_no] }}</p></td>
+            <td><p>{{ qpulse_list[qpulse_id] }}</p></td>
+            <td><p>{{ qpulse_list[qpulse_name] }}</p></td>
+            <td><p>{{ qpulse_list[qpulse_no] }}</p></td>
             <td><p>{{ qpulse_no }}</p></td>
+            <td><p>{{ qpulse_name }}</p></td>
         </tr>
         {% endfor %}
-
     </table>
 </div>
 <br/>
-
 
 <div class="panel">
     <table>
@@ -48,18 +50,17 @@
             <td><p>Date discussed</p></td>
             <td><p>Trainer Initials</p></td>
         </tr>
-        {% if subsec_list.get('constant_id') == 1: %}
+        {% if subsec_list.get('constant_id') == 1 %}
         {% for name in subsec_list %}
         <tr>
             <td>[[ name ]]</td>
             <td> [[ subsec_list[name] ]]</td>
-            <td>bloop</td>
+
         </tr>
         {% else %}
         <tr>
             <td>None</td>
-            <td></td>
-            <td></td>
+        <td>bloop</td>
         </tr>
         {% endfor %}
         {% endif %}
@@ -69,21 +70,20 @@
             <td><p>Date discussed</p></td>
             <td><p>Trainer Initials</p></td>
         </tr>
-        {% if subsec_list.get('constant_id') == 3: %}
+
         {% for name in subsec_list %}
         <tr>
-            <td>[[ name ]]</td>
-            <td> [[ subsec_list[name] ]]</td>
+            {% if subsec_list.get(name['constant_id']) == 3 %}
+            <td>[[ name['constant_id'] ]]</td>
+            <td>[[ name['name'] ]]</td>
             <td>bloop</td>
         </tr>
         {% else %}
         <tr>
             <td>None</td>
-            <td></td>
-            <td></td>
         </tr>
-        {% endfor %}
         {% endif %}
+        {% endfor %}
 
         <tr>
             <td><h2><strong>COSHH: </strong></h2>
@@ -91,21 +91,19 @@
             <td><p>Date discussed</p></td>
             <td><p>Trainer Initials</p></td>
         </tr>
-        {% if subsec_list.get('constant_id') == 2: %}
         {% for name in subsec_list %}
         <tr>
-            <td>[[ name ]]</td>
-            <td> [[ subsec_list[name] ]]</td>
+            {% if subsec_list.get(name['constant_id']) == 2 %}
+            <td>[[ name['name'] ]]</td>
+            <td> [[ name['constant'] ]]</td>
             <td>bloop</td>
         </tr>
         {% else %}
         <tr>
             <td>None</td>
-            <td></td>
-            <td></td>
         </tr>
-        {% endfor %}
         {% endif %}
+        {% endfor %}
     </table>
 </div>
 <br/>
