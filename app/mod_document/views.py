@@ -18,6 +18,7 @@ from app.competence import s
 from app.qpulseweb import QPulseWeb
 from app.qpulse_details import QpulseDetails
 from forms import *
+from sqlalchemy.orm import aliased
 
 document = Blueprint('document', __name__, template_folder='templates')
 
@@ -45,38 +46,38 @@ def get_doc_info(c_id):
 
 def get_subsections(c_id):
     """
-    Method to get subsection info from database
+    Method to get section and subsection info from database
     :param c_id: ID of competence to be returned
     :type c_id: INT
     :return:
     """
-    subsection_list = s.query(Subsection). \
+    subsections = s.query(Subsection). \
         join(Section). \
         join(Competence).\
         filter(Subsection.c_id == c_id). \
-        values(Subsection.name, \
-               Subsection.comments, \
+        values(Subsection.name.label('subsec_name'),
+               Subsection.comments,
+               Section.name.label('sec_name'),
                Section.id,
-               Section.constant, \
+               Section.constant,
                Subsection.evidence)
+    subsection_list = []
+    for i in subsections:
+        subsection_list.append(i)
     return subsection_list
 
 def get_qpulsenums(c_id):
-        qpulse_no_list = s.query(Documents).\
-            filter(Documents.c_id == c_id).\
-            values(Documents.qpulse_no)
-        print("#####################################################")
-        doc_list = []
-        for i in qpulse_no_list:
-            print repr(i)
-            doc_list.append(i)
-        return doc_list
-        print("#####################################################")
+    qpulse_no_list = s.query(Documents).\
+        filter(Documents.c_id == c_id).\
+        values(Documents.qpulse_no)
+    doc_list = []
+    for i in qpulse_no_list:
+        doc_list.append(i)
+    return doc_list
 
-        #return qpulse_no_list
+# evidence query
 
-
-#methods
+# methods
 
 def get_page_body(boxes):
     """
@@ -103,15 +104,6 @@ def export_document(c_id):
     comp = get_doc_info(c_id)
     subsec = get_subsections(c_id)
     qpulse = get_qpulsenums(c_id)
-    print "LIST"
-    print qpulse
-    #qpulse_list = []
-
-    print "HELLO" + str(qpulse)
-    for i in qpulse:
-        #qpulse_list.append(i)
-        print "LOOK HERE"
-        print i
 
     # Competence details
     title = comp.title
@@ -121,43 +113,31 @@ def export_document(c_id):
     scope = comp.scope
 
     # subsection details
-    subsec_list = {}
+    subsec_dict = {}
+
     for sub in subsec:
-        name = sub.name
-        subsec_list[name]={} # Dict within dict
-        subsec_list['name']= name
+        sub_name = sub.subsec_name
+        sec_name = sub.sec_name
         comments = sub.comments
-        subsec_list[name]['comments'] = comments
         constant = sub.constant
-        subsec_list[name]['constant'] = constant
-        constant_id = sub.id
-        subsec_list[name]['constant_id'] = constant_id
+        sub_id = sub.id
+        value_list = [sub_name, comments, constant, sub_id]
+        subsec_dict[sec_name]= value_list
 
     #associated qpulse documents
     qpulse_list = {}
-    print("*************************************************************")
-    print("qpulse pre dict")
-    for i in qpulse:
-        print(i)
-    print("*************************************************************")
+
     for qpulse_no in qpulse:
-        qpulse_id = repr(qpulse_no)
         d = QpulseDetails()
         details = d.Details()
         username = str(details[1])
         password = str(details[0])
         qpulse_name = QPulseWeb().get_doc_by_id(username, password, qpulse_no)
-        qpulse_list[qpulse_id]=qpulse_name
-        print("***2343563467************************************")
-        print repr(qpulse_id)
-        print("******234623453245********************************")
-        #return qpulse_no
-    print "QPULSE DICTIONARY"
-    print qpulse_list
+        qpulse_list[qpulse_no]=qpulse_name
 
-    print('Rendering main document')
+    print('***Rendering main document***')
     # Make main document
-    html_out = render_template('export_to_pdf.html', title=title, scope=scope, docid=docid ,version_no=version_no, author=author, subsec_list=subsec_list, qpulse_list=qpulse_list)
+    html_out = render_template('export_to_pdf.html', title=title, scope=scope, docid=docid ,version_no=version_no, author=author, subsec_dict=subsec_dict, qpulse_list=qpulse_list)
     html = HTML(string=html_out)
 
     main_doc = html.render(stylesheets=[CSS('static/css/simple_report.css')])
