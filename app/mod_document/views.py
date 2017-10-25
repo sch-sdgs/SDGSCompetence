@@ -65,7 +65,16 @@ def get_qpulsenums(c_id):
         qpulse_no_list = s.query(Documents).\
             filter(Documents.c_id == c_id).\
             values(Documents.qpulse_no)
-        return qpulse_no_list
+        print("#####################################################")
+        doc_list = []
+        for i in qpulse_no_list:
+            print repr(i)
+            doc_list.append(i)
+        return doc_list
+        print("#####################################################")
+
+        #return qpulse_no_list
+
 
 #methods
 
@@ -94,6 +103,15 @@ def export_document(c_id):
     comp = get_doc_info(c_id)
     subsec = get_subsections(c_id)
     qpulse = get_qpulsenums(c_id)
+    print "LIST"
+    print qpulse
+    #qpulse_list = []
+
+    print "HELLO" + str(qpulse)
+    for i in qpulse:
+        #qpulse_list.append(i)
+        print "LOOK HERE"
+        print i
 
     # Competence details
     title = comp.title
@@ -119,20 +137,23 @@ def export_document(c_id):
     qpulse_list = {}
     print("*************************************************************")
     print("qpulse pre dict")
-    print(qpulse)
+    for i in qpulse:
+        print(i)
     print("*************************************************************")
     for qpulse_no in qpulse:
-        qpulse_list['qpulse_id'] = qpulse_no
+        qpulse_id = repr(qpulse_no)
         d = QpulseDetails()
         details = d.Details()
         username = str(details[1])
         password = str(details[0])
         qpulse_name = QPulseWeb().get_doc_by_id(username, password, qpulse_no)
-
-        qpulse_list['qpulse_name'] = qpulse_name
-        print("*************************************************************")
-        print(qpulse_list[qpulse_no])
-        print("*************************************************************")
+        qpulse_list[qpulse_id]=qpulse_name
+        print("***2343563467************************************")
+        print repr(qpulse_id)
+        print("******234623453245********************************")
+        #return qpulse_no
+    print "QPULSE DICTIONARY"
+    print qpulse_list
 
     print('Rendering main document')
     # Make main document
