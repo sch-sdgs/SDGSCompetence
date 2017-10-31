@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<lang="en">
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="static/css/simple_report.css">
+    <title>Export competence</title>
+</head>
+<body>
+
+<div class="panel" style="background-color: lightgray; border:solid black 1px">
+    <h2><strong> Title: {{ title }}</strong></h2>
+</div>
+
+<div class="panel" style="border: solid black 1px">
+    <h2><strong> Trainee: </strong></h2>
+</div>
+<br/>
+<div class="panel" style="border: solid black 1px">
+    <h2><strong>Scope:</strong></h2>
+    <p>{{ scope }}</p>
+</div>
+<br/>
+<div class="panel">
+    <table>
+        <tr>
+            <td><h2><strong>SOPs and documents used within this Competency Training:</strong></h2></td>
+            <td><h2><strong>QPulse no:</strong></h2></td>
+        </tr>
+        {%for sub in subsec %}
+            {% for qpulse_no in sub %}
+        <tr>
+            <td><p>{{ qpulse_no }}</p></td>
+        </tr>
+            {% endfor %}
+        {% endfor %}
+    </table>
+</div>
+<br/>
+
+
+<div class="panel">
+    <table>
+        <tr>
+            <td><h2><strong>Discuss: </strong></h2>
+                <p>Relevant Health and Safety hazards associated with this procedure. <strong> If none, state
+                    'None'</strong></p></td>
+            <td><p>Date discussed</p></td>
+            <td><p>Trainer Initials</p></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><h2><strong>Discuss: </strong></h2>
+                <p>Relevant reagent handling and storage. <strong>If none, state 'None'</strong></p></td>
+            <td><p>Date discussed</p></td>
+            <td><p>Trainer Initials</p></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><h2><strong>COSHH: </strong></h2>
+                <p>Audit: SDGS - COSHH *Insert COSHH details* <strong> If none, state 'None'</strong></p></td>
+            <td><p>Date discussed</p></td>
+            <td><p>Trainer Initials</p></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+</div>
+<br/>
+
+<div class="panel">
+    <table>
+        <tr>
+            <td><h4><strong>Area of competence</strong></h4></td>
+            <td><h4><strong>How has the competency been assessed:</strong></h4></td>
+            <td><h4><strong>Evidence for competence</strong></h4></td>
+            <td><h4><strong>Outcome</strong></h4></td>
+            <td><h4><strong>Assessor</strong></h4></td>
+            <td><h4><strong>Date</strong></h4></td>
+        </tr>
+        <tr>
+            <td><p> 1. Insert stage of process for review and assessment eg Demonstrate awareness of the local policies
+                for Aneuvysion FISH analysis </p></td>
+            <td><p>Eg “can describe the software installation process including where SOP and discs are stored”</p></td>
+            <td><p>{{link_to_evidence}}</p></td>
+            <td><p> {{outcome}}</p></td>
+            <td><p>{{assessor_name}}</p></td>
+            <td><p> {{date_of_evidence}} </p></td>
+        </tr>
+        <tr>
+            <td><p> 2. Insert next stage of process for review and assessment </p></td>
+            <td><p>{{description_of_evidence}}</p></td>
+            <td><p>{{link_to_evidence}}</p></td>
+            <td><p> {{outcome}}</p></td>
+            <td><p>{{assessor_name}}</p></td>
+            <td><p> {{date_of_evidence}}</p></td>
+        </tr>
+        <tr>
+            <td><p> 3. Insert next stage of process for review and assessment </p></td>
+            <td><p>{{description_of_evidence}}</p></td>
+            <td><p>{{link_to_evidence}}</p></td>
+            <td><p> {{outcome}} </p></td>
+            <td><p>{{assessor_name}}</p></td>
+            <td><p> {{date_of_evidence}}</p></td>
+        </tr>
+    </table>
+</div>
+<br/>
+
+<p><strong> If you have not carried out this task for a period of greater than {{validity_period}} months you are no
+    longer deemed competent and need to be reassessed. This is assuming NO major changes have been made to the
+    procedure. </strong></p>
+<table>
+    <tr>
+        <td><strong>Date of reassessment</strong></td>
+        <td><strong>Trainer</strong></td>
+        <td><strong>Notes/Major changes Implemented (Y/N)</strong></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+</table>
+
+<p>Were all aspects conducted according to documented procedures? {{reassess_outcome}} </p>
+
+<p>Are SOP's readily available, up to date, formatted in accordance with 999-0092h Content of Examination Procedures and
+    detailed enough to allow a consistency of application? {{sop_status}} </p>
+
+<p> If “NO” – have change requests (C/R) been raised? {{sop_change_request}}
+
+
+<table>
+    <tr>SUCCESSFULLY COMPLETED</tr>
+    <tr>
+        <td>Signed: Trainee</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Signed: Assessor</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Designation:</td>
+        <td>{{service}}</td>
+    </tr>
+    <tr>
+        <td>Date:</td>
+        <td> {{current_date}}</td>
+    </tr>
+</table>
+<br/>
+
+</body>
+</html>

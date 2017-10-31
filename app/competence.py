@@ -55,9 +55,11 @@ def message(f):
 from mod_admin.views import admin
 from mod_training.views import training
 from mod_competence.views import competence
+from mod_document.views import document
 
 app.register_blueprint(admin,url_prefix='/admin')
 app.register_blueprint(training,url_prefix='/training')
 app.register_blueprint(competence,url_prefix='/competence')
+app.register_blueprint(document, url_prefix='/document')
 
 
