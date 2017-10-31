@@ -43,6 +43,9 @@ class AssignForm(Form):
     name = TextField("Area of Competence")
     submit = SubmitField()
 
+class UserAssignForm(Form):
+    full_name = TextField("Username")
+    submit = SubmitField()
 
 class EditCompetency(Form):
     #test_id=c_id
@@ -58,5 +61,4 @@ class EditCompetency(Form):
     ass_documents=QuerySelectMultipleField("Associated Documents",  query_factory=lambda:s.query(Documents).filter_by(c_id=18).all(), get_label="qpulse_no")
     add_document = TextField("Add Related Document", [Required("Enter a Q-Pulse Document Number")])
 
-    edit_constant
 

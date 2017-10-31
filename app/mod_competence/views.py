@@ -46,6 +46,60 @@ def list_comptencies():
     print data
     return render_template('competences_list.html',data=data)
 
+
+@competence.route('/competent_staff', methods=['GET', 'POST'])
+def competent_staff():
+    ids = request.args["ids"].split(",")
+
+    competent_staff = s.query(Assessments).join(Subsection).join(Competence).join(CompetenceDetails).filter(Competence.id.in_(ids)).filter(
+        Assessments.status == 3).all()
+
+    result = {}
+    competence = s.query(Competence).join(CompetenceDetails).filter(Competence.id.in_(ids)).group_by(
+        CompetenceDetails.id).all()
+    for k in competence:
+        result[k.competence_detail[0].title] = {}
+        print result
+        subsections = s.query(Subsection).filter_by(c_id=k.id).all()
+        for j in subsections:
+            print j
+            result[k.competence_detail[0].title][j.name] = []
+
+
+    for i in competent_staff:
+        c_name = i.ss_id_rel.c_id_rel.competence_detail[0].title
+        ss_name = i.ss_id_rel.name
+        result[c_name][ss_name].append(i.user_id_rel)
+
+    return render_template('competent_staff.html',result=result)
+
+
+@competence.route('/activate', methods=['GET', 'POST'])
+def activate():
+    ids = request.args["ids"].split(",")
+    for id in ids:
+        count = s.query(Competence).join(CompetenceDetails).filter(Competence.id==id).group_by(CompetenceDetails.id).filter(CompetenceDetails.creator_id==current_user.database_id).count()
+        if count == 1:
+            s.query(Competence).filter_by(id=int(id)).update({"obsolete":True})
+            s.commit()
+        else:
+            pass
+
+    return redirect(url_for('competence.list_comptencies'))
+
+@competence.route('/deactivate', methods=['GET', 'POST'])
+def deactivate():
+    ids = request.args["ids"].split(",")
+    for id in ids:
+        count = s.query(Competence).join(CompetenceDetails).filter(Competence.id==id).group_by(CompetenceDetails.id).filter(CompetenceDetails.creator_id==current_user.database_id).count()
+        if count == 1:
+            s.query(Competence).filter_by(id=int(id)).update({"obsolete":False})
+            s.commit()
+        else:
+            pass
+
+    return redirect(url_for('competence.list_comptencies'))
+
 @competence.route('/add', methods=['GET', 'POST'])
 def add_competence():
     form = AddCompetence()
@@ -273,6 +327,43 @@ def assign_user_to_competence():
 
         return render_template('competence_assign.html',form=form,assignees=", ".join(assignees),ids=request.args["ids"])
 
+
+@competence.route('/assign_competences_to_user', methods=['GET', 'POST'])
+def assign_competences_to_user():
+    form = UserAssignForm()
+
+    ids = request.args["ids"].split(",")
+
+
+    if request.method == 'POST':
+        users = request.form["user_list"].split(",")
+        result={}
+        for user in users:
+            failed = []
+            if user not in result:
+                result[user] = []
+            firstname, surname = user.split()
+            count = s.query(Users).filter_by(first_name=firstname, last_name=surname).count()
+            if count > 0:
+                user_id = int(s.query(Users).filter_by(first_name=firstname, last_name=surname).first().id)
+                for c_id in ids:
+                    final_id = assign_competence_to_user(user_id, int(c_id))
+                    if final_id:
+                        comp = s.query(Competence).join(CompetenceDetails).filter(Competence.id==final_id).first()
+                        print comp.competence_detail
+                        result[user].append( dict(comptence=comp.competence_detail[0].title,success=True) )
+            else:
+                failed.append(user)
+
+        return render_template('competence_assigned.html', result=result, failed=failed)
+    else:
+        query = s.query(Competence).join(CompetenceDetails).filter(Competence.id.in_(ids)).values(CompetenceDetails.title)
+        comptences = []
+        for i in query:
+            print i.title
+            comptences.append(i.title)
+
+        return render_template('competence_user_assign.html', form=form, competences=", ".join(comptences), ids=request.args["ids"])
 
 
 def assign_competence_to_user(user_id,competence_id):
