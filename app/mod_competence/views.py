@@ -102,7 +102,28 @@ def add_sections():
                 add_constant=Subsection(c_id=c_id, s_id=s_id, name=item_add, evidence=evidence, comments=None)
                 s.add(add_constant)
                 s.commit()
-    return render_template('competence_view.html', c_id=c_id)
+
+
+    #This section pulls the entire competence up to view once added.
+    form = ViewCompetency()
+    comp_title = s.query(CompetenceDetails.title).filter_by(c_id=c_id).first()
+    form.view_title.data = comp_title[0]
+    comp_scope = s.query(CompetenceDetails.scope).filter_by(c_id=c_id).first()
+    form.view_scope.data = comp_scope[0]
+    comp_category = s.query(CompetenceCategory.category).join(CompetenceDetails).filter_by(c_id=c_id).first()
+    form.view_competency_type.data = comp_category[0]
+    comp_val_period = s.query(ValidityRef.months).join(CompetenceDetails).filter_by(c_id=c_id).first()
+    form.view_validity_period.data = comp_val_period[0]
+    list_docs = []
+    docs = s.query(Documents.qpulse_no).join(CompetenceDetails).filter_by(c_id=c_id).first()
+    for doc in docs:
+
+        print doc
+        list_docs.append(doc)
+    print list_docs
+
+
+    return render_template('competence_view.html', c_id=c_id, form=form)
 
 
 @competence.route('/section', methods=['GET', 'POST'])
@@ -230,24 +251,33 @@ def add_constant_subsection():
 
 
 
-@competence.route('/view_competence',methods=['POST'])
-def view_competence():
-        print "this method is being called"
-        c_id = request.args.get('c_id')
-        print c_id
+# @competence.route('/view_competence',methods=['GET', 'POST'])
+# def view_competence(c_id):
+#
+#         form = ViewCompetency()
+#         print "this method is being called"
+#         c_id = request.args.get('c_id')
+#         print c_id
+#         # get basic details for competence
+#
+#         comp_title = s.query(CompetenceDetails.title).filter_by(c_id=c_id).first()
+#         form.view_title.data = comp_title[0]
+#
+#         # comp_scope = s.query(CompetenceDetails.scope).filter_by(c_id=c_id).first()
+#         # form.view_scope.data = comp_scope[0]
+#         # comp_category = s.query(CompetenceCategory.category).join(CompetenceDetails).filter_by(c_id=c_id).first()
+#         # form.view_competency_type.default = comp_category[0]
+#         # comp_val_period = s.query(ValidityRef.months).join(CompetenceDetails).filter_by(c_id=c_id).first()
+#         # form.view_validity_period.data = comp_val_period[0]
+#         print '####################################'
+#        # print comp_val_period[0]
+#        # print comp_category[0]
+#        # print comp_scope[0]
+#         print comp_title[0]
+#         print '####################################'
 
 
 
-    # competence_info= s.query(Competence).join(Users).filter_by(Competence.id==c_id).all()
-    # print competence_info
-    # subsection_list = s.query(Subsection). \
-    #     join(Section). \
-    #     join(Competence). \
-    #     join(Documents). \
-    #     filter(Subsection.c_id == c_id). \
-    #     values(Subsection.name, Subsection.comments, Documents.qpulse_no, Section.constant, Subsection.evidence)
-    # for subsection in subsection_list:
-    #     print subsection
 
 @competence.route('/assign_user_to_competence', methods=['GET', 'POST'])
 def assign_user_to_competence():
@@ -300,22 +330,22 @@ def assign_competence_to_user(user_id,competence_id):
 
 @competence.route('/competence_edit', methods=['GET', 'POST'])
 def edit_competence():
-    #c_id = request.args.get('c_id')
-    test_id = '18'
+    c_id = request.args.get('c_id')
+    #test_id = '18'
 
     form=EditCompetency()
     #get basic details for competence
 
 
 
-    comp_title=s.query(CompetenceDetails.title).filter_by(c_id=test_id).first()
+    comp_title=s.query(CompetenceDetails.title).filter_by(c_id=c_id).first()
     form.edit_title.data=comp_title[0]
 
-    comp_scope=s.query(CompetenceDetails.scope).filter_by(c_id=test_id).first()
+    comp_scope=s.query(CompetenceDetails.scope).filter_by(c_id=c_id).first()
     form.edit_scope.data = comp_scope[0]
-    comp_category=s.query(CompetenceCategory.category).join(CompetenceDetails).filter_by(c_id=test_id).first()
+    comp_category=s.query(CompetenceCategory.category).join(CompetenceDetails).filter_by(c_id=c_id).first()
     #form.edit_competency_type.default = comp_category[0]
-    comp_val_period=s.query(ValidityRef.months).join(CompetenceDetails).filter_by(c_id=test_id).first()
+    comp_val_period=s.query(ValidityRef.months).join(CompetenceDetails).filter_by(c_id=c_id).first()
     form.edit_validity_period.data = comp_val_period[0]
     print comp_val_period[0]
     print comp_category[0]
