@@ -191,6 +191,13 @@ def get_constant_subsections(c_id):
         constant_subsec_list.append(constant_sub)
     return constant_subsec_list
 
+@competence.route('/activate_comp', methods=['GET', 'POST'])
+def activate_competency():
+    c_id=request.json['c_id']
+    #UPDATE Competence SET Competence.current_version = 1 WHERE Competence.id=c_id
+    s.query(Competence).filter_by(id=c_id).update({"current_version":1})
+    s.commit()
+    return jsonify('Competence has been activated!')
 
 @competence.route('/section', methods=['GET', 'POST'])
 def get_section():
