@@ -121,10 +121,9 @@ def add_sections():
     get_comp_category = s.query(CompetenceCategory.category).join(CompetenceDetails).filter_by(c_id=c_id).first()
     comp_category=','.join(repr(x.encode('utf-8')) for x in get_comp_category).replace("'", "")
 
-    comp_val_period = s.query(ValidityRef.months).join(CompetenceDetails).filter_by(c_id=c_id).first()
-    #comp_val_period = ','.join(get_comp_val_period)
-    print 'VAL PERIOD'
-    print comp_val_period
+
+    get_comp_val_period = s.query(ValidityRef.months).join(CompetenceDetails).filter_by(c_id=c_id).first()
+    comp_val_period = int(get_comp_val_period[0])
 
 
     ##Creates a dictionary of the docs associated with a created competence
