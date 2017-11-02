@@ -15,10 +15,7 @@ from flask.ext.login import login_required, current_user
 from app.views import admin_permission
 from app.models import *
 from app.competence import s
-from app.qpulseweb import QPulseWeb
-from app.qpulse_details import QpulseDetails
 from forms import *
-from sqlalchemy.orm import aliased
 
 document = Blueprint('document', __name__, template_folder='templates')
 
@@ -31,53 +28,30 @@ def get_doc_info(c_id):
     :type c_id: INT
     :return:
     """
-    print('query')
     competence_list = s.query(Competence).\
-        join(CompetenceDetails).\
-        join(Users, CompetenceDetails.creator_rel). \
+        join(Users). \
         filter(Competence.id == c_id).\
-        values(CompetenceDetails.title,
-               CompetenceDetails.qpulsenum,
-               CompetenceDetails.scope,
-               (Users.first_name + ' ' + Users.last_name).label('name'),
-               Competence.current_version)
+        values(Competence.title, Competence.qpulsenum, Competence.scope,
+               (Users.first_name + ' ' + Users.last_name).label('name'), Competence.current_version)
     for c in competence_list:
         return c
 
 def get_subsections(c_id):
     """
-    Method to get section and subsection info from database
+    Method to get subsection info from database
     :param c_id: ID of competence to be returned
     :type c_id: INT
     :return:
     """
-    subsections = s.query(Subsection). \
+    subsection_list = s.query(Subsection). \
         join(Section). \
-        join(Competence).\
+        join(Competence). \
+        join(Documents).\
         filter(Subsection.c_id == c_id). \
-        values(Subsection.name.label('subsec_name'),
-               Subsection.comments,
-               Section.name.label('sec_name'),
-               Section.id,
-               Section.constant,
-               Subsection.evidence)
-    subsection_list = []
-    for i in subsections:
-        subsection_list.append(i)
+        values(Subsection.name, Subsection.comments, Documents.qpulse_no, Section.constant, Subsection.evidence)
     return subsection_list
 
-def get_qpulsenums(c_id):
-    qpulse_no_list = s.query(Documents).\
-        filter(Documents.c_id == c_id).\
-        values(Documents.qpulse_no)
-    doc_list = []
-    for i in qpulse_no_list:
-        doc_list.append(i)
-    return doc_list
-
-# evidence query
-
-# methods
+#methods
 
 def get_page_body(boxes):
     """
@@ -103,41 +77,33 @@ def export_document(c_id):
     # Get variables using queries
     comp = get_doc_info(c_id)
     subsec = get_subsections(c_id)
-    qpulse = get_qpulsenums(c_id)
-
-    # Competence details
-    title = comp.title
-    docid = comp.qpulsenum
-    version_no = comp.current_version
-    author = comp.name
-    scope = comp.scope
-
-    # subsection details
-    subsec_dict = {}
 
     for sub in subsec:
-        sub_name = sub.subsec_name
-        sec_name = sub.sec_name
+        name = sub.name
         comments = sub.comments
+        qpulse_no = sub.qpulse_no
         constant = sub.constant
-        sub_id = sub.id
-        value_list = [sub_name, comments, constant, sub_id]
-        subsec_dict[sec_name]= value_list
+        evidence = sub.evidence
+        # I'm not sure if this is right
+        return sub
 
-    #associated qpulse documents
-    qpulse_list = {}
+    # Header
+    title = comp.title
+    docid = comp.qpulsenum
 
-    for qpulse_no in qpulse:
-        d = QpulseDetails()
-        details = d.Details()
-        username = str(details[1])
-        password = str(details[0])
-        qpulse_name = QPulseWeb().get_doc_by_id(username, password, qpulse_no)
-        qpulse_list[qpulse_no]=qpulse_name
+    # Footer
+    version_no = comp.current_version
+    author = comp.name
 
-    print('***Rendering main document***')
+    # Competence details
+    scope = comp.scope
+
+
+
+
+
     # Make main document
-    html_out = render_template('export_to_pdf.html', title=title, scope=scope, docid=docid ,version_no=version_no, author=author, subsec_dict=subsec_dict, qpulse_list=qpulse_list)
+    html_out = render_template('export_to_pdf.html', title=title, docid=docid, scope=scope, sub=sub)
     html = HTML(string=html_out)
 
     main_doc = html.render(stylesheets=[CSS('static/css/simple_report.css')])
@@ -167,6 +133,8 @@ def export_document(c_id):
 
     # Insert header and footer in main doc
     for i, page in enumerate(main_doc.pages):
+        # if not i:
+        #     continue
 
         page_body = get_page_body(page._page_box.all_children())
         page_body.children += header_body.all_children()

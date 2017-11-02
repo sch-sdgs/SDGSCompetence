@@ -15,17 +15,21 @@
 <div class="well bs-component">
 <table class="table table-striped" id="competencies">
     <thead>
+    <th>id</th>
     <th>Category</th>
     <th>Title</th>
     <th>Creator</th>
     <th>Version</th>
+    <th>Active</th>
     </thead>
     {% for competence in data %}
         <tr>
+            <td>{{ competence.competence.id }}</td>
             <td>{{ competence.category_rel.category }}</td>
             <td>{{ competence.title }}</td>
             <td>{{ competence.creator_rel.first_name }} {{ competence.creator_rel.last_name }}</td>
             <td>{{ competence.competence.current_version }}</td>
+            <td>{{ competence.competence.obsolete }}</td>
         </tr>
     {% endfor %}
 
