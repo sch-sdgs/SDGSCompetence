@@ -12,6 +12,7 @@ from forms import *
 import json
 from app.qpulseweb import *
 from app.qpulse_details import QpulseDetails
+from collections import defaultdict
 
 
 
@@ -144,6 +145,9 @@ def add_sections():
 
     f = request.form
     c_id = request.args.get('c_id')
+    print '#######'
+    print c_id
+    print '#######'
     print f
     for key in f.keys():
         if "subsections" in key:
@@ -156,8 +160,97 @@ def add_sections():
                 add_constant=Subsection(c_id=c_id, s_id=s_id, name=item_add, evidence=evidence, comments=None)
                 s.add(add_constant)
                 s.commit()
-    return render_template('competence_view.html', c_id=c_id)
 
+
+    ###This section pulls the entire competence into the view once created.
+
+    ##Comptetence Details
+
+    get_comp_title = s.query(CompetenceDetails.title).filter_by(c_id=c_id).first()
+    comp_title=','.join(repr(x.encode('utf-8')) for x in get_comp_title).replace("'", "")
+
+    get_comp_scope = s.query(CompetenceDetails.scope).filter_by(c_id=c_id).first()
+    comp_scope = ','.join(repr(x.encode('utf-8')) for x in get_comp_scope).replace("'", "")
+
+    get_comp_category = s.query(CompetenceCategory.category).join(CompetenceDetails).filter_by(c_id=c_id).first()
+    comp_category=','.join(repr(x.encode('utf-8')) for x in get_comp_category).replace("'", "")
+
+
+    get_comp_val_period = s.query(ValidityRef.months).join(CompetenceDetails).filter_by(c_id=c_id).first()
+    comp_val_period = int(get_comp_val_period[0])
+
+
+    ##Creates a dictionary of the docs associated with a created competence
+    dict_docs = {}
+    docs = s.query(Documents.qpulse_no).join(CompetenceDetails).filter_by(c_id=c_id)
+    for doc in docs:
+        doc_id=','.join(repr(x.encode('utf-8')) for x in doc).replace("'", "")
+        d = QpulseDetails()
+        details = d.Details()
+        username = str(details[1])
+        password = str(details[0])
+        q = QPulseWeb()
+        doc_name = q.get_doc_by_id(username=username, password=password, docNumber=doc)
+
+        print doc_id
+        dict_docs[doc_id]=doc_name
+    print dict_docs
+    ##Get subsection details
+    dict_subsecs = {}
+    subsections = get_subsections(c_id)
+    for item in subsections:
+        sec_name= item.sec_name
+        subsection_name=item.subsec_name
+        comment=item.comments
+        evidence_type=item.type
+        subsection_data = [subsection_name, comment, evidence_type]
+        print subsection_data
+        dict_subsecs.setdefault(sec_name,[]).append(subsection_data)
+    print dict_subsecs
+
+    dict_constants = {}
+    constants = get_constant_subsections(c_id)
+    for item in constants:
+        constant_sec_name = item.sec_name
+        constant_subsection_name = item.subsec_name
+        constant_comment = item.comments
+        constant_evidence_type = item.type
+        constant_subsection_data = [constant_subsection_name, constant_comment, constant_evidence_type]
+        print constant_subsection_data
+        dict_constants.setdefault(constant_sec_name, []).append(constant_subsection_data)
+    print "###CONSTANTS###"
+    print dict_constants
+
+
+    return render_template('competence_view.html', c_id=c_id, title=comp_title, scope=comp_scope, category=comp_category, val_period=comp_val_period, docs=dict_docs, constants= dict_constants, subsections=dict_subsecs)
+
+
+def get_subsections(c_id):
+    subsec_list = []
+    subsecs = s.query(Subsection).join(Section).join(Competence).join(EvidenceTypeRef).filter(Subsection.c_id == c_id).filter(Section.constant==0).values(
+                                                        Section.name.label('sec_name'), Subsection.name.label('subsec_name'),
+                                                        Subsection.comments, EvidenceTypeRef.type)
+    for sub in subsecs:
+        subsec_list.append(sub)
+    return subsec_list
+
+def get_constant_subsections(c_id):
+    constant_subsec_list = []
+    constant_subsecs = s.query(Subsection).join(Section).join(Competence).join(EvidenceTypeRef).filter(
+                                                    Subsection.c_id == c_id).filter(Section.constant == 1).values(
+                                                    Section.name.label('sec_name'), Subsection.name.label('subsec_name'),
+                                                    Subsection.comments, EvidenceTypeRef.type)
+    for constant_sub in constant_subsecs:
+        constant_subsec_list.append(constant_sub)
+    return constant_subsec_list
+
+@competence.route('/activate_comp', methods=['GET', 'POST'])
+def activate_competency():
+    c_id=request.json['c_id']
+    #UPDATE Competence SET Competence.current_version = 1 WHERE Competence.id=c_id
+    s.query(Competence).filter_by(id=c_id).update({"current_version":1})
+    s.commit()
+    return jsonify('Competence has been activated!')
 
 @competence.route('/section', methods=['GET', 'POST'])
 def get_section():
@@ -284,24 +377,33 @@ def add_constant_subsection():
 
 
 
-@competence.route('/view_competence',methods=['POST'])
-def view_competence():
-        print "this method is being called"
-        c_id = request.args.get('c_id')
-        print c_id
+# @competence.route('/view_competence',methods=['GET', 'POST'])
+# def view_competence(c_id):
+#
+#         form = ViewCompetency()
+#         print "this method is being called"
+#         c_id = request.args.get('c_id')
+#         print c_id
+#         # get basic details for competence
+#
+#         comp_title = s.query(CompetenceDetails.title).filter_by(c_id=c_id).first()
+#         form.view_title.data = comp_title[0]
+#
+#         # comp_scope = s.query(CompetenceDetails.scope).filter_by(c_id=c_id).first()
+#         # form.view_scope.data = comp_scope[0]
+#         # comp_category = s.query(CompetenceCategory.category).join(CompetenceDetails).filter_by(c_id=c_id).first()
+#         # form.view_competency_type.default = comp_category[0]
+#         # comp_val_period = s.query(ValidityRef.months).join(CompetenceDetails).filter_by(c_id=c_id).first()
+#         # form.view_validity_period.data = comp_val_period[0]
+#         print '####################################'
+#        # print comp_val_period[0]
+#        # print comp_category[0]
+#        # print comp_scope[0]
+#         print comp_title[0]
+#         print '####################################'
 
 
 
-    # competence_info= s.query(Competence).join(Users).filter_by(Competence.id==c_id).all()
-    # print competence_info
-    # subsection_list = s.query(Subsection). \
-    #     join(Section). \
-    #     join(Competence). \
-    #     join(Documents). \
-    #     filter(Subsection.c_id == c_id). \
-    #     values(Subsection.name, Subsection.comments, Documents.qpulse_no, Section.constant, Subsection.evidence)
-    # for subsection in subsection_list:
-    #     print subsection
 
 @competence.route('/assign_user_to_competence', methods=['GET', 'POST'])
 def assign_user_to_competence():
@@ -391,22 +493,22 @@ def assign_competence_to_user(user_id,competence_id):
 
 @competence.route('/competence_edit', methods=['GET', 'POST'])
 def edit_competence():
-    #c_id = request.args.get('c_id')
-    test_id = '18'
+    c_id = request.args.get('c_id')
+    #test_id = '18'
 
     form=EditCompetency()
     #get basic details for competence
 
 
 
-    comp_title=s.query(CompetenceDetails.title).filter_by(c_id=test_id).first()
+    comp_title=s.query(CompetenceDetails.title).filter_by(c_id=c_id).first()
     form.edit_title.data=comp_title[0]
 
-    comp_scope=s.query(CompetenceDetails.scope).filter_by(c_id=test_id).first()
+    comp_scope=s.query(CompetenceDetails.scope).filter_by(c_id=c_id).first()
     form.edit_scope.data = comp_scope[0]
-    comp_category=s.query(CompetenceCategory.category).join(CompetenceDetails).filter_by(c_id=test_id).first()
+    comp_category=s.query(CompetenceCategory.category).join(CompetenceDetails).filter_by(c_id=c_id).first()
     #form.edit_competency_type.default = comp_category[0]
-    comp_val_period=s.query(ValidityRef.months).join(CompetenceDetails).filter_by(c_id=test_id).first()
+    comp_val_period=s.query(ValidityRef.months).join(CompetenceDetails).filter_by(c_id=c_id).first()
     form.edit_validity_period.data = comp_val_period[0]
     print comp_val_period[0]
     print comp_category[0]
