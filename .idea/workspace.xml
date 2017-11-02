@@ -2,74 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="86ad6f08-fae7-427e-b844-77c44f90d4c9" name="Default" comment="adding required to user roles">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_admin/templates/bulk_upload_users.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_admin/templates/competencetypes.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_admin/templates/competencetypes_edit.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_assign.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_section.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competences_list.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_competence/templates/with_selected.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_document/__init__.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_document/forms.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_document/templates/export_to_pdf.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_document/templates/footer.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_document/templates/header.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_document/views.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_training/__init__.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_training/forms.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_training/templates/case-based.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_training/templates/case_based.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_training/templates/complete_training.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_training/templates/discussion.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_training/templates/obx.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_training/templates/upload.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_training/templates/upload_evidence.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_training/views.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/qpulseweb.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/static/css/jquery.smartmenus.bootstrap.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/static/css/simple_report.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/static/js/jquery.smartmenus.bootstrap.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/static/js/jquery.smartmenus.bootstrap.min.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/static/js/jquery.smartmenus.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/static/js/jquery.smartmenus.min.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/templates/audit.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/templates/upload.html" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/SDGSCompetence.iml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/deployment.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_admin/templates/dropdown_choices.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_admin/templates/dropdown_choices_edit.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/mod_training/templates/reassessment.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/activedirectory.py" afterPath="$PROJECT_DIR$/app/activedirectory.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/competence.py" afterPath="$PROJECT_DIR$/app/competence.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/config.py" afterPath="$PROJECT_DIR$/app/config.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_admin/forms.py" afterPath="$PROJECT_DIR$/app/mod_admin/forms.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_admin/templates/admin.html" afterPath="$PROJECT_DIR$/app/mod_admin/templates/admin.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_admin/templates/assessmentstatus.html" afterPath="$PROJECT_DIR$/app/mod_admin/templates/assessmentstatus.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_admin/templates/assessmentstatus_edit.html" afterPath="$PROJECT_DIR$/app/mod_admin/templates/assessmentstatus_edit.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_admin/templates/evidencetypes.html" afterPath="$PROJECT_DIR$/app/mod_admin/templates/evidencetypes.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_admin/templates/evidencetypes_edit.html" afterPath="$PROJECT_DIR$/app/mod_admin/templates/evidencetypes_edit.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_admin/templates/sections.html" afterPath="$PROJECT_DIR$/app/mod_admin/templates/sections.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_admin/templates/sections_edit.html" afterPath="$PROJECT_DIR$/app/mod_admin/templates/sections_edit.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_admin/templates/service.html" afterPath="$PROJECT_DIR$/app/mod_admin/templates/service.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_admin/templates/service_edit.html" afterPath="$PROJECT_DIR$/app/mod_admin/templates/service_edit.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_admin/templates/users_add.html" afterPath="$PROJECT_DIR$/app/mod_admin/templates/users_add.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_admin/templates/users_edit.html" afterPath="$PROJECT_DIR$/app/mod_admin/templates/users_edit.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_admin/templates/users_view.html" afterPath="$PROJECT_DIR$/app/mod_admin/templates/users_view.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_admin/templates/validityperiods.html" afterPath="$PROJECT_DIR$/app/mod_admin/templates/validityperiods.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_admin/templates/validityperiods_edit.html" afterPath="$PROJECT_DIR$/app/mod_admin/templates/validityperiods_edit.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_admin/templates/questions.html" afterPath="$PROJECT_DIR$/app/mod_admin/templates/questions.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_admin/templates/questions_edit.html" afterPath="$PROJECT_DIR$/app/mod_admin/templates/questions_edit.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_admin/views.py" afterPath="$PROJECT_DIR$/app/mod_admin/views.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_competence/forms.py" afterPath="$PROJECT_DIR$/app/mod_competence/forms.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_add.html" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_add.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_competence/templates/section.html" afterPath="$PROJECT_DIR$/app/mod_competence/templates/section.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_competence/views.py" afterPath="$PROJECT_DIR$/app/mod_competence/views.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_training/forms.py" afterPath="$PROJECT_DIR$/app/mod_training/forms.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mod_training/views.py" afterPath="$PROJECT_DIR$/app/mod_training/views.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/models.py" afterPath="$PROJECT_DIR$/app/models.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/static/css/panel_pal.css" afterPath="$PROJECT_DIR$/app/static/css/panel_pal.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/run.py" afterPath="$PROJECT_DIR$/app/run.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/templates/base.html" afterPath="$PROJECT_DIR$/app/templates/base.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/templates/index.html" afterPath="$PROJECT_DIR$/app/templates/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/views.py" afterPath="$PROJECT_DIR$/app/views.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.py" afterPath="$PROJECT_DIR$/build.py" />
     </list>
     <ignored path="SDGSCompetence.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -82,7 +28,8 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/SDGSCompetence$run.coverage" NAME="run Coverage Results" MODIFIED="1508247487982" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$build.coverage" NAME="build Coverage Results" MODIFIED="1509384612866" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$run.coverage" NAME="run Coverage Results" MODIFIED="1509635790844" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
   </component>
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
@@ -92,11 +39,76 @@
     <favorites_list name="SDGSCompetence" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="questions_edit.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/questions_edit.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-735">
+              <caret line="41" column="35" selection-start-line="41" selection-start-column="33" selection-end-line="41" selection-end-column="35" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="run.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/run.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="75">
+              <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="reassessment.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/mod_training/templates/reassessment.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="480">
+              <caret line="32" column="40" selection-start-line="32" selection-start-column="40" selection-end-line="32" selection-end-column="40" />
+              <folding>
+                <element signature="e#1426#1482#0#HTML" expanded="true" />
+                <element signature="e#1743#1799#0#HTML" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/mod_training/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="527">
+              <caret line="196" column="57" selection-start-line="196" selection-start-column="57" selection-end-line="196" selection-end-column="57" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="forms.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/mod_training/forms.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="120">
+              <caret line="14" column="46" selection-start-line="14" selection-start-column="46" selection-end-line="14" selection-end-column="46" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/models.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="331">
+              <caret line="372" column="4" selection-start-line="372" selection-start-column="4" selection-end-line="372" selection-end-column="10" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Python Script" />
         <option value="HTML File" />
       </list>
     </option>
@@ -118,7 +130,6 @@
         <option value="$PROJECT_DIR$/app/mod_admin/templates/evidence_types_edit.html" />
         <option value="$PROJECT_DIR$/app/mod_admin/templates/evidencetypes.html" />
         <option value="$PROJECT_DIR$/app/mod_admin/templates/evidencetypes_edit.html" />
-        <option value="$PROJECT_DIR$/app/models.py" />
         <option value="$PROJECT_DIR$/app/mod_admin/templates/sections.html" />
         <option value="$PROJECT_DIR$/app/mod_admin/templates/sections_edit.html" />
         <option value="$PROJECT_DIR$/app/mod_admin/templates/validityperiods_edit.html" />
@@ -130,14 +141,22 @@
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/app/mod_admin/templates/jobroles.html" />
         <option value="$PROJECT_DIR$/app/mod_admin/templates/jobroles_edit.html" />
-        <option value="$PROJECT_DIR$/app/run.py" />
         <option value="$PROJECT_DIR$/app/mod_admin/templates/userroles.html" />
+        <option value="$PROJECT_DIR$/app/mod_admin/templates/userroles_edit.html" />
+        <option value="$PROJECT_DIR$/app/run.py" />
+        <option value="$PROJECT_DIR$/app/qpulse_details.py" />
+        <option value="$PROJECT_DIR$/app/templates/base.html" />
+        <option value="$PROJECT_DIR$/app/mod_training/forms.py" />
+        <option value="$PROJECT_DIR$/app/mod_admin/templates/admin.html" />
+        <option value="$PROJECT_DIR$/app/mod_admin/templates/dropdown_choices_edit.html" />
+        <option value="$PROJECT_DIR$/app/models.py" />
         <option value="$PROJECT_DIR$/app/mod_admin/forms.py" />
         <option value="$PROJECT_DIR$/app/mod_admin/templates/questions.html" />
-        <option value="$PROJECT_DIR$/app/mod_admin/templates/userroles_edit.html" />
-        <option value="$PROJECT_DIR$/app/mod_admin/templates/questions_edit.html" />
-        <option value="$PROJECT_DIR$/app/mod_admin/templates/admin.html" />
+        <option value="$PROJECT_DIR$/app/mod_admin/templates/dropdown_choices.html" />
         <option value="$PROJECT_DIR$/app/mod_admin/views.py" />
+        <option value="$PROJECT_DIR$/app/mod_admin/templates/questions_edit.html" />
+        <option value="$PROJECT_DIR$/app/mod_training/views.py" />
+        <option value="$PROJECT_DIR$/app/mod_training/templates/reassessment.html" />
       </list>
     </option>
   </component>
@@ -148,10 +167,9 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="3" />
-    <option name="y" value="11" />
+    <option name="x" value="2" />
     <option name="width" value="1918" />
-    <option name="height" value="1147" />
+    <option name="height" value="1160" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -178,6 +196,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -212,8 +232,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scratches" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -222,6 +240,14 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="WebServerToolWindowFactoryState" value="true" />
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
+  </component>
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings module-name="SDGSCompetence" is-module-sdk="true">
+        <option name="myUseModuleSdk" value="true" />
+        <option name="myModuleName" value="SDGSCompetence" />
+      </console-settings>
+    </option>
   </component>
   <component name="RunManager" selected="Python.run">
     <configuration default="false" name="run" type="PythonConfigurationType" factoryName="Python" temporary="true">
@@ -238,6 +264,24 @@
       <module name="SDGSCompetence" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/app/run.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="build" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="SDGSCompetence" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/build.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -479,13 +523,15 @@
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
     </configuration>
-    <list size="2">
+    <list size="3">
       <item index="0" class="java.lang.String" itemvalue="Python.SDGSCompetence" />
       <item index="1" class="java.lang.String" itemvalue="Python.run" />
+      <item index="2" class="java.lang.String" itemvalue="Python.build" />
     </list>
     <recent_temporary>
-      <list size="1">
+      <list size="2">
         <item index="0" class="java.lang.String" itemvalue="Python.run" />
+        <item index="1" class="java.lang.String" itemvalue="Python.build" />
       </list>
     </recent_temporary>
   </component>
@@ -549,33 +595,40 @@
       <option name="project" value="LOCAL" />
       <updated>1508851985486</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="merging with develop_natalie">
+      <created>1508852431009</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1508852431009</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="3" y="11" width="1918" height="1147" extended-state="0" />
+    <frame x="2" y="0" width="1918" height="1160" extended-state="0" />
     <editor active="false" />
     <layout>
-      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26803014" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32906404" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32906404" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19941634" sideWeight="0.52152854" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32879376" sideWeight="0.4913886" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32906404" sideWeight="0.49784714" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32906404" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19941634" sideWeight="0.4784715" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32906404" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2378902" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2497309" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16059114" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -597,31 +650,14 @@
     <MESSAGE value="Merge branches 'develop_lizzy' and 'master' of https://github.com/sch-sdgs/SDGSCompetence into develop_lizzy&#10;&#10;# Conflicts:&#10;#&#9;app/mod_admin/views.py&#10;" />
     <MESSAGE value="adding required to user roles" />
     <MESSAGE value="adding questions reference tables" />
-    <option name="LAST_COMMIT_MESSAGE" value="adding questions reference tables" />
+    <MESSAGE value="merging with develop_natalie" />
+    <option name="LAST_COMMIT_MESSAGE" value="merging with develop_natalie" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/questions_edit.html" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/forms.py" />
-    <entry file="file://$PROJECT_DIR$/app/run.py" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/admin.html" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/userroles.html" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/views.py" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/forms.py" />
-    <entry file="file://$PROJECT_DIR$/app/run.py" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/userroles.html" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/evidencetypes.html" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/users_edit.html" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/views.py" />
-    <entry file="file://$PROJECT_DIR$/app/run.py" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/users_add.html" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/forms.py" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/views.py" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/service.html" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/service_edit.html" />
     <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/assessmentstatus.html" />
     <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/assessmentstatus_edit.html" />
     <entry file="file://$PROJECT_DIR$/app/models.py" />
@@ -635,14 +671,66 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/sections.html" />
     <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/sections_edit.html" />
-    <entry file="file://$PROJECT_DIR$/app/views.py" />
     <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/validityperiods.html" />
     <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/validityperiods_edit.html" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/evidencetypes_edit.html" />
     <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/service_edit.html" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/assessmentstatus.html" />
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/service.html" />
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/jobroles_edit.html" />
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/users_edit.html" />
+    <entry file="file://$PROJECT_DIR$/app/competence.py" />
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/evidencetypes.html" />
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/userroles.html" />
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/userroles_edit.html" />
+    <entry file="file://$PROJECT_DIR$/app/qpulse_details.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="6" column="41" selection-start-line="6" selection-start-column="41" selection-end-line="6" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_training/templates/discussion.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_training/templates/obx.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_training/templates/upload.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_training/templates/case-based.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_training/templates/case_based.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_training/templates/complete_training.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="17" column="40" selection-start-line="17" selection-start-column="40" selection-end-line="17" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="15">
@@ -650,22 +738,196 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/service.html" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/jobroles.html" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/assessmentstatus_edit.html" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/jobroles_edit.html" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/users_edit.html" />
-    <entry file="file://$PROJECT_DIR$/app/competence.py" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/users_add.html" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/evidencetypes.html" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/forms.py" />
-    <entry file="file://$PROJECT_DIR$/app/run.py" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/admin.html" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/userroles.html" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/questions.html" />
-    <entry file="file://$PROJECT_DIR$/app/models.py" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/userroles_edit.html" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/questions_edit.html" />
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/views.py" />
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/sections.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="738">
+          <caret line="62" column="12" selection-start-line="62" selection-start-column="12" selection-end-line="62" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/login.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="8" column="88" selection-start-line="8" selection-start-column="12" selection-end-line="8" selection-end-column="88" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/users_add.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1620">
+          <caret line="108" column="0" selection-start-line="108" selection-start-column="0" selection-end-line="121" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/admin.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="11" column="66" selection-start-line="11" selection-start-column="66" selection-end-line="11" selection-end-column="66" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_competence/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="345">
+          <caret line="23" column="138" selection-start-line="23" selection-start-column="21" selection-end-line="23" selection-end-column="138" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/base.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="462">
+          <caret line="167" column="67" selection-start-line="167" selection-start-column="67" selection-end-line="167" selection-end-column="67" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="717">
+          <caret line="218" column="96" selection-start-line="218" selection-start-column="96" selection-end-line="218" selection-end-column="96" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/jobroles.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/assessmentstatus.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="58" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/assessmentstatus_edit.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="31" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/evidencetypes_edit.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="990">
+          <caret line="72" column="102" selection-start-line="72" selection-start-column="102" selection-end-line="72" selection-end-column="102" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/run.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="481">
+          <caret line="333" column="68" selection-start-line="333" selection-start-column="68" selection-end-line="333" selection-end-column="68" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/dropdown_choices_edit.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="1" column="19" selection-start-line="1" selection-start-column="19" selection-end-line="1" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_competence/templates/competence_add.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1185">
+          <caret line="79" column="43" selection-start-line="79" selection-start-column="37" selection-end-line="79" selection-end-column="43" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="331">
+          <caret line="372" column="4" selection-start-line="372" selection-start-column="4" selection-end-line="372" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_training/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="527">
+          <caret line="196" column="57" selection-start-line="196" selection-start-column="57" selection-end-line="196" selection-end-column="57" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/questions.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="247">
+          <caret line="17" column="61" selection-start-line="17" selection-start-column="53" selection-end-line="17" selection-end-column="61" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_training/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="14" column="46" selection-start-line="14" selection-start-column="46" selection-end-line="14" selection-end-column="46" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/dropdown_choices.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="85" selection-start-line="15" selection-start-column="85" selection-end-line="15" selection-end-column="85" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/questions_edit.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-735">
+          <caret line="41" column="35" selection-start-line="41" selection-start-column="33" selection-end-line="41" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_training/templates/reassessment.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="480">
+          <caret line="32" column="40" selection-start-line="32" selection-start-column="40" selection-end-line="32" selection-end-column="40" />
+          <folding>
+            <element signature="e#1426#1482#0#HTML" expanded="true" />
+            <element signature="e#1743#1799#0#HTML" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
   </component>
 </project>

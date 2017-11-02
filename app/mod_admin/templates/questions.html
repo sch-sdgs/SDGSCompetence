@@ -1,59 +1,189 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="page-header">
-<h1>Reassessment Questions</h1>
-</div>
+    <div class="page-header">
+        <h1>Reassessment Questions</h1>
+    </div>
 
-<div class="row">
-    <div class="col-md-3"></div>
-    <div class="col-md-6">
-        <div class="well bs-component">
-            <form action="{{ url_for('admin.reassessment_questions') }}" method="POST" class="form-horizontal">
-                <fieldset>
-                    <legend>Add Reassessment Question</legend>
-                    <div class="form-group">
-                        {{ form.question.label(class_="col-lg-2 control-label") }}
-                        <div class="col-lg-10">
-                            {{ form.question(required="required",class_="form-control") }}
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="well bs-component">
+                <form action="{{ url_for('admin.reassessment_questions') }}" method="POST" class="form-horizontal">
+                    <fieldset>
+                        <legend>Add Reassessment Question</legend>
+                        <div class="form-group">
+                            {{ form.question.label(class_="col-lg-2 control-label") }}
+                            <div class="col-lg-10">
+                                {% if dropdown %}
+                                    {{ form.question(required="required", class_="form-control", disabled="disabled") }}
+                                {% else %}
+                                    {{ form.question(required="required",class_="form-control") }}
+                                {% endif %}
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-lg-10 col-lg-offset-2">
-                            {{ form.submit(class_="btn btn-primary") }}
+                        <div class="form-group">
+                            {{ form.type.label(class_="col-lg-2 control-label") }}
+                            <div class="col-lg-10">
+                                {% if dropdown %}
+                                    {{ form.type(class_="form-control", disabled="disabled") }}
+                                {% else %}
+                                    {{ form.type(class_="form-control") }}
+                                {% endif %}
+                            </div>
                         </div>
-                    </div>
-                </fieldset>
-            </form>
+                        <div class="form-group">
+                            <div class="col-lg-10 col-lg-offset-2">
+                                {% if dropdown %}
+                                    {{ form.submit(class_="btn btn-primary", disabled="disabled") }}
+                                {% else %}
+                                    {{ form.submit(class_="btn btn-primary") }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if dropdown %}
+                            <div class="form-group row" id="optionsform">
+                                <div class="col-lg-2">
+                                    <label class="control-label" for="option">Dropdown option</label>
+                                </div>
+                                <div class="col-lg-8">
+                                    <input class="form-control" id="option" name="option" type="text" value="">
+                                </div>
+                                <div class="col-lg-2">
+                                    <a class="btn btn-success" id="AddOption">Add</a>
+                                </div>
+                            </div>
+                            <div id="optionstable">
+
+                            </div>
+
+                            <div>
+                                <a href="{{ url_for('admin.reassessment_questions') }}" class="btn btn-success" id="Finish" disabled="disabled">Finish</a>
+                            </div>
+                        {% endif %}
+                    </fieldset>
+                </form>
+            </div>
         </div>
+        <div class="col-md-2"></div>
     </div>
-    <div class="col-md-3"></div>
-</div>
 
 
-<div class="row">
-    <div class="col-md-3"></div>
-    <div class="col-md-6">
-        <div class="well bs-component">
-            <legend>Reassessment Questions</legend>
-            <table class="table table-striped">
-                <thead>
-                    <th>Question</th>
-                    <th>Edit</th>
-                    <th>Delete</th>
-                </thead>
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="well bs-component">
+                <legend>Reassessment Questions</legend>
+                <table class="table table-striped">
+                    <thead>
+                    <th width="50%">Question</th>
+                    <th width="20%">Answer type</th>
+                    <th width="15%">Edit</th>
+                    <th width="15%">Delete</th>
+                    </thead>
 
-            {% for question_object in data %}
-                <tr>
-                    <td>{{ question_object.question }}</td>
-                    <td><a href="{{ url_for('admin.reassessment_questions_edit', id=question_object.id) }}"><span class="label label-primary"><span class="glyphicon glyphicon-pencil"></span></span></a></td>
-                    <td><a href="{{ url_for('admin.delete_reassessment_question', id=question_object.id) }}"><span class="label label-danger"><span class="glyphicon glyphicon-remove"></span></span></a></td>
-                </tr>
-            {% endfor %}
+                    {% for question_object in data %}
+                        <tr>
+                            <td>{{ question_object.question }}</td>
+                            <td>{{ question_object.answer_type }}</td>
+                            <td>
+                                <a href="{{ url_for('admin.reassessment_questions_edit', question_id=question_object.id) }}"><span
+                                        class="label label-primary"><span
+                                        class="glyphicon glyphicon-pencil"></span></span></a></td>
+                            <td>
+                                <a href="{{ url_for('admin.delete_reassessment_question', id=question_object.id) }}"><span
+                                        class="label label-danger"><span
+                                        class="glyphicon glyphicon-remove"></span></span></a></td>
+                        </tr>
+                    {% endfor %}
 
-            </table>
-           </div>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-2"></div>
     </div>
-    <div class="col-md-3"></div>
-</div>
+
+    <script>
+
+        $(document).on("click", "#AddOption", function () {
+            if ($('#option').val() != "") {
+                var dict = {
+                    "choice": $('#option').val(),
+                    "question_id": {{ question_id }}
+                };
+                var data = JSON.stringify(dict);
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url_for('admin.dropdown_choices') }}",
+                    data: data,
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (response) {
+                        $("#optionstable").children().remove();
+                        $("#optionstable").append(response);
+                        $('#option').val("")
+                        var row_count = $('#table tr').length;
+                        if (row_count > 2){
+                            $('#Finish').removeAttr('disabled');
+                        }
+                        else{
+                            $('#Finish').attr('disabled','disabled');
+                        }
+
+                    },
+                    error: function (xhr, status, error) {
+
+                    }
+
+                });
+            }
+
+        });
+    $(document).on("click", "[name='DeleteOption']", function (e) {
+        console.log('delete');
+        console.log($($(e.target).parent()));
+        var id = 0;
+        if ($(e.target).hasClass('glyphicon')){
+            id = $($(e.target).parent()).attr('id')
+        }
+        else{
+            id = $(e.target).attr('id')
+        }
+        console.log(id);
+        var dict = {
+                    "option_id": id,
+                    "question_id": {{ question_id }}
+                };
+                var data = JSON.stringify(dict);
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url_for('admin.delete_dropdown_choice') }}",
+                    data: data,
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (response) {
+                        console.log(response);
+                        $("#optionstable").children().remove();
+                        $("#optionstable").append(response);
+                        $('#option').val("")
+                        var row_count = $('#table tr').length;
+                        if (row_count > 2){
+                            $('#Finish').removeAttr('disabled');
+                        }
+                        else{
+                            $('#Finish').attr('disabled','disabled');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+
+                    }
+
+                });
+
+
+        })
+    </script>
+
 
 {% endblock %}}

@@ -7,12 +7,33 @@ from sqlalchemy.sql.expression import func, and_, or_, case, exists, update
 from sqlalchemy.orm import aliased
 from werkzeug import secure_filename
 import os
+from forms import *
 
 training = Blueprint('training', __name__, template_folder='templates')
 
 ###########
 # Queries #
 ###########
+
+def get_ss_id_from_assessment(assess_id_list):
+    ss_ids_res = s.query(Assessments).filter(Assessments.id.in_(assess_id_list)).values(Assessments.ss_id)
+    ss_ids = []
+
+    for ss_id in ss_ids_res:
+        ss_ids.append(ss_id.ss_id)
+
+    return ss_ids
+
+def get_competent_users(ss_id_list):
+    users = s.query(Users).\
+        join(Assessments,Assessments.user_id==Users.id).\
+        join(AssessmentStatusRef).\
+        filter(AssessmentStatusRef.status=="Complete",
+            Assessments.date_expiry>datetime.date.today()).\
+        group_by(Users.id).having(func.count(Assessments.ss_id.in_(ss_id_list)) == len(ss_id_list)).\
+        values(Users.id, (Users.first_name + ' ' + Users.last_name).label('name'))
+    return users
+
 def get_user(user):
     """
     Method to check if value sent with request is ID, if not the method queries the database and returns the ID
@@ -149,6 +170,73 @@ def filter_for_none(value):
 ###########
 #  Views  #
 ###########
+
+@training.route('/reassessment', methods=['GET', 'POST'])
+@login_required
+def reassessment():
+    if request.method=='GET':
+        c_id = request.args.get('c_id')
+        print c_id
+        user = request.args.get('user')
+        assess_id_list = request.args.get('assess_id_list').split(',')
+        if not user:
+            user = current_user.id
+        u_id = get_user(user)
+        competence_summary = get_competence_summary_by_user(c_id, u_id)
+
+        questions = s.query(QuestionsRef).filter(QuestionsRef.active==True)
+        data=[]
+        for question in questions:
+            row={}
+            row['id'] = question.id
+            row['question'] = question.question
+            if question.answer_type == 'Dropdown':
+                options = s.query(DropDownChoices).filter(DropDownChoices.question_id==question.id).all()
+                row['DropDown'] = []
+                for option in options:
+                    row['DropDown'].append(option.choice)
+            elif question.answer_type == 'Free text':
+                row['FreeText'] = True
+            elif question.answer_type == 'Date':
+                row['Date'] = True
+            elif question.answer_type == 'Yes/no':
+                row['yesno'] = True
+            data.append(row)
+        form=Reassessment()
+        ss_id_list = get_ss_id_from_assessment(assess_id_list)
+        competent_users = get_competent_users(ss_id_list)
+        choices=[]
+        for user in competent_users:
+            choices.append((user.id, user.name))
+        form.signoff_id.choices=choices
+        return render_template('reassessment.html', data=data, c_id = c_id, user_id=u_id, competence_name=competence_summary.title, form=form, assess_id_list=','.join(assess_id_list))
+
+    elif request.method =='POST':
+        print "now posting"
+        questions = s.query(QuestionsRef).filter(QuestionsRef.active == True).all()
+        print questions
+        signoff_id = request.form["signoff_id"]
+        print(request.form)
+        assess_id_list = request.args.get('assess_id_list').split(',')
+        print signoff_id
+        reassessment = Reassessments(signoff_id)
+        s.add(reassessment)
+        s.commit()
+        for assess in assess_id_list:
+            assess_rel = AssessReassessRel(assess, reassessment.id)
+            s.add(assess_rel)
+        s.commit()
+        for question in questions:
+            print(question)
+            id = "answer"+str(question.id)
+            print id
+            answer = request.form.get(id)
+            print(answer)
+            reassess = ReassessmentQuestions(question_id=question.id, answer=answer, reassessment_id=reassessment.id)
+            s.add(reassess)
+            s.commit()
+
+        return redirect(url_for('training.view_current_competence', c_id=request.args.get('c_id'), user=request.args.get('u_id')))
 
 @training.route('/view', methods=['GET', 'POST'])
 @login_required

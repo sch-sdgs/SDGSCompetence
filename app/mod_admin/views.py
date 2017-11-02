@@ -254,39 +254,92 @@ def users_edit(id=None):
 
         return redirect(url_for('admin.users_view'))
 
+@admin.route('/dropdownchoices',methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def dropdown_choices():
 
-@admin.route('/jobroles', methods=['GET', 'POST'])
+    if request.method == 'POST':
+        try:
+            choice = request.json['choice']
+            choices = s.query(DropDownChoices).filter(DropDownChoices.question_id == request.json['question_id'],
+                                                      DropDownChoices.choice == request.json['choice']).all()
+            if len(choices) == 0:
+                q = DropDownChoices(choice=request.json['choice'], question_id=request.json['question_id'])
+                s.add(q)
+                s.commit()
+        except KeyError:
+            pass
+
+    print "requesting"
+    print request.json['question_id']
+    choices = s.query(DropDownChoices).filter(DropDownChoices.question_id==request.json['question_id'])
+    print jsonify(render_template("dropdown_choices.html",data=choices))
+    return jsonify(render_template("dropdown_choices.html",data=choices))
+
+@admin.route('/dropdownchoices/delete', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def delete_dropdown_choice():
+    s.query(DropDownChoices).filter_by(id=request.json['option_id']).delete()
+    s.commit()
+
+    choices = s.query(DropDownChoices).filter(DropDownChoices.question_id == request.json['question_id'])
+    return jsonify(render_template("dropdown_choices.html", data=choices))
+
 @admin.route('/questions',methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def reassessment_questions():
+    print "hello"
     form = QuestionsForm()
-
+    q_id = 0
+    dropdown=False
     if request.method == 'POST':
-        q =QuestionsRef(question=request.form['question'])
+        # if request.args.get('commit') == "True":
+        q =QuestionsRef(question=request.form['question'], answer_type=request.form['type'])
         s.add(q)
         s.commit()
-
+        q_id = q.id
+        if request.form['type'] == "Dropdown":
+            dropdown = True
+        else:
+            return redirect(url_for('admin.reassessment_questions'))
+        # else:
+        #     print "I'm here!"
+        #     return redirect(url_for('admin.reassessment_questions'))
     questions = s.query(QuestionsRef).all()
 
-    return render_template("questions.html",form=form,data=questions)
+    return render_template("questions.html",form=form,data=questions, dropdown=dropdown, question_id=q_id)
 
-@admin.route('/questions/edit/<id>', methods=['GET', 'POST'])
+@admin.route('/questions/edit/<question_id>', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
-def reassessment_questions_edit(id=None):
+def reassessment_questions_edit(question_id=None, commit=None):
+    if request.args.get('commit') == "True":
+        return redirect(url_for('admin.reassessment_questions'))
     form=QuestionsForm()
-    question = s.query(QuestionsRef).filter_by(id=id).first()
+    question = s.query(QuestionsRef).filter_by(id=question_id).first()
+    form.type.default = question.answer_type
+    print question.answer_type
+    form.process()
     form.question.data = question.question
+    if question.answer_type == "Dropdown":
+        dropdown = True
+    else:
+        dropdown=False
 
     if request.method == 'POST':
-        s.query(QuestionsRef).filter_by(id=id).update({'question': request.form["question"]})
+        s.query(QuestionsRef).filter_by(id=question_id).update({'question': request.form["question"], 'answer_type': request.form['type']})
         s.commit()
-        return redirect(url_for('admin.reassessment_questions'))
-
-    return render_template("questions_edit.html", form=form, id=id)
+        if request.form['type'] == "Dropdown":
+            dropdown = True
+        else:
+            return redirect(url_for('admin.reassessment_questions'))
+    print('dropdown')
+    print(dropdown)
+    return render_template("questions_edit.html", form=form, question_id=question_id, dropdown=dropdown)
 
 @admin.route('/questions/delete/<id>', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def delete_reassessment_question(id=None):
+    s.query(DropDownChoices).filter_by(question_id=id).delete()
     s.query(QuestionsRef).filter_by(id=id).delete()
     s.commit()
     return redirect(url_for('admin.reassessment_questions'))

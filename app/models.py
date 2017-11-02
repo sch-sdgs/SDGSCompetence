@@ -37,10 +37,12 @@ class ValidityRef(db.Model):
 class QuestionsRef(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     question = db.Column(db.String(1000), unique=True, nullable=False)
-    active = db.Column(db.BOOLEAN, unique=False, default=True, nullable=False, )
+    active = db.Column(db.BOOLEAN, unique=False, default=True, nullable=False)
+    answer_type = db.Column(db.String(1000), unique=False, nullable=False)
 
-    def __init__(self, question):
+    def __init__(self, question, answer_type):
         self.question = question
+        self.answer_type = answer_type
 
     def __repr__(self):
         return '<QuestionsRef %r' % self.question
@@ -331,34 +333,74 @@ class Assessments(db.Model):
     def __repr__(self):
         return '<Assessment %r>' % self.status
 
-
-
-class Reassessment(db.Model):
+class AssessReassessRel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     assess_id = db.Column(db.Integer, db.ForeignKey("assessments.id"), unique=False, nullable=False)
-    question_id = db.Column(db.Integer, db.ForeignKey("questions_ref.id"), unique=False, nullable=False)
-    signoff_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=True)
-    date_completed = db.Column(db.DATE, unique=False, nullable=True)
-    answer = db.Column(db.String(1000), unique=False, nullable=False)
+    reassess_id = db.Column(db.Integer, db.ForeignKey("reassessments.id"), unique=False, nullable=False)
 
-    assess_id_rel = db.relationship("Assessments", lazy='joined', foreign_keys=[assess_id])
-    question_id_rel = db.relationship("QuestionsRef", lazy='joined', foreign_keys=[question_id])
-    signoff_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[signoff_id])
+    assess_rel = db.relationship("Assessments", lazy='joined', foreign_keys=[assess_id])
+    reassess_rel = db.relationship("Reassessments", lazy='joined', foreign_keys=[reassess_id])
 
-    def __init__(self, assess_id, question_id, answer):
-
-        self.assess_id=assess_id
-        self.question_id=question_id
-        self.answer=answer
+    def __init__(self, assess_id, reassess_id):
+        self.assess_id = assess_id
+        self.reassess_id = reassess_id
 
     def __repr__(self):
-        return '<Reassessment %r>' % self.assess_id
+        return '<AssessReassessRel %r>' % self.id
+
+class ReassessmentQuestions(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    question_id = db.Column(db.Integer, db.ForeignKey("questions_ref.id"), unique=False, nullable=False)
+    answer = db.Column(db.String(1000), unique=False, nullable=False)
+    reassessment_id = db.Column(db.Integer, db.ForeignKey("reassessments.id"), unique=False, nullable=False)
+
+    question_id_rel = db.relationship("QuestionsRef", lazy='joined', foreign_keys=[question_id])
+    reassessment_id_rel = db.relationship("Reassessments", lazy='joined', foreign_keys=[reassessment_id])
+
+
+    def __init__(self, question_id, answer, reassessment_id):
+
+        self.question_id=question_id
+        self.answer=answer
+        self.reassessment_id = reassessment_id
+
+    def __repr__(self):
+        return '<ReassessmentQuestions %r>' % self.id
+
+class DropDownChoices(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    question_id = db.Column(db.Integer, db.ForeignKey("questions_ref.id"), unique=False, nullable=False)
+    choice = db.Column(db.String(1000), unique=False, nullable=False)
+
+    question_id_rel = db.relationship("QuestionsRef", lazy='joined', foreign_keys=[question_id])
+
+    def __init__(self, choice, question_id):
+        self.question_id = question_id
+        self.choice = choice
+
+    def __repr__(self):
+        return '<Dropdown Choices %r>' % self.id
+
+class Reassessments(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    signoff_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=True)
+    date_completed = db.Column(db.DATE, unique=False, nullable=True)
+    is_correct = db.Column(db.BOOLEAN, unique=False, nullable=True)
+
+    signoff_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[signoff_id])
+
+    def __init__(self, signoff_id):
+        self.signoff_id=signoff_id
+
+    def __repr__(self):
+        return '<Reassessments %r>' % self.id
+
 
 class Evidence(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     evidence = db.Column(db.String(1000), unique=False, nullable=True)
     result = db.Column(db.String(1000), unique=False, nullable=True)
-    is_correct = db.Column(db.BOOLEAN, unique=False, nullable=False)
+    is_correct = db.Column(db.BOOLEAN, unique=False, nullable=True)
     signoff_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=False)
     comments = db.Column(db.String(1000), unique=False, nullable=True)
     date_completed = db.Column(db.DATE, unique=False, nullable=True)
