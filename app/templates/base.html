@@ -117,6 +117,10 @@
                 console.log("competent_staff");
                 window.location.assign("{{url_for('competence.competent_staff')}}?ids=" + ids.join(','));
             }
+            if (func == "view_competence") {
+                console.log("view_competence");
+                window.location.assign("{{ url_for('competence.view_competence') }}?c_id="+ids);
+            }
         })
     });
 

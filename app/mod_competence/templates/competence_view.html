@@ -2,7 +2,14 @@
 {% block content %}
 
 <div class="page-header">
-    <h1>View Completed Competency</h1>
+    {% if review %}
+        <h1>View Competency</h1>
+        <div>
+            <a href="{{ url_for('competence.list_comptencies') }}" class="btn btn-primary" type="button" id="back">< Back</a>
+        </div>
+    {% else %}
+        <h1>View Completed Competency</h1>
+    {% endif %}
 
  <div class="alert alert-success" role="alert" id="competence_activated" hidden >Success! You have activated {{ title }}.</div>
                     <div class="form-group">
@@ -19,7 +26,7 @@
         <div class="well bs-component">
 
 
-                        <legend><strong>{{ title }}</legend></strong>
+                        <legend><strong>{{ title }}</strong></legend>
 
 
                          <div class="form-group">
@@ -122,78 +129,57 @@
 
         </div>
     </div>
-    <div class="col-md-12">
-        <div class="well bs-component">
+    {% if review %}
 
-                        <a href="#" class="btn btn-success" type="button" id="activate_{{ c_id }}">Activate</a>
-                        <a href="#" class="btn btn-info" type="button" id="edit_{{ c_id }}">Edit</a>
+    {% else %}
+        <div class="col-md-12">
+            <div class="well bs-component">
 
-        </div>
+                            <a href="#" class="btn btn-success" type="button" id="activate_{{ c_id }}">Activate</a>
+                            <a href="#" class="btn btn-info" type="button" id="edit_{{ c_id }}">Edit</a>
 
-
-
-        <script>
-
-                  $('#activate_{{ c_id }}').click(function () {
-                    var c_id = {{ c_id }};
-                    console.log(c_id);
-
-                    var url = "{{ url_for('competence.activate_competency') }}";
-                    var dict = {'c_id': c_id};
-                    var data = JSON.stringify(dict);
-
-                    $.ajax({
-                        type: "POST",
-                        url: url,
-                        data: data,
-                        dataType: "json",
-                        contentType: "application/json",
-                        success: function (response) {
-                            console.log(response);
-
-                            if(response.match(/Competence has been activated!/i))
-                            {
-                                $('#competence_activated').show()
+            </div>
 
 
+
+            <script>
+
+                      $('#activate_{{ c_id }}').click(function () {
+                        var c_id = {{ c_id }};
+                        console.log(c_id);
+
+                        var url = "{{ url_for('competence.activate_competency') }}";
+                        var dict = {'c_id': c_id};
+                        var data = JSON.stringify(dict);
+
+                        $.ajax({
+                            type: "POST",
+                            url: url,
+                            data: data,
+                            dataType: "json",
+                            contentType: "application/json",
+                            success: function (response) {
+                                console.log(response);
+
+                                if(response.match(/Competence has been activated!/i))
+                                {
+                                    $('#competence_activated').show()
+
+
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                $('#trace').append("<p>" + error + "</p>");
+                                $('#ajaxModal').modal('show');
+                                return false;
                             }
-                        },
-                        error: function (xhr, status, error) {
-                            $('#trace').append("<p>" + error + "</p>");
-                            $('#ajaxModal').modal('show');
-                            return false;
-                        }
+                        });
                     });
-                });
 
 
-            </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-     </div>
+                </script>
+         </div>
+    {% endif %}
 </div>
 
 
