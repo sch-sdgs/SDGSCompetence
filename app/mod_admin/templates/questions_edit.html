@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+        <div class="well bs-component">
+            <form action="{{ url_for('admin.reassessment_questions_edit', question_id=question_id, commit="False") }}" method="POST" class="form-horizontal" >
+                <fieldset>
+                    <legend>Edit Reassessment Question</legend>
+                    <div class="form-group">
+                            {{ form.question.label(class_="col-lg-2 control-label") }}
+                            <div class="col-lg-10">
+                                 {% if dropdown %}
+                                    {{ form.question(required="required", class_="form-control", disabled="disabled") }}
+                                {% else %}
+                                    {{ form.question(required="required",class_="form-control") }}
+                                {% endif %}
+                            </div>
+                        </div>
+                     <div class="form-group">
+                            {{ form.type.label(class_="col-lg-2 control-label") }}
+                            <div class="col-lg-10">
+                                {% if dropdown %}
+                                    {{ form.type(class_="form-control", disabled="disabled") }}
+                                {% else %}
+                                    {{ form.type(class_="form-control") }}
+                                {% endif %}
+                            </div>
+                        </div>
+                    <div class="form-group">
+                            <div class="col-lg-10 col-lg-offset-2">
+                                {% if dropdown %}
+                                    {{ form.submit(class_="btn btn-primary", disabled="disabled") }}
+                                {% else %}
+                                    {{ form.submit(class_="btn btn-primary") }}
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% if dropdown %}
+                            <div class="form-group row" id="optionsform">
+                                <div class="col-lg-2">
+                                    <label class="control-label" for="option">Dropdown option</label>
+                                </div>
+                                <div class="col-lg-8">
+                                    <input class="form-control" id="option" name="option" type="text" value="">
+                                </div>
+                                <div class="col-lg-2">
+                                    <a class="btn btn-success" id="AddOption" >Add</a>
+                                </div>
+                            </div>
+                            <div id="optionstable">
+
+                            </div>
+
+                            <div>
+                                <a href="{{ url_for('admin.reassessment_questions_edit',question_id=question_id, commit="True") }}" class="btn btn-success" id="Finish" disabled="disabled">Finish</a>
+                            </div>
+                        {% endif %}
+                </fieldset>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-3"></div>
+</div>
+
+    <script>
+        $(document).on("click", "#Submit", function(){
+            var thing = $('#type').val();
+            console.log(thing);
+            if ($('#type').val() == "Dropdown") {
+                console.log("submitted a dropdown");
+                var dict = {
+                    "question_id": {{ question_id }}
+                };
+                var data = JSON.stringify(dict);
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url_for('admin.dropdown_choices') }}",
+                    data: data,
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (response) {
+                        console.log(response);
+                        $("#optionstable").children().remove();
+                        $("#optionstable").append(response);
+                        var row_count = $('#table tr').length;
+                        if (row_count > 2){
+                            $('#Finish').removeAttr('disabled');
+                        }
+                        else{
+                            $('#Finish').attr('disabled','disabled');
+                        }
+
+
+                    },
+                    error: function (xhr, status, error) {
+
+                    }
+
+                });
+            }
+
+        });
+
+
+        $(document).on("click", "#AddOption", function () {
+            if ($('#option').val() != "") {
+                var dict = {
+                    "choice": $('#option').val(),
+                    "question_id": {{ question_id }}
+                };
+                var data = JSON.stringify(dict);
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url_for('admin.dropdown_choices') }}",
+                    data: data,
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (response) {
+                        $("#optionstable").children().remove();
+                        $("#optionstable").append(response);
+                        $('#option').val("")
+                        var row_count = $('#table tr').length;
+                        if (row_count > 2){
+                            $('#Finish').removeAttr('disabled');
+                        }
+                        else{
+                            $('#Finish').attr('disabled','disabled');
+                        }
+
+                    },
+                    error: function (xhr, status, error) {
+
+                    }
+
+                });
+            }
+
+        });
+    $(document).on("click", "[name='DeleteOption']", function (e) {
+        console.log('delete');
+        console.log($($(e.target).parent()));
+        var id = 0;
+        if ($(e.target).hasClass('glyphicon')){
+            id = $($(e.target).parent()).attr('id')
+        }
+        else{
+            id = $(e.target).attr('id')
+        }
+        console.log(id);
+        var dict = {
+                    "option_id": id,
+                    "question_id": {{ question_id }}
+                };
+                var data = JSON.stringify(dict);
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url_for('admin.delete_dropdown_choice') }}",
+                    data: data,
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (response) {
+                        console.log(response);
+                        $("#optionstable").children().remove();
+                        $("#optionstable").append(response);
+                        $('#option').val("")
+                        var row_count = $('#table tr').length;
+                        if (row_count > 2){
+                            $('#Finish').removeAttr('disabled');
+                        }
+                        else{
+                            $('#Finish').attr('disabled','disabled');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+
+                    }
+
+                });
+
+
+        })
+    </script>
+
+{% endblock %}}

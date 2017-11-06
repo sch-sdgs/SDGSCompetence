@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <div class="page-header">
+        <h1>Edit Competency</h1>
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-12">
+            <div class="well bs-component">
+                <form action="{{ url_for('competence.edit_competence') }}?c_id={{ c_id }}" method="POST"
+                      class="form-horizontal">
+                    <fieldset>
+
+                        <legend>Edit Basic Details</legend>
+
+                        <div class="form-group">
+                            {{ form.edit_title.label(class_="col-lg-2 control-label") }}
+                            <div class="col-lg-10">
+                                {{ form.edit_title(required="required",class_="form-control") }}
+
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            {{ form.edit_scope.label(class_="col-lg-2 control-label") }}
+                            <div class="col-lg-10">
+                                {{ form.edit_scope(required="required",class_="form-control") }}
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            {{ form.edit_competency_type.label(class_="col-lg-2 control-label") }}
+                            <div class="col-lg-10">
+                                {{ form.edit_competency_type(required="required",class_="form-control", value=defname ) }}
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            {{ form.edit_validity_period.label(class_="col-lg-2 control-label") }}
+                            <div class="col-lg-10">
+                                <div class="input-group">
+                                    {{ form.edit_validity_period(required="required",class_="form-control") }}</div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+
+
+            <div class="well bs-component">
+                <form action="{{ url_for('competence.edit_competence') }}?c_id={{ c_id }}" method="POST"
+                      class="form-horizontal">
+                    <fieldset>
+
+                        <legend>Edit Associated Documents</legend>
+                         <div class="form-group">
+                            {{ form.ass_documents.label(class_="col-lg-2 control-label") }}
+                            <div class="col-lg-10">
+                                {{ form.ass_documents(required="required",class_="form-control") }}
+                            </div>
+                        </div>
+                         <div class="form-group">
+                        {{ form.add_document.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            <div class="input-group">
+                                {{ form.add_document(class_="form-control") }}
+
+                                <span class="input-group-btn"><button class="btn btn-primary" id="submit_document"
+                                                                      type="button">Attach</button></span>
+
+                            </div>
+                            <span class="help-block" id="add_document_text">Please enter a Q-Pulse Document ID</span><div id="invalid_qpulse"></div>
+                        </div>
+                    </div>
+
+
+
+
+                    </fieldset>
+                </form>
+            </div>
+
+
+
+    <div class="well bs-component">
+        <form action="{{ url_for('competence.edit_competence') }}?c_id={{ c_id }}" method="POST"
+              class="form-horizontal">
+            <fieldset>
+
+                <legend>Edit Permanent Sections</legend>
+
+
+
+                    </fieldset>
+                </form>
+            </div>
+
+
+
+
+    <div class="well bs-component">
+        <form action="{{ url_for('competence.edit_competence') }}?c_id={{ c_id }}" method="POST"
+              class="form-horizontal">
+            <fieldset>
+
+                <legend>Edit Sections</legend>
+
+
+
+                    </fieldset>
+                </form>
+            </div>
+
+
+    </div>
+
+    </div>
+
+
+
+
+
+
+{% endblock %}

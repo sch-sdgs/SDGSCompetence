@@ -35,15 +35,6 @@
                     </div>
 
 
-
-                    <!--&lt;!&ndash;<div class="form-group">&ndash;&gt;-->
-                    <!--{{ form.creator_id.label(class_="col-lg-2 control-label") }}-->
-                    <!--<div class="col-lg-10">-->
-                    <!--{{ form.creator_id(class_="form-control") }}-->
-                    <!--</div>-->
-                    <!--</div>-->
-
-
                     <div class="form-group">
                         {{ form.validity_period.label(class_="col-lg-2 control-label") }}
                         <div class="col-lg-10">
@@ -54,12 +45,7 @@
                         </div>
                     </div>
 
-                    <!--<div class="form-group">-->
-                    <!--{{ form.documents.label(class_="col-lg-2 control-label") }}-->
-                    <!--<div class="col-lg-10">-->
-                    <!--{{ form.documents(class_="form-control") }}-->
-                    <!--</div>-->
-                    <!--</div>-->
+
 
                     <div class="form-group">
                         {{ form.add_document.label(class_="col-lg-2 control-label") }}
@@ -71,9 +57,11 @@
                                                                       type="button">Attach</button></span>
 
                             </div>
-                            <span class="help-block" id="add_document_text">Please enter a Q-Pulse Document ID</span>
+                            <span class="help-block" id="add_document_text">Please enter a Q-Pulse Document ID</span><div id="invalid_qpulse"></div>
                         </div>
                     </div>
+
+                    <div class="alert alert-danger" role="alert" id="qpulse_error" hidden >This is not a valid QPulse Document! Please try again.</div>
                     <div class="form-group">
                         <div class="col-lg-2"></div>
                         <div class="col-lg-10">
@@ -86,7 +74,7 @@
                     <div class="form-group">
                         <div class="col-lg-10 col-lg-offset-2">
                             {{ form.submit(class_="btn btn-primary") }}
-                            <span class="help-block">...move to add sections form when all are filled</span>
+
                         </div>
 
                     </div>
@@ -99,6 +87,7 @@
 </div>
 <div id="document_list"></div>
 
+
 <script>
     //this function does autocomplete for existing documents in the database
     $(function () {
@@ -108,12 +97,14 @@
             $('#add_document').autocomplete({
                 source: data.json_list,
                 minLength: 2
-
             });
         });
     });
-
+    //This function checks whether the input is a valid Qpulse doc number and adds it to a list if correct, list items are displayed underneath if succesfully added
     $('#submit_document').click(function () {
+
+        $('#qpulse_error').hide()
+
         previous_value = $('#doc_list').val()
         if (previous_value == "") {
             sep = ''
@@ -121,11 +112,48 @@
             sep = ','
         }
 
-        $('#doc_list').val(previous_value + sep + $('#add_document').val())
-        $('#selected_docs').append('<a href="#" class="btn btn-success remove" id="remove_document" doc_number="'+ $('#add_document').val()+'">' + $('#add_document').val() + ' <span class="glyphicon glyphicon-remove"></span> </a> ')
-        $('#add_document').val('')
+        var url = "{{ url_for('competence.get_doc_name') }}";
+        var doc_id=$('#add_document').val()
+        console.log(doc_id);
+        console.log(url);
+
+        var dict = {'doc_id':doc_id};
+        var data = JSON.stringify(dict);
+        console.log(data);
+
+        $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: data,
+                        dataType: "json",
+                        contentType: "application/json",
+                        success: function (response) {
+                            console.log(response)
+
+                            if(response.match(/This is not a valid QPulse Document/i))
+                            {
+                                $('#qpulse_error').show()
+
+
+                            }
+                            else
+                            {
+
+                                $('#doc_list').val(previous_value + sep + $('#add_document').val() )
+                                $('#selected_docs').append('<a href="#" class="btn btn-success remove" id="remove_document" doc_number="' + $('#add_document').val() + '">' + $('#add_document').val() + ': '+ response +' <span class="glyphicon glyphicon-remove"></span> </a> ')
+                                $('#add_document').val('')
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            $('#trace').append("<p>" + error + "</p>");
+                            $('#ajaxModal').modal('show');
+                            return false;
+                        }
+                    });
+
     });
 
+    //this function allows deletion of items from the document list so they can'r be added to the database
     $(document).on("click", '.remove' ,function(){
         console.log("HELLO");
         var docs = $('#doc_list').val().split(',');
@@ -136,52 +164,6 @@
         $(this).remove();
     });
 
-
-    //     $('#submit_document').click(function () {
-    //
-    //         if (localStorage.getItem("docs") === null) {
-    //             var docs = []
-    //             docs.push($('#add_document').val())
-    //             localStorage.setItem('docs', JSON.stringify(docs));
-    //         }else {
-    //             var docs = JSON.parse(localStorage.getItem('docs'));
-    //             docs.push($('#add_document').val());
-    //             localStorage.setItem('docs', JSON.stringify(docs));
-    //         }
-    //
-    //     });
-
-
-    //     $(document).on('click', '#submit_document', function () {
-    //                    var doc_id = $('#add_document option:selected');
-    //                    var c_id = 1;
-    //
-    //                    console.log(doc_id);
-    //
-    //                    var url = "{{ url_for('competence.get_documents') }}";
-    //                    var dict = {'doc_id': text, 'c_id': c_id};
-    //                    var data = JSON.stringify(dict);
-    //
-    //                    $.ajax({
-    //                        type: "POST",
-    //                        url: url,
-    //                        data: data,
-    //                        dataType: "json",
-    //                        contentType: "application/json",
-    //                        success: function (response) {
-    //                            console.log(response);
-    //                            $('#document_list').append(response);
-    //                        },
-    //                        error: function (xhr, status, error) {
-    //                            $('#trace').append("<p>" + error + "</p>");
-    //                            $('#ajaxModal').modal('show');
-    //                            return false;
-    //                        }
-    //
-    //                    });
-    //
-    //
-    //                });
 </script>
 
 {% endblock %}

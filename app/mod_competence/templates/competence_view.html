@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+    <h1>View Completed Competency</h1>
+
+ <div class="alert alert-success" role="alert" id="competence_activated" hidden >Success! You have activated {{ title }}.</div>
+                    <div class="form-group">
+                        <div class="col-lg-2"></div>
+                        <div class="col-lg-10">
+                            <div id="selected_docs"></div>
+                        </div>
+                    </div>
+</div>
+
+<div class="row">
+
+    <div class="col-md-12">
+        <div class="well bs-component">
+
+
+                        <legend><strong>{{ title }}</legend></strong>
+
+
+                         <div class="form-group">
+                             <td><p><strong>Scope</strong> : {{ scope }}</p></td>
+                         </div>
+
+
+                        <div class="form-group">
+                            <td><p><strong>Competence Type</strong> : {{ category }}</p></td>
+                        </div>
+
+
+                        <div class="form-group">
+                           <td><p><strong>Validity Period (months)</strong> : {{ val_period }}</p></td>
+                         </div>
+        </div>
+    </div>
+
+     <div class="col-md-12">
+        <div class="well bs-component">
+
+                        <div class="form-group">
+                            <td><p><strong>Associated Q-Pulse Documents:</strong></p></td>
+
+                            {% for doc in docs %}
+                                <tr>
+                                    <td><p>{{ doc }} : {{ docs[doc] }}</p></td>
+                                </tr>
+                            {% endfor %}
+                        </div>
+    </div>
+     </div>
+
+     <div class="col-md-12">
+        <div class="well bs-component">
+                        <legend><strong>Compulsory Sections:</strong></legend>
+
+                        {% for constant_sec_name in constants %}
+
+
+                                <table class="table table-striped table-hover ">
+                                <caption class="text-primary"><strong>{{ constant_sec_name }}</strong></caption>
+
+                                          <thead>
+                                            <tr>
+                                              <th>Area of Competence</th>
+                                              <th>Evidence Type</th>
+                                              <th>Comments</th>
+                                            </tr>
+                                          </thead>
+                                         {% for i in  constants[constant_sec_name] %}
+                                <tbody>
+                                     <tr>
+                                           <td> {{ i[0] }}</td>
+                                           <td>{{ i[2] }}</td>
+                                           <td> {{ i[1] }}</td>
+
+                                    </tr>
+
+                         {% endfor %}
+                         {% endfor %}
+
+                        </tbody>
+                        </table>
+
+        </div>
+     </div>
+
+
+    <div class="col-md-12">
+        <div class="well bs-component">
+                         <div class="form-group">
+                             <legend><strong>Competence Sections:</strong></legend>
+
+                             {% for sec_name in subsections %}
+
+                        <table class="table table-striped table-hover ">
+                                 <caption class="text-primary"><strong>{{ sec_name }}</strong></caption>
+                                  <thead>
+                                    <tr>
+                                      <th>Area of Competence</th>
+                                      <th>Evidence Type</th>
+                                      <th>Comments</th>
+                                    </tr>
+                                  </thead>
+                                 {% for i in  subsections[sec_name] %}
+                        <tbody>
+                                     <tr>
+                                           <td> {{ i[0] }}</td>
+                                           <td>{{ i[2] }}</td>
+                                           <td> {{ i[1] }}</td>
+                                    </tr>
+
+                         {% endfor %}
+                         {% endfor %}
+
+                        </tbody>
+                        </table>
+                         </div>
+
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="well bs-component">
+
+                        <a href="#" class="btn btn-success" type="button" id="activate_{{ c_id }}">Activate</a>
+                        <a href="#" class="btn btn-info" type="button" id="edit_{{ c_id }}">Edit</a>
+
+        </div>
+
+
+
+        <script>
+
+                  $('#activate_{{ c_id }}').click(function () {
+                    var c_id = {{ c_id }};
+                    console.log(c_id);
+
+                    var url = "{{ url_for('competence.activate_competency') }}";
+                    var dict = {'c_id': c_id};
+                    var data = JSON.stringify(dict);
+
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: data,
+                        dataType: "json",
+                        contentType: "application/json",
+                        success: function (response) {
+                            console.log(response);
+
+                            if(response.match(/Competence has been activated!/i))
+                            {
+                                $('#competence_activated').show()
+
+
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            $('#trace').append("<p>" + error + "</p>");
+                            $('#ajaxModal').modal('show');
+                            return false;
+                        }
+                    });
+                });
+
+
+            </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     </div>
+</div>
+
+
+{% endblock %}

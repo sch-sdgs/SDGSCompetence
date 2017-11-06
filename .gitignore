@@ -1,6 +1,7 @@
+# Created by .ignore support plugin (hsz.mobi)
+
 .idea
-app/audit.html
-app/password.txt
-*/password.txt
+
 qpulse_details.py
-workspace.xml
+
+app/qpulse_details.py
