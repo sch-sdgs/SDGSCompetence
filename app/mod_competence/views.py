@@ -44,6 +44,7 @@ class ItemTableDocuments(Table):
 def list_comptencies():
 
     data = s.query(CompetenceDetails).join(Competence).filter(Competence.current_version==CompetenceDetails.intro).all()
+    print "hello"
     print data
     return render_template('competences_list.html',data=data)
 
@@ -377,8 +378,67 @@ def add_constant_subsection():
 
 
 
-# @competence.route('/view_competence',methods=['GET', 'POST'])
-# def view_competence(c_id):
+@competence.route('/view_competence/',methods=['GET', 'POST'])
+def view_competence():
+    c_id = request.args["c_id"]
+    get_comp_title = s.query(CompetenceDetails.title).filter_by(c_id=c_id).first()
+    comp_title = ','.join(repr(x.encode('utf-8')) for x in get_comp_title).replace("'", "")
+
+    get_comp_scope = s.query(CompetenceDetails.scope).filter_by(c_id=c_id).first()
+    comp_scope = ','.join(repr(x.encode('utf-8')) for x in get_comp_scope).replace("'", "")
+
+    get_comp_category = s.query(CompetenceCategory.category).join(CompetenceDetails).filter_by(c_id=c_id).first()
+    comp_category = ','.join(repr(x.encode('utf-8')) for x in get_comp_category).replace("'", "")
+
+    get_comp_val_period = s.query(ValidityRef.months).join(CompetenceDetails).filter_by(c_id=c_id).first()
+    comp_val_period = int(get_comp_val_period[0])
+
+    ##Creates a dictionary of the docs associated with a created competence
+    dict_docs = {}
+    docs = s.query(Documents.qpulse_no).join(CompetenceDetails).filter_by(c_id=c_id)
+    for doc in docs:
+        doc_id = ','.join(repr(x.encode('utf-8')) for x in doc).replace("'", "")
+        d = QpulseDetails()
+        details = d.Details()
+        username = str(details[1])
+        password = str(details[0])
+        q = QPulseWeb()
+        doc_name = q.get_doc_by_id(username=username, password=password, docNumber=doc)
+
+        print doc_id
+        dict_docs[doc_id] = doc_name
+    print dict_docs
+    ##Get subsection details
+    dict_subsecs = {}
+    subsections = get_subsections(c_id)
+    for item in subsections:
+        sec_name = item.sec_name
+        subsection_name = item.subsec_name
+        comment = item.comments
+        evidence_type = item.type
+        subsection_data = [subsection_name, comment, evidence_type]
+        print subsection_data
+        dict_subsecs.setdefault(sec_name, []).append(subsection_data)
+    print dict_subsecs
+
+    dict_constants = {}
+    constants = get_constant_subsections(c_id)
+    for item in constants:
+        constant_sec_name = item.sec_name
+        constant_subsection_name = item.subsec_name
+        constant_comment = item.comments
+        constant_evidence_type = item.type
+        constant_subsection_data = [constant_subsection_name, constant_comment, constant_evidence_type]
+        print constant_subsection_data
+        dict_constants.setdefault(constant_sec_name, []).append(constant_subsection_data)
+    print "###CONSTANTS###"
+    print dict_constants
+
+    return render_template('competence_view.html', c_id=c_id, title=comp_title, scope=comp_scope,
+                           category=comp_category, val_period=comp_val_period, docs=dict_docs, constants=dict_constants,
+                           subsections=dict_subsecs, review="yes")
+
+
 #
 #         form = ViewCompetency()
 #         print "this method is being called"
@@ -401,6 +461,7 @@ def add_constant_subsection():
 #        # print comp_scope[0]
 #         print comp_title[0]
 #         print '####################################'
+
 
 
 
