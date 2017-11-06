@@ -14,112 +14,113 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="container">
-                <form class="form-group"
-                      action="{{ url_for('training.select_subsections', c_id=competence, user=user['id'], action=action) }}">
-                    <div class="panel panel-primary">
-                        <div class="panel-heading"><h3><strong>{{ heading }}</strong></h3></div>
-                        <div class="panel-body">
-                            {% for section in section_list['constant'] %}
-                                <div class="panel panel-default">
-                                    <div class="panel-heading"><h3><strong>{{ section }}</strong></h3></div>
-                                    <div class="panel-body">
-                                        <div class="row">
-                                            <div class="col-lg-1"></div>
-                                            <div class="col-lg-10">
-                                                <table id="{{ section }}" class="table table-striped">
-                                                    <thead>
+                <div class="panel panel-primary">
+                    <div class="panel-heading"><h3><strong>{{ heading }}</strong></h3></div>
+                    <div class="panel-body">
+                        {% for section in section_list['constant'] %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading"><h3><strong>{{ section }}</strong></h3></div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-lg-1"></div>
+                                        <div class="col-lg-10">
+                                            <table id="{{ section }}" class="table table-striped">
+                                                <thead>
+                                                <tr>
+                                                    <th style="width: 85%">
+                                                        Area of Competence
+                                                    </th>
+                                                    <th style="width: 15%">Select All
+                                                        <div class="material-switch pull-right">
+                                                            <input type="checkbox" id="{{ section }}checkAll">
+                                                            <label for="{{ section }}checkAll"
+                                                                   class="label-success label-selectall"></label>
+                                                        </div>
+                                                    </th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for sub in section_list['constant'][section]['subsections'] %}
                                                     <tr>
-                                                        <th style="width: 85%">
-                                                            Area of Competence
-                                                        </th>
-                                                        <th style="width: 15%">Select All
+                                                        <td>{{ sub["name"] }}</td>
+                                                        <td>
                                                             <div class="material-switch pull-right">
-                                                                <input type="checkbox" id="{{ section }}checkAll">
-                                                                <label for="{{ section }}checkAll"
-                                                                       class="label-success label-selectall"></label>
+                                                                <input type="checkbox" id="{{ sub["id"] }}">
+                                                                <label for="{{ sub["id"] }}"
+                                                                       class="label-success label-competence"
+                                                                        {% if sub['status'] != required_status %}
+                                                                       disabled="disabled"
+                                                                        {% endif %}
+                                                                ></label>
                                                             </div>
-                                                        </th>
+                                                        </td>
                                                     </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    {% for sub in section_list['constant'][section]['subsections'] %}
-                                                        <tr>
-                                                            <td>{{ sub["name"] }}</td>
-                                                            <td>
-                                                                <div class="material-switch pull-right">
-                                                                    <input type="checkbox" id="{{ sub["id"] }}">
-                                                                    <label for="{{ sub["id"] }}"
-                                                                           class="label-success label-competence"
-                                                                            {% if sub['status'] != required_status %}
-                                                                           disabled="disabled"
-                                                                            {% endif %}
-                                                                    ></label>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    {% endfor %}
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                            <div class="col-lg-1"></div>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
                                         </div>
+                                        <div class="col-lg-1"></div>
                                     </div>
                                 </div>
-                            {% endfor %}
-                        {% for section in section_list['custom'] %}
-                                <div class="panel panel-default">
-                                    <div class="panel-heading"><h3><strong>{{ section }}</strong></h3></div>
-                                    <div class="panel-body">
-                                        <div class="row">
-                                            <div class="col-lg-1"></div>
-                                            <div class="col-lg-10">
-                                                <table id="{{ section }}" class="table table-striped">
-                                                    <thead>
-                                                    <tr>
-                                                        <th style="width: 85%">
-                                                            Area of Competence
-                                                        </th>
-                                                        <th style="width: 15%">Select All
-                                                            <div class="material-switch pull-right">
-                                                                <input type="checkbox" id="{{ section }}checkAll">
-                                                                <label for="{{ section }}checkAll"
-                                                                       class="label-success label-selectall"></label>
-                                                            </div>
-                                                        </th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    {% for sub in section_list['custom'][section]['subsections'] %}
-                                                        <tr>
-                                                            <td>{{ sub["name"] }}</td>
-                                                            <td>
-                                                                <div class="material-switch pull-right">
-                                                                    <input type="checkbox" id="{{ sub["id"] }}">
-                                                                    <label for="{{ sub["id"] }}"
-                                                                           class="label-success label-competence"
-                                                                            {% if sub['status'] != required_status %}
-                                                                           disabled="disabled"
-                                                                            {% endif %}
-                                                                    ></label>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    {% endfor %}
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                            <div class="col-lg-1"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                            <div>
-                                <input type="hidden" id="ids" value="[]">
-                                <button class="btn btn-success" id="submit">Continue</button>
                             </div>
+                        {% endfor %}
+                        {% for section in section_list['custom'] %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading"><h3><strong>{{ section }}</strong></h3></div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-lg-1"></div>
+                                        <div class="col-lg-10">
+                                            <table id="{{ section }}" class="table table-striped">
+                                                <thead>
+                                                <tr>
+                                                    <th style="width: 85%">
+                                                        Area of Competence
+                                                    </th>
+                                                    <th style="width: 15%">Select All
+                                                        <div class="material-switch pull-right">
+                                                            <input type="checkbox" id="{{ section }}checkAll">
+                                                            <label for="{{ section }}checkAll"
+                                                                   class="label-success label-selectall"></label>
+                                                        </div>
+                                                    </th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for sub in section_list['custom'][section]['subsections'] %}
+                                                    <tr>
+                                                        <td>{{ sub["name"] }}</td>
+                                                        <td>
+                                                            <div class="material-switch pull-right">
+                                                                <input type="checkbox" id="{{ sub["id"] }}">
+                                                                <label for="{{ sub["id"] }}"
+                                                                       class="label-success label-competence"
+                                                                        {% if sub['status'] != required_status %}
+                                                                       disabled="disabled"
+                                                                        {% endif %}
+                                                                ></label>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="col-lg-1"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <div>
+                            <form class="form-group"
+                                  action="{{ url_for('training.select_subsections', c_id=competence, user=user['id'], action=action) }}"
+                                  method="post">
+                                {{ form.ids }}
+                                {{ form.submit(class_="btn btn-success") }}
+                            </form>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
@@ -176,23 +177,23 @@
 
         function count_ids(table) {
             var ids = [];
-            if (table != null){
-                $($(table).find(".label-competence")).each(function (i, obj){
-                var check = $(obj).parent().children().eq(0);
+            if (table != null) {
+                $($(table).find(".label-competence")).each(function (i, obj) {
+                    var check = $(obj).parent().children().eq(0);
 
-                if ($(check).prop('checked')) {
-                    ids.push($(obj).attr('for'));
-                }
-            });
+                    if ($(check).prop('checked')) {
+                        ids.push($(obj).attr('for'));
+                    }
+                });
             }
-            else{
+            else {
                 $('.label-region').each(function (i, obj) {
-                var check = $(obj).parent().children().eq(0);
+                    var check = $(obj).parent().children().eq(0);
 
-                if ($(check).prop('checked')) {
-                    ids.push($(obj).attr('for'));
-                }
-            });
+                    if ($(check).prop('checked')) {
+                        ids.push($(obj).attr('for'));
+                    }
+                });
             }
 
             return ids
@@ -221,7 +222,7 @@
             var ids = [];
             console.log('start');
             console.log($(id_list).val());
-            if ($(id_list).val()){
+            if ($(id_list).val()) {
                 console.log('value');
                 ids = JSON.parse($(id_list).val());
             }

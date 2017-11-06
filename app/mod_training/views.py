@@ -141,21 +141,22 @@ def get_competence_summary_by_user(c_id, u_id):
     for comp in competence_result:
         return comp
 
-def activate_assessments(c_id, u_id):
+def activate_assessments(ids, u_id):
     """
 
 
     :return:
     """
-    for r in s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Active").values(AssessmentStatusRef.id):
-        activated = r.id
-    for r in s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Assigned").values(AssessmentStatusRef.id):
-        assigned = r.id
+    activated = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Active").first().id
+    assigned = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Assigned").first().id
+    print('activated = ' + str(activated))
+    print('assigned = ' + str(assigned))
     print('query')
+    print(s.query(Assessments).filter(and_(Assessments.user_id == u_id, Assessments.status == assigned, Assessments.ss_id.in_(ids))))
+    print(s.query(Assessments).filter(and_(Assessments.user_id == u_id, Assessments.status == assigned, Assessments.ss_id.in_(ids))))
     statement = s.query(Assessments). \
-        filter(Assessments.ss_id == Subsection.id).\
-        filter(and_(Assessments.user_id == u_id, Assessments.status == assigned, Subsection.c_id == c_id)).\
-        update({Assessments.status:activated, Assessments.date_activated:datetime.date.today()})
+        filter(and_(Assessments.user_id == u_id, Assessments.status == assigned, Assessments.ss_id.in_(ids))).\
+        update({Assessments.status:activated, Assessments.date_activated:datetime.date.today()}, synchronize_session='fetch')
     s.commit()
     print(statement)
 
@@ -306,6 +307,8 @@ def select_subsections():
     forward_action = request.args.get('action')
     print(forward_action)
 
+    form = SubSectionsForm()
+
     if request.method == "GET":
         competence_summary = get_competence_summary_by_user(c_id, u_id)
         section_list = get_competence_by_user(c_id, u_id)
@@ -329,10 +332,17 @@ def select_subsections():
         return render_template('select_subsections.html', competence=c_id, user={'name':competence_summary.user,
                                                                                  'id':u_id},
                                title=competence_summary.title, validity=competence_summary.months, heading=heading,
-                               section_list=section_list, required_status=required_status, action=forward_action)
+                               section_list=section_list, required_status=required_status, action=forward_action, form=form)
     else:
-        pass
-    
+        ids = form.ids.data.replace('"', '').replace('[', '').replace(']','').split(',')
+
+        if forward_action == "assign":
+            pass
+        elif forward_action == "activate":
+            activate_assessments(ids, u_id)
+
+        return redirect(url_for('training.view_current_competence', c_id=c_id, user=u_id))
+
 
 @training.route('/activate', methods=['GET', 'POST'])
 @login_required

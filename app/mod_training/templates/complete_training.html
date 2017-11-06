@@ -69,8 +69,8 @@
                     <div class="panel-heading">
                         <div class="row">
                             <div class="col-lg-9"><h3><strong>{{ section }}</strong></h3></div>
-                            <div class="col-lg-1"><p class="pull-right">{{ section_list[section]['complete'] }} out
-                                of {{ section_list[section]['total'] }}</p></div>
+                            <div class="col-lg-1"><p class="pull-right">{{ section_list['constant'][section]['complete'] }} out
+                                of {{ section_list['constant'][section]['total'] }}</p></div>
                             <div class="col-lg-2">
                                 <div class="progress progress-striped"
                                      style="margin-bottom:0px; height:25px; background-color: #888888;">
@@ -99,7 +99,7 @@
                             </tr>
                             </thead>
                             <tfoot>
-                            {% for sub in section_list[section]['subsections'] %}
+                            {% for sub in section_list['constant'][section]['subsections'] %}
                                 <tr>
                                     <td>{{ sub['name'] }}</td>
                                     <td>{{ sub['status'] }}</td>
@@ -134,8 +134,8 @@
                     <div class="panel-heading">
                         <div class="row">
                             <div class="col-lg-9"><h3><strong>{{ section }}</strong></h3></div>
-                            <div class="col-lg-1"><p class="pull-right">{{ section_list[section]['complete'] }} out
-                                of {{ section_list[section]['total'] }}</p></div>
+                            <div class="col-lg-1"><p class="pull-right">{{ section_list['custom'][section]['complete'] }} out
+                                of {{ section_list['custom'][section]['total'] }}</p></div>
                             <div class="col-lg-2">
                                 <div class="progress progress-striped"
                                      style="margin-bottom:0px; height:25px; background-color: #888888;">
@@ -164,7 +164,7 @@
                             </tr>
                             </thead>
                             <tfoot>
-                            {% for sub in section_list[section]['subsections'] %}
+                            {% for sub in section_list['custom'][section]['subsections'] %}
                                 <tr>
                                     <td>{{ sub['name'] }}</td>
                                     <td>{{ sub['status'] }}</td>
