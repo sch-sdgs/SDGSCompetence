@@ -53,15 +53,20 @@ def get_competence_by_user(c_id, u_id):
         outerjoin(AssessmentStatusRef, Assessments.status==AssessmentStatusRef.id).\
         outerjoin(EvidenceTypeRef).\
         filter(and_(Assessments.user_id == u_id, Competence.id == c_id)).\
-        values(Section.name, Subsection.name.label('area_of_competence'), Subsection.comments.label('notes'), EvidenceTypeRef.type,
+        values(Section.name, Section.constant, Subsection.id, Subsection.name.label('area_of_competence'), Subsection.comments.label('notes'), EvidenceTypeRef.type,
                AssessmentStatusRef.status, (Users.first_name + ' ' + Users.last_name).label('assessor'),
                (users_alias.first_name + ' ' + users_alias.last_name).label('trainer'), Assessments.date_of_training,
                Assessments.date_completed, Assessments.date_expiry, Assessments.comments.label('training_comments'))
-    result = {}
+    result = {'constant':{}, 'custom':{}}
     for c in competence_result:
-        if c.name not in result.keys():
-            result[c.name] = {'complete':0, 'total':0, 'subsections':[]}
-        subsection = {'name':c.area_of_competence,
+        if c.constant:
+            d = 'constant'
+        else:
+            d = 'custom'
+        if c.name not in result[d].keys():
+            result[d][c.name] = {'complete':0, 'total':0, 'subsections':[]}
+        subsection = {'id':c.id,
+                      'name':c.area_of_competence,
                       'status':c.status,
                       'evidence_type':c.type,
                       'assessor':filter_for_none(c.assessor),
@@ -71,9 +76,11 @@ def get_competence_by_user(c_id, u_id):
                       'trainer':filter_for_none(c.trainer),
                       'date_of_training':filter_for_none(c.date_of_training)}
         if c.date_completed:
-            result[c.name]['complete'] += 1
-        result[c.name]['total'] += 1
-        result[c.name]['subsections'].append(subsection)
+            result[d][c.name]['complete'] += 1
+        result[d][c.name]['total'] += 1
+        subsection_list =  result[d][c.name]['subsections']
+        subsection_list.append(subsection)
+        result[d][c.name]['subsections'] = subsection_list
     return result
 
 def get_competence_summary_by_user(c_id, u_id):
@@ -178,6 +185,67 @@ def view_current_competence():
                                assigned=competence_summary.assigned, activated = filter_for_none(competence_summary.activated),
                                completed=filter_for_none(competence_summary.completed), expires=filter_for_none(competence_summary.expiry))
 
+@training.route('/select_subsections', methods=['GET', 'POST'])
+@login_required
+def select_subsections():
+    """
+    Method to display all subsections for a competence in a checkbox list to allow a number of subsections to be
+    selected for activation etc.
+
+    This method can be used in multiple places as it just sends a list of subsection IDs to the action URL which is
+    specific to the required action (e.g. assign, upload evidence etc.)
+
+    The method requires the competence ID, user ID (unless the current user is to be used) and the forward action.
+
+    Forward action can be one of the following:
+
+    * assign
+    * activate
+    * evidence
+    * reassess
+
+    This will determine the subsections available for selection and the action completed after selection.
+
+    :return:
+    """
+    c_id = request.args.get('c_id')
+
+    user = request.args.get('user')
+    if not user:
+        user = current_user.id
+    u_id = get_user(user)
+
+    forward_action = request.args.get('action')
+    print(forward_action)
+
+    if request.method == "GET":
+        competence_summary = get_competence_summary_by_user(c_id, u_id)
+        section_list = get_competence_by_user(c_id, u_id)
+
+        required_status = ""
+        heading = "Select the subsections you wish to {}"
+        if forward_action == "assign":
+            required_status = None
+            heading = heading.format("assign")
+        elif forward_action == "activate":
+            print('here')
+            heading = heading.format("activate")
+            required_status = "Assigned"
+        elif forward_action == "evidence":
+            heading = heading.format("associate with this piece of evidence")
+            required_status = "Active"
+        elif forward_action == "reassess":
+            heading = heading.format("reassess")
+            required_status = "Complete"
+
+        return render_template('select_subsections.html', competence=c_id, user={'name':competence_summary.user,
+                                                                                 'id':u_id},
+                               title=competence_summary.title, validity=competence_summary.months, heading=heading,
+                               section_list=section_list, required_status=required_status, action=forward_action)
+    else:
+        pass
+    
+
 @training.route('/activate', methods=['GET', 'POST'])
 @login_required
 def activate_competence():
@@ -204,7 +272,7 @@ def upload_evidence():
     if request.method == 'GET':
         c_id = request.args.get('c_id')
         # c_id = 4
-        user = request.args.get('user')
+        user = request.args.get('u_id')
         if not user:
             user = current_user.id
 
