@@ -43,6 +43,9 @@ class AssignForm(Form):
     name = TextField("Area of Competence")
     submit = SubmitField()
 
+class UserAssignForm(Form):
+    full_name = TextField("Username")
+    submit = SubmitField()
 
 class EditCompetency(Form):
     #test_id=c_id

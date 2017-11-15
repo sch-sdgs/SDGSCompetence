@@ -42,14 +42,19 @@
                                                 <tbody>
                                                 {% for sub in section_list['constant'][section]['subsections'] %}
                                                     <tr>
-                                                        <td>{{ sub["name"] }}</td>
+                                                        <td>{{ sub["name"] }}: {{ sub['status'] }}</td>
                                                         <td>
                                                             <div class="material-switch pull-right">
-                                                                <input type="checkbox" id="{{ sub["id"] }}">
-                                                                <label for="{{ sub["id"] }}"
-                                                                       class="label-success label-competence"
+                                                                <input type="checkbox" id="{{ sub["id"] }}"
                                                                         {% if sub['status'] != required_status %}
                                                                        disabled="disabled"
+                                                                        {% endif %}
+                                                                >
+                                                                <label for="{{ sub["id"] }}"
+                                                                        {% if sub['status'] != required_status %}
+                                                                       class="label-disabled label-competence" disabled="disabled"
+                                                                       {% else %}
+                                                                       class="label-success label-competence"
                                                                         {% endif %}
                                                                 ></label>
                                                             </div>
@@ -89,14 +94,19 @@
                                                 <tbody>
                                                 {% for sub in section_list['custom'][section]['subsections'] %}
                                                     <tr>
-                                                        <td>{{ sub["name"] }}</td>
+                                                        <td>{{ sub["name"] }}: {{ sub['status'] }}</td>
                                                         <td>
                                                             <div class="material-switch pull-right">
-                                                                <input type="checkbox" id="{{ sub["id"] }}">
-                                                                <label for="{{ sub["id"] }}"
-                                                                       class="label-success label-competence"
+                                                                <input type="checkbox" id="{{ sub["id"] }}"
                                                                         {% if sub['status'] != required_status %}
                                                                        disabled="disabled"
+                                                                        {% endif %}
+                                                                >
+                                                                <label for="{{ sub["id"] }}"
+                                                                       {% if sub['status'] != required_status %}
+                                                                       class="label-disabled label-competence" disabled="disabled"
+                                                                       {% else %}
+                                                                       class="label-success label-competence"
                                                                         {% endif %}
                                                                 ></label>
                                                             </div>
@@ -127,21 +137,16 @@
 
     <script>
         $(document).on('click', ".label-selectall", function (e) {
-            console.log($(e.target));
             var select_all = $(e.target);
             var select_check = $(select_all).parent().children().eq(0);
-            console.log(select_check.prop('checked'));
             select_all.attr('clicked', 'clicked');
             var table = $($($($($(select_all).parent()).parent()).parent()).parent()).parent();
             if (select_all.attr('uncheck-all') == 'false')//if one region has been (un)selected (not all regions need to be deselected)
             {
-                console.log('here');
                 select_all.removeAttr('uncheck-all')
             }
             else if (select_check.prop('checked')) //if select all has been clicked off
             {
-                console.log($(table).find(".label-competence"));
-                console.log($(table));
                 $($(table).find(".label-competence")).each(function (i, obj)//loop through all elements with .label-region class within the relevant table
                 {
                     var check = $(obj).parent().children().eq(0);
@@ -153,9 +158,6 @@
             }
             else //if select all has been clicked on
             {
-                console.log($(table).find(".label-competence"));
-                console.log($(table));
-                console.log('else');
                 if (select_all.attr('uncheck-all') == 'false') {
                 }
                 else {
@@ -201,76 +203,50 @@
 
         $(document).on('click', ".label-competence", function (request) {
             var obj = $(request.currentTarget);
-            var check = $(obj).parent().children().eq(0);
-            var table = $($($($($(obj).parent()).parent()).parent()).parent()).parent();
-            console.log($(table));
-            var select_all = $($(table).find('.label-selectall'));
+            if ($(obj).attr('disabled') != 'disabled') {
+                var check = $(obj).parent().children().eq(0);
+                var table = $($($($($(obj).parent()).parent()).parent()).parent()).parent();
+                var select_all = $($(table).find('.label-selectall'));
 
-            var count = count_ids().length;
-            console.log(count);
-            if (count == 1 && $(check).prop('checked')) {
-                $('#submit').attr('disabled', 'disabled');
-            }
-            else if (count > 0 || (count == 0 && !$(check).prop('checked'))) {
-                $('#submit').removeAttr('disabled');
-            }
-            else if ($('#submit').attr('disabled') != 'disabled') {
-                $('#submit').attr('disabled', 'disabled');
-            }
+                var count = count_ids().length;
+                if (count == 1 && $(check).prop('checked')) {
+                    $('#submit').attr('disabled', 'disabled');
+                }
+                else if (count > 0 || (count == 0 && !$(check).prop('checked'))) {
+                    $('#submit').removeAttr('disabled');
+                }
+                else if ($('#submit').attr('disabled') != 'disabled') {
+                    $('#submit').attr('disabled', 'disabled');
+                }
 
-            var id_list = $('#ids');
-            var ids = [];
-            console.log('start');
-            console.log($(id_list).val());
-            if ($(id_list).val()) {
-                console.log('value');
-                ids = JSON.parse($(id_list).val());
-            }
+                var id_list = $('#ids');
+                var ids = [];
+                if ($(id_list).val()) {
+                    ids = JSON.parse($(id_list).val());
+                }
+                if ($(check).prop('checked')) {
+                    ids.splice($.inArray($(check).attr('id'), ids), 1);
+                }
+                else {
+                    ids.push($(check).attr('id'));
+                }
+                $(id_list).val(JSON.stringify(ids));
 
-            console.log($(id_list).val());
-            console.log($(ids));
-            console.log($(id_list).val());
-            console.log('end');
-            if ($(check).prop('checked')) {
-                ids.splice($.inArray($(check).attr('id'), ids), 1);
+                if (((count == $($(table).find(".label-competence")).length - 1 && !$(check).prop('checked')) || //if the count is one less than the total and the current target is about to be "checked"
+                        (count == 1 && $(check).prop('checked'))) && //if the count is one and the current target is about to be "unchecked"
+                    select_all.attr('clicked') != "clicked") { //if the selectall slider has not been clicked
+                    select_all.attr('uncheck-all', 'false');
+                    select_all.trigger('click')
+                }
+                else if ($(check).prop('checked') && $(select_all.parent().children().eq(0)).prop('checked')//if the current target is being "unchecked" and the selectall button is checked
+                    && select_all.attr('clicked') != "clicked") { //if the selectall slider has not been clicked
+                    select_all.attr('uncheck-all', 'false');
+                    select_all.trigger('click')
+                }
             }
-            else {
-                ids.push($(check).attr('id'));
-            }
-            $(id_list).val(JSON.stringify(ids));
-
-
-            console.log((count == $($(table).find(".label-competence")).length - 1 && !$(check).prop('checked')));
-            console.log((count == $($(table).find(".label-competence")).length - 1));
-            console.log($($(table).find(".label-competence")).length - 1);
-            if (((count == $($(table).find(".label-competence")).length - 1 && !$(check).prop('checked')) || //if the count is one less than the total and the current target is about to be "checked"
-                    (count == 1 && $(check).prop('checked'))) && //if the count is one and the current target is about to be "unchecked"
-                select_all.attr('clicked') != "clicked") { //if the selectall slider has not been clicked
-                console.log('trigger');
-                select_all.attr('uncheck-all', 'false');
-                select_all.trigger('click')
-            }
-            else if ($(check).prop('checked') && $(select_all.parent().children().eq(0)).prop('checked')//if the current target is being "unchecked" and the selectall button is checked
-                && select_all.attr('clicked') != "clicked") { //if the selectall slider has not been clicked
-                console.log('uncheck');
-                select_all.attr('uncheck-all', 'false');
-                select_all.trigger('click')
-            }
-        });
-
-        $(document).on('click', "#submit", function () {
-            var ids = count_ids();
-            var dict = {
-                "c_id": panel_id,
-                "user": gene_id,
-                "section_ids": gene_name,
-                "vpanel_id": vpanel_id,
-                "include_utr": include_utr
-            };
-            var data = JSON.stringify(dict);
-
 
         });
+
     </script>
 
 {% endblock %}

@@ -212,6 +212,7 @@ def reassessment():
             data.append(row)
         form=Reassessment()
         ss_id_list = get_ss_id_from_assessment(assess_id_list)
+        print(ss_id_list)
         competent_users = get_competent_users(ss_id_list)
         choices=[]
         for user in competent_users:

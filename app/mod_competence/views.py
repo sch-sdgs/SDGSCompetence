@@ -129,10 +129,10 @@ def add_competence():
         result = {}
         for section in constants:
             if section.name not in result:
-                result[section.name]={}
-                result[section.name][str(section.id)]=[]
+                result[section.name]={'id':str(section.id), 'subsections':[]}
             subsections = s.query(ConstantSubsections).filter_by(s_id=section.id).all()
-            result[section.name][str(section.id)].append(subsections)
+            result[section.name]['subsections'].append(subsections)
+            print(result[section.name]['subsections'])
 
        # print request.form(dir())
         #return render_template('competence_section.html', form=add_section_form, c_id=c_id, result=result)
@@ -152,6 +152,8 @@ def add_sections():
     print f
     for key in f.keys():
         if "subsections" in key:
+            print(key)
+            print(len(f.getlist(key)))
             for value in f.getlist(key):
                 print key, ":", value
                 s_id = key[0]
@@ -321,9 +323,10 @@ def add_sections_to_db():
 def document_autocomplete():
     doc_id = request.args.get('add_document')
 
-    docs = s.query(Documents.qpulse_no).all()
+    docs = s.query(Documents.qpulse_no).distinct()
     doc_list = []
     for i in docs:
+        print(i)
         doc_list.append(i.qpulse_no)
 
     return jsonify(json_list=doc_list)
@@ -516,6 +519,7 @@ def assign_competences_to_user():
                         print comp.competence_detail
                         result[user].append( dict(comptence=comp.competence_detail[0].title,success=True) )
             else:
+                failed.append(user)
                 failed.append(user)
 
         return render_template('competence_assigned.html', result=result, failed=failed)
