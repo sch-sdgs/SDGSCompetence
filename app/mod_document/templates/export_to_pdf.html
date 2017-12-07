@@ -82,14 +82,14 @@
         </tr>
         {% for sub_name in subsec_dict %}
         <tr>
-            <td></td>
-            <td></td>
+            <td>for loop is working</td>
+            <td>{{ subsec_dict[sub_name][0] }}</td>
             <td>{{ link_to_evidence }}</td>
             <td>{{ outcome }}</td>
             <td>{{ assessor_name }}</td>
             <td>{{ date_of_evidence }}</td>
         </tr>
-
+        {% endfor %}
     </table>
 </div>
 <br/>

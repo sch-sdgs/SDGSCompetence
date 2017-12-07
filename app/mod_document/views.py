@@ -75,7 +75,21 @@ def get_qpulsenums(c_id):
         doc_list.append(i)
     return doc_list
 
-# evidence query
+# evidence query - would this need to be filtered for each sub section - leave until Natalie has finished
+
+# def get_evidence(c_id)
+#     evidence = s.query(). \
+#         join(Subsection). \
+#         join(Assessments). \
+#         join(Users)
+#     filter(Subsection.c_id == c_id)
+#     values(Evidence.name,
+#            Evidence.s_id,
+#
+#            )
+
+    return
+
 
 # methods
 
@@ -134,6 +148,12 @@ def export_document(c_id):
         password = str(details[0])
         qpulse_name = QPulseWeb().get_doc_by_id(username, password, qpulse_no)
         qpulse_list[qpulse_no]=qpulse_name
+
+    # evidence
+
+    evidence_list = {}
+
+
 
     print('***Rendering main document***')
     # Make main document
