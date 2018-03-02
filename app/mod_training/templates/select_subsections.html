@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="page-header">
+        <div class="row">
+            <div class="col-lg-12"><h3><strong>User: </strong>{{ user['name'] }}</h3></div>
+        </div>
+    </div>
+
+    <div class="row" style="margin-bottom: 30px">
+        <div class="col-lg-10"><h3><strong>Competence:</strong> {{ title }}</h3></div>
+        <div class="col-lg-2 pull-right" style="text-align: right">({{ validity }} months)</div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="container">
+                <div class="panel panel-primary">
+                    <div class="panel-heading"><h3><strong>{{ heading }}</strong></h3></div>
+                    <div class="panel-body">
+                        {% for section in section_list['constant'] %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading"><h3><strong>{{ section }}</strong></h3></div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-lg-1"></div>
+                                        <div class="col-lg-10">
+                                            <table id="{{ section }}" class="table table-striped">
+                                                <thead>
+                                                <tr>
+                                                    <th style="width: 85%">
+                                                        Area of Competence
+                                                    </th>
+                                                    <th style="width: 15%">Select All
+                                                        <div class="material-switch pull-right">
+                                                            <input type="checkbox" id="{{ section }}checkAll">
+                                                            <label for="{{ section }}checkAll"
+                                                                   class="label-success label-selectall"></label>
+                                                        </div>
+                                                    </th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for sub in section_list['constant'][section]['subsections'] %}
+                                                    <tr>
+                                                        <td>{{ sub["name"] }}: {{ sub['status'] }}</td>
+                                                        <td>
+                                                            <div class="material-switch pull-right">
+                                                                <input type="checkbox" id="{{ sub["id"] }}"
+                                                                        {% if sub['status'] != required_status %}
+                                                                       disabled="disabled"
+                                                                        {% endif %}
+                                                                >
+                                                                <label for="{{ sub["id"] }}"
+                                                                        {% if sub['status'] != required_status %}
+                                                                       class="label-disabled label-competence" disabled="disabled"
+                                                                       {% else %}
+                                                                       class="label-success label-competence"
+                                                                        {% endif %}
+                                                                ></label>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="col-lg-1"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        {% for section in section_list['custom'] %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading"><h3><strong>{{ section }}</strong></h3></div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-lg-1"></div>
+                                        <div class="col-lg-10">
+                                            <table id="{{ section }}" class="table table-striped">
+                                                <thead>
+                                                <tr>
+                                                    <th style="width: 85%">
+                                                        Area of Competence
+                                                    </th>
+                                                    <th style="width: 15%">Select All
+                                                        <div class="material-switch pull-right">
+                                                            <input type="checkbox" id="{{ section }}checkAll">
+                                                            <label for="{{ section }}checkAll"
+                                                                   class="label-success label-selectall"></label>
+                                                        </div>
+                                                    </th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for sub in section_list['custom'][section]['subsections'] %}
+                                                    <tr>
+                                                        <td>{{ sub["name"] }}: {{ sub['status'] }}</td>
+                                                        <td>
+                                                            <div class="material-switch pull-right">
+                                                                <input type="checkbox" id="{{ sub["id"] }}"
+                                                                        {% if sub['status'] != required_status %}
+                                                                       disabled="disabled"
+                                                                        {% endif %}
+                                                                >
+                                                                <label for="{{ sub["id"] }}"
+                                                                       {% if sub['status'] != required_status %}
+                                                                       class="label-disabled label-competence" disabled="disabled"
+                                                                       {% else %}
+                                                                       class="label-success label-competence"
+                                                                        {% endif %}
+                                                                ></label>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="col-lg-1"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <div>
+                            <form class="form-group"
+                                  action="{{ url_for('training.select_subsections', c_id=competence, user=user['id'], action=action) }}"
+                                  method="post">
+                                {{ form.ids }}
+                                {{ form.submit(class_="btn btn-success") }}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).on('click', ".label-selectall", function (e) {
+            var select_all = $(e.target);
+            var select_check = $(select_all).parent().children().eq(0);
+            select_all.attr('clicked', 'clicked');
+            var table = $($($($($(select_all).parent()).parent()).parent()).parent()).parent();
+            if (select_all.attr('uncheck-all') == 'false')//if one region has been (un)selected (not all regions need to be deselected)
+            {
+                select_all.removeAttr('uncheck-all')
+            }
+            else if (select_check.prop('checked')) //if select all has been clicked off
+            {
+                $($(table).find(".label-competence")).each(function (i, obj)//loop through all elements with .label-region class within the relevant table
+                {
+                    var check = $(obj).parent().children().eq(0);
+                    if ($(check).prop('checked'))//if object is checked turn it off
+                    {
+                        $(obj).trigger('click');
+                    }
+                });
+            }
+            else //if select all has been clicked on
+            {
+                if (select_all.attr('uncheck-all') == 'false') {
+                }
+                else {
+                    $($(table).find(".label-competence")).each(function (i, obj)//loop through all elements with .label-region class
+                    {
+                        var check = $(obj).parent().children().eq(0);
+                        if (!$(check).prop('checked'))//if object is selected do nothing
+                        {
+                            $(obj).trigger('click')
+                        }
+                    });
+                }
+
+            }
+
+            select_all.removeAttr('clicked');
+
+        });
+
+        function count_ids(table) {
+            var ids = [];
+            if (table != null) {
+                $($(table).find(".label-competence")).each(function (i, obj) {
+                    var check = $(obj).parent().children().eq(0);
+
+                    if ($(check).prop('checked')) {
+                        ids.push($(obj).attr('for'));
+                    }
+                });
+            }
+            else {
+                $('.label-region').each(function (i, obj) {
+                    var check = $(obj).parent().children().eq(0);
+
+                    if ($(check).prop('checked')) {
+                        ids.push($(obj).attr('for'));
+                    }
+                });
+            }
+
+            return ids
+        }
+
+        $(document).on('click', ".label-competence", function (request) {
+            var obj = $(request.currentTarget);
+            if ($(obj).attr('disabled') != 'disabled') {
+                var check = $(obj).parent().children().eq(0);
+                var table = $($($($($(obj).parent()).parent()).parent()).parent()).parent();
+                var select_all = $($(table).find('.label-selectall'));
+
+                var count = count_ids().length;
+                if (count == 1 && $(check).prop('checked')) {
+                    $('#submit').attr('disabled', 'disabled');
+                }
+                else if (count > 0 || (count == 0 && !$(check).prop('checked'))) {
+                    $('#submit').removeAttr('disabled');
+                }
+                else if ($('#submit').attr('disabled') != 'disabled') {
+                    $('#submit').attr('disabled', 'disabled');
+                }
+
+                var id_list = $('#ids');
+                var ids = [];
+                if ($(id_list).val()) {
+                    ids = JSON.parse($(id_list).val());
+                }
+                if ($(check).prop('checked')) {
+                    ids.splice($.inArray($(check).attr('id'), ids), 1);
+                }
+                else {
+                    ids.push($(check).attr('id'));
+                }
+                $(id_list).val(JSON.stringify(ids));
+
+                if (((count == $($(table).find(".label-competence")).length - 1 && !$(check).prop('checked')) || //if the count is one less than the total and the current target is about to be "checked"
+                        (count == 1 && $(check).prop('checked'))) && //if the count is one and the current target is about to be "unchecked"
+                    select_all.attr('clicked') != "clicked") { //if the selectall slider has not been clicked
+                    select_all.attr('uncheck-all', 'false');
+                    select_all.trigger('click')
+                }
+                else if ($(check).prop('checked') && $(select_all.parent().children().eq(0)).prop('checked')//if the current target is being "unchecked" and the selectall button is checked
+                    && select_all.attr('clicked') != "clicked") { //if the selectall slider has not been clicked
+                    select_all.attr('uncheck-all', 'false');
+                    select_all.trigger('click')
+                }
+            }
+
+        });
+
+    </script>
+
+{% endblock %}

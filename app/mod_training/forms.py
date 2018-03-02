@@ -10,4 +10,10 @@ class UploadEvidence(Form):
     """
     For to submit evidence for a competence
     """
-    
+
+class Reassessment(Form):
+    signoff_id=SelectField(label="Authoriser")
+
+class SubSectionsForm(Form):
+    ids=HiddenField()
+    submit=SubmitField('Continue')

@@ -7,12 +7,33 @@ from sqlalchemy.sql.expression import func, and_, or_, case, exists, update
 from sqlalchemy.orm import aliased
 from werkzeug import secure_filename
 import os
+from forms import *
 
 training = Blueprint('training', __name__, template_folder='templates')
 
 ###########
 # Queries #
 ###########
+
+def get_ss_id_from_assessment(assess_id_list):
+    ss_ids_res = s.query(Assessments).filter(Assessments.id.in_(assess_id_list)).values(Assessments.ss_id)
+    ss_ids = []
+
+    for ss_id in ss_ids_res:
+        ss_ids.append(ss_id.ss_id)
+
+    return ss_ids
+
+def get_competent_users(ss_id_list):
+    users = s.query(Users).\
+        join(Assessments,Assessments.user_id==Users.id).\
+        join(AssessmentStatusRef).\
+        filter(AssessmentStatusRef.status=="Complete",
+            Assessments.date_expiry>datetime.date.today()).\
+        group_by(Users.id).having(func.count(Assessments.ss_id.in_(ss_id_list)) == len(ss_id_list)).\
+        values(Users.id, (Users.first_name + ' ' + Users.last_name).label('name'))
+    return users
+
 def get_user(user):
     """
     Method to check if value sent with request is ID, if not the method queries the database and returns the ID
@@ -53,15 +74,20 @@ def get_competence_by_user(c_id, u_id):
         outerjoin(AssessmentStatusRef, Assessments.status==AssessmentStatusRef.id).\
         outerjoin(EvidenceTypeRef).\
         filter(and_(Assessments.user_id == u_id, Competence.id == c_id)).\
-        values(Section.name, Subsection.name.label('area_of_competence'), Subsection.comments.label('notes'), EvidenceTypeRef.type,
+        values(Section.name, Section.constant, Subsection.id, Subsection.name.label('area_of_competence'), Subsection.comments.label('notes'), EvidenceTypeRef.type,
                AssessmentStatusRef.status, (Users.first_name + ' ' + Users.last_name).label('assessor'),
                (users_alias.first_name + ' ' + users_alias.last_name).label('trainer'), Assessments.date_of_training,
                Assessments.date_completed, Assessments.date_expiry, Assessments.comments.label('training_comments'))
-    result = {}
+    result = {'constant':{}, 'custom':{}}
     for c in competence_result:
-        if c.name not in result.keys():
-            result[c.name] = {'complete':0, 'total':0, 'subsections':[]}
-        subsection = {'name':c.area_of_competence,
+        if c.constant:
+            d = 'constant'
+        else:
+            d = 'custom'
+        if c.name not in result[d].keys():
+            result[d][c.name] = {'complete':0, 'total':0, 'subsections':[]}
+        subsection = {'id':c.id,
+                      'name':c.area_of_competence,
                       'status':c.status,
                       'evidence_type':c.type,
                       'assessor':filter_for_none(c.assessor),
@@ -71,9 +97,11 @@ def get_competence_by_user(c_id, u_id):
                       'trainer':filter_for_none(c.trainer),
                       'date_of_training':filter_for_none(c.date_of_training)}
         if c.date_completed:
-            result[c.name]['complete'] += 1
-        result[c.name]['total'] += 1
-        result[c.name]['subsections'].append(subsection)
+            result[d][c.name]['complete'] += 1
+        result[d][c.name]['total'] += 1
+        subsection_list =  result[d][c.name]['subsections']
+        subsection_list.append(subsection)
+        result[d][c.name]['subsections'] = subsection_list
     return result
 
 def get_competence_summary_by_user(c_id, u_id):
@@ -113,21 +141,22 @@ def get_competence_summary_by_user(c_id, u_id):
     for comp in competence_result:
         return comp
 
-def activate_assessments(c_id, u_id):
+def activate_assessments(ids, u_id):
     """
 
 
     :return:
     """
-    for r in s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Active").values(AssessmentStatusRef.id):
-        activated = r.id
-    for r in s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Assigned").values(AssessmentStatusRef.id):
-        assigned = r.id
+    activated = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Active").first().id
+    assigned = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Assigned").first().id
+    print('activated = ' + str(activated))
+    print('assigned = ' + str(assigned))
     print('query')
+    print(s.query(Assessments).filter(and_(Assessments.user_id == u_id, Assessments.status == assigned, Assessments.ss_id.in_(ids))))
+    print(s.query(Assessments).filter(and_(Assessments.user_id == u_id, Assessments.status == assigned, Assessments.ss_id.in_(ids))))
     statement = s.query(Assessments). \
-        filter(Assessments.ss_id == Subsection.id).\
-        filter(and_(Assessments.user_id == u_id, Assessments.status == assigned, Subsection.c_id == c_id)).\
-        update({Assessments.status:activated, Assessments.date_activated:datetime.date.today()})
+        filter(and_(Assessments.user_id == u_id, Assessments.status == assigned, Assessments.ss_id.in_(ids))).\
+        update({Assessments.status:activated, Assessments.date_activated:datetime.date.today()}, synchronize_session='fetch')
     s.commit()
     print(statement)
 
@@ -149,6 +178,74 @@ def filter_for_none(value):
 ###########
 #  Views  #
 ###########
+
+@training.route('/reassessment', methods=['GET', 'POST'])
+@login_required
+def reassessment():
+    if request.method=='GET':
+        c_id = request.args.get('c_id')
+        print c_id
+        user = request.args.get('user')
+        assess_id_list = request.args.get('assess_id_list').split(',')
+        if not user:
+            user = current_user.id
+        u_id = get_user(user)
+        competence_summary = get_competence_summary_by_user(c_id, u_id)
+
+        questions = s.query(QuestionsRef).filter(QuestionsRef.active==True)
+        data=[]
+        for question in questions:
+            row={}
+            row['id'] = question.id
+            row['question'] = question.question
+            if question.answer_type == 'Dropdown':
+                options = s.query(DropDownChoices).filter(DropDownChoices.question_id==question.id).all()
+                row['DropDown'] = []
+                for option in options:
+                    row['DropDown'].append(option.choice)
+            elif question.answer_type == 'Free text':
+                row['FreeText'] = True
+            elif question.answer_type == 'Date':
+                row['Date'] = True
+            elif question.answer_type == 'Yes/no':
+                row['yesno'] = True
+            data.append(row)
+        form=Reassessment()
+        ss_id_list = get_ss_id_from_assessment(assess_id_list)
+        print(ss_id_list)
+        competent_users = get_competent_users(ss_id_list)
+        choices=[]
+        for user in competent_users:
+            choices.append((user.id, user.name))
+        form.signoff_id.choices=choices
+        return render_template('reassessment.html', data=data, c_id = c_id, user_id=u_id, competence_name=competence_summary.title, form=form, assess_id_list=','.join(assess_id_list))
+
+    elif request.method =='POST':
+        print "now posting"
+        questions = s.query(QuestionsRef).filter(QuestionsRef.active == True).all()
+        print questions
+        signoff_id = request.form["signoff_id"]
+        print(request.form)
+        assess_id_list = request.args.get('assess_id_list').split(',')
+        print signoff_id
+        reassessment = Reassessments(signoff_id)
+        s.add(reassessment)
+        s.commit()
+        for assess in assess_id_list:
+            assess_rel = AssessReassessRel(assess, reassessment.id)
+            s.add(assess_rel)
+        s.commit()
+        for question in questions:
+            print(question)
+            id = "answer"+str(question.id)
+            print id
+            answer = request.form.get(id)
+            print(answer)
+            reassess = ReassessmentQuestions(question_id=question.id, answer=answer, reassessment_id=reassessment.id)
+            s.add(reassess)
+            s.commit()
+
+        return redirect(url_for('training.view_current_competence', c_id=request.args.get('c_id'), user=request.args.get('u_id')))
 
 @training.route('/view', methods=['GET', 'POST'])
 @login_required
@@ -178,6 +275,76 @@ def view_current_competence():
                                assigned=competence_summary.assigned, activated = filter_for_none(competence_summary.activated),
                                completed=filter_for_none(competence_summary.completed), expires=filter_for_none(competence_summary.expiry))
 
+@training.route('/select_subsections', methods=['GET', 'POST'])
+@login_required
+def select_subsections():
+    """
+    Method to display all subsections for a competence in a checkbox list to allow a number of subsections to be
+    selected for activation etc.
+
+    This method can be used in multiple places as it just sends a list of subsection IDs to the action URL which is
+    specific to the required action (e.g. assign, upload evidence etc.)
+
+    The method requires the competence ID, user ID (unless the current user is to be used) and the forward action.
+
+    Forward action can be one of the following:
+
+    * assign
+    * activate
+    * evidence
+    * reassess
+
+    This will determine the subsections available for selection and the action completed after selection.
+
+    :return:
+    """
+    c_id = request.args.get('c_id')
+
+    user = request.args.get('user')
+    if not user:
+        user = current_user.id
+    u_id = get_user(user)
+
+    forward_action = request.args.get('action')
+    print(forward_action)
+
+    form = SubSectionsForm()
+
+    if request.method == "GET":
+        competence_summary = get_competence_summary_by_user(c_id, u_id)
+        section_list = get_competence_by_user(c_id, u_id)
+
+        required_status = ""
+        heading = "Select the subsections you wish to {}"
+        if forward_action == "assign":
+            required_status = None
+            heading = heading.format("assign")
+        elif forward_action == "activate":
+            print('here')
+            heading = heading.format("activate")
+            required_status = "Assigned"
+        elif forward_action == "evidence":
+            heading = heading.format("associate with this piece of evidence")
+            required_status = "Active"
+        elif forward_action == "reassess":
+            heading = heading.format("reassess")
+            required_status = "Complete"
+
+        return render_template('select_subsections.html', competence=c_id, user={'name':competence_summary.user,
+                                                                                 'id':u_id},
+                               title=competence_summary.title, validity=competence_summary.months, heading=heading,
+                               section_list=section_list, required_status=required_status, action=forward_action, form=form)
+    else:
+        ids = form.ids.data.replace('"', '').replace('[', '').replace(']','').split(',')
+
+        if forward_action == "assign":
+            pass
+        elif forward_action == "activate":
+            activate_assessments(ids, u_id)
+
+        return redirect(url_for('training.view_current_competence', c_id=c_id, user=u_id))
+
+
 @training.route('/activate', methods=['GET', 'POST'])
 @login_required
 def activate_competence():
@@ -204,7 +371,7 @@ def upload_evidence():
     if request.method == 'GET':
         c_id = request.args.get('c_id')
         # c_id = 4
-        user = request.args.get('user')
+        user = request.args.get('u_id')
         if not user:
             user = current_user.id
 

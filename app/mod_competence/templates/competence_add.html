@@ -94,6 +94,7 @@
         $.ajax({
             url: '{{ url_for("competence.document_autocomplete") }}'
         }).done(function (data) {
+            console.log(data.json_list);
             $('#add_document').autocomplete({
                 source: data.json_list,
                 minLength: 2
@@ -103,9 +104,9 @@
     //This function checks whether the input is a valid Qpulse doc number and adds it to a list if correct, list items are displayed underneath if succesfully added
     $('#submit_document').click(function () {
 
-        $('#qpulse_error').hide()
+        $('#qpulse_error').hide();
 
-        previous_value = $('#doc_list').val()
+        var previous_value = $('#doc_list').val();
         if (previous_value == "") {
             sep = ''
         } else {
@@ -113,7 +114,7 @@
         }
 
         var url = "{{ url_for('competence.get_doc_name') }}";
-        var doc_id=$('#add_document').val()
+        var doc_id=$('#add_document').val();
         console.log(doc_id);
         console.log(url);
 

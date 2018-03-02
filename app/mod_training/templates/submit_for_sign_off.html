@@ -1,0 +1,38 @@
+<div class="modal" id="{{ sub['id'] }}">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span
+                        aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title"><strong>Evidence Summary: </strong>{{ sub['name'] }}</h4>
+            </div>
+            <div class="modal-body">
+                <p>Files that can open in your browser will (i.e. images)...</p>
+                <table class="table table-striped">
+                    <thead>
+                    <th>Filename</th>
+                    <th>Date Uploaded</th>
+                    </thead>
+                    {% for i in evidence %}
+
+                        {% for u in get_uploads(i.evidence_id_rel.id) %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('training.download',filename=u.uuid,alias=u.filename) }}">{{ u.filename }}</a>
+                                </td>
+                                <td>{{ u.date_uploaded }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                </table>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

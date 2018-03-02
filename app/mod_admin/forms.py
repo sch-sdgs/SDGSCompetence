@@ -67,3 +67,13 @@ class ServiceForm(Form):
 class JobRoleForm(Form):
     job=TextField("Job Role",  [Required("Enter a job role")])
     submit = SubmitField()
+
+class QuestionsForm(Form):
+    question = TextField("Reassessment Question", [Required("Enter a reassessment question")])
+    choices=[("Free text", "Free text"),("Date","Date"), ("Yes/no","Yes/no"), ("Dropdown","Dropdown")]
+    type = SelectField("Answer type", choices=choices)
+    submit = SubmitField()
+
+class DropDownForm(Form):
+    choice=TextField("Dropdown Choice",  [Required("Enter an dropdown choice")])
+    submit = SubmitField()

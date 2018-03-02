@@ -324,7 +324,7 @@ h3
 }
 
 .material-switch > label::before {
-    background: rgb(0, 0, 0);
+    background: rgb(0,0,0);
     box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
     border-radius: 8px;
     content: '';
@@ -355,6 +355,11 @@ h3
 .material-switch > input[type="checkbox"]:checked + label::after {
     background: inherit;
     left: 20px;
+}
+
+.material-switch > label[disabled] {
+    background: #999999;
+    opacity: 0.35;
 }
 
 /*Now the CSS*/
@@ -477,9 +482,8 @@ font-style: oblique}
 .label-gene{}
 .label-region{}
 .label-selectall{}
-.label-added{background-color: #999}
 .label-custom{}
-
+.label-competence{}
 
 
 .line {
