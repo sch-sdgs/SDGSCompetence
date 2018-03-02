@@ -44,7 +44,7 @@ class AssignForm(Form):
     submit = SubmitField()
 
 class UserAssignForm(Form):
-    full_name = TextField("Username")
+    full_name = TextField("Full Name")
     submit = SubmitField()
 
 class EditCompetency(Form):

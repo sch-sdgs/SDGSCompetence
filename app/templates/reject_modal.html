@@ -1,5 +1,5 @@
-<div class="modal" id="accept_{{ ass.id }}">
-    <form action="{{ url_for('training.signoff_evidence',action="accept",assess_id=ass.id) }}" method="POST"
+<div class="modal" id="reject_{{ evidence.id }}">
+    <form action="{{ url_for('training.signoff_evidence',action="reject",evidence_id=evidence.id) }}" method="POST"
                       class="form-horizontal" enctype="multipart/form-data">
         <fieldset>
     <div class="modal-dialog">
@@ -8,7 +8,7 @@
                 <button type="button" class="close" data-dismiss="modal"><span
                         aria-hidden="true">&times;</span><span class="sr-only">Close</span>
                 </button>
-                <h4 class="modal-title"><strong>Accept Evidence</strong></h4>
+                <h4 class="modal-title"><strong>Reject Evidence</strong></h4>
             </div>
             <div class="modal-body">
 
@@ -19,7 +19,7 @@
                             <div class="col-lg-9">{{ accept_form.comments(class_="form-control ") }}</div>
                         </div>
                  <div class="form-group">
-                            <div class="col-lg-9">{{ accept_form.assid(class_="form-control ",value=ass.id) }}</div>
+                            <div class="col-lg-9">{{ accept_form.assid(class_="form-control ",value=evidence.id) }}</div>
                         </div>
 
 

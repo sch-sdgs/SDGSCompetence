@@ -75,7 +75,7 @@ def index():
 
 @admin.route('/users/view', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
-def users_view():
+def users_view(message=None):
     """
     view all users in the database - roles control how much info you can see
     :return: template users_view.html
@@ -107,7 +107,7 @@ def users_view():
 
         data.append(user_dict)
 
-    return render_template("users_view.html", data=data)
+    return render_template("users_view.html", data=data,message=message)
 
 
 @admin.route('/users/toggle_active/<id>', methods=['GET', 'POST'])
@@ -122,10 +122,17 @@ def users_toggle_active(id=None):
     user = s.query(Users).filter_by(id=id).first()
     if user.active == True:
         s.query(Users).filter_by(id=id).update({'active': False})
+        s.commit()
+        competences = s.query(CompetenceDetails).filter(Competence.obsolete==False).filter(CompetenceDetails.creator_id==id).all()
+        if len(competences) > 0:
+            print "YOYO"
+            return users_view(message="The user you made inactive owns the following competence (please change ownership!):<br>" + "<br>".join([c.title for c in competences]))
+        else:
+            return redirect(url_for('admin.users_view'))
     elif user.active == False:
         s.query(Users).filter_by(id=id).update({'active': True})
-    s.commit()
-    return redirect(url_for('admin.users_view'))
+        s.commit()
+        return redirect(url_for('admin.users_view'))
 
 
 @admin.route('/users/add', methods=['GET', 'POST'])
@@ -766,6 +773,33 @@ def deleterole(id=None):
     s.commit()
 
     return redirect(url_for('admin.userroles'))
+
+
+@admin.route('/subsection_autocomplete', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def subsection_autocomplete():
+    form = SubSectionAutoComplete()
+
+    if request.method == 'POST':
+        phrases = request.form["phrase"].split("\r\n")
+        for phrase in phrases:
+            u = SubsectionAutocomplete(phrase=phrase)
+            s.add(u)
+        s.commit()
+
+    subsections = s.query(SubsectionAutocomplete).all()
+
+    return render_template("subsection_autocomplete.html", form=form, data=subsections)
+
+
+@admin.route('/subsection_autocomplete/delete/<id>', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def delete_subsection_autocomplete(id=None):
+    s.query(SubsectionAutocomplete).filter_by(id=id).delete()
+
+    s.commit()
+
+    return redirect(url_for('admin.subsection_autocomplete'))
 
 
 @admin.route('/logs', methods=['GET', 'POST'])

@@ -1,23 +1,37 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% block content %}
-<div class="page-header">
-<h1>Assign Competence</h1>
-</div>
 
 
-<div class="row">
-    <div class="col-md-2"></div>
-    <div class="col-md-8">
-        <div class="well bs-component">
+
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                Assign User(s) to Competence
+                <small></small>
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                <li class="active">Here</li>
+            </ol>
+            {% if message %}
+                <div class="alert alert-danger">
+                    <strong>Fail Whale!</strong> {{ message }}
+                </div>
+            {% endif %}
+           <h3><strong>Competencies:</strong> {{competences}}</h3>
+        </section>
+
+        <!-- Main content -->
+        <section class="content container-fluid">
+            <div class="box" id="training">
+
+                <div class="box-body">
             <form action="{{ url_for('competence.assign_competences_to_user') }}?ids={{ ids }}" method="POST" class="form-horizontal">
                 <fieldset>
-                    <legend>Choose User (or multiple users!)</legend>
 
-                    <div class="form-group">
-                    <div class="col-lg-12">
-                    <strong>Competencies:</strong> {{competences}}
-                    </div>
-                    </div>
+
+
                     <div class="form-group">
                         {{ form.full_name.label(class_="col-lg-2 control-label") }}
 
@@ -25,7 +39,7 @@
                             <div class="input-group">
                             {{ form.full_name(class_="form-control") }}
 
-                            <span class="input-group-btn"><button class="btn btn-primary" id="add_user"
+                            <span class="input-group-btn"><button class="btn btn-primary btn-flat" id="add_user"
                                                                       type="button">Assign</button></span>
                                 </div>
                              <span class="help-block"><strong>Start typing and users will appear.</strong></span>
@@ -36,15 +50,15 @@
                     </div>
                     <div class="form-group">
                         <div class="col-lg-10 col-lg-offset-2">
-                            {{ form.submit(class_="btn btn-primary") }}
+                            {{ form.submit(class_="btn btn-primary btn-flat") }}
                         </div>
                     </div>
                 </fieldset>
             </form>
         </div>
     </div>
-    <div class="col-md-2"></div>
-</div>
+</section>
+    </div>
 
 <script>
 
@@ -63,7 +77,7 @@
         $('#user_list').val(previous_value + sep + $('#full_name').val() )
 
         $('#selected_users').val( $('#add_document').val() )
-        $('#selected_users').append('<a href="#" class="btn btn-success remove" id="remove_document" >' + $('#full_name').val() + ' <span class="glyphicon glyphicon-remove"></span> </a> ')
+        $('#selected_users').append('<a href="#" class="btn btn-success btn-flat remove" id="remove_document" >' + $('#full_name').val() + ' <span class="glyphicon glyphicon-remove"></span> </a> ')
         $('#full_name').val('')
 
     };

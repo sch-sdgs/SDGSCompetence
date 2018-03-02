@@ -1,315 +1,55 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto+Mono');
 
-@media (min-width: 768px) {
-    .navbar-centered .navbar-nav {
-        float: none;
-        text-align: center;
-    }
-    .navbar-centered .navbar-nav > li {
-        float: none;
-    }
-    .navbar-centered .nav > li {
-        display: inline;
-    }
-    .navbar-centered .nav > li > a {
-        display: inline-block;
-    }
+table.dataTable tbody tr.selected {
+    color: white !important;
+    background-color: #999999 !important;
 }
 
-@media (min-width: 1200px) {
-  .container {
-    width: 1300px;
-  }
-}
-
-div.progress{
-  margin:0;
-}
-.table > tbody > tr > td {
-     vertical-align: middle;
-}
-.pull-down{position:absolute;left:0;bottom:0}
-
-/* visited link grey */
-.dropdown-menu>li>a:focus {
-    color: #7b8a8b;
-}
-
-.dropdown-submenu{ position: relative; }
-
-.dropdown-submenu>.dropdown-menu{
-  top:0;
-  left:100%;
-  margin-top:-6px;
-  margin-left:-1px;
-  -webkit-border-radius:0 6px 6px 6px;
-  -moz-border-radius:0 6px 6px 6px;
-  border-radius:0 6px 6px 6px;
-}
-
-.dropdown-submenu>a:after{
-  display:block;
-  content:" ";
-  float:right;
-  width:0;
-  height:0;
-  border-color:transparent;
-  border-style:solid;
-  border-width:5px 0 5px 5px;
-  border-left-color:#cccccc;
-  margin-top:5px;margin-right:-10px;
-}
-.dropdown-submenu:hover>a:after{
-  border-left-color:#555;
-}
-.dropdown-submenu.pull-left{ float: none; }
-.dropdown-submenu.pull-left>.dropdown-menu{
-  left: -100%;
-  margin-left: 10px;
-  -webkit-border-radius: 6px 0 6px 6px;
-  -moz-border-radius: 6px 0 6px 6px;
-  border-radius: 6px 0 6px 6px;
-}
-
-@media (min-width: 768px) {
-
-}
-@media (min-width: 992px) {
-
-}
-@media (min-width: 1200px) {
-
-}
-
-.panel-heading a:after {
-    font-family:'Glyphicons Halflings';
-    content:"\e114";
-    float: right;
-    color: grey;
-}
-.panel-heading a.collapsed:after {
-    content:"\e080";
-}
-
-body {
-  padding-top: 60px;
-
-}
 .ui-autocomplete {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1000;
-  display: none;
-  float: left;
-  min-width: 160px;
-  padding: 5px 0;
-  margin: 1px 0 0;
-  list-style: none;
-  font-size: 14px;
-  text-align: left;
-  background-color: #ffffff;
-  border: 1px solid #cccccc;
-  border: 1px solid rgba(0, 0, 0, 0.15);
 
-  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-  background-clip: padding-box;
-}
 
-.ui-autocomplete > li > div {
-  display: block;
-  padding: 3px 20px;
-  clear: both;
-  font-weight: normal;
-  line-height: 1.42857143;
-  color: #333333;
-  white-space: nowrap;
-}
 
-.ui-state-hover,
-.ui-state-active,
-.ui-state-focus {
-  text-decoration: none;
-  color: #262626;
-  background-color: #c9c9c9;
-  cursor: pointer;
-}
-
-.ui-helper-hidden-accessible {
-  border: 0;
-  clip: rect(0 0 0 0);
-  height: 1px;
-  margin: -1px;
-  overflow: hidden;
-  padding: 0;
-  position: absolute;
-  width: 1px;
-}
-.archived{
-
-    background-color: #2b3e50 !important;
-
-}
-
-.focusedInput {
-    border-color: rgba(82,168,236,.8);
-    outline: 0;
-    outline: thin dotted \9;
-    -moz-box-shadow: 0 0 8px rgba(82,168,236,.6);
-    box-shadow: 0 0 8px rgba(82,168,236,.6) !important;
-}
-
-/*.table tr.row_selected td {*/
-/*background-color: #2b3e50 !important;*/
-/*}*/
-
-/*.even.selected td {*/
-           /*background-color: #2b3e50; !important; !* Add !important to make sure override datables base styles *!*/
-  /*}*/
-
- /*.odd.selected td {*/
-          /*background-color: #2b3e50; !important; !* Add !important to make sure override datables base styles *!*/
-   /*}*/
-
-.strong{
-     font-weight: 700; !important;
- }
-
-.margin-top {
-     margin-top: 5px; !important;
- }
-
-div#loading {
-    width: 230px;
-    height: 35px;
-    display: none;
-    cursor: wait;
+    padding: 4px 4px;
     position: absolute;
-left: 50%;
-top: 50%;
--webkit-transform: translate(-50%, -50%);
--ms-transform: translate(-50%, -50%);
-transform: translate(-50%, -50%);
-    }
-
-.ui-accordion-header.ui-state-active {
-    border: 1px solid #17967d;
-    background: #18bc9c;
+    list-style: none;
+    background-color: #ffffff;
+    border-color: #ccc;
+    border-color: rgba(0, 0, 0, 0.2);
+    border-style: solid;
+    border-width: 1px;
+border-radius: 0px;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    /*-webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);*/
+    /*-moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);*/
+    /*box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);*/
+    /*-webkit-background-clip: padding-box;*/
+    /*-moz-background-clip: padding;*/
+    /*background-clip: padding-box;*/
+    /**border-right-width: 2px;*/
+    /**border-bottom-width: 2px;*/
 }
 
-.sequence {
-font-family: 'Roboto Mono';
-    background-color:#4e5d6c;
-    font-size: 22px;
-    text-align: center;
-    padding: 5px;
-    margin: 30px;
-    margin-top: 1px;
-}
-
-.starter-template {
-  padding: 40px 15px;
-  text-align: center;
-}
-.jumbotron{
-  /*margin-top: 100px;*/
-  /*background-color: #69B5EC;*/
-  /*color: #ffffff;*/
-}
-
-.btngene{
-  margin-bottom: 5px;
-}
-
-.hide
-{
-    display:none;
-}
-
-table{
-    table-layout: fixed;
-}
-
-/*.table-nonfluid {*/
-   /*width: auto !important;*/
-    /*word-wrap: break-word;*/
+/*.ui-menu-item > a.ui-corner-all {*/
+    /*display: block;*/
+    /*padding: 3px 15px;*/
+    /*clear: both;*/
+    /*font-weight: normal;*/
+    /*line-height: 18px;*/
+    /*color: #555555;*/
+    /*white-space: nowrap;*/
+    /*text-decoration: none;*/
 /*}*/
 
-td{
-    word-wrap: break-word;
+.ui-state-hover, .ui-state-active {
+    color: #ffffff;
+    text-decoration: none;
+    background-color: #0088cc;
+    border-radius: 0px;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    background-image: none;
 }
-
-h3
-{
-  display: inline;
-}
-
-.test{
-  display: inline-block;
-}
-
-.label
-{
-  margin-right:5px;
-}
-
-.panel{
-  margin-top: 10px;
-}
-.addhere{
-  white-space:normal;
-}
-
-.wrapper {
-	margin-top: 80px;
-  margin-bottom: 80px;
-  background-color: #FFFFFF;
-}
-
-.white-bk {
-  background-color: #FFFFFF;
-  padding: 10px 10px 1px;
-  border: 1px solid #ebebeb;
-}
-
-
-
-.form-signin {
-  max-width: 400px;
-  padding: 10px 35px 35px;
-  margin: 0 auto;
-  background-color: #f6f6f6;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.form-create {
-  max-width: 500px;
-  padding: 10px 35px 35px;
-  margin: 0 auto;
-  background-color: #f6f6f6;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.form-permissions{
-  max-width: 800px;
-  padding: 10px 35px 35px;
-  margin: 0 auto;
-  background-color: #f6f6f6;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.form-vpgenes {
-    padding: 100px 35px 35px;
-    margin: 0 auto;
-    background-color: #ffffff;
-    /*border: 1px solid rgba(0, 0, 0, 0.1);*/
-}
-
-.top-buffer { margin-top:20px; }
-.bttm-buffer { margin-bottom:20px; }
-.centerdiv{margin: 0 auto; text-align: center;}
-
 
 
 .material-switch > input[type="checkbox"] {
@@ -324,7 +64,7 @@ h3
 }
 
 .material-switch > label::before {
-    background: rgb(0,0,0);
+    background: rgb(0, 0, 0);
     box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
     border-radius: 8px;
     content: '';
@@ -355,207 +95,4 @@ h3
 .material-switch > input[type="checkbox"]:checked + label::after {
     background: inherit;
     left: 20px;
-}
-
-.material-switch > label[disabled] {
-    background: #999999;
-    opacity: 0.35;
-}
-
-/*Now the CSS*/
-/** {margin: 0; padding: 0;}*/
-
-.tree ul {
-	padding-top: 20px; position: relative;
-
-	transition: all 0.5s;
-	-webkit-transition: all 0.5s;
-	-moz-transition: all 0.5s;
-}
-
-.tree li {
-	float: left; text-align: center;
-	list-style-type: none;
-	position: relative;
-	padding: 20px 5px 0 5px;
-
-	transition: all 0.5s;
-	-webkit-transition: all 0.5s;
-	-moz-transition: all 0.5s;
-}
-
-/*We will use ::before and ::after to draw the connectors*/
-
-.tree li::before, .tree li::after{
-	content: '';
-	position: absolute; top: 0; right: 50%;
-	border-top: 1px solid #ccc;
-	width: 50%; height: 20px;
-}
-.tree li::after{
-	right: auto; left: 50%;
-	border-left: 1px solid #ccc;
-}
-
-/*We need to remove left-right connectors from elements without
-any siblings*/
-.tree li:only-child::after, .tree li:only-child::before {
-	display: none;
-}
-
-/*Remove space from the top of single children*/
-.tree li:only-child{ padding-top: 0;}
-
-/*Remove left connector from first child and
-right connector from last child*/
-.tree li:first-child::before, .tree li:last-child::after{
-	border: 0 none;
-}
-/*Adding back the vertical connector to the last nodes*/
-.tree li:last-child::before{
-	border-right: 1px solid #ccc;
-	border-radius: 0 5px 0 0;
-	-webkit-border-radius: 0 5px 0 0;
-	-moz-border-radius: 0 5px 0 0;
-}
-.tree li:first-child::after{
-	border-radius: 5px 0 0 0;
-	-webkit-border-radius: 5px 0 0 0;
-	-moz-border-radius: 5px 0 0 0;
-}
-
-/*Time to add downward connectors from parents*/
-.tree ul ul::before{
-	content: '';
-	position: absolute; top: 0; left: 50%;
-	border-left: 1px solid #ccc;
-	width: 0; height: 20px;
-}
-
-.tree li a{
-	border: 1px solid #ccc;
-	padding: 5px 10px;
-	text-decoration: none;
-	color: #666;
-	font-family: arial, verdana, tahoma;
-	font-size: 11px;
-	display: inline-block;
-
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-
-	transition: all 0.5s;
-	-webkit-transition: all 0.5s;
-	-moz-transition: all 0.5s;
-}
-
-/*Time for some hover effects*/
-/*We will apply the hover effect the the lineage of the element also*/
-.tree li a:hover, .tree li a:hover+ul li a {
-	background: #c8e4f8; color: #000; border: 1px solid #94a0b4;
-}
-/*Connector styles on hover*/
-.tree li a:hover+ul li::after,
-.tree li a:hover+ul li::before,
-.tree li a:hover+ul::before,
-.tree li a:hover+ul ul::before{
-	border-color:  #94a0b4;
-}
-
-
-.logs{
-    font-family: Consolas,monaco,monospace;
-    /*max-width: 1000px;*/
-    max-height: 1000px;
-      padding: 10px 35px 35px;
-      margin: 0 auto;
-      background-color: #f6f6f6;
-      border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.bolden{font-weight: bold;
-font-style: oblique}
-
-.red{color: red}
-
-.label-gene{}
-.label-region{}
-.label-selectall{}
-.label-custom{}
-.label-competence{}
-
-
-.line {
-  width:580px;
-  min-height:2px;
-  background-color: #ddd;
-  margin-top:50px;
-  margin-bottom:-35px;
-  margin-left:auto;
-  margin-right:auto;
-}
-
-table.dataTable tbody tr.selected {
-    color: white;
-    background-color: #2c3e50;
-}
-
-.loader {
-  border: 16px solid #f3f3f3;
-  border-radius: 50%;
-  border-top: 16px solid #18bc9c;
-  width: 120px;
-  height: 120px;
-  -webkit-animation: spin 2s linear infinite;
-  animation: spin 2s linear infinite;
-}
-
-@-webkit-keyframes spin {
-  0% { -webkit-transform: rotate(0deg); }
-  100% { -webkit-transform: rotate(360deg); }
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-
-
-input[type=checkbox].permissions_checkbox {
-     cursor: pointer;
-  }
-
- input[type=checkbox].permissions_checkbox:after {
-  content: " ";
-  background-color: #D7B1D7;
-  display: inline-block;
-  visibility: visible;
- }
-
- input[type=checkbox].permissions_checkbox:checked:after {
-   content: "\2714";
- }
-
- .inline{
-    display:inline-block;
-     width: 100px;
-}
-
-.dataTable>td{
-    word-wrap: break-word;
-}
-.top-buffer { margin-top:30px; }
-.vertical { vertical-align: middle;}
-.no-margin-heading { margin-top: 0px}
-.no-padding-left {padding-left: 0px}
-.xtra-padding-right {padding-right: 30px}
-
-/*#browsebutton {*/
-    /*background-color: white;*/
-/*}*/
-
-#my-file-selector {
-    display: none;
 }

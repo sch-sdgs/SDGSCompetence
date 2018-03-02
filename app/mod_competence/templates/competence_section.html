@@ -1,33 +1,56 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% block content %}
 
 
-    <div class="page-header">
-        <h1>Add Competency Sections:</h1>
-    </div>
 
-    <div class="row">
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                Add Competency Sections
+                <small></small>
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                <li class="active">Here</li>
+            </ol>
+            {% if message %}
+                <div class="alert alert-danger">
+                    <strong>Fail Whale!</strong> {{ message }}
+                </div>
+            {% endif %}
+        </section>
 
-        <div class="col-md-12">
+        <!-- Main content -->
+        <section class="content container-fluid">
+
+            <h3>Constant Sections</h3>
+
             <form action="{{ url_for('competence.add_sections') }}?c_id={{ c_id }}" method="POST"
                   class="form-horizontal">
-                <h2>Permanent Sections</h2>
                 {% for section in result %}
-                    <div class="well bs-component">
-                        <ul class="list-unstyled list-inline">
-                            <li>
-                                <legend>{{ section }}</legend>
-                            </li>
-                            <li class="pull-right">
-                                <div>
-                                    <label class="checkbox" for="required">Section Required?&nbsp;&nbsp;
-                                    <input id="required" class="" type="checkbox" data-toggle="toggle" data-on="Yes" data-off="No" data-size="mini" data-onstyle="success" data-offstyle="danger" data-id="{{ result[section]['id'] }}" checked></label>
+
+                    <div class="box box-danger" id="training">
+                        <div class="box-header box-border">
+                            <h3 class="box-title"><i class="fa fa-fw fa-check-square-o"></i> {{ section }}</h3>
+                            <div class="box-tools pull-right inline">
+                                <div class=form-group">
+                                    <label class="checkbox" for="required">
+                                        <input id="required" class="minimal" type="checkbox"
+                                               data-toggle="toggle"
+                                               data-on="Yes" data-off="No" data-size="mini"
+                                               data-onstyle="success" data-offstyle="danger"
+                                               data-id="{{ result[section]['id'] }}" checked>
+                                        Required</label>
                                 </div>
-                            </li>
-                        </ul>
-                        <div class="form-group">
-                            <div class="col-md-2"><label> Relevant {{ section }}</label></div>
-                            <div class="col-lg-10">
+                            </div>
+                        </div>
+                        <div class="box-body">
+
+
+                            <div class="form-group">
+                                <div class="col-md-2"><label> Relevant {{ section }}</label></div>
+                                <div class="col-lg-10">
 
                                     <select class="form-control" name="{{ result[section]['id'] }}_subsections"
                                             id="{{ result[section]['id'] }}_subsections" multiple>
@@ -39,82 +62,87 @@
                                             {% endfor %}
                                         {% endfor %}
                                     </select>
-                                    </div>
-                                    </div>
-                                    <div class="form-group">
-                                        {{ form.add_h_and_s.label(class_="col-lg-2 control-label") }}
-                                        <div class="col-lg-10">
-                                            <div class="input-group">
-                                                {{ form.add_h_and_s(class_="form-control new_item_"+result[section]['id']) }}
-                                                <span class="input-group-btn"><button class="btn btn-primary"
+                                </div>
+                            </div>
+                        {% if "ADMIN" in current_user.roles %}
+                            <div class="form-group">
+                                {{ form.add_h_and_s.label(class_="col-lg-2 control-label") }}
+                                <div class="col-lg-10">
+                                    <div class="input-group">
+                                        {{ form.add_h_and_s(class_="form-control new_item_"+result[section]['id']) }}
+                                                <span class="input-group-btn"><button class="btn btn-primary btn-flat"
                                                                                       type="button"
                                                                                       id="update_{{ result[section]['id'] }}">Update</button></span>
-                                            </div>
-                                            <span class="help-block">Please enter a new item</span>
-                                        </div>
                                     </div>
-                                    </div>
+                                    <span class="help-block">Please enter a new item</span>
+                                </div>
+                            </div>
+                        {% endif %}
+                        </div>
+                    </div>
 
-                                    <script>
+                    <script>
 
-                                        $("#update_{{ result[section]['id'] }}").click(function (e) {
-                                            console.log("hello1")
-                                            var s_id = {{ result[section]['id'] }};
-                                            var item = $(".new_item_{{ result[section]['id'] }}").val()
+                        $("#update_{{ result[section]['id'] }}").click(function (e) {
+                            console.log("hello1")
+                            var s_id = {{ result[section]['id'] }};
+                            var item = $(".new_item_{{ result[section]['id'] }}").val()
 
-                                            console.log(s_id);
-                                            console.log("hello2");
-                                            console.log(item);
-                                            console.log("hello3");
+                            console.log(s_id);
+                            console.log("hello2");
+                            console.log(item);
+                            console.log("hello3");
 
-                                            var url = "{{ url_for('competence.add_constant_subsection') }}";
-                                            var dict = {'s_id': s_id, 'item': item};
-                                            var data = JSON.stringify(dict);
-                                            console.log(data);
+                            var url = "{{ url_for('competence.add_constant_subsection') }}";
+                            var dict = {'s_id': s_id, 'item': item};
+                            var data = JSON.stringify(dict);
+                            console.log(data);
 
-                                            $.ajax({
-                                                type: "POST",
-                                                url: url,
-                                                data: data,
-                                                dataType: "json",
-                                                contentType: "application/json",
-                                                success: function (response) {
-                                                    var o = new Option(item, response);
-                                                    // $(o).html(item);
-                                                    $("#{{ result[section]['id'] }}_subsections").append(o);
+                            $.ajax({
+                                type: "POST",
+                                url: url,
+                                data: data,
+                                dataType: "json",
+                                contentType: "application/json",
+                                success: function (response) {
+                                    var o = new Option(item, response);
+                                    // $(o).html(item);
+                                    $("#{{ result[section]['id'] }}_subsections").append(o);
 
 
-                                                },
-                                                error: function (xhr, status, error) {
-                                                    $('#trace').append("<p>" + error + "</p>");
-                                                    $('#ajaxModal').modal('show');
-                                                    return false;
-                                                }
-                                            });
+                                },
+                                error: function (xhr, status, error) {
+                                    $('#trace').append("<p>" + error + "</p>");
+                                    $('#ajaxModal').modal('show');
+                                    return false;
+                                }
+                            });
 
 
 //                     var o = new Option("option text", "value");
 //                     $("{{ result[section]['id'] }}_{{ section }}_subsections").append(item);
-                                        });
+                        });
 
 
-                                    </script>
+                    </script>
 
 
 
                 {% endfor %}
+                <h3>Custom Sections</h3>
 
-                <h2>Custom Sections</h2>
-                <div class="well bs-component">
-                    <div class="form-group">
-                        {{ form.choose_section.label(class_="col-lg-2 control-label") }}
-                        <div class="col-lg-4">
-                            <div class="input-group">
-                                {{ form.choose_section(class_="form-control") }}
-                                <span class="input-group-btn"><button class="btn btn-primary" id="add_section"
+                <div class="box box-success" id="training">
+                    <div class="box-header box-border">
+                        <h3 class="box-title"><i class="fa fa-fw fa-plus"></i> Add Custom Section</h3>
+                    </div>
+                    <div class="box-body">
+
+                                <div class="input-group">
+                                    {{ form.choose_section(class_="form-control") }}
+                                <span class="input-group-btn"><button class="btn btn-primary btn-flat" id="add_section"
                                                                       type="button">Add</button></span>
-                            </div>
-                        </div>
+                                </div>
+
                     </div>
                 </div>
                 <div id="section_list"></div>
@@ -152,24 +180,24 @@
                         });
                     });
 
-                    $(document).on('change', '#required', function(e){
+                    $(document).on('change', '#required', function (e) {
                         console.log($(e.target));
                         console.log($(e.target).attr('data-id'));
                         console.log($(e.target).prop('checked'));
                         var required = $(e.target);
                         var section_id = $(required).attr('data-id');
-                        if ($(required).prop('checked')){
+                        if ($(required).prop('checked')) {
                             $('#' + section_id + '_subsections').removeAttr('disabled');
                             $('#update_' + section_id).removeAttr('disabled');
 
                         }
-                        else{
+                        else {
                             $('#' + section_id + '_subsections').attr('disabled', 'disabled');
                             $('#update_' + section_id).attr('disabled', 'disabled');
                         }
                     });
 
-                    $(document).on('click', '#submit', function(){
+                    $(document).on('click', '#submit', function () {
 
                     });
 
@@ -178,13 +206,14 @@
 
                 <div class="form-group">
                     <div class="col-lg-10 col-lg-offset-2">
-                        {{ form.submit(class_="btn btn-primary") }}
+                        {{ form.submit(class_="btn btn-danger btn-flat pull-right") }}
                     </div>
                 </div>
 
 
             </form>
-        </div>
+    </div>
+    </section>
     </div>
 
 {% endblock %}

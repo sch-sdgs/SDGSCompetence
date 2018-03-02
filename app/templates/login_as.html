@@ -6,10 +6,10 @@
     <div class="col-md-3"></div>
     <div class="col-md-6">
         <div class="well bs-component transparent">
-            <form action="{{ url_for('login') }}" method="POST" class="form-horizontal">
+            <form action="{{ url_for('login_as') }}" method="POST" class="form-horizontal">
 
                 <fieldset>
-                    <legend><span class="glyphicon glyphicon-star"></span> StarDB Login</legend>
+                    <legend><span class="glyphicon glyphicon-star"></span> Administrator Login As...</legend>
                     {% if message %}
                     <div class="alert alert-danger"><strong>{{ modifier }}</strong> {{ message }}</div>
                     {% endif %}
@@ -21,16 +21,8 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {{ form.password.label(class_="col-lg-2 control-label") }}
-                        <div class="col-lg-10">
-                            {{ form.password(class_="form-control") }}
-                        </div>
-
-                        {{ form.next(class_="form-control") }}
-                    </div>
-                    <div class="form-group">
                         <div class="col-lg-10 col-lg-offset-2">
-                            {{ form.submit(class_="btn btn-primary") }}
+                            {{ form.next(class_="form-control") }}{{ form.submit(class_="btn btn-primary") }}
                         </div>
                     </div>
                     Need to register? email <a

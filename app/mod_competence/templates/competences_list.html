@@ -1,43 +1,81 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% block content %}
 
-<div class="page-header">
-<div class="well bs-component">
-<div class="row">
-    <div class="col-lg-6"><h3>All Competencies</h3></div>
-<div class="col-lg-6">
-    {% include "with_selected.html" %}
+
+
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                All Competencies
+                <small></small>
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                <li class="active">Here</li>
+            </ol>
+            {% if message %}
+                <div class="alert alert-danger">
+                    <strong>Fail Whale!</strong> {{ message }}
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- Main content -->
+        <section class="content container-fluid">
+
+
+            <div class="box" id="training">
+                <div class="box-header">
+                    <h3 class="box-title">Complete Competencies</h3>
+                    <div class="box-tools pull-right">
+
+
+                        {% include "with_selected.html" %}
+
+                    </div>
+                </div>
+                <div class="box-body table-responsive">
+
+                    <table class="table table-striped table-condensed  dataTable dt-responsive" width="100%"
+                           id="competencies">
+
+
+                        <thead>
+                        <th>id</th>
+                        <th>Category</th>
+                        <th>Title</th>
+                        <th>Creator</th>
+                        <th>Version</th>
+                        <th>Status</th>
+                        </thead>
+                        {% for competence in data %}
+                            <tr>
+                                <td>{{ competence.c_id }}</td>
+                                <td>{{ competence.category_rel.category }}</td>
+                                <td>{{ competence.title }}</td>
+                                <td>{{ competence.creator_rel.first_name }} {{ competence.creator_rel.last_name }}</td>
+                                <td>v{{ competence.competence.current_version }}</td>
+                                <td>
+                                    {% if competence.competence.obsolete %}
+                                        <p class="label label-danger">Inactive</p>
+                                    {% else %}
+                                        <p class="label label-success">Active</p>
+                                    {% endif %}
+
+
+
+
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+
+                    </table>
+                </div>
+            </div>
+        </section>
     </div>
-</div>
-    </div>
-    </div>
-
-<div class="well bs-component">
-<table class="table table-striped" id="competencies">
-    <thead>
-    <th>id</th>
-    <th>Category</th>
-    <th>Title</th>
-    <th>Creator</th>
-    <th>Version</th>
-    <th>Active</th>
-    </thead>
-    {% for competence in data %}
-        <tr>
-            <td>{{ competence.competence.id }}</td>
-            <td>{{ competence.category_rel.category }}</td>
-            <td>{{ competence.title }}</td>
-            <td>{{ competence.creator_rel.first_name }} {{ competence.creator_rel.last_name }}</td>
-            <td>{{ competence.competence.current_version }}</td>
-            <td>{{ competence.competence.obsolete }}</td>
-        </tr>
-    {% endfor %}
-
-
-
-</table>
-    </div>
-
 
 
 {% endblock %}}

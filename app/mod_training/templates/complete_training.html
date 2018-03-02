@@ -1,153 +1,194 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% block content %}
-
-    <div class="page-header">
-        <div class="row">
-            <div class="col-lg-12"><h3><strong>User: </strong>{{ user }}</h3></div>
-        </div>
-    </div>
-
-    <div class="row" style="margin-bottom: 30px">
-        <div class="col-lg-10"><h3><strong>Competence:</strong> {{ title }}</h3></div>
-        <div class="col-lg-2 pull-right" style="text-align: right">({{ validity }} months)</div>
-    </div>
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="panel panel-default">
-                <div class="panel-heading"><h3><strong>Summary</strong></h3></div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-lg-9"><p>{{ scope }}</p></div>
-                        {% if completed == '-' and activated != '-' %}
-                            <div class="col-lg-3">
-                                <a class="btn btn-success pull-right" role="button" href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&action=evidence"><span class="glyphicon glyphicon-open"></span> Upload Evidence</a>
-                            </div>
-                        {% elif activated == '-' %}
-                            <div class="col-lg-3">
-                                <a class="btn btn-success pull-right" role="button" href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&action=activate">Activate</a>
-                            </div>
-                        {% else %}
-                            <div class="col-lg-3">
-                                <button class="btn btn-success pull-right">Reassess</button>
-                            </div>
-                        {% endif %}
-                    </div>
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                Training
+                <small></small>
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                <li class="active">Here</li>
+            </ol>
+            {% if message %}
+                <div class="alert alert-danger">
+                    <strong>Fail Whale!</strong> {{ message }}
                 </div>
-                <div class="panel body">
-                    <div class="row">
-                        <div class="col-lg-1"></div>
-                        <div class="col-lg-10">
-                        <table class="table table-striped">
-                            <thead>
-                            <tr>
-                                <th>Assigned</th>
-                                <th>Activated</th>
-                                <th>Completed</th>
-                                <th>Expires</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td>{{ assigned }}</td>
-                                <td>{{ activated }}</td>
-                                <td>{{ completed }}</td>
-                                <td>{{ expires }}</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                        </div>
-                        <div class="col-lg-1"></div>
-                    </div>
+            {% endif %}
+        </section>
+
+        <!-- Main content -->
+        <section class="content container-fluid">
+
+
+            <div class="row" style="margin-bottom: 30px">
+                <div class="col-lg-8"><h3>{{ title }}</h3>
+                    <small>{{ scope }}</small>
+                </div>
+                <div class="col-lg-4 pull-right" style="text-align: right"><h3><span
+                        class="glyphicon glyphicon-calendar"></span> {{ validity }} months</h3></div>
+            </div>
+
+            <div class="box" id="training">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Available Actions</h3>
+
+                </div>
+                <div class="box-body table-responsive no-padding">
+                    {% if completed == '-' and activated != '-' %}
+
+                        <a class="btn btn-success btn-flat pull-right" role="button"
+                           href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&action=evidence"><span
+                                class="glyphicon glyphicon-open"></span> Upload Evidence</a>
+
+                    {% elif activated == '-' %}
+
+                        <a class="btn btn-success btn-flat pull-right" role="button"
+                           href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&action=activate">Activate</a>
+
+                    {% else %}
+
+                        <button class="btn btn-success btn-flat pull-right">Reassess</button>
+
+                    {% endif %}
                 </div>
             </div>
-        </div>
-    </div>
-    {% for section in section_list['constant'] %}
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
+
+            <div class="box" id="training">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Summary</h3>
+
+                </div>
+                <div class="box-body table-responsive no-padding">
+
+
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Assigned</th>
+                            <th>Activated</th>
+                            <th>Completed</th>
+                            <th>Expires</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>{{ assigned }}</td>
+                            <td>{{ activated }}</td>
+                            <td>{{ completed }}</td>
+                            <td>{{ expires }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <h3>Common Sections</h3>
+            {% for section in section_list['constant'] %}
+
+                <div class="box box-danger" id="training">
+                    <div class="box-header with-border">
                         <div class="row">
-                            <div class="col-lg-9"><h3><strong>{{ section }}</strong></h3></div>
-                            <div class="col-lg-1"><p class="pull-right">{{ section_list['constant'][section]['complete'] }} out
-                                of {{ section_list['constant'][section]['total'] }}</p></div>
-                            <div class="col-lg-2">
-                                <div class="progress progress-striped"
-                                     style="margin-bottom:0px; height:25px; background-color: #888888;">
-                                    <div class="progress-bar progress-bar-success" role="progressbar"
-                                         aria-valuenow={{ get_percent(competence, u_id) }} aria-valuemin="0"
-                                         aria-valuemax="100"
-                                         style="height:25px; width:{{ get_percent(competence, u_id) }}%"></div>
+                            <div class="col-md-8">
+                                <h3 class="box-title">{{ section }}</h3>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="pull-right">
+                                    {% set percent = (section_list['constant'][section]['complete'] / section_list['constant'][section]['total']) *100 %}
+                                    {{ section_list['constant'][section]['complete'] }} out
+                                    of {{ section_list['constant'][section]['total'] }}
                                 </div>
                             </div>
+                            <div class="col-md-2" style="height: 20px;">
+                                <div class="progress progress-striped">
+                                    <div class="progress-bar progress-bar-success "
+                                         style="width:{{ percent }}%"></div>
+                                </div>
+
+                            </div>
+
                         </div>
+
                     </div>
-                    <div class="panel body">
+                    <div class="box-body table-responsive no-padding">
                         <table class="table table-striped">
                             <thead>
                             <tr>
                                 <th>Area of Competence</th>
                                 <th>Status</th>
-                                <th>Evidence Type</th>
-                                <th>Trained By</th>
-                                <th>Trained On</th>
-                                <th>Assessed By</th>
-                                <th>Assessed On</th>
-                                <th>Evidence</th>
-                                <th>Notes</th>
-                                <th>Training Related Remarks</th>
+                                <th>Declaration</th>
+                                <th></th>
+
                             </tr>
                             </thead>
                             <tfoot>
                             {% for sub in section_list['constant'][section]['subsections'] %}
                                 <tr>
+
                                     <td>{{ sub['name'] }}</td>
-                                    <td>{{ sub['status'] }}</td>
-                                    <td>{{ sub['evidence_type'] }}</td>
-                                    <td>{{ sub['trainer'] }}</td>
-                                    <td>{{ sub['date_of_training'] }}</td>
-                                    <td>{{ sub['assessor'] }}</td>
-                                    <td>{{ sub['date_of_completion'] }}</td>
-                                    <td>
-                                        <button class="btn btn-sm btn-success"
-                                                {% if sub['date_of_completion'] == '-' %}
-                                                disabled
-                                                {% endif %}
-                                        ><span class="glyphicon glyphicon-eye-open"></span>
-                                        </button>
-                                    </td>
-                                    <td>{{ sub['notes'] }}</td>
-                                    <td>{{ sub['training_comments'] }}</td>
+                                    <td>{{ make_status_label(sub['status'])|safe }}</td>
+                                    {% if sub['status'] != "Complete" %}
+                                        <td><input type="checkbox" class="check" id="check_{{ sub['id'] }}"> I
+                                            acknowledge I
+                                            have read the relevant documents and are aware of the health &
+                                            safety
+                                            implications
+                                        </td>
+                                        <td>
+                                            <button role="button"
+                                                    onclick="location.href = '{{ url_for('training.self_complete',assess_id=sub['id']) }}'"
+                                                    class="btn btn-sm btn-success" id="button_{{ sub['id'] }}"
+                                                    disabled="disabled"><span
+                                                    class="glyphicon glyphicon-ok"></span> Complete
+                                                Section
+                                        </td>
+                                    {% else %}
+                                        <td colspan="2">I have acknowledged that I
+                                            have read the relevant documents and are aware of the health &
+                                            safety
+                                            implications
+                                        </td>
+                                    {% endif %}
+
                                 </tr>
                             {% endfor %}
                             </tfoot>
                         </table>
                     </div>
                 </div>
-            </div>
-        </div>
-    {% endfor %}
-    {% for section in section_list['custom'] %}
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
+
+
+
+            {% endfor %}
+        <h3>Specific Sections</h3>
+            {% for section in section_list['custom'] %}
+                <div class="box box-success" id="training">
+                    <div class="box-header with-border">
                         <div class="row">
-                            <div class="col-lg-9"><h3><strong>{{ section }}</strong></h3></div>
-                            <div class="col-lg-1"><p class="pull-right">{{ section_list['custom'][section]['complete'] }} out
-                                of {{ section_list['custom'][section]['total'] }}</p></div>
-                            <div class="col-lg-2">
-                                <div class="progress progress-striped"
-                                     style="margin-bottom:0px; height:25px; background-color: #888888;">
-                                    <div class="progress-bar progress-bar-success" role="progressbar"
-                                         aria-valuenow={{ get_percent(competence, u_id) }} aria-valuemin="0"
-                                         aria-valuemax="100"
-                                         style="height:25px; width:{{ get_percent(competence, u_id) }}%"></div>
+                            <div class="col-md-8">
+                                <h3 class="box-title">{{ section }}</h3>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="pull-right">
+                                    {% set percent = (section_list['custom'][section]['complete'] / section_list['custom'][section]['total']) *100 %}
+                                    {{ section_list['custom'][section]['complete'] }} out
+                                    of {{ section_list['custom'][section]['total'] }}
                                 </div>
                             </div>
+                            <div class="col-md-2" style="height: 20px;">
+                                <div class="progress progress-striped">
+                                    <div class="progress-bar progress-bar-success "
+                                         style="width:{{ percent }}%"></div>
+                                </div>
+
+                            </div>
+
                         </div>
+
                     </div>
-                    <div class="panel body">
+                    <div class="box-body table-responsive no-padding">
                         <table class="table table-striped">
                             <thead>
                             <tr>
@@ -159,28 +200,37 @@
                                 <th>Assessed By</th>
                                 <th>Assessed On</th>
                                 <th>Evidence</th>
+
                                 <th>Notes</th>
-                                <th>Training Related Remarks</th>
+                                <th>Assessor Notes</th>
                             </tr>
                             </thead>
                             <tfoot>
                             {% for sub in section_list['custom'][section]['subsections'] %}
                                 <tr>
                                     <td>{{ sub['name'] }}</td>
-                                    <td>{{ sub['status'] }}</td>
+                                    <td>{{ make_status_label(sub['status'])|safe }}</td>
                                     <td>{{ sub['evidence_type'] }}</td>
                                     <td>{{ sub['trainer'] }}</td>
                                     <td>{{ sub['date_of_training'] }}</td>
                                     <td>{{ sub['assessor'] }}</td>
                                     <td>{{ sub['date_of_completion'] }}</td>
                                     <td>
-                                        <button class="btn btn-sm btn-success"
-                                                {% if sub['date_of_completion'] == '-' %}
-                                                disabled
-                                                {% endif %}
-                                        ><span class="glyphicon glyphicon-eye-open"></span>
-                                        </button>
+
+                                        {% if sub['evidence'] == '-' %}
+                                            <a class="btn btn-sm btn-default" disabled><span
+                                                    class="glyphicon glyphicon-eye-open"></span></a>
+                                        {% else %}
+
+                                            {% include "evidence_upload_modal.html" %}
+                                            <a data-toggle="modal" data="" href="#{{ sub['id'] }}"
+                                               class="btn btn-sm btn-flat btn-success"><span
+                                                    class="glyphicon glyphicon-eye-open"></span></a>
+                                        {% endif %}
+
+
                                     </td>
+
                                     <td>{{ sub['notes'] }}</td>
                                     <td>{{ sub['training_comments'] }}</td>
                                 </tr>
@@ -189,9 +239,41 @@
                         </table>
                     </div>
                 </div>
-            </div>
-        </div>
-    {% endfor %}
 
+
+
+            {% endfor %}
+
+    </section>
+
+    </div>
+
+    <script>
+
+        $(function () {
+            $('.check').click(function () {
+                var id = this.id.split('_')[1];
+                console.log(id)
+                if ($(this).is(':checked')) {
+                    $('#button_' + id).removeAttr('disabled');
+                    $('#button_' + id).bind('click');
+                } else {
+                    $('#button_' + id).attr('disabled', 'disabled');
+                    $('#button_' + id).unbind('click');
+
+                }
+
+            });
+        });
+        {#$(function() {#}
+        {#    $('.').click(function() {#}
+        {#        if ($(this).is(':checked')) {#}
+        {#            $('#id_of_your_button').attr('disabled', 'disabled');#}
+        {#        } else {#}
+        {#            $('#id_of_your_button').removeAttr('disabled');#}
+        {#        }#}
+        {#    });#}
+
+    </script>
 
 {% endblock %}

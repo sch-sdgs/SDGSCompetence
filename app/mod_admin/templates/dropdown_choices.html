@@ -1,25 +1,23 @@
-  <div class="row">
-        <div class="col-md-2"></div>
-        <div class="col-md-8">
-            <div class="well bs-component">
-                <legend>Dropdown Options</legend>
-                <table class="table table-striped" id="table">
-                    <thead>
-                    <th width="70%">Option</th>
-                    <th width="30%">Delete</th>
-                    </thead>
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <h4>Dropdown Options</h4>
+        <table class="table table-striped" id="table">
+            <thead>
+            <th width="70%">Option</th>
+            <th width="30%">Delete</th>
+            </thead>
 
-                    {% for option in data %}
-                        <tr>
-                            <td>{{ option.choice }}</td>
-                            <td>
-                                <a name="DeleteOption" class="btn btn-sm btn-danger" id={{ option.id }}><span
-                                        class="glyphicon glyphicon-remove"></span></a></td>
-                        </tr>
-                    {% endfor %}
+            {% for option in data %}
+                <tr>
+                    <td>{{ option.choice }}</td>
+                    <td>
+                        <a name="DeleteOption" class="btn btn-sm btn-danger" id={{ option.id }}><span
+                                class="glyphicon glyphicon-remove"></span></a></td>
+                </tr>
+            {% endfor %}
 
-                </table>
-            </div>
-        </div>
-        <div class="col-md-2"></div>
+        </table>
     </div>
+    <div class="col-md-2"></div>
+</div>

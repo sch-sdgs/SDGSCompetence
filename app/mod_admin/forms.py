@@ -1,6 +1,6 @@
 from flask_wtf import Form
 from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
-from wtforms.fields import TextField, SubmitField, HiddenField, BooleanField, SelectMultipleField, SelectField
+from wtforms.fields import TextField, SubmitField, HiddenField, BooleanField, SelectMultipleField, SelectField, TextAreaField
 from wtforms.validators import Required
 
 from app.competence import s
@@ -76,4 +76,8 @@ class QuestionsForm(Form):
 
 class DropDownForm(Form):
     choice=TextField("Dropdown Choice",  [Required("Enter an dropdown choice")])
+    submit = SubmitField()
+
+class SubSectionAutoComplete(Form):
+    phrase = TextAreaField("Phrase(s)", [Required("Enter a phrase")])
     submit = SubmitField()

@@ -36,12 +36,13 @@
 
 
     <!--<script type="text/javascript" language="javascript"-->
-            <!--src="https://cdn.datatables.net/1.10.13/js/dataTables.bootstrap.min.js"></script>-->
+    <!--src="https://cdn.datatables.net/1.10.13/js/dataTables.bootstrap.min.js"></script>-->
     <!---->
 
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/dt-1.10.16/sl-1.2.3/datatables.min.css"/>
+    <link rel="stylesheet" type="text/css"
+          href="https://cdn.datatables.net/v/bs/dt-1.10.16/sl-1.2.3/datatables.min.css"/>
 
-<script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.16/sl-1.2.3/datatables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.16/sl-1.2.3/datatables.min.js"></script>
 
 
     <!--<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap.min.css">-->
@@ -56,78 +57,82 @@
             var users = $('#users').DataTable({
                 "pageLength": 10,
                 "columnDefs": [
-                {
-                    "targets": [0],
-                    "visible": false,
-                    "searchable": false
-                }],
+                    {
+                        "targets": [0],
+                        "visible": false,
+                        "searchable": false
+                    }],
                 select: true
             })
             var competencies = $('#competencies').DataTable({
                 "pageLength": 10,
                 "columnDefs": [
-                {
-                    "targets": [0],
-                    "visible": false,
-                    "searchable": false
-                }],
+                    {
+                        "targets": [0],
+                        "visible": false,
+                        "searchable": false
+                    }],
                 select: true
             })
 
-        $(".action").click(function () {
-            console.log("hello")
-            var func = $(this).attr("name")
-            console.log(func)
-            var ids = []
-            var data = users.rows({selected: true}).data()
-            var arrayLength = data.length;
-            for (var i = 0; i < arrayLength; i++) {
-                ids.push(data[i][0])
-            }
-            if (func == "assign_user_to_competence") {
-                console.log("assign_user_to_competence");
-                window.location.assign("{{url_for('competence.assign_user_to_competence')}}?ids=" + ids.join(','));
-            }
+            $(".action").click(function () {
+                console.log("hello")
+                var func = $(this).attr("name")
+                console.log(func)
+                var ids = []
+                var data = users.rows({selected: true}).data()
+                var arrayLength = data.length;
+                for (var i = 0; i < arrayLength; i++) {
+                    ids.push(data[i][0])
+                }
+                if (func == "assign_user_to_competence") {
+                    console.log("assign_user_to_competence");
+                    window.location.assign("{{url_for('competence.assign_user_to_competence')}}?ids=" + ids.join(','));
+                }
 
-        })
+            })
 
             $(".actionc").click(function () {
-            console.log("hello")
-            var func = $(this).attr("name")
-            console.log(func)
-            var ids = []
-            var data = competencies.rows({selected: true}).data()
-            var arrayLength = data.length;
-            for (var i = 0; i < arrayLength; i++) {
-                ids.push(data[i][0])
-            }
+                console.log("hello")
+                var func = $(this).attr("name")
+                console.log(func)
+                var ids = []
+                var data = competencies.rows({selected: true}).data()
+                var arrayLength = data.length;
+                for (var i = 0; i < arrayLength; i++) {
+                    ids.push(data[i][0])
+                }
 
-            if (func == "assign_competences_to_user") {
-                console.log("assign_competences_to_user");
-                window.location.assign("{{url_for('competence.assign_competences_to_user')}}?ids=" + ids.join(','));
-            }
-            if (func == "activate") {
-                console.log("activate");
-                window.location.assign("{{url_for('competence.activate')}}?ids=" + ids.join(','));
-            }
-            if (func == "deactivate") {
-                console.log("deactivate");
-                window.location.assign("{{url_for('competence.deactivate')}}?ids=" + ids.join(','));
-            }
-            if (func == "competent_staff") {
-                console.log("competent_staff");
-                window.location.assign("{{url_for('competence.competent_staff')}}?ids=" + ids.join(','));
-            }
-            if (func == "view_competence") {
-                console.log("view_competence");
-                window.location.assign("{{ url_for('competence.view_competence') }}?c_id="+ids);
-            }
-        })
-    });
+                if (func == "assign_competences_to_user") {
+                    console.log("assign_competences_to_user");
+                    window.location.assign("{{url_for('competence.assign_competences_to_user')}}?ids=" + ids.join(','));
+                }
+                if (func == "activate") {
+                    console.log("activate");
+                    window.location.assign("{{url_for('competence.activate')}}?ids=" + ids.join(','));
+                }
+                if (func == "deactivate") {
+                    console.log("deactivate");
+                    window.location.assign("{{url_for('competence.deactivate')}}?ids=" + ids.join(','));
+                }
+                if (func == "competent_staff") {
+                    console.log("competent_staff");
+                    window.location.assign("{{url_for('competence.competent_staff')}}?ids=" + ids.join(','));
+                }
+                if (func == "view_competence") {
+                    console.log("view_competence");
+                    window.location.assign("{{ url_for('competence.view_competence') }}?c_id=" + ids);
+                }
+                if (func == "make_competent") {
+                    console.log("make_competent");
+                    window.location.assign("{{ url_for('competence.make_user_competent') }}?ids=" + ids.join(','));
+                }
+            })
+        });
 
     </script>
     {% if not current_user.id %}
-    <style>
+        <style>
 
         * {
             margin: 0;
@@ -144,10 +149,10 @@
             background-size: cover;
 
             /*background: #c5deea; !* Old browsers *!*/
-/*background: -moz-linear-gradient(top, #c5deea 0%, #8abbd7 31%, #066dab 100%); !* FF3.6-15 *!*/
-/*background: -webkit-linear-gradient(top, #c5deea 0%,#8abbd7 31%,#066dab 100%); !* Chrome10-25,Safari5.1-6 *!*/
-/*background: linear-gradient(to bottom, #c5deea 0%,#8abbd7 31%,#066dab 100%); !* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ *!*/
-/*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c5deea', endColorstr='#066dab',GradientType=0 ); !* IE6-9 *!*/
+            /*background: -moz-linear-gradient(top, #c5deea 0%, #8abbd7 31%, #066dab 100%); !* FF3.6-15 *!*/
+            /*background: -webkit-linear-gradient(top, #c5deea 0%,#8abbd7 31%,#066dab 100%); !* Chrome10-25,Safari5.1-6 *!*/
+            /*background: linear-gradient(to bottom, #c5deea 0%,#8abbd7 31%,#066dab 100%); !* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ *!*/
+            /*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c5deea', endColorstr='#066dab',GradientType=0 ); !* IE6-9 *!*/
         }
 
         .transparent {
@@ -155,96 +160,102 @@
 
         }
         .row {
-  min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
-  min-height: 100vh; /* These two lines are counted as one :-)       */
+            min-height: 100%; /* Fallback for browsers do NOT support vh unit */
+            min-height: 100vh; /* These two lines are counted as one :-)       */
 
-  display: flex;
-  align-items: center;
-}
+            display: flex;
+            align-items: center;
+        }
 
-        {%  endif %}
+    {%  endif %}
     </style>
 </head>
 <body>
 {% if current_user.id %}
 
-<nav class="navbar navbar-default navbar-fixed-top">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-                    data-target="#bs-example-navbar-collapse-2">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="{{ url_for('index') }}"><span class="glyphicon glyphicon-star"></span> StarDB</a>
-        </div>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-2">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{{ url_for('index') }}"><span class="glyphicon glyphicon-star"></span>
+                    StarDB</a>
+            </div>
 
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
-            <ul class="nav navbar-nav">
-                <li><a href="#">Link <span class="sr-only">(current)</span></a></li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"  aria-expanded="false">Competences
-                       <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="{{ url_for('competence.add_competence') }}">Add Competency</a></li>
-                        <li><a href="{{ url_for('competence.list_comptencies') }}">List Competencies</a></li>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+                <ul class="nav navbar-nav">
+                    <li><a href="#">Link <span class="sr-only">(current)</span></a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Competences
+                            <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ url_for('competence.add_competence') }}">Add Competency</a></li>
+                            <li><a href="{{ url_for('competence.list_comptencies') }}">List Competencies</a></li>
 
-                    </ul>
-                </li>
-                {% if "ADMIN" in current_user.roles %}
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Admin
-                        <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="{{ url_for('admin.index') }}">Admin Home</a></li>
-                        <li class="divider"></li>
-                        <li class="dropdown-header">Admin Quick Links</li>
-                        <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Users</a>
+                        </ul>
+                    </li>
+                    {% if "ADMIN" in current_user.roles %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-expanded="false">Admin
+                                <span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="{{ url_for('admin.users_view') }}">View Users</a></li>
-                                <li><a href="{{ url_for('admin.users_add') }}">Add User</a></li>
-                                <li><a href="{{ url_for('admin.userroles') }}">User Roles</a></li>
-                                <li><a href="{{ url_for('admin.jobroles') }}">Job Roles</a></li>
+                                <li><a href="{{ url_for('admin.index') }}">Admin Home</a></li>
+                                <li class="divider"></li>
+                                <li class="dropdown-header">Admin Quick Links</li>
+                                <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle"
+                                                                         data-toggle="dropdown">Users</a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="{{ url_for('login_as') }}">Login As..</a></li>
+                                        <li><a href="{{ url_for('admin.users_view') }}">View Users</a></li>
+                                        <li><a href="{{ url_for('admin.users_add') }}">Add User</a></li>
+                                        <li><a href="{{ url_for('admin.userroles') }}">User Roles</a></li>
+                                        <li><a href="{{ url_for('admin.jobroles') }}">Job Roles</a></li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle"
+                                                                         data-toggle="dropdown">Reference Tables</a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="{{ url_for('admin.evidencetypes') }}">Evidence Types</a></li>
+                                        <li><a href="{{ url_for('admin.sections') }}">Sections</a></li>
+                                        <li><a href="{{ url_for('admin.validityperiods') }}">Validity Periods</a></li>
+                                        <li><a href="{{ url_for('admin.assessmentstatus') }}">Assessment Status</a></li>
+                                        <li><a href="{{ url_for('admin.service') }}">Service</a></li>
+                                        <li><a href="{{ url_for('admin.competencetypes') }}">Competence Types</a></li>
+                                        <li><a href="{{ url_for('admin.reassessment_questions') }}">Reassessment
+                                            Questions</a></li>
+                                    </ul>
+                                </li>
                             </ul>
                         </li>
-                        <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Reference Tables</a>
-                            <ul class="dropdown-menu">
-                                <li><a href="{{ url_for('admin.evidencetypes') }}">Evidence Types</a></li>
-                                <li><a href="{{ url_for('admin.sections') }}">Sections</a></li>
-                                <li><a href="{{ url_for('admin.validityperiods') }}">Validity Periods</a></li>
-                                <li><a href="{{ url_for('admin.assessmentstatus') }}">Assessment Status</a></li>
-                                <li><a href="{{ url_for('admin.service') }}">Service</a></li>
-                                <li><a href="{{ url_for('admin.competencetypes') }}">Competence Types</a></li>
-                                <li><a href="{{ url_for('admin.reassessment_questions') }}">Reassessment Questions</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-                 {% endif %}
-            </ul>
-            <form class="navbar-form navbar-left" role="search">
-                <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Search">
-                </div>
-                <button type="submit" class="btn btn-default">Submit</button>
-            </form>
-            <ul class="nav navbar-nav navbar-right">
-                <li>
-
-
-                    {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('logout')}}">Logout <strong>{{ current_user.id }}</strong></a>
-                    {% else %}
-                    <a href="{{ url_for('login')}}">Login</a>
                     {% endif %}
+                </ul>
+                <form class="navbar-form navbar-left" role="search">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search">
+                    </div>
+                    <button type="submit" class="btn btn-default">Submit</button>
+                </form>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
 
-                </li>
-            </ul>
+
+                        {% if current_user.is_authenticated %}
+                            <a href="{{ url_for('logout') }}">Logout <strong>{{ current_user.id }}</strong></a>
+                        {% else %}
+                            <a href="{{ url_for('login') }}">Login</a>
+                        {% endif %}
+
+                    </li>
+                </ul>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
 {% endif %}
 <div class="my-fluid-container" role="main">
@@ -257,16 +268,16 @@
 </div>
 
 <script>
-    (function($){
-	$(document).ready(function(){
-		$('ul.dropdown-menu [data-toggle=dropdown]').on('click', function(event) {
-			event.preventDefault();
-			event.stopPropagation();
-			$(this).parent().siblings().removeClass('open');
-			$(this).parent().toggleClass('open');
-		});
-	});
-})(jQuery);
+    (function ($) {
+        $(document).ready(function () {
+            $('ul.dropdown-menu [data-toggle=dropdown]').on('click', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                $(this).parent().siblings().removeClass('open');
+                $(this).parent().toggleClass('open');
+            });
+        });
+    })(jQuery);
 </script>
 
 </body>

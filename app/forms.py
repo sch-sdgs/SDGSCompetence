@@ -1,6 +1,6 @@
 
 from flask_wtf import Form
-from wtforms.fields import TextField, SubmitField, HiddenField, PasswordField, RadioField, BooleanField, SelectField
+from wtforms.fields import TextField, SubmitField, HiddenField, PasswordField, RadioField, BooleanField, SelectField, TextAreaField
 from wtforms.validators import Required
 
 
@@ -9,3 +9,8 @@ class Login(Form):
     password = PasswordField("Password")
     submit = SubmitField("Login")
     next = HiddenField("Next")
+
+class RateEvidence(Form):
+    comments = TextAreaField("Comments")
+    assid = HiddenField("id")
+    submit = SubmitField("Submit")
