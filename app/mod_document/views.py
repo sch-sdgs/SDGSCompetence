@@ -10,7 +10,7 @@ from docx import Document
 from flask import Blueprint, jsonify
 from flask_table import Table, Col
 from sqlalchemy import and_, or_, case
-from flask import render_template, request, url_for, redirect, Blueprint
+from flask import render_template, request, url_for, redirect, Blueprint, send_from_directory
 from flask.ext.login import login_required, current_user
 from app.views import admin_permission
 from app.models import *
@@ -196,7 +196,7 @@ def export_document(c_id):
             page.links.extend(header_page.links)
             page.links.extend(footer_page.links)
 
-    main_doc.write_pdf(target="/home/bioinfo/chicks/stardb_download/test.pdf")
+    main_doc.write_pdf(target=app.config["UPLOAD_FOLDER"]+"/test.pdf")
     return html_out
 
 #views
@@ -212,4 +212,5 @@ def export_document_view():
         print('cid')
         print(c_id)
         html = export_document(c_id)
-        return html
+        uploads = app.config["UPLOAD_FOLDER"]
+        return send_from_directory(directory=uploads, filename="test.pdf", as_attachment=True, attachment_filename="competence_download.pdf")

@@ -3,11 +3,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_required, login_user, logout_user, LoginManager, UserMixin, \
     current_user
 from activedirectory import UserAuthentication
-from forms import Login
+from forms import *
 from flask_principal import Principal, Identity, AnonymousIdentity, \
-    identity_changed, Permission, RoleNeed, UserNeed,identity_loaded
-from sqlalchemy.sql.expression import func, and_, case
+    identity_changed, Permission, RoleNeed, UserNeed, identity_loaded
 
+from app.mod_training.views import get_competence_summary_by_user
+from dateutil.relativedelta import relativedelta
+from sqlalchemy.sql.expression import func, and_, or_, case, exists, update,distinct
 import os
 
 from app.competence import app, s, db
@@ -20,16 +22,18 @@ login_manager.login_view = "login"
 
 principals = Principal(app)
 
-#permission levels
+# permission levels
 
 user_permission = Permission(RoleNeed('USER'))
 linemanager_permission = Permission(RoleNeed('LINEMANAGER'))
 admin_permission = Permission(RoleNeed('ADMIN'))
 privilege_perminssion = Permission(RoleNeed('PRIVILEGE'))
 
+
 @login_manager.user_loader
 def load_user(user_id):
     return User(user_id)
+
 
 class User(UserMixin):
     def __init__(self, id, password=None):
@@ -51,7 +55,7 @@ class User(UserMixin):
         gets the id of the row in the database for the user.
         :return: database id
         """
-        query= s.query(Users).filter_by(login=self.id).first()
+        query = s.query(Users).filter_by(login=self.id).first()
         if query:
             database_id = query.id
         else:
@@ -77,7 +81,6 @@ class User(UserMixin):
         user = s.query(Users).filter_by(login=self.id).first()
         full_name = user.first_name + " " + user.last_name
         return full_name
-
 
     def is_authenticated(self, id, password):
         """
@@ -116,6 +119,7 @@ class User(UserMixin):
     def get_id(self):
         return self.id
 
+
 @identity_loaded.connect_via(app)
 def on_identity_loaded(sender, identity):
     # Set the identity user object
@@ -129,8 +133,9 @@ def on_identity_loaded(sender, identity):
     # identity with the roles that the user provides
     if hasattr(current_user, 'roles'):
         for role in current_user.roles:
-            #identity.provides.add(RoleNeed(role.name))
+            # identity.provides.add(RoleNeed(role.name))
             identity.provides.add(RoleNeed(role))
+
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -141,6 +146,7 @@ def page_not_found(e):
     """
     return render_template('404.html'), 404
 
+
 @app.errorhandler(500)
 def internal_server_error(e):
     """
@@ -149,6 +155,7 @@ def internal_server_error(e):
     :return: template 500.html
     """
     return render_template('500.html'), 500
+
 
 @app.errorhandler(403)
 def page_not_found(e):
@@ -160,35 +167,129 @@ def page_not_found(e):
     session['redirected_from'] = request.url
     return redirect(url_for('login'))
 
-def get_competence_from_subsections(subsection_ids):
 
+def get_competence_from_subsections(subsection_ids):
     subsections = s.query(Competence).join(Subsection).filter(Subsection.id.in_(subsection_ids)).all()
 
     return subsections
+
 
 #####################
 # context processor #
 #####################
 @app.context_processor
 def utility_processor():
-    def get_percent(c_id, u_id):
+    def get_percent(c_id, u_id,version):
         """
         gets the percentage complete of any competence
         :param c_id: competence id
         :param u_id: user id
         :return: percentage complete
         """
-        counts = s.query(Assessments).join(Subsection)\
-            .filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id))\
-            .values((func.sum(case([(Assessments.date_completed == None, 0)], else_=1)) / func.count(Assessments.id)*100).label('percentage'))
+        counts = s.query(Assessments)\
+            .join(Subsection) \
+            .filter(Assessments.version==version) \
+            .filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id)) \
+            .values((func.sum(case([(Assessments.date_completed == None, 0)], else_=1)) / func.count(
+            Assessments.id) * 100).label('percentage'))
         for c in counts:
             return c.percentage
+
     return dict(get_percent=get_percent)
+
+
+@app.context_processor
+def utility_processor():
+    def count_active(c_id, u_id):
+        """
+        gets the percentage complete of any competence
+        :param c_id: competence id
+        :param u_id: user id
+        :return: percentage complete
+        """
+        counts = s.query(Assessments).join(Subsection) \
+            .filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id)) \
+            .values((func.sum(
+            case([(or_(Assessments.status == 1, Assessments.status == 3, Assessments.status == 5), 1)],
+                 else_=0)) / func.count(Assessments.id) * 100).label('percentage'))
+        for c in counts:
+            return c.percentage
+
+    return dict(count_active=count_active)
+
+def check_margin(date,margin_days):
+    today = datetime.date.today()
+    if margin_days == 0:
+        margin = datetime.timedelta()
+    else:
+        margin = datetime.timedelta(days=margin_days)
+    if date is not None:
+        if date < today:
+            result = True
+        else:
+            result = today - margin <= date <= today + margin
+    else:
+        result = False
+    print result
+    return result
+
+@app.context_processor
+def utility_processor():
+    def check_expiry(expiry_date):
+        if check_margin(expiry_date,0):
+            html = '<span class="label label-danger">Expired</span>'
+        elif check_margin(expiry_date,5):
+            html = '<span class="label label-danger">Expiring Within 5 Days</span>'
+        elif check_margin(expiry_date,30):
+            html = '<span class="label label-warning">Expiring Within 30 Days</span>'
+        elif check_margin(expiry_date, 90):
+            html = '<span class="label label-info">Expiring Within Days</span>'
+        else:
+            html = '<span class="label label-success">OK</span>'
+
+        return html
+
+    return dict(check_expiry=check_expiry)
+
+@app.context_processor
+def utility_processor():
+    def notifications():
+        expired = s.query(Assessments).filter(Assessments.user_id == current_user.database_id)
+        alerts = {}
+        count=0
+        for i in expired:
+            if i.date_expiry is not None:
+                if datetime.date.today() > i.date_expiry:
+                    if "Assessments Expired" not in alerts:
+                        alerts["Assessments Expired"] = 1
+                        count+=1
+                    else:
+                        alerts["Assessments Expired"] += 1
+                        count+=1
+                elif datetime.date.today() + relativedelta(months=+6) > i.date_expiry:
+                    if "Assessments Expiring" not in alerts:
+                        alerts["Assessments Expiring"] = 1
+                        count += 1
+                    else:
+                        alerts["Assessments Expiring"] += 1
+                        count += 1
+        signoff = s.query(Evidence).filter(Evidence.signoff_id == current_user.database_id).filter(Evidence.is_correct == None).count()
+        if signoff > 0:
+            count+=signoff
+            alerts["Evidence Approval"] = signoff
+        approval = s.query(CompetenceDetails).filter(CompetenceDetails.approve_id == current_user.database_id).filter(or_(CompetenceDetails.approved==None,CompetenceDetails.approved==0)).count()
+        if approval > 0:
+            count += approval
+            alerts["Competence Approval"] = approval
+
+        return [count,alerts]
+    return dict(notifications=notifications)
+
 
 #########
 # views #
 #########
-@app.route('/autocomplete_user',methods=['GET'])
+@app.route('/autocomplete_user', methods=['GET'])
 def autocomplete():
     """
     autocompletes a user once their name is being types
@@ -196,7 +297,7 @@ def autocomplete():
     """
     search = request.args.get('linemanager')
 
-    users = s.query(Users.first_name,Users.last_name).all()
+    users = s.query(Users.first_name, Users.last_name).filter(Users.active==1).all()
     user_list = []
     for i in users:
         print i
@@ -204,6 +305,43 @@ def autocomplete():
         user_list.append(name)
 
     return jsonify(json_list=user_list)
+
+
+@app.route('/autocomplete_subsection', methods=['GET'])
+def autocomplete_subsection():
+    """
+    autocompletes a user once their name is being types
+    :return: jsonified list of users for ajax to use
+    """
+    search = request.args.get('name')
+
+    phrases = s.query(SubsectionAutocomplete.phrase).all()
+    phrase_list = []
+    for i in phrases:
+        print i
+        phrase_list.append(i[0])
+
+    return jsonify(json_list=phrase_list)
+
+@app.route('/autocomplete_competent_user/<int:ss_id>', methods=['GET'])
+def autocomplete_competent_user(ss_id):
+    # todo: add competence author to this list
+    users = s.query(Users). \
+        join(Assessments, Assessments.user_id == Users.id). \
+        join(AssessmentStatusRef). \
+        filter(AssessmentStatusRef.status == "Complete",
+               Assessments.date_expiry > datetime.date.today()). \
+        group_by(Users.id).having(func.count(Assessments.ss_id == ss_id) == 1). \
+        values(Users.id, (Users.first_name + ' ' + Users.last_name).label('name'))
+    user_list = []
+    for i in users:
+        user = {}
+        user["id"] = i.id
+        user["name"] = i.name
+        user_list.append(user)
+
+    return jsonify(users=user_list)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -229,6 +367,33 @@ def login():
         else:
             return render_template("login.html", form=form, modifier="Oh Snap!", message="Wrong username or password")
 
+
+@app.route('/login_as', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def login_as():
+    """
+    method to login user
+    :return: either login.html or if successful the page the user was trying to access
+    """
+    form = Login(next=request.args.get('next'))
+    if request.method == 'GET':
+        return render_template("login_as.html", form=form)
+    elif request.method == 'POST':
+        user = User(form.data["username"])
+        result = True
+        if result:
+            login_user(user)
+            identity_changed.send(current_app._get_current_object(),
+                                  identity=Identity(user.id))
+
+            if form.data["next"] != "":
+                return redirect(form.data["next"])
+            else:
+                return redirect(url_for('index'))
+        else:
+            return render_template("login.html", form=form, modifier="Oh Snap!", message="Wrong username or password")
+
+
 @app.route('/logout')
 @login_required
 def logout():
@@ -248,6 +413,7 @@ def logout():
 
     return redirect(request.args.get('next') or '/')
 
+
 @app.route('/')
 @login_required
 def index():
@@ -255,37 +421,101 @@ def index():
     displays the users dashboard
     :return: template index.html
     """
-    with admin_permission.require():
-        linereports = s.query(Users).filter_by(line_managerid=int(current_user.database_id)).filter_by(active=True).all()
-        linereports_inactive = s.query(Users).filter_by(line_managerid=int(current_user.database_id)).filter_by(
-            active=False).count()
-    print linereports
+
+    linereports = s.query(Users).filter_by(line_managerid=int(current_user.database_id)).filter_by(active=True).all()
+    linereports_inactive = s.query(Users).filter_by(line_managerid=int(current_user.database_id)).filter_by(
+        active=False).count()
     counts = {}
-    active_count=0
-    assigned_count=0
+    active_count = 0
+    assigned_count = 0
+    complete_count = 0
     for i in linereports:
         counts[i.id] = {}
-        #TODO get competence because assessments is all subsections
+        # TODO get competence because assessments is all subsections
 
-        counts[i.id]["assigned"] = len(s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id==i.id).filter(Assessments.status==2).all())
+        counts[i.id]["assigned"] = len(
+            s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id == i.id).filter(
+                Assessments.status == 2).all())
         assigned_count += counts[i.id]["assigned"]
-        counts[i.id]["active"] = len(s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id==i.id).filter(Assessments.status==1).all())
+        counts[i.id]["active"] = len(
+            s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id == i.id).filter(
+                Assessments.status == 1).all())
         active_count += counts[i.id]["active"]
-        counts[i.id]["complete"] = len(s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id==i.id).filter(Assessments.status==3).all())
-        counts[i.id]["failed"] = len(s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id==i.id).filter(Assessments.status==5).all())
-        counts[i.id]["obsolete"] = len(s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id==i.id).filter(Assessments.status==6).all())
-        counts[i.id]["abandoned"] = len(s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id==i.id).filter(Assessments.status==4).all())
+        counts[i.id]["complete"] = len(
+            s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id == i.id).filter(
+                Assessments.status == 3).all())
+        complete_count += counts[i.id]["complete"]
+        counts[i.id]["failed"] = len(
+            s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id == i.id).filter(
+                Assessments.status == 5).all())
+        counts[i.id]["obsolete"] = len(
+            s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id == i.id).filter(
+                Assessments.status == 6).all())
+        counts[i.id]["abandoned"] = len(
+            s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id == i.id).filter(
+                Assessments.status == 4).all())
 
-
-    competences_incomlete = s.query(CompetenceDetails).join(Competence).filter(CompetenceDetails.creator_id==current_user.database_id).filter(Competence.current_version==0).all()
+    competences_incomlete = s.query(CompetenceDetails).join(Competence).filter(
+        CompetenceDetails.creator_id == current_user.database_id).filter(Competence.current_version == 0).all()
     competences_complete = s.query(CompetenceDetails).join(Competence).filter(
         CompetenceDetails.creator_id == current_user.database_id).filter(Competence.current_version == 1).all()
 
-    assigned = s.query(Assessments).join(Subsection).join(Competence).join(CompetenceDetails).group_by(CompetenceDetails.id).filter(Assessments.user_id==current_user.database_id).filter(Assessments.status==2).all()
+    # assigned = s.query(Assessments).filter(Assessments.user_id == current_user.database_id).filter(
+    #     or_(Assessments.status == 2, Assessments.status == 1, Assessments.status == 7)).filter(Competence.current_version==Assessments.version).all()
+    #
+
+    assigned = s.query(Assessments)\
+        .join(Subsection)\
+        .join(Competence)\
+        .join(CompetenceDetails)\
+        .filter(Assessments.user_id == current_user.database_id)\
+        .group_by(Competence.id)\
+        .filter(or_(Assessments.status == 2, Assessments.status == 1, Assessments.status == 7))\
+        .all()
+
+    # assigned = s.query(Assessments).join(Subsection).join()
+
+    all_assigned=[]
+    for j in assigned:
+        all_assigned.append(get_competence_summary_by_user(c_id=j.ss_id_rel.c_id,u_id=current_user.database_id,version=j.version))
+
     active = s.query(Assessments).join(Subsection).join(Competence).join(CompetenceDetails).group_by(
-        CompetenceDetails.id).filter(Assessments.user_id == current_user.database_id).filter(
+        CompetenceDetails.id).filter(Assessments.user_id == current_user.database_id).filter(CompetenceDetails.intro==Competence.current_version).filter(
         Assessments.status == 1).all()
 
+    # complete = s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id == current_user.database_id).filter(
+    #             Assessments.status == 3).all()
 
-    return render_template("index.html",assigned_count=assigned_count,active_count=active_count,linereports=linereports,linereports_inactive=linereports_inactive,competences_incomplete=competences_incomlete, competences_complete=competences_complete,counts=counts,assigned=assigned,active=active)
+    complete = s.query(Assessments) \
+        .join(Subsection)\
+        .join(Competence)\
+        .join(CompetenceDetails)\
+        .filter(Assessments.user_id == current_user.database_id) \
+        .group_by(Assessments.version) \
+        .filter(Assessments.status.in_([3])) \
+        .all()
 
+    print complete
+    all_complete = []
+    for i in complete:
+        print "COMPLETE"
+        print i
+        result = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
+        if result.completed != None:
+            all_complete.append(result)
+
+
+    signoff = s.query(Evidence).filter(Evidence.signoff_id == current_user.database_id).filter(Evidence.is_correct == None).all()
+    signoff_competence = s.query(CompetenceDetails).filter(CompetenceDetails.approve_id == current_user.database_id).filter(or_(CompetenceDetails.approved==None,CompetenceDetails.approved==0)).all()
+
+    accept_form = RateEvidence()
+    return render_template("index.html", complete=all_complete, accept_form=accept_form, signoff=signoff, assigned_count=assigned_count,
+                           active_count=active_count, complete_count=complete_count, linereports=linereports,
+                           linereports_inactive=linereports_inactive, competences_incomplete=competences_incomlete,
+                           competences_complete=competences_complete, counts=counts, assigned=all_assigned, active=active,signoff_competence=signoff_competence)
+
+
+@app.route('/notifications')
+@login_required
+def notifications():
+    return render_template("notifications.html")

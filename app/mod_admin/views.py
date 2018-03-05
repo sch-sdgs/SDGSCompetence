@@ -74,8 +74,8 @@ def index():
 
 
 @admin.route('/users/view', methods=['GET', 'POST'])
-@admin_permission.require(http_exception=403)
-def users_view():
+# @admin_permission.require(http_exception=403)
+def users_view(message=None):
     """
     view all users in the database - roles control how much info you can see
     :return: template users_view.html
@@ -107,7 +107,7 @@ def users_view():
 
         data.append(user_dict)
 
-    return render_template("users_view.html", data=data)
+    return render_template("users_view.html", data=data,message=message)
 
 
 @admin.route('/users/toggle_active/<id>', methods=['GET', 'POST'])
@@ -122,10 +122,17 @@ def users_toggle_active(id=None):
     user = s.query(Users).filter_by(id=id).first()
     if user.active == True:
         s.query(Users).filter_by(id=id).update({'active': False})
+        s.commit()
+        competences = s.query(CompetenceDetails).filter(Competence.obsolete==False).filter(CompetenceDetails.creator_id==id).all()
+        if len(competences) > 0:
+            print "YOYO"
+            return users_view(message="The user you made inactive owns the following competence (please change ownership!):<br>" + "<br>".join([c.title for c in competences]))
+        else:
+            return redirect(url_for('admin.users_view'))
     elif user.active == False:
         s.query(Users).filter_by(id=id).update({'active': True})
-    s.commit()
-    return redirect(url_for('admin.users_view'))
+        s.commit()
+        return redirect(url_for('admin.users_view'))
 
 
 @admin.route('/users/add', methods=['GET', 'POST'])
@@ -254,8 +261,105 @@ def users_edit(id=None):
 
         return redirect(url_for('admin.users_view'))
 
+@admin.route('/dropdownchoices',methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def dropdown_choices():
 
-@admin.route('/jobroles', methods=['GET', 'POST'])
+    if request.method == 'POST':
+        try:
+            choices = s.query(DropDownChoices).filter(DropDownChoices.question_id == request.json['question_id'],
+                                                      DropDownChoices.choice == request.json['choice']).all()
+            if len(choices) == 0:
+                q = DropDownChoices(choice=request.json['choice'], question_id=request.json['question_id'])
+                s.add(q)
+                s.commit()
+        except KeyError:
+            pass
+
+    print "requesting"
+    print request.json['question_id']
+    choices = s.query(DropDownChoices).filter(DropDownChoices.question_id==request.json['question_id'])
+    print jsonify(render_template("dropdown_choices.html",data=choices))
+    return jsonify(render_template("dropdown_choices.html",data=choices))
+
+@admin.route('/dropdownchoices/delete', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def delete_dropdown_choice():
+    s.query(DropDownChoices).filter_by(id=request.json['option_id']).delete()
+    s.commit()
+
+    choices = s.query(DropDownChoices).filter(DropDownChoices.question_id == request.json['question_id'])
+    return jsonify(render_template("dropdown_choices.html", data=choices))
+
+@admin.route('/questions',methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def reassessment_questions():
+    print "hello"
+    form = QuestionsForm()
+    q_id = 0
+    dropdown=False
+    if request.method == 'POST':
+        # if request.args.get('commit') == "True":
+        q =QuestionsRef(question=request.form['question'], answer_type=request.form['type'])
+        s.add(q)
+        s.commit()
+        q_id = q.id
+        if request.form['type'] == "Dropdown":
+            dropdown = True
+        else:
+            return redirect(url_for('admin.reassessment_questions'))
+        # else:
+        #     print "I'm here!"
+        #     return redirect(url_for('admin.reassessment_questions'))
+    questions = s.query(QuestionsRef).all()
+
+    return render_template("questions.html",form=form,data=questions, dropdown=dropdown, question_id=q_id)
+
+@admin.route('/questions/edit/<question_id>', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def reassessment_questions_edit(question_id=None, commit=None):
+    choices_html = ""
+    length=0
+    if request.args.get('commit') == "True":
+        return redirect(url_for('admin.reassessment_questions'))
+    if request.method == 'GET':
+        form=QuestionsForm()
+        question = s.query(QuestionsRef).filter_by(id=question_id).first()
+        form.type.default = question.answer_type
+        print question.answer_type
+        form.process()
+        form.question.data = question.question
+        dropdown=False
+
+    if request.method == 'POST':
+        s.query(QuestionsRef).filter_by(id=question_id).update({'question': request.form["question"], 'answer_type': request.form['type']})
+        s.commit()
+        form = QuestionsForm()
+        question = s.query(QuestionsRef).filter_by(id=question_id).first()
+        form.type.default = request.form['type']
+        form.process()
+        form.question.data = question.question
+        if request.form['type'] == "Dropdown":
+            dropdown = True
+            choices = s.query(DropDownChoices).filter(DropDownChoices.question_id == question_id)
+            length = len(choices.all())
+            print length
+            choices_html = render_template("dropdown_choices.html",data=choices)
+        else:
+            return redirect(url_for('admin.reassessment_questions'))
+    print('dropdown')
+    print(dropdown)
+    return render_template("questions_edit.html", form=form, question_id=question_id, dropdown=dropdown, choices=choices_html, length=length)
+
+@admin.route('/questions/delete/<id>', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def delete_reassessment_question(id=None):
+    s.query(DropDownChoices).filter_by(question_id=id).delete()
+    s.query(QuestionsRef).filter_by(id=id).delete()
+    s.commit()
+    return redirect(url_for('admin.reassessment_questions'))
+
+@admin.route('/jobroles',methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def jobroles():
     """
@@ -669,6 +773,33 @@ def deleterole(id=None):
     s.commit()
 
     return redirect(url_for('admin.userroles'))
+
+
+@admin.route('/subsection_autocomplete', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def subsection_autocomplete():
+    form = SubSectionAutoComplete()
+
+    if request.method == 'POST':
+        phrases = request.form["phrase"].split("\r\n")
+        for phrase in phrases:
+            u = SubsectionAutocomplete(phrase=phrase)
+            s.add(u)
+        s.commit()
+
+    subsections = s.query(SubsectionAutocomplete).all()
+
+    return render_template("subsection_autocomplete.html", form=form, data=subsections)
+
+
+@admin.route('/subsection_autocomplete/delete/<id>', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def delete_subsection_autocomplete(id=None):
+    s.query(SubsectionAutocomplete).filter_by(id=id).delete()
+
+    s.commit()
+
+    return redirect(url_for('admin.subsection_autocomplete'))
 
 
 @admin.route('/logs', methods=['GET', 'POST'])

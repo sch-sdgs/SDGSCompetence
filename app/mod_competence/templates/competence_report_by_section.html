@@ -1,0 +1,520 @@
+{% extends "base2.html" %}
+{% block content %}
+
+
+
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+
+
+            <h1>Reports By Section</h1>
+            <small></small>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                <li class="active">Here</li>
+            </ol>
+            {% if message %}
+                <div class="alert alert-danger">
+                    <strong>Fail Whale!</strong> {{ message }}
+                </div>
+            {% endif %}
+
+        </section>
+
+        <!-- Main content -->
+        <section class="content container-fluid">
+
+
+            <h3>Assessments Overview: Previous Month</h3>
+            <div class="row">
+                {% for data in historic %}
+                    <div class="col-md-4">
+                        <div class="box box-default" id="training">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">{{ data.service_id_rel.name | replace(" ","") }}
+                                </h3>
+
+                            </div>
+                            <div class="box-body">
+
+                                <canvas id="pieChartHistoric{{ data.service_id_rel.name | replace(" ","") }}" style="height: 188px; width: 377px;" width="471"
+                                        height="235"></canvas>
+
+                                <script>
+                                    $(function () {
+                                        /* ChartJS
+                                         * -------
+                                         * Here we will create a few charts using ChartJS
+                                         */
+
+
+                                        //-------------
+                                        //- PIE CHART -
+                                        //-------------
+                                        // Get context with jQuery - using jQuery's .get() method.
+                                        var pieChartCanvas = $('#pieChartHistoric{{ data.service_id_rel.name | replace(" ","") }}').get(0).getContext('2d')
+                                        var pieChart = new Chart(pieChartCanvas)
+                                        var PieData = [
+                                            {
+                                                value: {{ data.assigned }},
+                                                color: '#d2d6de',
+                                                highlight: '#d2d6de',
+                                                label: 'Assigned'
+                                            },
+                                            {
+                                                value: {{ data.active }},
+                                                color: '#00c0ef',
+                                                highlight: '#00c0ef',
+                                                label: 'Active'
+                                            },
+                                            {
+                                                value: {{ data.expiring }},
+                                                color: '#ef8f23',
+                                                highlight: '#ef8f23',
+                                                label: 'Expiring'
+                                            },
+                                            {
+                                                value: {{ data.expired }},
+                                                color: '#ef4923',
+                                                highlight: '#ef4923',
+                                                label: 'Expired'
+                                            }
+                                        ]
+                                        var pieOptions = {
+                                            //Boolean - Whether we should show a stroke on each segment
+                                            segmentShowStroke: true,
+                                            //String - The colour of each segment stroke
+                                            segmentStrokeColor: '#fff',
+                                            //Number - The width of each segment stroke
+                                            segmentStrokeWidth: 2,
+                                            //Number - The percentage of the chart that we cut out of the middle
+                                            percentageInnerCutout: 50, // This is 0 for Pie charts
+                                            //Number - Amount of animation steps
+                                            animationSteps: 50,
+                                            //String - Animation easing effect
+                                            animationEasing: 'easeOutBounce',
+                                            //Boolean - Whether we animate the rotation of the Doughnut
+                                            animateRotate: true,
+                                            //Boolean - Whether we animate scaling the Doughnut from the centre
+                                            animateScale: false,
+                                            //Boolean - whether to make the chart responsive to window resizing
+                                            responsive: true,
+                                            // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+                                            maintainAspectRatio: true,
+                                            //String - A legend template
+                                            {#      legendTemplate       : '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<segments.length; i++){%><li><span style="background-color:<%=segments[i].fillColor%>"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>'#}
+                                        }
+                                        //Create pie or douhnut chart
+                                        // You can switch between pie and douhnut using the method below.
+                                        pieChart.Doughnut(PieData, pieOptions)
+
+
+                                    })
+                                </script>
+
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <h3>Assessments Overview: Current</h3>
+            <div class="row">
+                {% for service in counts|dictsort %}
+                    <div class="col-md-4">
+                        <div class="box box-primary" id="training">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">{{ service[0] }}
+                                </h3>
+
+                            </div>
+                            <div class="box-body">
+                                <canvas id="pieChart{{ service[0] }}" style="height: 188px; width: 377px;" width="471"
+                                        height="235"></canvas>
+
+                                <script>
+                                    $(function () {
+                                        /* ChartJS
+                                         * -------
+                                         * Here we will create a few charts using ChartJS
+                                         */
+
+
+                                        //-------------
+                                        //- PIE CHART -
+                                        //-------------
+                                        // Get context with jQuery - using jQuery's .get() method.
+                                        var pieChartCanvas = $('#pieChart{{ service[0] }}').get(0).getContext('2d')
+                                        var pieChart = new Chart(pieChartCanvas)
+                                        var PieData = [
+                                            {
+                                                value: {{ service[1]["Assigned"] }},
+                                                color: '#d2d6de',
+                                                highlight: '#d2d6de',
+                                                label: 'Assigned'
+                                            },
+                                            {
+                                                value: {{ service[1]["Active"] }},
+                                                color: '#00c0ef',
+                                                highlight: '#00c0ef',
+                                                label: 'Active'
+                                            },
+                                            {
+                                                value: {{ service[1]["Expiring"] }},
+                                                color: '#ef8f23',
+                                                highlight: '#ef8f23',
+                                                label: 'Expiring'
+                                            },
+                                            {
+                                                value: {{ service[1]["Expired"] }},
+                                                color: '#ef4923',
+                                                highlight: '#ef4923',
+                                                label: 'Expired'
+                                            }
+                                        ]
+                                        var pieOptions = {
+                                            //Boolean - Whether we should show a stroke on each segment
+                                            segmentShowStroke: true,
+                                            //String - The colour of each segment stroke
+                                            segmentStrokeColor: '#fff',
+                                            //Number - The width of each segment stroke
+                                            segmentStrokeWidth: 2,
+                                            //Number - The percentage of the chart that we cut out of the middle
+                                            percentageInnerCutout: 50, // This is 0 for Pie charts
+                                            //Number - Amount of animation steps
+                                            animationSteps: 50,
+                                            //String - Animation easing effect
+                                            animationEasing: 'easeOutBounce',
+                                            //Boolean - Whether we animate the rotation of the Doughnut
+                                            animateRotate: true,
+                                            //Boolean - Whether we animate scaling the Doughnut from the centre
+                                            animateScale: false,
+                                            //Boolean - whether to make the chart responsive to window resizing
+                                            responsive: true,
+                                            // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+                                            maintainAspectRatio: true,
+                                            //String - A legend template
+                                            {#      legendTemplate       : '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<segments.length; i++){%><li><span style="background-color:<%=segments[i].fillColor%>"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>'#}
+                                        }
+                                        //Create pie or douhnut chart
+                                        // You can switch between pie and douhnut using the method below.
+                                        pieChart.Doughnut(PieData, pieOptions)
+
+
+                                    })
+                                </script>
+
+                            </div>
+                             <table class="table">
+                                <tr>
+                                    <td>Expiring</td>
+                                    <td></td>
+                                </tr>
+                                 <tr>
+                                    <td>Expired</td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <h3>Expired Assessments</h3>
+
+            <div class="row">
+                <div class="col-md-9">
+                    <!-- Custom Tabs -->
+                    <div class="nav-tabs-custom ">
+                        <ul class="nav nav-tabs">
+                            {% for service in expired %}
+                                {% if loop.index == 1 %}
+
+                                    <li class="active">
+                                        {% else %}
+                                    <li class="">
+                                {% endif %}
+
+                            <a href="#{{ service }}_expired" data-toggle="tab" aria-expanded="true">{{ service }}</a>
+                            </li>
+                            {% endfor %}
+
+                        </ul>
+                        <div class="tab-content" >
+                            {% for service in expired %}
+                                {% if loop.index == 1 %}
+                                    <div class="tab-pane active" id="{{ service }}_expired">
+                                {% else %}
+                                    <div class="tab-pane" id="{{ service }}_expired">
+                                {% endif %}
+                            <table class="table table-striped table-condensed  dataTable dt-responsive expired"
+                                   width="100%">
+                                <thead>
+                                <th>Assessment ID</th>
+                                <th>User</th>
+                                <th>Competence</th>
+                                <th>Assessment</th>
+                                <th>Expiry Date</th>
+                                </thead>
+                                {% for assessment in expired[service] %}
+                                    <tr>
+                                        <td>{{ assessment.id }}</td>
+                                        <td>{{ assessment.user_id_rel.first_name }} {{ assessment.user_id_rel.last_name }}</td>
+                                        <td>{{ assessment.ss_id_rel.c_id_rel.competence_detail[0].title }}</td>
+                                        <td>{{ assessment.ss_id_rel.name }}</td>
+                                        <td>{{ assessment.date_expiry }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                            </div>
+                            {% endfor %}
+
+                            </div>
+                            <!-- /.tab-content -->
+                        </div>
+                        <!-- nav-tabs-custom -->
+                    </div>
+                    <!-- /.col -->
+                    <div class="col-md-3">
+                        <div class="box box-danger">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">Top 5 Offenders</h3>
+
+                                {#                                <div class="box-tools pull-right">#}
+                                {#                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i#}
+                                {#                                            class="fa fa-minus"></i>#}
+                                {#                                    </button>#}
+                                {#                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i#}
+                                {#                                            class="fa fa-times"></i></button>#}
+                                {#                                </div>#}
+                            </div>
+                            <div class="box-body">
+                                <div class="chart">
+                                    <canvas id="barChart" style="height: 420px;"
+                                            height="420"></canvas>
+                                </div>
+                            </div>
+                            <!-- /.box-body -->
+                        </div>
+                    </div>
+                </div>
+
+
+                <h3>Expiring Assessments</h3>
+
+                <div class="row">
+                    <div class="col-md-9">
+                        <!-- Custom Tab -->
+                        <div class="nav-tabs-custom">
+                            <ul class="nav nav-tabs">
+                                {% for service in expiring %}
+                                    {% if loop.index == 1 %}
+
+                                        <li class="active">
+                                            {% else %}
+                                        <li class="">
+                                    {% endif %}
+
+                                <a href="#{{ service }}_expiring" data-toggle="tab"
+                                   aria-expanded="true">{{ service }}</a>
+                                </li>
+                                {% endfor %}
+
+                            </ul>
+                            <div class="tab-content">
+                                {% for service in expiring %}
+                                    {% if loop.index == 1 %}
+                                        <div class="tab-pane active" id="{{ service }}_expiring">
+                                    {% else %}
+                                        <div class="tab-pane" id="{{ service }}_expiring">
+                                    {% endif %}
+                                <table class="table table-striped table-condensed  dataTable dt-responsive expiring"
+                                       width="100%">
+                                    <thead>
+                                    <th>Assessment ID</th>
+                                    <th>User</th>
+                                    <th>Competence</th>
+                                    <th>Assessment</th>
+                                    <th>Expiry Date</th>
+                                    </thead>
+                                    {% for assessment in expiring[service] %}
+                                        <tr>
+                                            <td>{{ assessment.id }}</td>
+                                            <td>{{ assessment.user_id_rel.first_name }} {{ assessment.user_id_rel.last_name }}</td>
+                                            <td>{{ assessment.ss_id_rel.c_id_rel.competence_detail[0].title }}</td>
+                                            <td>{{ assessment.ss_id_rel.name }}</td>
+                                            <td>{{ assessment.date_expiry }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                                </div>
+                                {% endfor %}
+
+                                </div>
+                                <!-- /.tab-content -->
+                            </div>
+                            <!-- nav-tabs-custom -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-md-3">
+                            <div class="box box-warning">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title">Top 5 Offenders</h3>
+
+                                    {#                                <div class="box-tools pull-right">#}
+                                    {#                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i#}
+                                    {#                                            class="fa fa-minus"></i>#}
+                                    {#                                    </button>#}
+                                    {#                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i#}
+                                    {#                                            class="fa fa-times"></i></button>#}
+                                    {#                                </div>#}
+                                </div>
+                                <div class="box-body">
+                                    <div class="chart">
+                                        <div class="chart">
+                                            <canvas id="barChart_expiring" style="height: 420px;"
+                                                    height="420"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                        </div>
+
+
+        </section>
+    </div>
+
+
+
+
+    <script src="/static/bower_components/chart.js/Chart.js"></script>
+
+
+    <script>
+
+
+        $(function () {
+            /* ChartJS
+             * -------
+             * Here we will create a few charts using ChartJS
+             */
+
+            var data_expired = {
+                labels: [
+                    {% for name in user_expired %}
+                        "{{ name[0] }}",
+                    {% endfor %}
+
+                ],
+                datasets: [{
+                    data: [
+                        {% for name in user_expired %}
+                            {{ name[1] }},
+                        {% endfor %}
+
+                    ]
+
+                }]
+            }
+
+            var data_expiring = {
+                labels: [
+                    {% for name in user_expiring %}
+                        "{{ name[0] }}",
+                    {% endfor %}
+
+                ],
+                datasets: [{
+                    data: [
+                        {% for name in user_expiring %}
+                            {{ name[1] }},
+                        {% endfor %}
+
+                    ]
+
+                }]
+            }
+            //-------------
+            //- BAR CHART -
+            //-------------
+            var barChartCanvas = $('#barChart').get(0).getContext('2d')
+            var barChart = new Chart(barChartCanvas)
+            var barChartData = data_expired
+            barChartData.datasets[0].fillColor = '#ef4923'
+            barChartData.datasets[0].strokeColor = '#ef4923'
+            barChartData.datasets[0].pointColor = '#ef4923'
+            var barChartOptions = {
+                //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+                scaleBeginAtZero: true,
+                //Boolean - Whether grid lines are shown across the chart
+                scaleShowGridLines: true,
+                //String - Colour of the grid lines
+                scaleGridLineColor: 'rgba(0,0,0,.05)',
+                //Number - Width of the grid lines
+                scaleGridLineWidth: 1,
+                //Boolean - Whether to show horizontal lines (except X axis)
+                scaleShowHorizontalLines: true,
+                //Boolean - Whether to show vertical lines (except Y axis)
+                scaleShowVerticalLines: true,
+                //Boolean - If there is a stroke on each bar
+                barShowStroke: true,
+                //Number - Pixel width of the bar stroke
+                barStrokeWidth: 2,
+                //Number - Spacing between each of the X value sets
+                barValueSpacing: 5,
+                //Number - Spacing between data sets within X values
+                barDatasetSpacing: 1,
+                //String - A legend template
+                {#      legendTemplate          : '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span style="background-color:<%=datasets[i].fillColor%>"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>',#}
+                //Boolean - whether to make the chart responsive
+                responsive: true,
+                maintainAspectRatio: true
+            }
+
+            barChartOptions.datasetFill = false
+            barChart.Bar(barChartData, barChartOptions)
+
+            var barChartCanvas = $('#barChart_expiring').get(0).getContext('2d')
+            var barChart = new Chart(barChartCanvas)
+            var barChartData = data_expiring
+            barChartData.datasets[0].fillColor = '#ef8f23'
+            barChartData.datasets[0].strokeColor = '#ef8f23'
+            barChartData.datasets[0].pointColor = '#ef8f23'
+            var barChartOptions = {
+                //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+                scaleBeginAtZero: true,
+                //Boolean - Whether grid lines are shown across the chart
+                scaleShowGridLines: true,
+                //String - Colour of the grid lines
+                scaleGridLineColor: 'rgba(0,0,0,.05)',
+                //Number - Width of the grid lines
+                scaleGridLineWidth: 1,
+                //Boolean - Whether to show horizontal lines (except X axis)
+                scaleShowHorizontalLines: true,
+                //Boolean - Whether to show vertical lines (except Y axis)
+                scaleShowVerticalLines: true,
+                //Boolean - If there is a stroke on each bar
+                barShowStroke: true,
+                //Number - Pixel width of the bar stroke
+                barStrokeWidth: 2,
+                //Number - Spacing between each of the X value sets
+                barValueSpacing: 5,
+                //Number - Spacing between data sets within X values
+                barDatasetSpacing: 1,
+                //String - A legend template
+                {#      legendTemplate          : '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span style="background-color:<%=datasets[i].fillColor%>"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>',#}
+                //Boolean - whether to make the chart responsive
+                responsive: true,
+                maintainAspectRatio: true
+            }
+
+            barChartOptions.datasetFill = false
+            barChart.Bar(barChartData, barChartOptions)
+
+
+        })
+
+    </script>
+
+{% endblock %}

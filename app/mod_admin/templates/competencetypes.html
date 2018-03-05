@@ -1,17 +1,41 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% block content %}
-<div class="page-header">
-<h1>Competence Types</h1>
-</div>
 
 
-<div class="row">
-    <div class="col-md-3"></div>
-    <div class="col-md-6">
-        <div class="well bs-component">
-            <form action="{{ url_for('admin.competencetypes') }}" method="POST" class="form-horizontal">
-                <fieldset>
-                    <legend>Add Competence Type</legend>
+
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                Competence Types
+                <small></small>
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                <li class="active">Here</li>
+            </ol>
+            {% if message %}
+                <div class="alert alert-danger">
+                    <strong>Fail Whale!</strong> {{ message }}
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- Main content -->
+        <section class="content container-fluid">
+            <div class="callout callout-danger">
+                <h4>Editing this DANGERIOUS</h4>
+
+                <p>This page is here to create and delete competence types for compentcies - I.e. Scientists. Adding and
+                    editing is probably OK but DO NOT DELETE</p>
+            </div>
+
+            <div class="box" id="training">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Add Competence Types</h3>
+
+                </div>
+                <div class="box-body">
                     <div class="form-group">
                         {{ form.category.label(class_="col-lg-2 control-label") }}
                         <div class="col-lg-10">
@@ -23,38 +47,42 @@
                             {{ form.submit(class_="btn btn-primary") }}
                         </div>
                     </div>
-                </fieldset>
-            </form>
-        </div>
+                    </fieldset>
+                    </form>
+                </div>
+            </div>
+
+            <div class="box" id="training">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Competence Types</h3>
+
+                </div>
+                <div class="box-body">
+                    <table class="table table-striped">
+                        <thead>
+                        <th>Type</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                        </thead>
+
+                        {% for competencetype_object in data %}
+                            <tr>
+                                <td>{{ competencetype_object.category }}</td>
+                                <td>
+                                    <a href="{{ url_for('admin.competencetypes_edit', id=competencetype_object.id) }}"><span
+                                            class="label label-primary"><span class="glyphicon glyphicon-pencil"></span></span></a>
+                                </td>
+                                <td><a href="{{ url_for('admin.deletecompetencetypes', id=competencetype_object.id) }}"><span
+                                        class="label label-danger"><span
+                                        class="glyphicon glyphicon-remove"></span></span></a></td>
+                            </tr>
+                        {% endfor %}
+
+                    </table>
+                </div>
+            </div>
+
+        </section>
     </div>
-    <div class="col-md-3"></div>
-</div>
-
-
-<div class="row">
-    <div class="col-md-3"></div>
-    <div class="col-md-6">
-        <div class="well bs-component">
-            <legend>Competence Types</legend>
-            <table class="table table-striped">
-                <thead>
-                    <th>Type</th>
-                    <th>Edit</th>
-                    <th>Delete</th>
-                </thead>
-
-            {% for competencetype_object in data %}
-                <tr>
-                    <td>{{ competencetype_object.category }}</td>
-                    <td><a href="{{ url_for('admin.competencetypes_edit', id=competencetype_object.id) }}"><span class="label label-primary"><span class="glyphicon glyphicon-pencil"></span></span></a></td>
-                    <td><a href="{{ url_for('admin.deletecompetencetypes', id=competencetype_object.id) }}"><span class="label label-danger"><span class="glyphicon glyphicon-remove"></span></span></a></td>
-                </tr>
-            {% endfor %}
-
-            </table>
-           </div>
-    </div>
-    <div class="col-md-3"></div>
-</div>
 
 {% endblock %}}

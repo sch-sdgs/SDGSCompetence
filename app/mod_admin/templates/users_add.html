@@ -1,18 +1,35 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% block content %}
 
-<div class="page-header">
-<h1>Users</h1>
-</div>
 
-<div class="row">
-    <div class="col-md-2"></div>
-    <div class="col-md-8">
-        <div class="well bs-component">
+
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                Add User
+                <small></small>
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                <li class="active">Here</li>
+            </ol>
+            {% if message %}
+                <div class="alert alert-danger">
+                    <strong>Fail Whale!</strong> {{ message }}
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- Main content -->
+        <section class="content container-fluid">
+            <div class="box" id="training">
+
+                <div class="box-body">
             <form action="{{ url_for('admin.users_add') }}" method="POST" class="form-horizontal">
                 <fieldset>
 
-                    <legend>Add User</legend>
+
 
                     <div class="form-group username">
                         {{ form.username.label(class_="col-lg-2 control-label") }}
@@ -134,6 +151,7 @@
         });
 
         $('#username').focusout(function () {
+            console.log("hello");
 
             $('#username').each(function (i, v) {
                 console.log(this.value);

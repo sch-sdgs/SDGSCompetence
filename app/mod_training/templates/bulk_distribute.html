@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-header">
+<h1>Distribute Competence Tasks</h1>
+</div>
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+         <form action="{{ url_for('training.bulk_distribute') }}?ids={{ ids }}" method="POST" class="form-horizontal">
+            <table class="table table-striped">
+                <thead>
+                <th>Competence</th>
+                <th>Sub-Section</th>
+                <th>User</th>
+                <th>Choose Trainer</th>
+                <th>Choose Assessor</th>
+                </thead>
+            {% for competence in competence_result %}
+                <tr>
+                    <td>{{ competence.ss_id_rel.c_id_rel.competence_detail[0 ].title}}</td>
+                    <td>{{ competence.ss_id_rel.name }}</td>
+                    <td>{{ competence.user_id_rel.first_name }} {{ competence.user_id_rel.last_name }}</td>
+                    <td>{{ form.assid(class_="form-control",value=competence.id) }}{{ form.trainer(class_="form-control") }}</td>
+                    <td>{{ form.assessor(class_="form-control") }}</td>
+                </tr>
+            {% endfor %}
+            </table>
+         {{ form.submit(class_="btn btn-primary") }}
+         </form>
+        </div>
+    </div>
+</div>
+
+<script>
+   $(function () {
+        $.ajax({
+            url: '{{ url_for("autocomplete") }}'
+        }).done(function (data) {
+            $('#trainer').autocomplete({
+                source: data.json_list,
+                minLength: 2
+
+            });
+        });
+    });
+$(function () {
+        $.ajax({
+            url: '{{ url_for("autocomplete") }}'
+        }).done(function (data) {
+            $('#assessor').autocomplete({
+                source: data.json_list,
+                minLength: 2
+
+            });
+        });
+    });
+</script>
+
+{% endblock %}

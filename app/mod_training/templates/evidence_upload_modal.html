@@ -1,0 +1,102 @@
+<div class="modal" id="{{ sub['id'] }}">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span
+                        aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title"><strong>Evidence Summary: </strong>{{ sub['name'] }}</h4>
+            </div>
+            <div class="modal-body">
+
+                {% for i in sub['evidence'] %}
+                    {% if i.evidence_id_rel.evidence_type_rel.type == "Upload" %}
+                        <h4>Uploaded Evidence</h4>
+                        <p>Files that can open in your browser will (i.e. images)...</p>
+                        <table class="table table-striped">
+                            <thead>
+                            <th>Filename</th>
+                            <th>Date Uploaded</th>
+                            </thead>
+
+                            {% for u in get_uploads(i.evidence_id_rel.id) %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('training.download',filename=u.uuid,alias=u.filename) }}">{{ u.filename }}</a>
+                                    </td>
+                                    <td>{{ u.date_uploaded }}</td>
+                                </tr>
+                            {% endfor %}
+
+
+                        </table>
+                        {% if i.evidence_id_rel.comments %}
+                            <table class="table">
+
+                                <tr>
+                                    <td>
+                                    <blockquote class="blockquote text-right">
+                                        <p class="mb-0">{{ i.evidence_id_rel.comments }}</p>
+                                        <footer class="blockquote-footer">{{  sub["assessor"] }}</footer>
+                                    </blockquote>
+                                    </td>
+                                </tr>
+                            </table>
+                        {% endif %}
+                    {% elif i.evidence_id_rel.evidence_type_rel.type == "Case" %}
+                        <h4>Case Based Evidence</h4>
+                        <table class="table table-striped">
+                            <tr>
+                                <td>Case</td>
+                                <td>{{ i.evidence_id_rel.evidence }}</td>
+                            </tr>
+                            <tr>
+                                <td>Result</td>
+                                <td>{{ i.evidence_id_rel.result }}</td>
+                            </tr>
+                            {% if i.evidence_id_rel.comments %}
+                                <tr>
+                                    <td>Comments</td>
+                                    <td>{{ i.evidence_id_rel.comments }}</td>
+                                </tr>
+                            {% endif %}
+                        </table>
+                    {% elif i.evidence_id_rel.evidence_type_rel.type == "Observation" %}
+                        <h4>Observation Evidence</h4>
+                        <table class="table table-striped">
+                            <tr>
+                                <td>Evidence</td>
+                                <td>{{ i.evidence_id_rel.evidence }}</td>
+                            </tr>
+                            {% if i.evidence_id_rel.comments %}
+                                <tr>
+                                    <td>Comments</td>
+                                    <td>{{ i.evidence_id_rel.comments }}</td>
+                                </tr>
+                            {% endif %}
+                        </table>
+                    {% elif i.evidence_id_rel.evidence_type_rel.type == "Discussion" %}
+                        <h4>Discussion Evidence</h4>
+                        <table class="table table-striped">
+                            <tr>
+                                <td>{{ i.evidence_id_rel.evidence }}</td>
+                            </tr>
+                            {% if i.evidence_id_rel.comments %}
+                                <tr>
+                                    <td>Comments</td>
+                                    <td>{{ i.evidence_id_rel.comments }}</td>
+                                </tr>
+                            {% endif %}
+                        </table>
+
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

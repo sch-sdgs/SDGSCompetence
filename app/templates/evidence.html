@@ -1,0 +1,67 @@
+<div class="modal" id="{{ evidence.id }}">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span
+                        aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title"><strong>Evidence Summary: </strong></h4>
+            </div>
+            <div class="modal-body">
+
+                {% for i in signoff %}
+                    {% if i.evidence_type_rel.type == "Upload" %}
+                         <h4>Uploaded Evidence</h4>
+                        <p>Files that can open in your browser will (i.e. images)...</p>
+                        <table class="table table-striped">
+                            <thead>
+                            <th>Filename</th>
+                            <th>Date Uploaded</th>
+                            </thead>
+
+
+                            {% for u in get_uploads(i.id) %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('training.download',filename=u.uuid,alias=u.filename) }}">{{ u.filename }}</a>
+                                    </td>
+                                    <td>{{ u.date_uploaded }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+
+                     {% elif i.evidence_type_rel.type == "Case" %}
+                            <h4>Case Based Evidence</h4>
+                            <table class="table table-striped">
+                            <tr><td>Case</td><td>{{ i.evidence }}</td></tr>
+                            <tr><td>Result</td><td>{{ i.result }}</td></tr>
+                            </table>
+                    {% elif i.evidence_type_rel.type == "Observation" %}
+                        <h4>Observation Evidence</h4>
+                        <table class="table table-striped">
+                            <tr>
+                                <td>Evidence</td>
+                                <td>{{ i.evidence }}</td>
+                            </tr>
+                        </table>
+                    {% elif i.evidence_type_rel.type == "Discussion" %}
+                        <h4>Discussion Evidence</h4>
+                        <table class="table table-striped">
+                            <tr>
+                                <td>{{ i.evidence }}</td>
+                            </tr>
+                        </table>
+                    {% endif %}
+
+                {% endfor %}
+
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

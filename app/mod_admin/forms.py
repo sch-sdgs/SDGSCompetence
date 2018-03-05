@@ -1,6 +1,6 @@
 from flask_wtf import Form
 from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
-from wtforms.fields import TextField, SubmitField, HiddenField, BooleanField, SelectMultipleField, SelectField
+from wtforms.fields import TextField, SubmitField, HiddenField, BooleanField, SelectMultipleField, SelectField, TextAreaField
 from wtforms.validators import Required
 
 from app.competence import s
@@ -66,4 +66,18 @@ class ServiceForm(Form):
 
 class JobRoleForm(Form):
     job=TextField("Job Role",  [Required("Enter a job role")])
+    submit = SubmitField()
+
+class QuestionsForm(Form):
+    question = TextField("Reassessment Question", [Required("Enter a reassessment question")])
+    choices=[("Free text", "Free text"),("Date","Date"), ("Yes/no","Yes/no"), ("Dropdown","Dropdown")]
+    type = SelectField("Answer type", choices=choices)
+    submit = SubmitField()
+
+class DropDownForm(Form):
+    choice=TextField("Dropdown Choice",  [Required("Enter an dropdown choice")])
+    submit = SubmitField()
+
+class SubSectionAutoComplete(Form):
+    phrase = TextAreaField("Phrase(s)", [Required("Enter a phrase")])
     submit = SubmitField()

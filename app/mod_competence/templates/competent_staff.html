@@ -1,0 +1,112 @@
+{% extends "base2.html" %}
+{% block content %}
+
+
+
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                Competent Staff
+                <small></small>
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                <li class="active">Here</li>
+            </ol>
+            {% if message %}
+                <div class="alert alert-danger">
+                    <strong>Fail Whale!</strong> {{ message }}
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- Main content -->
+
+        <section class="content container-fluid">
+    {% for competence_name in result %}
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="box" id="training">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">{{  competence_name  }}</h3>
+
+                        </div>
+                        <div class="box-body table-responsive no-padding">
+                        <table class="table table-striped">
+
+
+                            <thead>
+                            <th>Name</th>
+                            <th>Signed-off By</th>
+                            <th>Line Manager</th>
+                            <th>Expiry Date</th>
+                            <th>Status</th>
+                            </thead>
+                            {% for ss in result[competence_name] %}
+                                <tr>
+
+                                    <td colspan="5"><strong>{{ ss }}</strong></td>
+                                </tr>
+                                {% for assessment in result[competence_name][ss] %}
+                                    <tr>
+
+                                        <td>{{ assessment.user_id_rel.first_name }} {{ assessment.user_id_rel.last_name }}</td>
+                                        <td>{{ assessment.signoff_id_rel.first_name }} {{ assessment.signoff_id_rel.last_name }}</td>
+                                        <td>{{ assessment.user_id_rel.linemanager_rel.first_name }} {{ assessment.user_id_rel.linemanager_rel.last_name }}</td>
+                                        <td>{{ assessment.date_expiry }}</td>
+                                        <td>{{ check_expiry(assessment.date_expiry)|safe }}</td>
+                                    </tr>
+                                {% endfor %}
+
+
+
+
+                            {% endfor %}
+                        </table>
+                        {#                            {% if result[competence_name][ss]|length > 0 %}#}
+                        {#                            <div class="panel panel-default">#}
+                        {#                                <div class="panel-heading"> <strong>{{ ss }}</strong></div>#}
+                        {#                                <div class="panel-body">#}
+                        {##}
+                        {#                                    <table class="table table-striped">#}
+                        {#                                        <thead>#}
+                        {#                                        <th>Name</th>#}
+                        {#                                        <th>Signed-off By</th>#}
+                        {#                                        <th>Line Manager</th>#}
+                        {#                                        <th>Expiry Date</th>#}
+                        {#                                        </thead>#}
+                        {#                                        {% for user in result[competence_name][ss] %}#}
+                        {#                                            <tr>#}
+                        {#                                                <td>{{ user.first_name }} {{ user.last_name }}</td>#}
+                        {#                                                <td></td>#}
+                        {#                                                <td></td>#}
+                        {#                                                <td></td>#}
+                        {#                                            </tr>#}
+                        {#                                        {% endfor %}#}
+                        {#                                    </table>#}
+                        {#                                 </div>#}
+                        {#                            </div>#}
+                        {#                                    {%  else %}#}
+                        {#                                <div class="panel panel-warning">#}
+                        {#                                <div class="panel-heading"> <strong>{{ ss }}</strong></div>#}
+                        {#                                <div class="panel-body">#}
+                        {#                                    No Staff are competent#}
+                        {#                                </div>#}
+                        {#                                </div>#}
+                        {##}
+                        {#                                {% endif %}#}
+                        {##}
+                        {#                        {% endfor %}#}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    {% endfor %}
+
+            </section>
+        </div>
+
+{% endblock %}

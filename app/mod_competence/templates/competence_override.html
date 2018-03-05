@@ -1,0 +1,133 @@
+{% extends "base2.html" %}
+{% block content %}
+
+
+
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+
+
+            <h1>Make a User Competent</h1>
+            <small></small>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                <li class="active">Here</li>
+            </ol>
+            {% if message %}
+                <div class="alert alert-danger">
+                    <strong>Fail Whale!</strong> {{ message }}
+                </div>
+            {% endif %}
+
+        </section>
+
+        <!-- Main content -->
+        <section class="content container-fluid">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="box box-default" id="training">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">Choose User (or multiple users!)
+                                </h3>
+
+                            </div>
+                            <div class="box-body">
+
+                        <form action="{{ url_for('competence.make_user_competent') }}?ids={{ ids }}" method="POST"
+                              class="form-horizontal">
+                            <fieldset>
+
+
+                                <div class="form-group">
+                                    <div class="col-lg-12">
+                                        <strong>Competencies:</strong> {{ competences }}
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    {{ form.full_name.label(class_="col-lg-2 control-label") }}
+
+                                    <div class="col-lg-10">
+                                        <div class="input-group">
+                                            {{ form.full_name(class_="form-control") }}
+
+                            <span class="input-group-btn"><button class="btn btn-flat btn-primary" id="add_user"
+                                                                  type="button">Assign</button></span>
+                                        </div>
+                                        <span class="help-block"><strong>Start typing and users will appear.</strong></span>
+                            <span class="help-block"><strong>Only to be used by admins for testing or in exceptional circumstances.</strong>
+                                This competence will be assigned, completed and signed off for all users listed below.</span>
+                                        <div id="selected_users"></div>
+                                        <input type="text" id="user_list" name="user_list" hidden required="required">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-lg-10 col-lg-offset-2">
+                                        {{ form.submit(class_="btn btn-flat btn-primary") }}
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <script>
+
+
+        function addUser() {
+            console.log('hello')
+            previous_value = $('#user_list').val()
+            if (previous_value == "") {
+                sep = ''
+            } else {
+                sep = ','
+            }
+
+            $('#user_list').val(previous_value + sep + $('#full_name').val())
+
+            $('#selected_users').val($('#add_document').val())
+            $('#selected_users').append('<a href="#" class="btn btn-flat btn-success remove" id="remove_document" >' + $('#full_name').val() + ' <span class="glyphicon glyphicon-remove"></span> </a> ')
+            $('#full_name').val('')
+
+        }
+        ;
+
+        $('#add_user').click(function () {
+            addUser()
+        });
+
+        $("#full_name").keydown(function (e) {
+            if (e.key == 'Enter') {
+                e.preventDefault()
+                addUser()
+            }
+
+        });
+
+        $(document).on("click", '.remove', function () {
+            console.log("HELLO");
+            var docs = $('#user_list').val().split(',');
+            console.log(docs);
+            docs.splice($.inArray($(this).attr('user_list'), docs), 1);
+            console.log(docs);
+            $('#user_list').val(docs.join());
+            $(this).remove();
+        });
+
+        $(function () {
+            $.ajax({
+                url: '{{ url_for("autocomplete") }}'
+            }).done(function (data) {
+                $('#full_name').autocomplete({
+                    source: data.json_list,
+                    minLength: 2
+
+                });
+            });
+        });
+    </script>
+
+{% endblock %}
