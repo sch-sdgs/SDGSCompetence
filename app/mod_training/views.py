@@ -79,7 +79,7 @@ def get_competent_users(ss_id_list):
     return users
 
 
-def get_competence_by_user(c_id, u_id):
+def get_competence_by_user(c_id, u_id,version):
     """
     Method to get information for competence for a given user
 
@@ -96,25 +96,24 @@ def get_competence_by_user(c_id, u_id):
     competence_result = s.query(Assessments). \
         join(Subsection). \
         join(Section). \
-        join(Competence, Subsection.c_id == Competence.id). \
+        join(Competence). \
+        join(CompetenceDetails, and_(Competence.id==CompetenceDetails.c_id,CompetenceDetails.intro==version)). \
         join(AssessmentStatusRef, Assessments.status == AssessmentStatusRef.id). \
         join(EvidenceTypeRef). \
-        filter(and_(Assessments.user_id == u_id, Competence.id == c_id)). \
+        filter(and_(Assessments.user_id == u_id, Competence.id == c_id, Assessments.version==version)). \
         values(Assessments.id.label('ass_id'), Section.name, Section.constant, Subsection.id, Assessments.trainer_id, Assessments.signoff_id,
                Subsection.name.label('area_of_competence'), Subsection.comments.label('notes'), EvidenceTypeRef.type,
                AssessmentStatusRef.status, Assessments.date_of_training,
-               Assessments.date_completed, Assessments.date_expiry, Assessments.comments.label('training_comments'))
+               Assessments.date_completed, Assessments.date_expiry, Assessments.comments.label('training_comments'),Assessments.version)
 
     print "COUNT"
     print competence_result
 
     result = {'constant': {}, 'custom': {}}
     for c in competence_result:
-        print c.id
+        print c
         evidence = s.query(AssessmentEvidenceRelationship).filter(
             AssessmentEvidenceRelationship.assessment_id == c.ass_id).all()
-        print "YEPPERS"
-        print evidence
         if c.constant:
             d = 'constant'
         else:
@@ -156,22 +155,24 @@ def get_competence_by_user(c_id, u_id):
     return result
 
 
-def get_competence_summary_by_user(c_id, u_id):
+def get_competence_summary_by_user(c_id, u_id,version):
     """
 
     :param c_id:
     :param u_id:
     :return:
     """
+    print "YOYOYOY"
     competence_result = s.query(Assessments).outerjoin(Users, Users.id == Assessments.user_id).outerjoin(Subsection). \
         outerjoin(Section).outerjoin(Competence, Subsection.c_id == Competence.id). \
-        outerjoin(CompetenceDetails,
-                  and_(CompetenceDetails.c_id == Competence.id, CompetenceDetails.intro == Competence.current_version)). \
+        outerjoin(CompetenceDetails,and_(Competence.id==CompetenceDetails.c_id,CompetenceDetails.intro==version)). \
         outerjoin(ValidityRef, CompetenceDetails.validity_period == ValidityRef.id). \
         filter(and_(Users.id == u_id, Competence.id == c_id)). \
+        filter(Assessments.version == version).\
         group_by(CompetenceDetails.id). \
         values((Users.first_name + ' ' + Users.last_name).label('user'),
                CompetenceDetails.title,
+               Assessments.version,
                CompetenceDetails.qpulsenum,
                CompetenceDetails.scope,
                Competence.id.label("c_id"),
@@ -180,23 +181,25 @@ def get_competence_summary_by_user(c_id, u_id):
                func.max(Assessments.date_activated).label('activated'),
                case([
                    (s.query(Assessments). \
-                    # outerjoin(Subsection, Subsection.id == Assessments.ss_id).\
-                    filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id,
+                    outerjoin(Subsection, Subsection.id == Assessments.ss_id).\
+                    filter(and_(Assessments.version==version,Assessments.user_id == u_id, Subsection.c_id == c_id,
                                 Assessments.date_completed == None)).exists(),
                     None)],
                    else_=func.max(Assessments.date_completed)).label('completed'),
                case([
                    (s.query(Assessments). \
-                    # outerjoin(Subsection, Subsection.id == Assessments.ss_id).\
-                    filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id,
+                    outerjoin(Subsection, Subsection.id == Assessments.ss_id).\
+                    filter(and_(Assessments.version==version,Assessments.user_id == u_id, Subsection.c_id == c_id,
                                 Assessments.date_expiry == None)).exists(),
                     None)],
                    else_=func.min(Assessments.date_expiry)).label('expiry'))
     for comp in competence_result:
+        print "HELLO"
+        print comp
         return comp
 
 
-def activate_assessments(ids, u_id):
+def activate_assessments(ids, u_id,version):
     """
 
 
@@ -204,6 +207,7 @@ def activate_assessments(ids, u_id):
     """
 
     print "FO SHO"
+    print ids
     ids = [int(x) for x in ids]
     print ids
     activated = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Active").first().id
@@ -216,7 +220,7 @@ def activate_assessments(ids, u_id):
     print(s.query(Assessments).filter(
         and_(Assessments.user_id == u_id, Assessments.status == assigned, Assessments.id.in_(ids))))
     statement = s.query(Assessments). \
-        filter(and_(Assessments.user_id == u_id, Assessments.status == assigned, Assessments.id.in_(ids))). \
+        filter(and_(Assessments.version==version,Assessments.user_id == u_id, Assessments.status == assigned, Assessments.id.in_(ids))). \
         update({Assessments.status: activated, Assessments.date_activated: datetime.date.today()},
                synchronize_session='fetch')
     s.commit()
@@ -329,9 +333,10 @@ def view_current_competence():
 
 
         c_id = request.args.get('c_id')
+        version = request.args.get('version')
         u_id = current_user.database_id
-        competence_summary = get_competence_summary_by_user(c_id, u_id)
-        section_list = get_competence_by_user(c_id, u_id)
+        competence_summary = get_competence_summary_by_user(c_id, u_id,version)
+        section_list = get_competence_by_user(c_id, u_id,version)
 
         # return template populated
         return render_template('complete_training.html', competence=c_id, u_id=u_id, user=competence_summary.user,
@@ -341,12 +346,12 @@ def view_current_competence():
                                assigned=competence_summary.assigned,
                                activated=filter_for_none(competence_summary.activated),
                                completed=filter_for_none(competence_summary.completed),
-                               expires=filter_for_none(competence_summary.expiry))
+                               expires=filter_for_none(competence_summary.expiry),version=competence_summary.version)
 
 
 @training.route('/upload')
 @login_required
-def upload_evidence(c_id=None, s_ids=None):
+def upload_evidence(c_id=None, s_ids=None,version=None):
     """
     Method to
 
@@ -354,7 +359,6 @@ def upload_evidence(c_id=None, s_ids=None):
     """
 
     ass_ids = json.loads(request.form["ids"])
-
     form = UploadEvidence()
 
     ss_id_list = get_ss_id_from_assessment(ass_ids)
@@ -375,9 +379,9 @@ def upload_evidence(c_id=None, s_ids=None):
     form.assessor.choices = choices
     u_id = current_user.database_id
 
-    competence_summary = get_competence_summary_by_user(c_id, u_id)
+    competence_summary = get_competence_summary_by_user(c_id, u_id,version)
     names = s.query(Assessments).filter(Assessments.id.in_(s_ids)).all()
-    return render_template('upload_evidence.html', c_id=c_id, u_id=u_id, user=competence_summary.user,
+    return render_template('upload_evidence.html', c_id=c_id, u_id=u_id, user=competence_summary.user, version=version,
                            number=competence_summary.qpulsenum,
                            title=competence_summary.title, validity=competence_summary.months, form=form, s_ids=s_ids, s_names=names)
 
@@ -503,7 +507,8 @@ def signoff_evidence(evidence_id,action):
 def process_evidence():
 
     s_ids = request.args.get('s_ids').split(",")
-
+    c_id = request.args.get('c_id')
+    version = request.args.get('version')
     status_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Sign-Off").first().id
     for i in request.form:
         print i
@@ -577,7 +582,7 @@ def process_evidence():
             s.add(u)
         s.commit()
 
-        return 'file uploaded successfully'
+        return redirect(url_for('training.view_current_competence')+"?version="+str(version)+"&c_id="+str(c_id))
 
 
 # @training.route('/uploader', methods=['GET', 'POST'])
@@ -613,7 +618,7 @@ def select_subsections():
     :return:
     """
     c_id = request.args.get('c_id')
-
+    version = request.args.get('version')
     u_id = current_user.database_id
 
     forward_action = request.args.get('action')
@@ -622,8 +627,8 @@ def select_subsections():
     form = SubSectionsForm()
 
     if request.method == "GET":
-        competence_summary = get_competence_summary_by_user(c_id, int(u_id))
-        section_list = get_competence_by_user(c_id, int(u_id))
+        competence_summary = get_competence_summary_by_user(c_id, int(u_id),version)
+        section_list = get_competence_by_user(c_id, int(u_id),version)
 
         required_status = ""
         heading = "{} Subsections"
@@ -645,7 +650,7 @@ def select_subsections():
                                                                                  'id': u_id},
                                title=competence_summary.title, validity=competence_summary.months, heading=heading,
                                section_list=section_list, required_status=required_status, action=forward_action,
-                               form=form)
+                               form=form,version=version)
     else:
         print request.form["ids"]
         ids = form.ids.data.replace('"', '').replace('[', '').replace(']', '').split(',')
@@ -654,15 +659,15 @@ def select_subsections():
         elif forward_action == "activate":
             print "THIS IS ME"
             print ids
-            activate_assessments(ids, u_id)
+            activate_assessments(ids, u_id,version)
         elif forward_action == "evidence":
             print "HELLO"
             print ids
-            return upload_evidence(c_id, ids)
+            return upload_evidence(c_id, ids,version)
         elif forward_action == "reassess":
             return reassessment()
 
-        return redirect(url_for('training.view_current_competence', c_id=c_id, user=u_id))
+        return redirect(url_for('training.view_current_competence', c_id=c_id, user=u_id,version=version))
 
 
 @training.route('/activate', methods=['GET', 'POST'])

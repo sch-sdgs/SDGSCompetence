@@ -133,7 +133,7 @@
                     {% endfor %}
                     <div>
                         <form class="form-group"
-                              action="{{ url_for('training.select_subsections', c_id=competence, user=user['id'], action=action) }}"
+                              action="{{ url_for('training.select_subsections', c_id=competence, user=user['id'], action=action, version=version ) }}"
                               method="post">
                             {{ form.ids }}
                             {{ form.submit(class_="btn btn-success") }}

@@ -24,7 +24,7 @@
                 </div>
             {% endif %}
 
-            <h3>{{ title }}</h3>
+            <h3>{{ title }} <small class="label bg-gray">v{{ version }}</small><small class="pull-right"><a href="{{ url_for('document.export_document_view') }}?c_id={{ c_id }}&version={{ version }}" class="btn btn-flat btn-default"><i class="fa fa-download"></i> Download</a></small></h3>
         </section>
 
         <!-- Main content -->
@@ -98,7 +98,7 @@
 
 
                         <table class="table table-striped table-hover ">
-                        <caption class="text-primary"><strong><i class="fa fa-fw fa-check-square-o"></i> {{ constant_sec_name }}</strong></caption>
+                        <h4 class="text-blue"><i class="fa fa-fw fa-check-square-o"></i> {{ constant_sec_name }}</h4>
 
                         <thead>
                         <tr>
@@ -136,7 +136,7 @@
                         {% for sec_name in subsections %}
 
                             <table class="table table-striped table-hover ">
-                            <caption class="text-primary"><strong><i class="fa fa-fw fa-check-square-o"></i> {{ sec_name }}</strong></caption>
+                            <h4 class="text-blue"><i class="fa fa-fw fa-check-square-o"></i> {{ sec_name }}</h4>
                             <thead>
                             <tr>
                                 <th>Area of Competence</th>

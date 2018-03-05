@@ -23,12 +23,15 @@
 
         <!-- Main content -->
         <section class="content container-fluid">
-            <div class="box" id="training">
+            <div class="box box-primary" id="training">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Basic Details</h3>
 
+                </div>
                 <div class="box-body">
                     <form action="{{ url_for('competence.add_competence') }}" method="POST" class="form-horizontal">
                         <fieldset>
-                            <legend>Basic Details</legend>
+
 
                             <div class="form-group">
                                 {{ form.title.label(class_="col-lg-2 control-label") }}
@@ -63,6 +66,13 @@
                                 </div>
                             </div>
 
+                             <div class="form-group">
+                                {{ form.approval.label(class_="col-lg-2 control-label") }}
+                                <div class="col-lg-10">
+                                    {{ form.approval(class_="form-control") }}
+                                </div>
+                            </div>
+
 
                             <div class="form-group">
                                 {{ form.add_document.label(class_="col-lg-2 control-label") }}
@@ -70,7 +80,8 @@
                                     <div class="input-group" id="add_document_group">
                                         {{ form.add_document(class_="form-control") }}
 
-                                <span class="input-group-btn"><button class="btn btn-primary btn-flat" id="submit_document"
+                                <span class="input-group-btn"><button class="btn btn-primary btn-flat"
+                                                                      id="submit_document"
                                                                       type="button">Attach</button></span>
 
                                     </div>
@@ -105,13 +116,24 @@
                     </form>
                 </div>
             </div>
-    <div id="document_list"></div>
+            <div id="document_list"></div>
 
-    </section>
+        </section>
     </div>
 
 
     <script>
+        $(function () {
+        $.ajax({
+            url: '{{ url_for("autocomplete") }}'
+        }).done(function (data) {
+            $('#approval').autocomplete({
+                source: data.json_list,
+                minLength: 2
+
+            });
+        });
+    });
         //this function does autocomplete for existing documents in the database
         $(function () {
             $.ajax({
@@ -160,7 +182,6 @@
                         $('#submit_document').addClass("btn-danger");
                         $('#add_document_text').text('Q-Pulse Document Not Found!');
                         $('#add_document_text').addClass('text-red');
-
 
 
                     }

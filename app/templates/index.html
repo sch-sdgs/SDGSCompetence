@@ -37,7 +37,7 @@
                                 <small class="label pull-right bg-black">{{ assigned|length }}</small>
                             </div>
                         </div>
-                        <div class="box-body">
+                        <div class="box-body table-responsive">
 
 
                             {% if assigned|length == 0 %}
@@ -47,6 +47,7 @@
                                     <thead>
 
                                     <th>Competence</th>
+                                    <th>Version</th>
                                     <th>Status</th>
                                     <th>Assigned By</th>
                                     <th>Date Assigned</th>
@@ -54,57 +55,109 @@
                                     <th>Activate Sub Competencies</th>
                                     <th>View & Update Training</th>
                                     </thead>
-
-
                                     {% for assessment in assigned %}
 
-                                        {% for details in assessment.ss_id_rel.c_id_rel.competence_detail %}
-                                            <tr>
-                                                <td>{{ details.title }}</td>
-                                                <td>
 
-                                                </td>
-                                                <td>{{ assessment.assign_id_rel.first_name }} {{ assessment.assign_id_rel.last_name }}</td>
-                                                <td>{{ assessment.date_assigned }}</td>
-                                                <td>
+                                        <tr>
+                                            <td>{{ assessment.title }}</td>
+                                            <td>
+                                                <small class="label bg-gray">v{{ assessment.version }}</small>
+                                            </td>
+                                            <td>
 
-                                                    <div class="progress">
-                                                        <div class="progress-bar progress-bar-success progress-bar-striped"
-                                                             role="progressbar" aria-valuenow="60"
-                                                             aria-valuemin="0"
-                                                             aria-valuemax="100"
-                                                             style="width: {{ get_percent(details.c_id,current_user.database_id) }}%;">
-                                                            <span class="sr-only">60% Complete</span>
-                                                        </div>
+                                            </td>
+                                            <td>{{ assessment.user }}</td>
+                                            <td>{{ assessment.assigned.strftime('%d-%m-%Y') }}</td>
+                                            <td>
+
+                                                <div class="progress progress-sm">
+                                                    <div class="progress-bar progress-sm progress-bar-success progress-bar-striped"
+                                                         role="progressbar" aria-valuenow="60"
+                                                         aria-valuemin="0"
+                                                         aria-valuemax="100"
+                                                         style="width: {{ get_percent(assessment.c_id,current_user.database_id,assessment.version) }}%;">
+                                                        <span class="sr-only">60% Complete</span>
                                                     </div>
+                                                </div>
 
 
-                                                </td>
-                                                <td>
-                                                    {% if count_active(details.c_id,current_user.database_id) != 100 %}
-                                                        <a href="{{ url_for('training.select_subsections') }}?u_id={{ current_user.database_id }}&c_id={{ details.c_id }}&action=activate"
-                                                           class="btn btn-xs btn-flat btn-primary"><span
-                                                                class="glyphicon glyphicon-play"></span>
-                                                            Activate</a>
-                                                    {% else %}
-                                                        <a
-                                                                class="btn btn-xs btn-flat btn-primary" disabled><span
-                                                                class="glyphicon glyphicon-remove"></span>
-                                                            All Active</a>
-
-                                                    {% endif %}
-
-                                                </td>
-
-
-                                                <td>
-                                                    <a href="{{ url_for('training.view_current_competence') }}?c_id={{ details.c_id }}"
+                                            </td>
+                                            <td>
+                                                {% if count_active(assessment.c_id,current_user.database_id) != 100 %}
+                                                    <a href="{{ url_for('training.select_subsections') }}?u_id={{ current_user.database_id }}&version={{ assessment.version }}&c_id={{ assessment.c_id }}&action=activate"
                                                        class="btn btn-xs btn-flat btn-primary"><span
-                                                            class="glyphicon glyphicon-eye-open"></span>
-                                                        View</a></td>
-                                            </tr>
-                                        {% endfor %}
+                                                            class="glyphicon glyphicon-play"></span>
+                                                        Activate</a>
+                                                {% else %}
+                                                    <a
+                                                            class="btn btn-xs btn-flat btn-primary" disabled><span
+                                                            class="glyphicon glyphicon-remove"></span>
+                                                        All Active</a>
+
+                                                {% endif %}
+
+                                            </td>
+
+
+                                            <td>
+                                                <a href="{{ url_for('training.view_current_competence') }}?c_id={{ assessment.c_id }}&version={{ assessment.version }}"
+                                                   class="btn btn-xs btn-flat btn-primary"><span
+                                                        class="glyphicon glyphicon-eye-open"></span>
+                                                    View</a></td>
+                                        </tr>
+
                                     {% endfor %}
+
+                                    {#                                    {% for assessment in assigned %}#}
+                                    {##}
+                                    {#                                        {% for details in assessment.ss_id_rel.c_id_rel.competence_detail %}#}
+                                    {#                                            <tr>#}
+                                    {#                                                <td>{{ details.title }}</td>#}
+                                    {#                                                <td><small class="label bg-gray">v{{ details.intro }}</small></td>#}
+                                    {#                                                <td>#}
+                                    {##}
+                                    {#                                                </td>#}
+                                    {#                                                <td>{{ assessment.assign_id_rel.first_name }} {{ assessment.assign_id_rel.last_name }}</td>#}
+                                    {#                                                <td>{{ assessment.date_assigned }}</td>#}
+                                    {#                                                <td>#}
+                                    {##}
+                                    {#                                                    <div class="progress">#}
+                                    {#                                                        <div class="progress-bar progress-bar-success progress-bar-striped"#}
+                                    {#                                                             role="progressbar" aria-valuenow="60"#}
+                                    {#                                                             aria-valuemin="0"#}
+                                    {#                                                             aria-valuemax="100"#}
+                                    {#                                                             style="width: {{ get_percent(details.c_id,current_user.database_id) }}%;">#}
+                                    {#                                                            <span class="sr-only">60% Complete</span>#}
+                                    {#                                                        </div>#}
+                                    {#                                                    </div>#}
+                                    {##}
+                                    {##}
+                                    {#                                                </td>#}
+                                    {#                                                <td>#}
+                                    {#                                                    {% if count_active(details.c_id,current_user.database_id) != 100 %}#}
+                                    {#                                                        <a href="{{ url_for('training.select_subsections') }}?u_id={{ current_user.database_id }}&c_id={{ details.c_id }}&action=activate"#}
+                                    {#                                                           class="btn btn-xs btn-flat btn-primary"><span#}
+                                    {#                                                                class="glyphicon glyphicon-play"></span>#}
+                                    {#                                                            Activate</a>#}
+                                    {#                                                    {% else %}#}
+                                    {#                                                        <a#}
+                                    {#                                                                class="btn btn-xs btn-flat btn-primary" disabled><span#}
+                                    {#                                                                class="glyphicon glyphicon-remove"></span>#}
+                                    {#                                                            All Active</a>#}
+                                    {##}
+                                    {#                                                    {% endif %}#}
+                                    {##}
+                                    {#                                                </td>#}
+                                    {##}
+                                    {##}
+                                    {#                                                <td>#}
+                                    {#                                                    <a href="{{ url_for('training.view_current_competence') }}?c_id={{ details.c_id }}"#}
+                                    {#                                                       class="btn btn-xs btn-flat btn-primary"><span#}
+                                    {#                                                            class="glyphicon glyphicon-eye-open"></span>#}
+                                    {#                                                        View</a></td>#}
+                                    {#                                            </tr>#}
+                                    {#                                        {% endfor %}#}
+                                    {#                                    {% endfor %}#}
                                 </table>
                             {% endif %}
                         </div>
@@ -123,12 +176,13 @@
                                 <small class="label pull-right bg-black">{{ complete|length }}</small>
                             </div>
                         </div>
-                        <div class="box-body table-responsive no-padding">
+                        <div class="box-body table-responsive">
 
                             <table class="table table-striped">
                                 <thead>
 
                                 <th>Competence</th>
+                                <th>Version</th>
                                 <th>Some Sub-Sections...</th>
                                 <th>Date Complete</th>
                                 <th>Earliest Date of Expiry</th>
@@ -137,12 +191,24 @@
                                 {% for i in complete %}
                                     <tr>
                                         <td>{{ i.title }}</td>
-                                        <td>{{ check_expiry(i.expiry)|safe }}</td>
-                                        <td>{{ i.completed }}</td>
-                                        <td>{{ i.expiry }}</td>
+                                        <td>
+                                            <small class="label bg-gray">v{{ i.version }}</small>
+                                        </td>
+                                        {% if i != None %}
+                                            <td>{{ check_expiry(i.expiry)|safe }}</td>
+                                        {% endif %}
+
+                                        <td>
+                                            {% if i.completed != None %}
+                                                {{ i.completed.strftime('%d-%m-%Y') }}
+                                            {% endif %}
+                                        </td>
+                                        <td>   {% if i.expiry != None %}
+                                            {{ i.expiry.strftime('%d-%m-%Y') }}
+                                        {% endif %}</td>
                                         <td>
                                             <div class="btn-group">
-                                                <a href="{{ url_for('training.view_current_competence') }}?c_id={{ i.c_id }}"
+                                                <a href="{{ url_for('training.view_current_competence') }}?c_id={{ i.c_id }}&version={{ i.version }}"
                                                    class="btn btn-sm btn-info btn-flat "><span
                                                         class="glyphicon glyphicon-eye-open"></span></a>
 
@@ -170,7 +236,7 @@
 
             <div class="box" id="training">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Awaiting Sign-Off</h3>
+                    <h3 class="box-title">Awaiting Approval</h3>
                 </div>
                 <div class="box-body">
                     {#            {% if signoff|length !=0 %}#}
@@ -185,6 +251,7 @@
                                     <thead>
                                     <th>Competence/Sub Section(s) Covered</th>
                                     <th>Trainee</th>
+                                    <th>Date Trained</th>
                                     <th>Actions</th>
                                     </thead>
 
@@ -201,6 +268,9 @@
                                             </td>
                                             <td>
                                                 {{ evidence.assessments[0].assess_id_rel.user_id_rel.first_name }} {{ evidence.assessments[0].assess_id_rel.user_id_rel.last_name }}
+                                            </td>
+                                            <td>
+                                                {{ evidence.assessments[0].assess_id_rel.date_of_training.strftime('%d-%m-%Y') }}
                                             </td>
                                             <td>
                                                 {% include "evidence.html" %}
@@ -226,8 +296,49 @@
                                 </table>
                             </div>
                         </div>
+                    {% endif %}
+                    {% if signoff_competence %}
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>Date Created</th>
+                                    <th>Version</th>
+                                    <th>Actions</th>
+                                    </thead>
+
+                                    {% for competence in signoff_competence %}
+                                        <tr>
+                                            <td>{{ competence.title }}</td>
+                                            <td>{{ competence.creator_rel.first_name }} {{ competence.creator_rel.last_name }}</td>
+                                            <td>{{ competence.date_created.strftime('%d-%m-%Y') }}</td>
+                                            <td>
+                                                <small class="label bg-gray">v{{ competence.intro }}</small>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <a href="{{ url_for('competence.view_competence') }}?c_id={{ competence.c_id }}&version={{ competence.intro }}"
+                                                       class="btn btn-sm btn-flat btn-primary"><span
+                                                            class="glyphicon glyphicon-eye-open"></span> View</a>
+                                                    <a href="{{ url_for('competence.approve',id=competence.c_id,version=competence.intro,u_id=current_user.database_id) }}"
+                                                       class="btn btn-sm btn-flat btn-success"><span
+                                                            class="glyphicon glyphicon-thumbs-up"></span> Accept</a>
+
+                                                    <a data-toggle="modal" data="" href="#reject_{{ competence.id }}"
+                                                       class="btn btn-sm btn-flat btn-danger"><span
+                                                            class="glyphicon glyphicon-thumbs-down"></span> Reject</a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+
+                            </div>
+                        </div>
                     {% else %}
-                        You have nothing to sign-off.
+                        You have no competencies to approve.
                     {% endif %}
                 </div>
             </div>

@@ -30,17 +30,18 @@
 
             <!-- If competence is live warn that it will create a new version -->
             {% if live %}
-            <div class="callout callout-danger">
-                <h4>This competence is live!</h4>
+                <div class="callout callout-danger">
+                    <h4>This competence is live!</h4>
 
-                <p>This is OK, but editing this page will create a new version of the competence. It won't be made live until you say so and users who are competent on the old version will still be so.</p>
-              </div>
-                {% else %}
+                    <p>This is OK, but editing this page will create a new version of the competence. It won't be made
+                        live until you say so and users who are competent on the old version will still be so.</p>
+                </div>
+            {% else %}
                 <div class="callout callout-success">
-                <h4>This competence is not live!</h4>
+                    <h4>This competence is not live!</h4>
 
-                <p>This competence has never been made live so you can edit freely.</p>
-              </div>
+                    <p>This competence has never been made live so you can edit freely.</p>
+                </div>
             {% endif %}
 
 
@@ -83,12 +84,19 @@
                                         </div>
                                     </div>
 
+                                    <div class="form-group">
+                                        {{ form.approval.label(class_="col-lg-2 control-label") }}
+                                        <div class="col-lg-10">
+                                            {{ form.approval(required="required",class_="form-control") }}
+                                        </div>
+                                    </div>
+
 
                                     <div class="form-group">
                                         {{ form.edit_validity_period.label(class_="col-lg-2 control-label") }}
                                         <div class="col-lg-10">
-                                            <div class="input-group">
-                                                {{ form.edit_validity_period(required="required",class_="form-control") }}</div>
+
+                                            {{ form.edit_validity_period(required="required",class_="form-control") }}
                                         </div>
                                     </div>
                                 </fieldset>
@@ -120,7 +128,8 @@
                                             <div class="input-group">
                                                 {{ form.add_document(class_="form-control") }}
 
-                                <span class="input-group-btn"><button class="btn btn-flat btn-primary" id="submit_document"
+                                <span class="input-group-btn"><button class="btn btn-flat btn-primary"
+                                                                      id="submit_document"
                                                                       type="button">Attach</button></span>
 
                                             </div>
@@ -135,29 +144,60 @@
                         </div>
                     </div>
 
-                    <div class="well bs-component">
-                        <form action="{{ url_for('competence.edit_competence') }}?c_id={{ c_id }}" method="POST"
-                              class="form-horizontal">
-                            <fieldset>
+                    <div class="box box-primary" id="training">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Edit Permanent Sections</h3>
 
-                                <legend>Edit Permanent Sections</legend>
+                        </div>
+                        <div class="box-body">
+                            <form action="{{ url_for('competence.edit_competence') }}?c_id={{ c_id }}" method="POST"
+                                  class="form-horizontal">
+                                <fieldset>
+                                    {% for section in subsections["constant"] %}
+                                        <h4 class="text-blue"><i class="fa fa-fw fa-check-square-o"></i>{{ section }}
+                                        </h4>
+                                        {% for subsection in subsections["constant"][section] %}
+                                            <p>{{ subsection.name }}</p>
+                                        {% endfor %}
 
-
-                            </fieldset>
-                        </form>
+                                    {% endfor %}
+                                </fieldset>
+                            </form>
+                        </div>
                     </div>
 
 
-                    <div class="well bs-component">
-                        <form action="{{ url_for('competence.edit_competence') }}?c_id={{ c_id }}" method="POST"
-                              class="form-horizontal">
-                            <fieldset>
+                    <div class="box box-primary" id="training">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Edit Custom Sections</h3>
 
-                                <legend>Edit Sections</legend>
+                        </div>
+                        <div class="box-body">
+                            <form action="{{ url_for('competence.edit_competence') }}?c_id={{ c_id }}" method="POST">
+                                <fieldset>
+                                    {% for section in subsections["custom"] %}
+                                        <h4 class="text-blue"><i class="fa fa-fw fa-check-square-o"></i>{{ section }}
+                                        </h4>
+                                        {% for subsection in subsections["custom"][section] %}
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <input type="text" name="{{ subsection.id }}"
+                                                           id="{{ subsection.id }}"
+                                                           value="{{ subsection.name }}" class="form-control">
+                                                <span class="input-group-btn">
+                                                  <button type="button" id="subsection_{{ subsection.id }}"
+                                                          class="btn btn-flat btn-danger remove"><i
+                                                          class="fa fa-remove"></i> </button>
+                                                </span>
+                                                </div>
+                                            </div>
 
+                                        {% endfor %}
 
-                            </fieldset>
-                        </form>
+                                    {% endfor %}
+                                </fieldset>
+                            </form>
+                        </div>
                     </div>
 
 
@@ -170,6 +210,29 @@
 
 
 
+    <script>
+        $('.remove').click(function () {
+            var remove = $(this).attr('id');
+            var id = $(this).attr('id').split('_')[1];
+            $.ajax({
+                url: '{{ url_for("competence.remove_subsection") }}?id=' + id + '&version={{ version }}',
+                success: function (response) {
+                    $('#'+remove).parent().parent().remove();
+                },
 
+            });
+        });
+        $(function () {
+            $.ajax({
+                url: '{{ url_for("autocomplete") }}'
+            }).done(function (data) {
+                $('#approval').autocomplete({
+                    source: data.json_list,
+                    minLength: 2
+
+                });
+            });
+        });
+    </script>
 
 {% endblock %}

@@ -47,7 +47,9 @@
                         <table class="table table-striped table-condensed  dataTable dt-responsive" width="100%" id="users">
                             <thead>
                             <th class="col-md-1">id</th>
+                             {% if "ADMIN" in current_user.roles %}
                             <th class="col-md-1">Login</th>
+                            {%  endif  %}
                             <th class="col-md-2">Name</th>
                             {% if 'PRIVILEGE' in current_user.roles %}
                                 <th class="col-md-2">Staff No</th>
@@ -56,13 +58,17 @@
                             <th class="col-md-2">Line Manager</th>
                             <th class="col-md-2">User Roles</th>
                             <th class="col-md-3">Job Roles</th>
+                            {% if "ADMIN" in current_user.roles %}
                             <th class="col-md-1">Edit</th>
                             <th class="col-md-1">Active</th>
+                            {% endif %}
                             </thead>
                             {% for user in data %}
                                 <tr>
                                     <td>{{ user["id"] }}</td>
+                                    {% if "ADMIN" in current_user.roles %}
                                     <td>{{ user["login"] }}</td>
+                                {% endif %}
                                     <td>{{ user["first_name"] }} {{ user["last_name"] }}</td>
                                     {% if 'PRIVILEGE' in current_user.roles %}
                                         <td>{{ user["staff_no"] }}</td>
@@ -79,6 +85,7 @@
                                             <span class="label label-default">{{ job }}</span>
                                         {% endfor %}
                                     </td>
+                                 {% if "ADMIN" in current_user.roles %}
                                     <td><a href="{{ url_for('admin.users_edit',id=user["id"]) }}"
                                            class="btn btn-sm btn-flat btn-warning"><span
                                             class="glyphicon glyphicon-pencil"></span></a></td>
@@ -92,6 +99,7 @@
                                                class="btn btn-sm btn-flat btn-danger"><span
                                                 class="glyphicon glyphicon-remove"></span></a></td>
                                     {% endif %}
+                                {% endif %}
                                 </tr>
                             {% endfor %}
                         </table>

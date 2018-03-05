@@ -21,6 +21,7 @@ class AddCompetence(Form):
     creator_id = TextField("Author Name", [Required("Enter an Author Name")])
     validity_period = QuerySelectField("Validity Period", query_factory=lambda:s.query(ValidityRef).all(), get_label="months")
     competency_type= QuerySelectField("Competence Category", query_factory=lambda:s.query(CompetenceCategory).all(), get_label="category")
+    approval = TextField("Authoriser")
     documents = QuerySelectMultipleField("Associated Documents",query_factory=lambda:s.query(Documents).all(), get_label="qpulse_no")
     add_document = TextField("Add Related Document", [Required("Enter a Q-Pulse Document Number")])
     submit = SubmitField()
@@ -51,6 +52,7 @@ class EditCompetency(Form):
     #test_id=c_id
     edit_title = TextField("Title")
     edit_scope = TextField("Scope")
+    approval = TextField("Authoriser")
     # qpulsenum = TextField("QPulse Doc ID", [Required("Enter a QPulse ID")]) #This needs to be added after competency creation!
     edit_validity_period = QuerySelectField("Validity Period", query_factory=lambda: s.query(ValidityRef).all(),
                                        get_label="months")

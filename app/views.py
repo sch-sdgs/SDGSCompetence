@@ -6,9 +6,10 @@ from activedirectory import UserAuthentication
 from forms import *
 from flask_principal import Principal, Identity, AnonymousIdentity, \
     identity_changed, Permission, RoleNeed, UserNeed, identity_loaded
-from sqlalchemy.sql.expression import func, and_, case, or_
+
 from app.mod_training.views import get_competence_summary_by_user
 from dateutil.relativedelta import relativedelta
+from sqlalchemy.sql.expression import func, and_, or_, case, exists, update,distinct
 import os
 
 from app.competence import app, s, db
@@ -178,14 +179,16 @@ def get_competence_from_subsections(subsection_ids):
 #####################
 @app.context_processor
 def utility_processor():
-    def get_percent(c_id, u_id):
+    def get_percent(c_id, u_id,version):
         """
         gets the percentage complete of any competence
         :param c_id: competence id
         :param u_id: user id
         :return: percentage complete
         """
-        counts = s.query(Assessments).join(Subsection) \
+        counts = s.query(Assessments)\
+            .join(Subsection) \
+            .filter(Assessments.version==version) \
             .filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id)) \
             .values((func.sum(case([(Assessments.date_completed == None, 0)], else_=1)) / func.count(
             Assessments.id) * 100).label('percentage'))
@@ -257,19 +260,28 @@ def utility_processor():
         for i in expired:
             if i.date_expiry is not None:
                 if datetime.date.today() > i.date_expiry:
-                    if "Expired" not in alerts:
-                        alerts["Expired"] = 1
+                    if "Assessments Expired" not in alerts:
+                        alerts["Assessments Expired"] = 1
                         count+=1
                     else:
-                        alerts["Expired"] += 1
+                        alerts["Assessments Expired"] += 1
                         count+=1
                 elif datetime.date.today() + relativedelta(months=+6) > i.date_expiry:
-                    if "Expiring" not in alerts:
-                        alerts["Expiring"] = 1
+                    if "Assessments Expiring" not in alerts:
+                        alerts["Assessments Expiring"] = 1
                         count += 1
                     else:
-                        alerts["Expiring"] += 1
+                        alerts["Assessments Expiring"] += 1
                         count += 1
+        signoff = s.query(Evidence).filter(Evidence.signoff_id == current_user.database_id).filter(Evidence.is_correct == None).count()
+        if signoff > 0:
+            count+=signoff
+            alerts["Evidence Approval"] = signoff
+        approval = s.query(CompetenceDetails).filter(CompetenceDetails.approve_id == current_user.database_id).filter(or_(CompetenceDetails.approved==None,CompetenceDetails.approved==0)).count()
+        if approval > 0:
+            count += approval
+            alerts["Competence Approval"] = approval
+
         return [count,alerts]
     return dict(notifications=notifications)
 
@@ -448,38 +460,59 @@ def index():
     competences_complete = s.query(CompetenceDetails).join(Competence).filter(
         CompetenceDetails.creator_id == current_user.database_id).filter(Competence.current_version == 1).all()
 
-    assigned = s.query(Assessments).join(Subsection).join(Competence).join(CompetenceDetails).group_by(
-        CompetenceDetails.id).filter(Assessments.user_id == current_user.database_id).filter(
-        or_(Assessments.status == 2, Assessments.status == 1, Assessments.status == 7)).all()
+    # assigned = s.query(Assessments).filter(Assessments.user_id == current_user.database_id).filter(
+    #     or_(Assessments.status == 2, Assessments.status == 1, Assessments.status == 7)).filter(Competence.current_version==Assessments.version).all()
+    #
 
-    print "HERE ME"
+    assigned = s.query(Assessments)\
+        .join(Subsection)\
+        .join(Competence)\
+        .join(CompetenceDetails)\
+        .filter(Assessments.user_id == current_user.database_id)\
+        .group_by(Competence.id)\
+        .filter(or_(Assessments.status == 2, Assessments.status == 1, Assessments.status == 7))\
+        .all()
+
+    # assigned = s.query(Assessments).join(Subsection).join()
+
+    all_assigned=[]
     for j in assigned:
-        print j
+        all_assigned.append(get_competence_summary_by_user(c_id=j.ss_id_rel.c_id,u_id=current_user.database_id,version=j.version))
 
     active = s.query(Assessments).join(Subsection).join(Competence).join(CompetenceDetails).group_by(
-        CompetenceDetails.id).filter(Assessments.user_id == current_user.database_id).filter(
+        CompetenceDetails.id).filter(Assessments.user_id == current_user.database_id).filter(CompetenceDetails.intro==Competence.current_version).filter(
         Assessments.status == 1).all()
 
-    complete = s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id == current_user.database_id).filter(
-                Assessments.status == 3).all()
+    # complete = s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id == current_user.database_id).filter(
+    #             Assessments.status == 3).all()
 
+    complete = s.query(Assessments) \
+        .join(Subsection)\
+        .join(Competence)\
+        .join(CompetenceDetails)\
+        .filter(Assessments.user_id == current_user.database_id) \
+        .group_by(Assessments.version) \
+        .filter(Assessments.status.in_([3])) \
+        .all()
 
-
-
-
+    print complete
     all_complete = []
     for i in complete:
+        print "COMPLETE"
         print i
-        all_complete.append(get_competence_summary_by_user(c_id=i.id,u_id=current_user.database_id))
+        result = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
+        if result.completed != None:
+            all_complete.append(result)
 
 
     signoff = s.query(Evidence).filter(Evidence.signoff_id == current_user.database_id).filter(Evidence.is_correct == None).all()
+    signoff_competence = s.query(CompetenceDetails).filter(CompetenceDetails.approve_id == current_user.database_id).filter(or_(CompetenceDetails.approved==None,CompetenceDetails.approved==0)).all()
 
     accept_form = RateEvidence()
     return render_template("index.html", complete=all_complete, accept_form=accept_form, signoff=signoff, assigned_count=assigned_count,
                            active_count=active_count, complete_count=complete_count, linereports=linereports,
                            linereports_inactive=linereports_inactive, competences_incomplete=competences_incomlete,
-                           competences_complete=competences_complete, counts=counts, assigned=assigned, active=active)
+                           competences_complete=competences_complete, counts=counts, assigned=all_assigned, active=active,signoff_competence=signoff_competence)
 
 
 @app.route('/notifications')

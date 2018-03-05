@@ -46,7 +46,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
           page. However, you can choose any other skin. Make sure you
           apply the skin class to the body tag so the changes take effect. -->
+    {% if "ADMIN" in current_user.roles %}
+    <link rel="stylesheet" href="/static/dist/css/skins/skin-black.min.css">
+{% else %}
     <link rel="stylesheet" href="/static/dist/css/skins/skin-blue.min.css">
+{% endif %}
+
     <!-- REQUIRED JS SCRIPTS -->
     <link rel="stylesheet" href="/static/css/panel_pal.css">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -101,16 +106,27 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 select: true
             })
 
-            var competencies = $('#competencies').DataTable({
-                "pageLength": 10,
-                "columnDefs": [
-                    {
-                        "targets": [0],
-                        "visible": false,
-                        "searchable": false
-                    }],
-                select: true
-            })
+            {#            var competencies = $('.competencies').DataTable({#}
+            {#                "pageLength": 25,#}
+            {#                "columnDefs": [#}
+            {#                    {#}
+            {#                        "targets": [0,1],#}
+            {#                        "visible": false,#}
+            {#                        "searchable": false#}
+            {#                    }],#}
+            {#                select: true#}
+            {#            })#}
+
+            {#            var competencies = $('.competencies_previous').DataTable({#}
+            {#                "pageLength": 25,#}
+            {#                "columnDefs": [#}
+            {#                    {#}
+            {#                        "targets": [0,1],#}
+            {#                        "visible": false,#}
+            {#                        "searchable": false#}
+            {#                    }],#}
+            {#                select: true#}
+            {#            })#}
 
             $(".action").click(function () {
                 console.log("hello")
@@ -134,10 +150,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 var func = $(this).attr("name")
                 console.log(func)
                 var ids = []
+                var versions = []
                 var data = competencies.rows({selected: true}).data()
+                console.log(data)
                 var arrayLength = data.length;
                 for (var i = 0; i < arrayLength; i++) {
                     ids.push(data[i][0])
+                }
+                for (var i = 0; i < arrayLength; i++) {
+                    versions.push(data[i][1])
                 }
 
                 if (func == "assign_competences_to_user") {
@@ -158,7 +179,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 }
                 if (func == "view_competence") {
                     console.log("view_competence");
-                    window.location.assign("{{ url_for('competence.view_competence') }}?c_id=" + ids);
+                    window.location.assign("{{ url_for('competence.view_competence') }}?c_id=" + ids + "&version=" + versions);
                 }
                 if (func == "make_competent") {
                     console.log("make_competent");
@@ -245,7 +266,11 @@ desired effect
 |               | sidebar-mini                            |
 |---------------------------------------------------------|
 -->
-<body class="hold-transition skin-blue fixed">
+{% if "ADMIN" in current_user.roles %}
+    <body class="hold-transition skin-black fixed">
+{% else %}
+    <body class="hold-transition skin-blue fixed">
+{% endif %}
 <div class="wrapper">
 
     <!-- Main Header -->
@@ -306,14 +331,17 @@ desired effect
                     {#                    <!-- /.messages-menu -->#}
                     {##}
                     <!-- Notifications Menu -->
-
-                    {%  set notes=notifications() %}
+                    <li>
+                        <a href="javascript:void(0)" onclick="javascript:toggleFullScreen()" data-toggle="push-menu"><i
+                                class="fa fa-expand"></i></a>
+                    </li>
+                    {% set notes=notifications() %}
                     <li class="dropdown notifications-menu">
                         <!-- Menu toggle button -->
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                             <i class="fa fa-bell-o"></i>
                             {% if notes[0] > 0 %}
-                            <span class="label label-danger">{{ notes[0] }}</span>
+                                <span class="label label-danger">{{ notes[0] }}</span>
                             {% endif %}
                         </a>
                         <ul class="dropdown-menu">
@@ -321,19 +349,20 @@ desired effect
                             <li>
                                 <!-- Inner Menu: contains the notifications -->
                                 <ul class="menu">
-                                   {% for note in notes[1] %}
-                                    <li><!-- start notification -->
-                                        <a href="#">
-                                          <i class="fa fa-warning text-red"></i> {{ notes[1][note] }} competence(s) {{ note }}
-                                        </a>
-                                    </li>
+                                    {% for note in notes[1] %}
+                                        <li><!-- start notification -->
+                                            <a href="#">
+                                                <i class="fa fa-warning text-red"></i> {{ notes[1][note] }}
+                                                {{ note }}
+                                            </a>
+                                        </li>
                                     {% endfor %}
                                     <!-- end notification -->
                                 </ul>
                             </li>
                             {% if notes[0] > 0 %}
-                            <li class="footer"><a href="{{ url_for('notifications') }}">View all</a></li>
-                        {%  endif %}
+                                <li class="footer"><a href="{{ url_for('notifications') }}">View all</a></li>
+                            {% endif %}
                         </ul>
                     </li>
                     {#                    <!-- Tasks Menu -->#}
@@ -386,29 +415,29 @@ desired effect
                         <ul class="dropdown-menu">
                             <!-- The user image in the menu -->
                             <li class="user-header">
-                                <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+                                {#                                <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">#}
 
                                 <p>
-                                    Alexander Pierce - Web Developer
-                                    <small>Member since Nov. 2012</small>
+                                    {{ current_user.full_name }}
+                                    {#                                    <small>Member since Nov. 2012</small>#}
                                 </p>
                             </li>
-                            <!-- Menu Body -->
-                            {#                            <li class="user-body">#}
-                            {#                                <div class="row">#}
-                            {#                                    <div class="col-xs-4 text-center">#}
-                            {#                                        <a href="#">Followers</a>#}
-                            {#                                    </div>#}
-                            {#                                    <div class="col-xs-4 text-center">#}
-                            {#                                        <a href="#">Sales</a>#}
-                            {#                                    </div>#}
-                            {#                                    <div class="col-xs-4 text-center">#}
-                            {#                                        <a href="#">Friends</a>#}
-                            {#                                    </div>#}
-                            {#                                </div>#}
-                            {#                                <!-- /.row -->#}
-                            {#                            </li>#}
-                            <!-- Menu Footer-->
+                            {#                            <!-- Menu Body -->#}
+                            {#                                                        <li class="user-body">#}
+                            {#                                                            <div class="row">#}
+                            {#                                                                <div class="col-xs-4 text-center">#}
+                            {#                                                                    <a href="#">Followers</a>#}
+                            {#                                                                </div>#}
+                            {#                                                                <div class="col-xs-4 text-center">#}
+                            {#                                                                    <a href="#">Sales</a>#}
+                            {#                                                                </div>#}
+                            {#                                                                <div class="col-xs-4 text-center">#}
+                            {#                                                                    <a href="#">Friends</a>#}
+                            {#                                                                </div>#}
+                            {#                                                            </div>#}
+                            {#                                                            <!-- /.row -->#}
+                            {#                                                        </li>#}
+                            {#                            <!-- Menu Footer-->#}
                             <li class="user-footer">
                                 <div class="pull-left">
                                     {#                                    <a href="#" class="btn btn-default btn-flat">Profile</a>#}
@@ -420,9 +449,9 @@ desired effect
                         </ul>
                     </li>
                     <!-- Control Sidebar Toggle Button -->
-                    <li>
-                        <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
-                    </li>
+                    {#                    <li>#}
+                    {#                        <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>#}
+                    {#                    </li>#}
                 </ul>
             </div>
         </nav>
@@ -459,12 +488,14 @@ desired effect
 
             <!-- Sidebar Menu -->
             <ul class="sidebar-menu" data-widget="tree">
-                <li class="header">SDGS TOOLS</li>
+
 
                 <!-- Optionally, you can add icons to the links -->
 
+                <li><a href="{{ url_for('index') }}"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
 
                 <li class="treeview">
+
                     <a href="#"><i class="fa fa-fw fa-file-text-o"></i> <span>Competences</span>
             <span class="pull-right-container">
                 <i class="fa fa-angle-left pull-right"></i>
@@ -477,6 +508,7 @@ desired effect
                             Competency</a>
                         <li><a href="{{ url_for('competence.list_comptencies') }}"><i class="fa fa-circle-o"></i>List
                             Competenices</a>
+                        <li><a href="{{ url_for('admin.users_view') }}"><i class="fa fa-circle-o"></i>View Users</a>
                         </li>
                     </ul>
                 </li>
@@ -493,12 +525,12 @@ desired effect
 
                         <li><a href="{{ url_for('competence.report_by_section') }}"><i class="fa fa-circle-o"></i>By
                             Section</a>
-                        <li><a href=""><i class="fa fa-circle-o"></i>Report 2</a>
+
                         </li>
                     </ul>
                 </li>
 
-              <li class="treeview">
+                <li class="treeview">
                     <a href="#"><i class="fa fa-fw fa-video-camera"></i> <span>Training Videos</span>
             <span class="pull-right-container">
                 <i class="fa fa-angle-left pull-right"></i>
@@ -575,7 +607,8 @@ desired effect
                                 Types</a></li>
                             <li><a href="{{ url_for('admin.reassessment_questions') }}"><i class="fa fa-circle-o"></i>Reassessment
                                 Questions</a></li>
-                            <li><a href="{{ url_for('admin.subsection_autocomplete') }}"><i class="fa fa-circle-o"></i>Subsection Autocomplete</a></li>
+                            <li><a href="{{ url_for('admin.subsection_autocomplete') }}"><i class="fa fa-circle-o"></i>Subsection
+                                Autocomplete</a></li>
                             </li>
                         </ul>
                     </li>
@@ -700,7 +733,7 @@ desired effect
     <footer class="main-footer">
         <!-- To the right -->
         <div class="pull-right hidden-xs">
-
+            v0.0
         </div>
         <!-- Default to the left -->
         <strong>Copyright &copy; 2018 <a href="#">Sheffield Diagnostic Genetics Service</a>.</strong> All rights
@@ -824,5 +857,35 @@ desired effect
 <!-- ./wrapper -->
 
 
+<script>
+    // mozfullscreenerror event handler
+    function errorHandler() {
+        alert('mozfullscreenerror');
+    }
+    document.documentElement.addEventListener('mozfullscreenerror', errorHandler, false);
+
+    // toggle full screen
+    function toggleFullScreen() {
+        if (!document.fullscreenElement &&    // alternative standard method
+                !document.mozFullScreenElement && !document.webkitFullscreenElement) {  // current working methods
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            } else if (document.documentElement.mozRequestFullScreen) {
+                document.documentElement.mozRequestFullScreen();
+            } else if (document.documentElement.webkitRequestFullscreen) {
+                document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+            }
+        } else {
+            if (document.cancelFullScreen) {
+                document.cancelFullScreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.webkitCancelFullScreen) {
+                document.webkitCancelFullScreen();
+            }
+        }
+    }
+
+</script>
 </body>
 </html>

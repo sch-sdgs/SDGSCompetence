@@ -74,7 +74,7 @@ def index():
 
 
 @admin.route('/users/view', methods=['GET', 'POST'])
-@admin_permission.require(http_exception=403)
+# @admin_permission.require(http_exception=403)
 def users_view(message=None):
     """
     view all users in the database - roles control how much info you can see

@@ -106,6 +106,9 @@ class Competence(db.Model):
 
     # competence_detail = db.relationship("CompetenceDetails", back_populates="competence")
     competence_detail = db.relationship("CompetenceDetails", lazy='joined', back_populates="competence")
+    # competence_detail_current = db.relationship("CompetenceDetails",
+    #                                     primaryjoin="and_(Competence.id== CompetenceDetails.c_id, Competence.current_version==CompetenceDetails.intro)",
+    #                                     lazy='joined', back_populates="competence")
 
     def __init__(self, current_version=0, obsolete=False, date_version=None):
         self.current_version = current_version
@@ -137,7 +140,7 @@ class CompetenceDetails(db.Model):
     validity_rel = db.relationship("ValidityRef", lazy='joined', foreign_keys=[validity_period])
     category_rel = db.relationship("CompetenceCategory", lazy='joined', foreign_keys=[category_id])
     # c_id_rel = db.relationship("Competence", lazy='joined', foreign_keys=[c_id])
-    competence = db.relationship("Competence", back_populates="competence_detail", lazy='joined')
+    competence = db.relationship("Competence",  back_populates="competence_detail", lazy='joined')
 
     def __init__(self, c_id, title, scope, creator_id, validity_period, category_id, intro=1, approve_id=None,
                  approved=False):
@@ -319,6 +322,7 @@ class Assessments(db.Model):
     date_activated = db.Column(db.DATE, unique=False, nullable=True)
     comments = db.Column(db.String(1000), unique=False, nullable=True)
     is_reassessment = db.Column(db.BOOLEAN, unique=False, default=False, nullable=False)
+    version = db.Column(db.Integer, unique=False, nullable=True)
 
     ss_id_rel = db.relationship("Subsection", lazy='joined', foreign_keys=[ss_id])
     status_rel = db.relationship("AssessmentStatusRef", lazy='joined', foreign_keys=[status])
@@ -329,7 +333,7 @@ class Assessments(db.Model):
 
     evidence = db.relationship("AssessmentEvidenceRelationship", backref="assessments")
 
-    def __init__(self, status, ss_id, user_id, assign_id, is_reassessment=0, date_completed=None, date_expiry=None,
+    def __init__(self, status, ss_id, user_id, assign_id, version, is_reassessment=0, date_completed=None, date_expiry=None,
                  comments=None):
         self.status = status
         self.ss_id = ss_id
@@ -340,6 +344,7 @@ class Assessments(db.Model):
         self.is_reassessment = is_reassessment
         self.date_assigned = str(datetime.datetime.now().strftime("%Y%m%d"))
         self.assign_id = assign_id
+        self.version=version
 
     def __repr__(self):
         return '<Assessment %r>' % self.status

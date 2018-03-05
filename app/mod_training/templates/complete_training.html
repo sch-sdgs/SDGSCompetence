@@ -23,7 +23,7 @@
 
 
             <div class="row" style="margin-bottom: 30px">
-                <div class="col-lg-8"><h3>{{ title }}</h3>
+                <div class="col-lg-8"><h3>{{ title }} <small class="label bg-gray">v{{ version }}</small></h3>
                     <small>{{ scope }}</small>
                 </div>
                 <div class="col-lg-4 pull-right" style="text-align: right"><h3><span
@@ -39,7 +39,7 @@
                     {% if completed == '-' and activated != '-' %}
 
                         <a class="btn btn-success btn-flat pull-right" role="button"
-                           href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&action=evidence"><span
+                           href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&version={{ version }}&action=evidence"><span
                                 class="glyphicon glyphicon-open"></span> Upload Evidence</a>
 
                     {% elif activated == '-' %}

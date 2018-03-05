@@ -1,19 +1,31 @@
-{% extends "base.html" %}
-
+{% extends "base2.html" %}
 {% block content %}
-<div class="jumbotron">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12"><h1><span class="glyphicon glyphicon-th-list"></span> 500 Internal Server Error</h1></div>
-            <div class="row">
-            <div class="col-md-12">The whales are strong with this one. Something awful has happened, well, not that awful, but it's pretty bad.</div></div>
-        </div>
-        <div class="row">
-            <div class="col-md-12"><br><center><img src="/static/images/whale2.png"></center></div>
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>
+                500 Error Page
+            </h1>
+
+        </section>
+        <section class="content">
+            <div class="error-page">
+                <h2 class="headline text-yellow"> 500</h2>
+
+                <div class="error-content">
+                    <h3><i class="fa fa-warning text-yellow"></i> Oops! Internal Server Error.</h3>
+
+                    <p>
+                        There was some problem.
+                        Meanwhile, you may <a href="../../index.html">return to dashboard</a>
+                    </p>
+
+
+                </div>
+                <!-- /.error-content -->
             </div>
+            <!-- /.error-page -->
 
+        </section>
     </div>
-</div>
-
 
 {% endblock %}
