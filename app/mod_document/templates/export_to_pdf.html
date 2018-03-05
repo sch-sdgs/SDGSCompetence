@@ -9,7 +9,7 @@
 <body>
 
 <div class="panel" style="background-color: lightgray; border:solid black 1px">
-    <h2><strong> Title: {{ title }}</strong></h2>
+    <h1><strong> Title: {{ title }}</strong></h1>
 </div>
 
 <div class="panel" style="border: solid black 1px">
@@ -21,7 +21,7 @@
     <p>{{ scope }}</p>
 </div>
 <br/>
-<div class="panel">
+<div class="panel" style="border: none">
     <table>
         <tr>
             <td><h2><strong>SOPs and documents used within this Competency Training:</strong></h2></td>
@@ -31,8 +31,8 @@
             {% for qpulse_no in qpulse_list %}
 
                 <tr>
-                    <td><p>{{ qpulse_no }}</p></td>
                     <td><p>{{ qpulse_list[qpulse_no] }}</p></td>
+                    <td><p>{{ qpulse_no[0] }}</p></td>
                 </tr>
             {% endfor %}
         {% else %}
@@ -43,25 +43,31 @@
 </div>
 <br/>
 
-<div class="panel">
+<div class="panel" style="border: 0px">
     <table>
         <tr>
-            {% for sec_name in subsec_dict %}
-                <td><h2><strong>Discuss: </strong></h2>
-                    <p>Relevant {{ sec_name }} associated with this procedure. <strong> If none, state
-                        'None'</strong></p></td>
-                <td><p>Date discussed</p></td>
-                <td><p>Trainer Initials</p></td>
+            {% for sec_type in constant_dict %}
+                <tr>
+                    <h2><strong>{{ sec_type }} </strong></h2>
                 </tr>
-                {% if sec_name %}
+                <tr>
+                <td><p><strong>Area of Competence</strong></p></td>
+                <td><p><strong>Comments</strong></p></td>
+                <td><p><strong>Date discussed</strong></p></td>
+                <td><p><strong>Trainer Initials</strong></p></td>
+                </tr>
+                {% if sec_type %}
                     <tr>
-                        <td>{{ subsec_dict[sec_name][0] }}</td>
+                        <td>{{ constant_dict[sec_type][0] }}</td>
+                        <td>{{ constant_dict[sec_type][1] }}</td>
                         <td></td>
                         <td></td>
                     </tr>
                 {% else %}
                     <tr>
                         <td>None</td>
+                        <td></td>
+                        <td></td>
                         <td></td>
                     </tr>
                 {% endif %}
@@ -70,24 +76,25 @@
 </div>
 <br/>
 
-<div class="panel">
-    <table>
+<div class="panel" style="border: 0px">
+    <table style="border: 0px">
         <tr>
-            <td><h4><strong>Area of competence</strong></h4></td>
-            <td><h4><strong>How has the competency been assessed:</strong></h4></td>
-            <td><h4><strong>Evidence for competence</strong></h4></td>
-            <td><h4><strong>Outcome</strong></h4></td>
-            <td><h4><strong>Assessor</strong></h4></td>
-            <td><h4><strong>Date</strong></h4></td>
-        </tr>
         {% for sub_name in subsec_dict %}
             <tr>
-                <td>for loop is working</td>
-                <td>{{ subsec_dict[sub_name][0] }}</td>
-                <td>{{ link_to_evidence }}</td>
-                <td>{{ outcome }}</td>
-                <td>{{ assessor_name }}</td>
-                <td>{{ date_of_evidence }}</td>
+                <h2><strong>{{ subsec_dict[sub_name][0] }} </strong></h2>
+            </tr>
+            <tr>
+                <td><p><strong>Area of Competence</strong></p></td>
+                <td><p><strong>Comments</strong></p></td>
+                <td><p><strong>Date discussed</strong></p></td>
+                <td><p><strong>Trainer Initials</strong></p></td>
+            </tr>
+            <tr>
+                <td>{{ subsec_dict[sub_name][1] }}</td>
+                <td>{{ subsec_dict[sub_name][2] }}</td>
+                <td></td>
+                <td></td>
+
             </tr>
         {% endfor %}
     </table>
