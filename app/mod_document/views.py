@@ -146,20 +146,20 @@ def export_document(c_id):
     scope = comp.scope
 
     # subsection details
-    subsec_dict = {}
+    subsection = {}
 
     for sub in subsec: ## This is each non-constant subsection
-        sub_name = sub.sec_name
-        sec_name = sub.subsec_name
+        sec_name = sub.sec_name
+        subsection_name = sub.subsec_name
         comments = sub.comments
-        evidence_type = sub[3]
-        value_list = [sub_name, sec_name, comments, evidence_type]#, sub_version,constant, sub_id]
-        print "**************** This is everything in sub: "
-        print value_list
-        subsec_dict[sec_name]= value_list
+        evidence_type = sub.type
+        value_list = [subsection_name, comments, evidence_type]#, sub_version,constant, sub_id]
+        subsection.setdefault(sec_name,[]).append(value_list)
+    print "**************** This is everything in sub: "
+    print subsection
 
     #constant section details
-    constant_dict = {}
+    constant = {}
 
     for c in const: # this is each constant subsection
         sec_type = c.sec_name #section name
@@ -167,7 +167,9 @@ def export_document(c_id):
         sec_comments = c.comments
         evidence = c[3]
         value_list = [sec_name, sec_comments, evidence]
-        constant_dict[sec_type] = value_list
+        constant[sec_type] = value_list
+    print "**************** This is everything in const: "
+    print constant
 
     #associated qpulse documents
     qpulse_list = {}
@@ -185,7 +187,7 @@ def export_document(c_id):
 
     print('***Rendering main document***')
     # Make main document
-    html_out = render_template('export_to_pdf.html', title=title, scope=scope, docid=docid ,version_no=version_no, author=author, subsec_dict=subsec_dict, constant_dict=constant_dict, qpulse_list=qpulse_list)
+    html_out = render_template('export_to_pdf.html', title=title, scope=scope, docid=docid ,version_no=version_no, author=author, subsection=subsection, constant=constant, qpulse_list=qpulse_list)
     html = HTML(string=html_out)
 
     main_doc = html.render(stylesheets=[CSS('static/css/simple_report.css')])

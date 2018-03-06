@@ -43,45 +43,58 @@
 </div>
 <br/>
 
-<div class="panel" style="border: 0px">
-    <table>
-        <tr>
-            {% for sec_type in constant_dict %}
-                <tr>
-                    <h2><strong>{{ sec_type }} </strong></h2>
-                </tr>
-                <tr>
-                <td><p><strong>Area of Competence</strong></p></td>
-                <td><p><strong>Comments</strong></p></td>
-                <td><p><strong>Date discussed</strong></p></td>
-                <td><p><strong>Trainer Initials</strong></p></td>
-                </tr>
-                {% if sec_type %}
+<div class="box" id="training">
+    <div class="box-header">
+        <h3 class="box-title">Compulsory Sections</h3>
+    </div>
+
+{% for sec_type in constant %}
+    <div class="panel" style="border: 0px">
+        <table>
+            <tr>
                     <tr>
-                        <td>{{ constant_dict[sec_type][0] }}</td>
-                        <td>{{ constant_dict[sec_type][1] }}</td>
-                        <td></td>
-                        <td></td>
+                        <h2><strong>{{ sec_type }} </strong></h2>
                     </tr>
-                {% else %}
-                    <tr>
-                        <td>None</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                {% endif %}
-            {% endfor %}
-    </table>
-</div>
+
+                <tr>
+                    <td><p><strong>Area of Competence</strong></p></td>
+                    <td><p><strong>Comments</strong></p></td>
+                    <td><p><strong>Date discussed</strong></p></td>
+                    <td><p><strong>Trainer Initials</strong></p></td>
+                </tr>
+            {% if sec_type %}
+                <tr>
+                    <td>{{ constant[sec_type][0] }}</td>
+                    <td>{{ constant[sec_type][1] }}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td>None</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            {% endif %}
+        </table>
+    </div>
+{% endfor %}
 <br/>
+
+{% for subsection_name in subsection %}
 
 <div class="panel" style="border: 0px">
     <table style="border: 0px">
         <tr>
-        {% for sub_name in subsec_dict %}
+
             <tr>
-                <h2><strong>{{ subsec_dict[sub_name][0] }} </strong></h2>
+                <h2><strong>{{ subsection_name }} </strong></h2>
+        <p>{{ subsection }}</p>
+        <p>{{ subsection[subsection_name] }}</p>
+        <p>{{ subsection[subsection_name][0] }}</p>
+        <p>{{ subsection[subsection_name][0][0] }}</p>
+
             </tr>
             <tr>
                 <td><p><strong>Area of Competence</strong></p></td>
@@ -89,16 +102,25 @@
                 <td><p><strong>Date discussed</strong></p></td>
                 <td><p><strong>Trainer Initials</strong></p></td>
             </tr>
-            <tr>
-                <td>{{ subsec_dict[sub_name][1] }}</td>
-                <td>{{ subsec_dict[sub_name][2] }}</td>
-                <td></td>
-                <td></td>
 
-            </tr>
-        {% endfor %}
+            {% for i in subsection %}
+                 <p>{{ i }}</p>
+                {% if i == subsection_name %}
+                    {% for j in range(0,subsection|length) %}
+                        <tr>
+                            <td>{{ subsection[i][j|int] }}</td>
+                            <td>{{ subsection_name[j|int] }}</td>
+                            <td>{{ subsection[subsection_name][j|int] }}</td>
+                            <td></td>
+                        </tr>
+
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+
     </table>
 </div>
+{% endfor %}
 <br/>
 
 <p><strong> If you have not carried out this task for a period of greater than {{ validity_period }} months you are no
