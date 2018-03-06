@@ -19,6 +19,7 @@ from app.qpulseweb import QPulseWeb
 from app.qpulse_details import QpulseDetails
 from forms import *
 from sqlalchemy.orm import aliased
+import uuid
 
 document = Blueprint('document', __name__, template_folder='templates')
 
@@ -196,8 +197,9 @@ def export_document(c_id):
             page.links.extend(header_page.links)
             page.links.extend(footer_page.links)
 
-    main_doc.write_pdf(target=app.config["UPLOAD_FOLDER"]+"/test.pdf")
-    return html_out
+    file_name = str(uuid.uuid4())
+    main_doc.write_pdf(target=app.config["UPLOAD_FOLDER"]+"/"+file_name)
+    return file_name
 
 #views
 @document.route('/export', methods=['GET', 'POST'])
@@ -211,6 +213,6 @@ def export_document_view():
         c_id = request.args.get('c_id')
         print('cid')
         print(c_id)
-        html = export_document(c_id)
+        file_name = export_document(c_id)
         uploads = app.config["UPLOAD_FOLDER"]
-        return send_from_directory(directory=uploads, filename="test.pdf", as_attachment=True, attachment_filename="competence_download.pdf")
+        return send_from_directory(directory=uploads, filename=file_name, as_attachment=True, attachment_filename="competence_download.pdf")

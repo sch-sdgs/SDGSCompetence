@@ -5,6 +5,14 @@ table.dataTable tbody tr.selected {
     background-color: #999999 !important;
 }
 
+.blink {
+  animation: blinker 1s linear 3;
+}
+
+@keyframes blinker {
+  50% { opacity: 0.0; }
+}
+
 .ui-autocomplete {
 
 

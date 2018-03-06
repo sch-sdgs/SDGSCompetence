@@ -4,25 +4,26 @@
        aria-expanded="false" id="actions"><span class="caret"></span></a>
     <ul class="dropdown-menu">
     <li class="dropdown-header">Competence Actions</li>
-        <li><a href="#" class="actionc single" name="view_competence"><span class="glyphicon glyphicon-search"></span> View Competence</a></li>
-        <li><a href="#" class="actionc" name="competent_staff"><span class="glyphicon glyphicon-eye-open"></span> View Competent Staff</a></li>
-        <li><a href="#" class="actionc single" name="competence_history"><i class="fa fa-history"></i> View Competence History</a></li>
-    <li><a href="#" class="actionc single" name="download"><span class="glyphicon glyphicon-download-alt"></span> Download Competence</a></li>
+        <li><a href="#" class="actionc single" name="view_competence"><i class="fa fa-eye"></i> View</a></li>
+        <li><a href="#" class="actionc" name="competent_staff"><i class="fa fa-users"></i> Competent Staff</a></li>
+        <li><a href="#" class="actionc single" name="competence_history"><i class="fa fa-history"></i> History</a></li>
+    <li><a href="#" class="actionc single" name="download"><span class="glyphicon glyphicon-download-alt"></span> Download</a></li>
         <li class="divider"></li>
     <li class="dropdown-header">User Actions</li>
-        <li><a href="#" class="actionc" name="assign_competences_to_user"><span class="glyphicon glyphicon-user"></span> Assign to User(s)</a></li>
+        <li><a href="#" class="actionc" name="assign_competences_to_user"><i class="fa fa-user"></i> Assign to User(s)</a></li>
         <li class="divider"></li>
 
         <li class="dropdown-header">Owner Functions</li>
         <li><a href="#" class="actionc" name="activate"><span class="glyphicon glyphicon-star"></span> Activate</a></li>
         <li><a href="#" class="actionc" name="deactivate"><span class="glyphicon glyphicon-star-empty"></span> De-Activate</a></li>
-        <li><a href="#" class="actionc single" name="edit"><span class="glyphicon glyphicon-pencil"></span> Edit</a></li>
+        <li><a href="#" class="actionc single" name="edit"><i class="fa fa-pencil"></i> Edit</a></li>
         {% if 'ADMIN' in current_user.roles %}
             <li class="divider"></li>
             <li class="dropdown-header">Admin Functions</li>
             <li><a href="#" id="actionc" name="chnage_ownership"><span class="glyphicon glyphicon-hand-right"></span> Change
                 Ownership</a></li>
             <li><a href="#" class="actionc" name="make_competent"><span class="glyphicon glyphicon-star"></span> Make A User Competent</a></li>
+            <li><a href="#" class="actionc single" name="force_authorise"><i class="fa fa-pencil"></i> Force Authorise</a></li>
         {% endif %}
 
 

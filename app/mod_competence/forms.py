@@ -54,11 +54,8 @@ class EditCompetency(Form):
     edit_scope = TextField("Scope")
     approval = TextField("Authoriser")
     # qpulsenum = TextField("QPulse Doc ID", [Required("Enter a QPulse ID")]) #This needs to be added after competency creation!
-    edit_validity_period = QuerySelectField("Validity Period", query_factory=lambda: s.query(ValidityRef).all(),
-                                       get_label="months")
-    test_id=21
-    edit_competency_type = QuerySelectField("Competence Category", query_factory=lambda: s.query(CompetenceCategory).all(),
-                                       get_label="category")
+    edit_validity_period = SelectField("Validity Period")
+    edit_competency_type = SelectField("Competence Category")
 
     ass_documents=QuerySelectMultipleField("Associated Documents",  query_factory=lambda:s.query(Documents).filter_by(c_id=18).all(), get_label="qpulse_no")
     add_document = TextField("Add Related Document", [Required("Enter a Q-Pulse Document Number")])
