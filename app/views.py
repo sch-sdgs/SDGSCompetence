@@ -455,10 +455,10 @@ def index():
             s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id == i.id).filter(
                 Assessments.status == 4).all())
 
-    competences_incomlete = s.query(CompetenceDetails).join(Competence).filter(
-        CompetenceDetails.creator_id == current_user.database_id).filter(Competence.current_version == 0).all()
+    competences_incomplete = s.query(CompetenceDetails).join(Competence).filter(
+        CompetenceDetails.creator_id == current_user.database_id).filter(Competence.current_version != CompetenceDetails.intro).all()
     competences_complete = s.query(CompetenceDetails).join(Competence).filter(
-        CompetenceDetails.creator_id == current_user.database_id).filter(Competence.current_version == 1).all()
+        CompetenceDetails.creator_id == current_user.database_id).filter(Competence.current_version == CompetenceDetails.intro).all()
 
     # assigned = s.query(Assessments).filter(Assessments.user_id == current_user.database_id).filter(
     #     or_(Assessments.status == 2, Assessments.status == 1, Assessments.status == 7)).filter(Competence.current_version==Assessments.version).all()
@@ -511,7 +511,7 @@ def index():
     accept_form = RateEvidence()
     return render_template("index.html", complete=all_complete, accept_form=accept_form, signoff=signoff, assigned_count=assigned_count,
                            active_count=active_count, complete_count=complete_count, linereports=linereports,
-                           linereports_inactive=linereports_inactive, competences_incomplete=competences_incomlete,
+                           linereports_inactive=linereports_inactive, competences_incomplete=competences_incomplete,
                            competences_complete=competences_complete, counts=counts, assigned=all_assigned, active=active,signoff_competence=signoff_competence)
 
 

@@ -4,13 +4,13 @@
         <!-- Content Header (Page header) -->
         <section class="content-header">
             <h1>
-                Training
+                <i class="fa fa-graduation-cap"></i> Training
                 <small></small>
             </h1>
-            <ol class="breadcrumb">
-                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                <li class="active">Here</li>
-            </ol>
+            {#            <ol class="breadcrumb">#}
+            {#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
+            {#                <li class="active">Here</li>#}
+            {#            </ol>#}
             {% if message %}
                 <div class="alert alert-danger">
                     <strong>Fail Whale!</strong> {{ message }}
@@ -22,37 +22,38 @@
         <section class="content container-fluid">
 
 
-            <div class="row" style="margin-bottom: 30px">
-                <div class="col-lg-8"><h3>{{ title }} <small class="label bg-gray">v{{ version }}</small></h3>
-                    <small>{{ scope }}</small>
+            <div class="row">
+                <div class="col-lg-8">
+                    <h3>{{ title }}
+                        <small class="label bg-gray">v{{ version }}</small>
+                    </h3>
+                    <p class="text-muted">{{ scope }}</p>
                 </div>
-                <div class="col-lg-4 pull-right" style="text-align: right"><h3><span
-                        class="glyphicon glyphicon-calendar"></span> {{ validity }} months</h3></div>
+                <div class="col-lg-4 pull-right">
+                    <h3>
+
+                        {% if completed == '-' and activated != '-' %}
+
+                            <a class="btn btn-success btn-flat pull-right" role="button"
+                               href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&version={{ version }}&action=evidence"><span
+                                    class="glyphicon glyphicon-open"></span> Upload Evidence</a>
+
+                        {% elif activated == '-' %}
+
+                            <a class="btn btn-success btn-flat pull-right" role="button"
+                               href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&action=activate">Activate</a>
+
+                        {% else %}
+
+                            <button class="btn btn-success btn-flat pull-right">Reassess</button>
+
+                        {% endif %}
+                    </h3>
+                </div>
             </div>
 
-            <div class="box" id="training">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Available Actions</h3>
+            <div class="row" style="margin-bottom: 30px">
 
-                </div>
-                <div class="box-body table-responsive no-padding">
-                    {% if completed == '-' and activated != '-' %}
-
-                        <a class="btn btn-success btn-flat pull-right" role="button"
-                           href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&version={{ version }}&action=evidence"><span
-                                class="glyphicon glyphicon-open"></span> Upload Evidence</a>
-
-                    {% elif activated == '-' %}
-
-                        <a class="btn btn-success btn-flat pull-right" role="button"
-                           href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&action=activate">Activate</a>
-
-                    {% else %}
-
-                        <button class="btn btn-success btn-flat pull-right">Reassess</button>
-
-                    {% endif %}
-                </div>
             </div>
 
             <div class="box" id="training">
@@ -67,6 +68,7 @@
                         <thead>
                         <tr>
                             <th>Assigned</th>
+                            <th>Validity</th>
                             <th>Activated</th>
                             <th>Completed</th>
                             <th>Expires</th>
@@ -74,7 +76,8 @@
                         </thead>
                         <tbody>
                         <tr>
-                            <td>{{ assigned }}</td>
+                            <td>{{ assigned.strftime("%d-%m-%Y") }}</td>
+                            <td>{{ validity }} months</td>
                             <td>{{ activated }}</td>
                             <td>{{ completed }}</td>
                             <td>{{ expires }}</td>
@@ -138,8 +141,8 @@
                                         </td>
                                         <td>
                                             <button role="button"
-                                                    onclick="location.href = '{{ url_for('training.self_complete',assess_id=sub['id']) }}'"
-                                                    class="btn btn-sm btn-success" id="button_{{ sub['id'] }}"
+                                                    onclick="location.href = '{{ url_for('training.self_complete',assess_id=sub['id']) }}?c_id={{ competence }}&version={{ version }}'"
+                                                    class="btn btn-sm btn-flat btn-success" id="button_{{ sub['id'] }}"
                                                     disabled="disabled"><span
                                                     class="glyphicon glyphicon-ok"></span> Complete
                                                 Section
@@ -162,7 +165,7 @@
 
 
             {% endfor %}
-        <h3>Specific Sections</h3>
+            <h3>Specific Sections</h3>
             {% for section in section_list['custom'] %}
                 <div class="box box-success" id="training">
                     <div class="box-header with-border">
@@ -244,7 +247,7 @@
 
             {% endfor %}
 
-    </section>
+        </section>
 
     </div>
 

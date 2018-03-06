@@ -166,6 +166,7 @@ def get_competence_summary_by_user(c_id, u_id,version):
     competence_result = s.query(Assessments).outerjoin(Users, Users.id == Assessments.user_id).outerjoin(Subsection). \
         outerjoin(Section).outerjoin(Competence, Subsection.c_id == Competence.id). \
         outerjoin(CompetenceDetails,and_(Competence.id==CompetenceDetails.c_id,CompetenceDetails.intro==version)). \
+        outerjoin(CompetenceCategory,(CompetenceDetails.category_id==CompetenceCategory.id)).\
         outerjoin(ValidityRef, CompetenceDetails.validity_period == ValidityRef.id). \
         filter(and_(Users.id == u_id, Competence.id == c_id)). \
         filter(Assessments.version == version).\
@@ -174,7 +175,9 @@ def get_competence_summary_by_user(c_id, u_id,version):
                CompetenceDetails.title,
                Assessments.version,
                CompetenceDetails.qpulsenum,
+               CompetenceDetails.category_rel,
                CompetenceDetails.scope,
+               CompetenceCategory.category,
                Competence.id.label("c_id"),
                ValidityRef.months,
                func.max(Assessments.date_assigned).label('assigned'),
@@ -447,6 +450,8 @@ def signoff(assess_id):
 @login_required
 def self_complete(assess_id):
     print assess_id
+    c_id = request.args.get('c_id')
+    version = request.args.get('version')
     status_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Complete").first().id
     data = {'trainer_id': current_user.database_id,
             'date_of_training': datetime.date.today(),
@@ -459,7 +464,7 @@ def self_complete(assess_id):
     print data
     s.query(Assessments).filter(Assessments.id == assess_id).update(data)
     s.commit()
-    return redirect(url_for('index'))
+    return redirect(url_for('training.view_current_competence')+"?c_id="+str(c_id)+"&version="+str(version))
 
 
 @training.route('/signoff_evidence/<string:action>/<int:evidence_id>', methods=['GET', 'POST'])

@@ -1,8 +1,8 @@
 <div class="box box-success" id="training">
-                <div class="box-header with-border">
-                    <h3 class="box-title"><i class="fa fa-fw fa-check-square-o"></i> {{ text }}</h3>
-                </div>
-                <div class="box-body">
+    <div class="box-header with-border">
+        <h3 class="box-title"><i class="fa fa-fw fa-check-square-o"></i> {{ text }}</h3>
+    </div>
+    <div class="box-body">
 
 
         <div class="subsections">
@@ -11,9 +11,9 @@
                     <h3 class="box-title"><i class="fa fa-fw fa-angle-right"></i> Sub-Sections</h3>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-primary btn-flat" data-toggle="modal"
-                            data-target="#subsection_form_{{ val }}">
-                        <i class="fa fa-fw fa-plus"></i>
-                    </button>
+                                data-target="#subsection_form_{{ val }}">
+                            <i class="fa fa-fw fa-plus"></i>
+                        </button>
                     </div>
                 </div>
                 <div class="box-body table-responsive no-padding">
@@ -21,176 +21,177 @@
                     {{ table|safe }}
                 </div>
             </div>
-    </div>
-
-    <!--<div class="form-group">-->
-    <!--<label class="col-lg-2 control-label"></label>-->
-    <!--<div class="col-lg-10">-->
-
-    <!--&lt;!&ndash;<a href="#" class="btn btn-primary pull-right" id="add_subsection_{{ val }}"><span&ndash;&gt;-->
-    <!--&lt;!&ndash;class="glyphicon glyphicon-plus-sign"></span> Add</a>&ndash;&gt;-->
-
-    <!--</div>-->
-    <!--</div>-->
-
-
-    <div class="modal fade ui-front" id="subsection_form_{{ val }}" style="display: none;">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span></button>
-                    <h4 class="modal-title">Adding Subsections for {{ text }}</h4>
-                </div>
-                <div class="modal-body">
-
-
-                    <div class="form-group">
-                        {{ subsection_form.name.label(class_="col-lg-2 control-label") }}
-                        <div class="col-lg-10">
-                            {{ subsection_form.name(class_="form-control name_"+val) }}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        {{ subsection_form.evidence.label(class_="col-lg-2 control-label") }}
-                        <div class="col-lg-10">
-                            {{ subsection_form.evidence(class_="form-control evidence_"+val) }}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        {{ subsection_form.comments.label(class_="col-lg-2 control-label") }}
-                        <div class="col-lg-10">
-                            {{ subsection_form.comments(class_="form-control comments_"+val) }}
-                        </div>
-                    </div>
-
-
-
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary btn-flat pull-left" id="submit_subsection_{{ val }}" type="button">Add Subsection
-                    </button>
-                    <button type="button" class="btn btn-default btn-flat pull-right" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-            <!-- /.modal-content -->
         </div>
-        <!-- /.modal-dialog -->
-    </div>
+
+        <!--<div class="form-group">-->
+        <!--<label class="col-lg-2 control-label"></label>-->
+        <!--<div class="col-lg-10">-->
+
+        <!--&lt;!&ndash;<a href="#" class="btn btn-primary pull-right" id="add_subsection_{{ val }}"><span&ndash;&gt;-->
+        <!--&lt;!&ndash;class="glyphicon glyphicon-plus-sign"></span> Add</a>&ndash;&gt;-->
+
+        <!--</div>-->
+        <!--</div>-->
 
 
-    {#    <div class="form-group" id="subsection_form_{{ val }}">#}
-    {#        <label class="col-lg-2 control-label"></label>#}
-    {#        <div class="col-lg-10">#}
-    {#            <div class="panel panel-primary">#}
-    {#                <div class="panel-heading">#}
-    {#                    Add Sub-Section#}
-    {#                </div>#}
-    {#                <div class="panel-body">#}
-    {##}
-    {#                    <div class="form-group">#}
-    {#                        {{ subsection_form.name.label(class_="col-lg-2 control-label") }}#}
-    {#                        <div class="col-lg-10">#}
-    {#                            {{ subsection_form.name(class_="form-control name_"+val) }}#}
-    {#                        </div>#}
-    {#                    </div>#}
-    {#                    <div class="form-group">#}
-    {#                        {{ subsection_form.evidence.label(class_="col-lg-2 control-label") }}#}
-    {#                        <div class="col-lg-10">#}
-    {#                            {{ subsection_form.evidence(class_="form-control evidence_"+val) }}#}
-    {#                        </div>#}
-    {#                    </div>#}
-    {#                    <div class="form-group">#}
-    {#                        {{ subsection_form.comments.label(class_="col-lg-2 control-label") }}#}
-    {#                        <div class="col-lg-10">#}
-    {#                            {{ subsection_form.comments(class_="form-control comments_"+val) }}#}
-    {#                        </div>#}
-    {#                    </div>#}
-    {#                    <button class="btn btn-primary" id="submit_subsection_{{ val }}" type="button">Add Subsection#}
-    {#                    </button>#}
-    {##}
-    {#                </div>#}
-    {#            </div>#}
-    {#        </div>#}
-    {#    </div>#}
+        <div class="modal fade ui-front" id="subsection_form_{{ val }}" style="display: none;">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span></button>
+                        <h4 class="modal-title">Adding Subsections for {{ text }}</h4>
+                    </div>
+                    <div class="modal-body">
 
 
-    <script>
+                        <div class="form-group">
+                            {{ subsection_form.name.label(class_="col-lg-2 control-label") }}
+                            <div class="col-lg-10">
+                                {{ subsection_form.name(class_="form-control name_"+val) }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {{ subsection_form.evidence.label(class_="col-lg-2 control-label") }}
+                            <div class="col-lg-10">
+                                {{ subsection_form.evidence(class_="form-control evidence_"+val) }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {{ subsection_form.comments.label(class_="col-lg-2 control-label") }}
+                            <div class="col-lg-10">
+                                {{ subsection_form.comments(class_="form-control comments_"+val) }}
+                            </div>
+                        </div>
 
-        $('body').on('click', 'a.remove', function (e) {
-            e.preventDefault();
-            console.log("ello");
-            console.log(this.id);
 
-            var dict = {'id': this.id, 'c_id': {{ c_id }}, 's_id':{{  val }}};
-            var data = JSON.stringify(dict);
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary btn-flat pull-left" id="submit_subsection_{{ val }}"
+                                type="button">Add Subsection
+                        </button>
+                        <button type="button" class="btn btn-default btn-flat pull-right" data-dismiss="modal">Close
+                        </button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
 
-            console.log(dict)
 
-            $.ajax({
-                type: "POST",
-                url: "{{ url_for('competence.delete_subsection') }}",
-                data: data,
-                dataType: "json",
-                contentType: "application/json",
-                success: function (response) {
+        {#    <div class="form-group" id="subsection_form_{{ val }}">#}
+        {#        <label class="col-lg-2 control-label"></label>#}
+        {#        <div class="col-lg-10">#}
+        {#            <div class="panel panel-primary">#}
+        {#                <div class="panel-heading">#}
+        {#                    Add Sub-Section#}
+        {#                </div>#}
+        {#                <div class="panel-body">#}
+        {##}
+        {#                    <div class="form-group">#}
+        {#                        {{ subsection_form.name.label(class_="col-lg-2 control-label") }}#}
+        {#                        <div class="col-lg-10">#}
+        {#                            {{ subsection_form.name(class_="form-control name_"+val) }}#}
+        {#                        </div>#}
+        {#                    </div>#}
+        {#                    <div class="form-group">#}
+        {#                        {{ subsection_form.evidence.label(class_="col-lg-2 control-label") }}#}
+        {#                        <div class="col-lg-10">#}
+        {#                            {{ subsection_form.evidence(class_="form-control evidence_"+val) }}#}
+        {#                        </div>#}
+        {#                    </div>#}
+        {#                    <div class="form-group">#}
+        {#                        {{ subsection_form.comments.label(class_="col-lg-2 control-label") }}#}
+        {#                        <div class="col-lg-10">#}
+        {#                            {{ subsection_form.comments(class_="form-control comments_"+val) }}#}
+        {#                        </div>#}
+        {#                    </div>#}
+        {#                    <button class="btn btn-primary" id="submit_subsection_{{ val }}" type="button">Add Subsection#}
+        {#                    </button>#}
+        {##}
+        {#                </div>#}
+        {#            </div>#}
+        {#        </div>#}
+        {#    </div>#}
 
-                    console.log(response);
-                    $('.section_{{ val }}').replaceWith(response);
-                },
-                error: function (xhr, status, error) {
-                    $('#trace').append("<p>" + error + "</p>");
-                    $('#ajaxModal').modal('show');
-                    return false;
-                }
+
+        <script>
+
+            $('body').on('click', 'a.remove', function (e) {
+                e.preventDefault();
+                console.log("ello");
+                console.log(this.id);
+
+                var dict = {'id': this.id, 'c_id': {{ c_id }}, 's_id':{{  val }}};
+                var data = JSON.stringify(dict);
+
+                console.log(dict)
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url_for('competence.delete_subsection') }}",
+                    data: data,
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (response) {
+
+                        console.log(response);
+                        $('.section_{{ val }}').replaceWith(response);
+                    },
+                    error: function (xhr, status, error) {
+                        $('#trace').append("<p>" + error + "</p>");
+                        $('#ajaxModal').modal('show');
+                        return false;
+                    }
+
+                });
+
 
             });
 
 
-        });
+            $("#submit_subsection_{{ val }}").click(function (e) {
+                e.preventDefault();
+                var dict = {
+                    'name': $(".name_{{ val }}").val(),
+                    'evidence_id': $(".evidence_{{ val }}").val(),
+                    'comments': $(".comments_{{ val }}").val(),
+                    'c_id':{{ c_id }},
+                    's_id':{{  val }}
+                };
+                var data = JSON.stringify(dict);
+                console.log(dict)
 
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url_for('competence.add_sections_to_db',id=val) }}",
+                    data: data,
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (response) {
+                        $('.subsections').show();
 
-        $("#submit_subsection_{{ val }}").click(function (e) {
-            e.preventDefault();
-            var dict = {
-                'name': $(".name_{{ val }}").val(),
-                'evidence_id': $(".evidence_{{ val }}").val(),
-                'comments': $(".comments_{{ val }}").val(),
-                'c_id':{{ c_id }},
-                's_id':{{  val }}
-            };
-            var data = JSON.stringify(dict);
-            console.log(dict)
+                        $('.section_{{ val }}').replaceWith(response);
+                    },
+                    error: function (xhr, status, error) {
+                        $('#trace').append("<p>" + error + "</p>");
+                        $('#ajaxModal').modal('show');
+                        return false;
+                    }
 
-            $.ajax({
-                type: "POST",
-                url: "{{ url_for('competence.add_sections_to_db',id=val) }}",
-                data: data,
-                dataType: "json",
-                contentType: "application/json",
-                success: function (response) {
-                    $('.subsections').show();
-
-                    $('.section_{{ val }}').replaceWith(response);
-                },
-                error: function (xhr, status, error) {
-                    $('#trace').append("<p>" + error + "</p>");
-                    $('#ajaxModal').modal('show');
-                    return false;
-                }
-
+                });
             });
-        });
-     $(function () {
-        $.ajax({
-            url: '{{ url_for("autocomplete_subsection") }}'
-        }).done(function (data) {
-            $('#name').autocomplete({
-                source: data.json_list,
-                minLength: 2
+            $(function () {
+                $.ajax({
+                    url: '{{ url_for("autocomplete_subsection") }}'
+                }).done(function (data) {
+                    $('#name').autocomplete({
+                        source: data.json_list,
+                        minLength: 2
 
+                    });
+                    console.log(data.json_list)
+                });
             });
-            console.log(data.json_list)
-        });
-    });
-    </script>
+        </script>

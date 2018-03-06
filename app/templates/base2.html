@@ -7,10 +7,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>StarDB</title>
+    <title>StarDB 2</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-
+    <link rel="shortcut icon" href="/static/images/favicon.ico">
     <!-- jQuery 3 -->
     <script src="/static/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="/static/bower_components/jquery/dist/jquery.js"></script>
@@ -47,10 +47,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
           page. However, you can choose any other skin. Make sure you
           apply the skin class to the body tag so the changes take effect. -->
     {% if "ADMIN" in current_user.roles %}
-    <link rel="stylesheet" href="/static/dist/css/skins/skin-black.min.css">
-{% else %}
-    <link rel="stylesheet" href="/static/dist/css/skins/skin-blue.min.css">
-{% endif %}
+        <link rel="stylesheet" href="/static/dist/css/skins/skin-black.min.css">
+    {% else %}
+        <link rel="stylesheet" href="/static/dist/css/skins/skin-blue.min.css">
+    {% endif %}
 
     <!-- REQUIRED JS SCRIPTS -->
     <link rel="stylesheet" href="/static/css/panel_pal.css">
@@ -73,6 +73,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
         });
 
         $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip({container: 'body'});
+
             var users = $('#users').DataTable({
                 "pageLength": 25,
                 "columnDefs": [
@@ -193,6 +195,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     console.log("competence_history");
                     window.location.assign("{{ url_for('competence.competence_history') }}?ids=" + ids.join(','));
                 }
+                if (func == "download") {
+                    console.log("download");
+                    window.location.assign("{{ url_for('document.export_document_view') }}?c_id=" + ids + "&version=" + versions);
+                }
+
             })
         });
 
@@ -281,7 +288,8 @@ desired effect
             <!-- mini logo for sidebar mini 50x50 pixels -->
             <span class="logo-mini"><span class="glyphicon glyphicon-star"></span></span>
             <!-- logo for regular state and mobile devices -->
-            <span class="logo-lg"><span class="glyphicon glyphicon-star"></span> <b>Star</b>DB</span>
+            <span class="logo-lg"><span class="glyphicon glyphicon-star text-yellow"></span> <b>Star</b>DB 2 <span
+                    class="badge bg-grey">BETA</span></span>
         </a>
 
         <!-- Header Navbar -->
@@ -332,7 +340,10 @@ desired effect
                     {##}
                     <!-- Notifications Menu -->
                     <li>
-                        <a href="javascript:void(0)" onclick="javascript:toggleFullScreen()" data-toggle="push-menu"><i
+                        <a href="#"><i class="fa fa-info-circle"></i></a>
+                    </li>
+                    <li>
+                        <a  href="javascript:void(0)" onclick="javascript:toggleFullScreen()" data-toggle="push-menu"><i
                                 class="fa fa-expand"></i></a>
                     </li>
                     {% set notes=notifications() %}

@@ -24,7 +24,12 @@
                 </div>
             {% endif %}
 
-            <h3>{{ title }} <small class="label bg-gray">v{{ version }}</small><small class="pull-right"><a href="{{ url_for('document.export_document_view') }}?c_id={{ c_id }}&version={{ version }}" class="btn btn-flat btn-default"><i class="fa fa-download"></i> Download</a></small></h3>
+            <h3>{{ title }}
+                <small class="label bg-gray">v{{ version }}</small>
+                <small class="pull-right"><a
+                        href="{{ url_for('document.export_document_view') }}?c_id={{ c_id }}&version={{ version }}"
+                        class="btn btn-flat btn-default"><i class="fa fa-download"></i> Download</a></small>
+            </h3>
         </section>
 
         <!-- Main content -->
@@ -102,9 +107,9 @@
 
                         <thead>
                         <tr>
-                            <th>Area of Competence</th>
-                            <th>Evidence Type</th>
-                            <th>Comments</th>
+                            <th class="col-md-5">Area of Competence</th>
+                            <th class="col-md-2">Evidence Type</th>
+                            <th class="col-md-5">Comments</th>
                         </tr>
                         </thead>
                         {% for i in  constants[constant_sec_name] %}
@@ -139,9 +144,9 @@
                             <h4 class="text-blue"><i class="fa fa-fw fa-check-square-o"></i> {{ sec_name }}</h4>
                             <thead>
                             <tr>
-                                <th>Area of Competence</th>
-                                <th>Evidence Type</th>
-                                <th>Comments</th>
+                                <th class="col-md-5">Area of Competence</th>
+                                <th class="col-md-2">Evidence Type</th>
+                                <th class="col-md-5">Comments</th>
                             </tr>
                             </thead>
                             {% for i in  subsections[sec_name] %}
@@ -171,48 +176,50 @@
                     </div>
                     <div class="box-body">
 
-                        <a href="#" class="btn btn-success btn-flat" type="button" id="activate_{{ c_id }}">Complete</a>
-                        <a href="#" class="btn btn-info btn-flat" type="button" id="edit_{{ c_id }}">Edit</a>
+                        <a href="#" class="btn btn-warning btn-flat" type="button" id="activate_{{ c_id }}">Send for
+                            Approval</a>
+                        <a href="{{ url_for('competence.edit_competence') }}?ids={{ c_id }}"
+                           class="btn btn-info btn-flat" type="button">Edit</a>
 
                     </div>
                 </div>
 
 
-                <script>
-
-                    $('#activate_{{ c_id }}').click(function () {
-                        var c_id = {{ c_id }};
-                        console.log(c_id);
-
-                        var url = "{{ url_for('competence.activate_competency') }}";
-                        var dict = {'c_id': c_id};
-                        var data = JSON.stringify(dict);
-
-                        $.ajax({
-                            type: "POST",
-                            url: url,
-                            data: data,
-                            dataType: "json",
-                            contentType: "application/json",
-                            success: function (response) {
-                                console.log(response);
-
-                                if (response.match(/Competence has been activated!/i)) {
-                                    $('#competence_activated').show()
-
-
-                                }
-                            },
-                            error: function (xhr, status, error) {
-                                $('#trace').append("<p>" + error + "</p>");
-                                $('#ajaxModal').modal('show');
-                                return false;
-                            }
-                        });
-                    });
-
-
-                </script>
+                {#                <script>#}
+                {##}
+                {#                    $('#activate_{{ c_id }}').click(function () {#}
+                {#                        var c_id = {{ c_id }};#}
+                {#                        console.log(c_id);#}
+                {##}
+                {#                        var url = "{{ url_for('competence.activate_competency') }}";#}
+                {#                        var dict = {'c_id': c_id};#}
+                {#                        var data = JSON.stringify(dict);#}
+                {##}
+                {#                        $.ajax({#}
+                {#                            type: "POST",#}
+                {#                            url: url,#}
+                {#                            data: data,#}
+                {#                            dataType: "json",#}
+                {#                            contentType: "application/json",#}
+                {#                            success: function (response) {#}
+                {#                                console.log(response);#}
+                {##}
+                {#                                if (response.match(/Competence has been activated!/i)) {#}
+                {#                                    $('#competence_activated').show()#}
+                {##}
+                {##}
+                {#                                }#}
+                {#                            },#}
+                {#                            error: function (xhr, status, error) {#}
+                {#                                $('#trace').append("<p>" + error + "</p>");#}
+                {#                                $('#ajaxModal').modal('show');#}
+                {#                                return false;#}
+                {#                            }#}
+                {#                        });#}
+                {#                    });#}
+                {##}
+                {##}
+                {#                </script>#}
                 </div>
             {% endif %}
     </div>
