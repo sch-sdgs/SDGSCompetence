@@ -167,7 +167,7 @@ def export_document(c_id):
         sec_comments = c.comments
         evidence = c[3]
         value_list = [sec_name, sec_comments, evidence]
-        constant[sec_type] = value_list
+        constant.setdefault(sec_type,[]).append(value_list)
     print "**************** This is everything in const: "
     print constant
 

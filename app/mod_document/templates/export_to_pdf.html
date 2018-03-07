@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<div class="panel" style="background-color: lightgray; border:solid black 1px">
+<div class="panel" style="background-color: lightgrey; border:solid black 1px">
     <h1><strong> Title: {{ title }}</strong></h1>
 </div>
 
@@ -17,8 +17,7 @@
 </div>
 <br/>
 <div class="panel" style="border: solid black 1px">
-    <h2><strong>Scope:</strong></h2>
-    <p>{{ scope }}</p>
+    <h2><strong>Scope:</strong></h2><p>{{ scope }}</p>
 </div>
 <br/>
 <div class="panel" style="border: none">
@@ -43,105 +42,82 @@
 </div>
 <br/>
 
-<div class="box" id="training">
-    <div class="box-header">
-        <h3 class="box-title">Compulsory Sections</h3>
-    </div>
-
-{% for sec_type in constant %}
-    <div class="panel" style="border: 0px">
-        <table>
-            <tr>
+<h1>Compulsory Sections</h1>
+{% if constant %}
+    {% for sec_type in constant %}
+        <div class="panel" >
+            <table>
+                <tr>
                     <tr>
-                        <h2><strong>{{ sec_type }} </strong></h2>
+                        <h2><strong>{{ sec_type }}</strong></h2>
                     </tr>
-
                 <tr>
                     <td><p><strong>Area of Competence</strong></p></td>
                     <td><p><strong>Comments</strong></p></td>
                     <td><p><strong>Date discussed</strong></p></td>
                     <td><p><strong>Trainer Initials</strong></p></td>
                 </tr>
-            {% if sec_type %}
+            {% for i in constant[sec_type] %}
                 <tr>
-                    <td>{{ constant[sec_type][0] }}</td>
-                    <td>{{ constant[sec_type][1] }}</td>
+                    <td>{{ i[0] }}</td>
+                    <td>{{ i[1] }}</td>
                     <td></td>
                     <td></td>
                 </tr>
-            {% else %}
-                <tr>
-                    <td>None</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            {% endif %}
-        </table>
-    </div>
-{% endfor %}
-<br/>
-
-{% for subsection_name in subsection %}
-
-<div class="panel" style="border: 0px">
-    <table style="border: 0px">
-        <tr>
-
-            <tr>
-                <h2><strong>{{ subsection_name }} </strong></h2>
-        <p>{{ subsection }}</p>
-        <p>{{ subsection[subsection_name] }}</p>
-        <p>{{ subsection[subsection_name][0] }}</p>
-        <p>{{ subsection[subsection_name][0][0] }}</p>
-
-            </tr>
-            <tr>
-                <td><p><strong>Area of Competence</strong></p></td>
-                <td><p><strong>Comments</strong></p></td>
-                <td><p><strong>Date discussed</strong></p></td>
-                <td><p><strong>Trainer Initials</strong></p></td>
-            </tr>
-
-            {% for i in subsection %}
-                 <p>{{ i }}</p>
-                {% if i == subsection_name %}
-                    {% for j in range(0,subsection|length) %}
-                        <tr>
-                            <td>{{ subsection[i][j|int] }}</td>
-                            <td>{{ subsection_name[j|int] }}</td>
-                            <td>{{ subsection[subsection_name][j|int] }}</td>
-                            <td></td>
-                        </tr>
-
-                    {% endfor %}
-                {% endif %}
             {% endfor %}
+            </table>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>There are no compulsory sections associated with this competence</p>
+{% endif %}
 
-    </table>
-</div>
-{% endfor %}
-<br/>
+<h1>Competence Sections</h1>
+{% if subsection %}
+    {% for subsection_name in subsection %}
 
+        <div class="panel" >
+            <table>
+                <tr>
+                <tr>
+                    <h2><strong>{{ subsection_name }} </strong></h2>
+                </tr>
+                <tr>
+                    <td><p><strong>Area of Competence</strong></p></td>
+                    <td><p><strong>Comments</strong></p></td>
+                    <td><p><strong>Date discussed</strong></p></td>
+                    <td><p><strong>Trainer Initials</strong></p></td>
+                </tr>
+                {% for i in subsection[subsection_name] %}
+                    <tr>
+                        <td>{{ i[0] }}</td>
+                        <td>{{ i[1] }}</td>
+                        <td>{{ i[2] }}</td>
+                        <td></td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>There are no competence sections associated with this competence</p>
+{% endif %}
+<h1>Reassessment of competence</h1>
 <p><strong> If you have not carried out this task for a period of greater than {{ validity_period }} months you are no
     longer deemed competent and need to be reassessed. This is assuming NO major changes have been made to the
     procedure. </strong></p>
 <table>
-    <tr>
+    <tr height="100">
         <td><strong>Date of reassessment</strong></td>
         <td><strong>Trainer</strong></td>
         <td><strong>Notes/Major changes Implemented (Y/N)</strong></td>
     </tr>
     <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr>
-        <td></td>
+        <td>{{ placeholder_for_reassessment }}</td>
         <td></td>
         <td></td>
     </tr>
+
 </table>
 
 <p>Were all aspects conducted according to documented procedures? {{ reassess_outcome }} </p>
