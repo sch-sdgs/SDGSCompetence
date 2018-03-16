@@ -5,20 +5,31 @@ from app.competence import s
 from app.models import *
 from sqlalchemy.sql.expression import func, and_, or_, case, exists, update
 from sqlalchemy.orm import aliased
+from werkzeug import secure_filename
+import os
 
 training = Blueprint('training', __name__, template_folder='templates')
 
 ###########
 # Queries #
 ###########
-def get_user_id_from_login(username):
+def get_user(user):
     """
-    Method to retrieve the user ID from the database from the username
+    Method to check if value sent with request is ID, if not the method queries the database and returns the ID
 
-    :param username: login for the user
+    :param user: user value sent with request
     :return:
     """
+    try:
+        u_id = int(user)
+    except ValueError:
+        user_result = s.query(Users).filter(Users.login == user).values(Users.id)
+        u_id = 0
+        for u in user_result:
+            u_id = u[0]
+            break
 
+    return u_id
 
 def get_competence_by_user(c_id, u_id):
     """
@@ -74,25 +85,27 @@ def get_competence_summary_by_user(c_id, u_id):
     """
     competence_result = s.query(Assessments).outerjoin(Users, Users.id == Assessments.user_id).outerjoin(Subsection).\
         outerjoin(Section).outerjoin(Competence, Subsection.c_id == Competence.id).\
-        outerjoin(ValidityRef, Competence.validity_period==ValidityRef.id).\
+        outerjoin(CompetenceDetails, and_(CompetenceDetails.c_id == Competence.id, CompetenceDetails.intro == Competence.current_version)).\
+        outerjoin(ValidityRef, CompetenceDetails.validity_period==ValidityRef.id).\
         filter(and_(Users.id == u_id, Competence.id == c_id)). \
+        group_by(CompetenceDetails.id).\
         values((Users.first_name + ' ' +  Users.last_name).label('user'),
-               Competence.title,
-               Competence.qpulsenum,
-               Competence.scope,
+               CompetenceDetails.title,
+               CompetenceDetails.qpulsenum,
+               CompetenceDetails.scope,
                ValidityRef.months,
                func.max(Assessments.date_assigned).label('assigned'),
                func.max(Assessments.date_activated).label('activated'),
                case([
                    (s.query(Assessments).\
-                       join(Subsection, Subsection.id == Assessments.ss_id).\
+                       # outerjoin(Subsection, Subsection.id == Assessments.ss_id).\
                        filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id,
                                    Assessments.date_completed == None)).exists(),
                     None)],
                    else_=func.max(Assessments.date_completed)).label('completed'),
                case([
                    (s.query(Assessments).\
-                       join(Subsection, Subsection.id == Assessments.ss_id).\
+                       # outerjoin(Subsection, Subsection.id == Assessments.ss_id).\
                        filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id,
                                    Assessments.date_expiry == None)).exists(),
                     None)],
@@ -111,15 +124,12 @@ def activate_assessments(c_id, u_id):
     for r in s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Assigned").values(AssessmentStatusRef.id):
         assigned = r.id
     print('query')
-    statement = update(Assessments). \
-        where(and_(Assessments.user_id == u_id, Assessments.status == assigned, Assessments.ss_id == Subsection.id, Subsection.c_id == c_id)).\
-        values(status=activated, date_activated=datetime.date.today())
-    s.execute(statement)
+    statement = s.query(Assessments). \
+        filter(Assessments.ss_id == Subsection.id).\
+        filter(and_(Assessments.user_id == u_id, Assessments.status == assigned, Subsection.c_id == c_id)).\
+        update({Assessments.status:activated, Assessments.date_activated:datetime.date.today()})
+    s.commit()
     print(statement)
-    # statement = s.query(Assessments).\
-    #     outerjoin(Subsection, Subsection.id==Assessments.ss_id).\
-    #     filter(and_(Assessments.user_id == u_id, Assessments.status == assigned, Subsection.c_id == c_id)).\
-    #     update({Assessments.status: activated, Assessments.date_activated: datetime.date.today()})
 
 ###########
 # Methods #
@@ -141,6 +151,7 @@ def filter_for_none(value):
 ###########
 
 @training.route('/view', methods=['GET', 'POST'])
+@login_required
 def view_current_competence():
     """
 
@@ -148,22 +159,14 @@ def view_current_competence():
     :return:
     """
     if request.method == 'GET':
-        print('here')
-        # c_id = request.args.get('c_id')
-        c_id = 4
+        c_id = request.args.get('c_id')
+        # c_id = 8
         user = request.args.get('user')
         if not user:
             user = current_user.id
 
-        try:
-            u_id = int(user)
-        except ValueError:
-            user_result = s.query(Users).filter(Users.login == user).values(Users.id)
-            u_id = 0
-            for u in user_result:
-                u_id = u[0]
-                break
-
+        u_id = get_user(user)
+        print(u_id)
         competence_summary = get_competence_summary_by_user(c_id, u_id)
         section_list = get_competence_by_user(c_id, u_id)
 
@@ -176,6 +179,7 @@ def view_current_competence():
                                completed=filter_for_none(competence_summary.completed), expires=filter_for_none(competence_summary.expiry))
 
 @training.route('/activate', methods=['GET', 'POST'])
+@login_required
 def activate_competence():
     """
     Method to change all assessments for a current competence to activated.
@@ -186,6 +190,38 @@ def activate_competence():
     c_id = request.args.get('c_id')
 
     activate_assessments(c_id, u_id)
-    print(url_for('view_current_competence', c_id=c_id, user=u_id))
-    return redirect(url_for('view_current_competence', c_id=c_id, user=u_id))
+    return redirect(url_for('training.view_current_competence', c_id=c_id, user=u_id))
 
+
+@training.route('/upload')
+@login_required
+def upload_evidence():
+    """
+    Method to 
+    
+    :return: 
+    """
+    if request.method == 'GET':
+        c_id = request.args.get('c_id')
+        # c_id = 4
+        user = request.args.get('user')
+        if not user:
+            user = current_user.id
+
+        u_id = get_user(user)
+
+        competence_summary = get_competence_summary_by_user(c_id, u_id)
+        
+        return render_template('upload_evidence.html', competence=c_id, u_id=u_id, user=competence_summary.user,
+                               number=competence_summary.qpulsenum,
+                               title=competence_summary.title, validity=competence_summary.months)
+
+
+@training.route('/uploader', methods=['GET', 'POST'])
+@login_required
+def file_uploader():
+    if request.method == 'POST':
+        f = request.files['file']
+        f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
+        print(f.filename)
+        return 'file uploaded successfully'

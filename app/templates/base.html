@@ -64,10 +64,16 @@
             })
             var competencies = $('#competencies').DataTable({
                 "pageLength": 10,
+                "columnDefs": [
+                {
+                    "targets": [0],
+                    "visible": false,
+                    "searchable": false
+                }],
                 select: true
             })
 
-        $("#action").click(function () {
+        $(".action").click(function () {
             console.log("hello")
             var func = $(this).attr("name")
             console.log(func)
@@ -80,6 +86,36 @@
             if (func == "assign_user_to_competence") {
                 console.log("assign_user_to_competence");
                 window.location.assign("{{url_for('competence.assign_user_to_competence')}}?ids=" + ids.join(','));
+            }
+
+        })
+
+            $(".actionc").click(function () {
+            console.log("hello")
+            var func = $(this).attr("name")
+            console.log(func)
+            var ids = []
+            var data = competencies.rows({selected: true}).data()
+            var arrayLength = data.length;
+            for (var i = 0; i < arrayLength; i++) {
+                ids.push(data[i][0])
+            }
+
+            if (func == "assign_competences_to_user") {
+                console.log("assign_competences_to_user");
+                window.location.assign("{{url_for('competence.assign_competences_to_user')}}?ids=" + ids.join(','));
+            }
+            if (func == "activate") {
+                console.log("activate");
+                window.location.assign("{{url_for('competence.activate')}}?ids=" + ids.join(','));
+            }
+            if (func == "deactivate") {
+                console.log("deactivate");
+                window.location.assign("{{url_for('competence.deactivate')}}?ids=" + ids.join(','));
+            }
+            if (func == "competent_staff") {
+                console.log("competent_staff");
+                window.location.assign("{{url_for('competence.competent_staff')}}?ids=" + ids.join(','));
             }
         })
     });

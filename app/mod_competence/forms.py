@@ -1,6 +1,6 @@
 from flask_wtf import Form
 from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
-from wtforms.fields import TextField, SubmitField, HiddenField, BooleanField, SelectField, TextAreaField, SelectMultipleField, Label
+from wtforms.fields import TextField, SubmitField, HiddenField, BooleanField, SelectField, TextAreaField, SelectMultipleField
 from wtforms.validators import Required
 
 from app.competence import s
@@ -43,6 +43,9 @@ class AssignForm(Form):
     name = TextField("Area of Competence")
     submit = SubmitField()
 
+class UserAssignForm(Form):
+    full_name = TextField("Username")
+    submit = SubmitField()
 
 class EditCompetency(Form):
     #test_id=c_id
@@ -58,15 +61,4 @@ class EditCompetency(Form):
     ass_documents=QuerySelectMultipleField("Associated Documents",  query_factory=lambda:s.query(Documents).filter_by(c_id=18).all(), get_label="qpulse_no")
     add_document = TextField("Add Related Document", [Required("Enter a Q-Pulse Document Number")])
 
-    #edit_constant
 
-
-class ViewCompetency(Form):
-    view_title = TextField("Title:")
-    view_scope = TextField("Scope:")
-    # qpulsenum = TextField("QPulse Doc ID", [Required("Enter a QPulse ID")]) #This needs to be added after competency creation!
-    view_validity_period =TextField("Validity Period(Months):")
-
-    view_competency_type = TextField("Competence Type:")
-
-    view_ass_documents = TextField("Qpulse Document:")

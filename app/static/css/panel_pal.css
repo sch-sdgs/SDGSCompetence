@@ -1,6 +1,33 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto+Mono');
 
+@media (min-width: 768px) {
+    .navbar-centered .navbar-nav {
+        float: none;
+        text-align: center;
+    }
+    .navbar-centered .navbar-nav > li {
+        float: none;
+    }
+    .navbar-centered .nav > li {
+        display: inline;
+    }
+    .navbar-centered .nav > li > a {
+        display: inline-block;
+    }
+}
 
+@media (min-width: 1200px) {
+  .container {
+    width: 1300px;
+  }
+}
+
+div.progress{
+  margin:0;
+}
+.table > tbody > tr > td {
+     vertical-align: middle;
+}
 .pull-down{position:absolute;left:0;bottom:0}
 
 /* visited link grey */
