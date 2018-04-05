@@ -43,10 +43,10 @@
                                     {{ evidence }}
                                     <table class="table table-striped">
                                         <thead>
-                                        <th>Competence/Sub Section(s) Covered</th>
-                                        <th>Trainee</th>
-                                        <th>Date Trained</th>
-                                        <th>Actions</th>
+                                        <th class="col-md-6">Competence/Sub Section(s) Covered</th>
+                                        <th class="col-md-2">Trainee</th>
+                                        <th class="col-md-2">Date Trained</th>
+                                        <th  lass="col-md-2">Actions</th>
                                         </thead>
 
                                         {% for evidence in signoff %}
@@ -73,17 +73,16 @@
                                                     <div class="btn-group">
                                                         <a data-toggle="modal" data="" href="#{{ evidence.id }}"
                                                            class="btn btn-sm btn-flat btn-primary"><span
-                                                                class="glyphicon glyphicon-eye-open"></span> View</a>
+                                                                class="glyphicon glyphicon-eye-open"></span></a>
 
 
                                                         <a data-toggle="modal" data="" href="#accept_{{ evidence.id }}"
                                                            class="btn btn-sm btn-flat btn-success"><span
-                                                                class="glyphicon glyphicon-thumbs-up"></span> Accept</a>
+                                                                class="glyphicon glyphicon-thumbs-up"></span></a>
 
                                                         <a data-toggle="modal" data="" href="#reject_{{ evidence.id }}"
                                                            class="btn btn-sm btn-flat btn-danger"><span
-                                                                class="glyphicon glyphicon-thumbs-down"></span>
-                                                            Reject</a>
+                                                                class="glyphicon glyphicon-thumbs-down"></span></a>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -97,19 +96,19 @@
                 {% if signoff_competence %}
                     <div class="box" id="training">
                         <div class="box-header with-border">
-                            <h3 class="box-title">New/Editied Competencies</h3>
+                            <h3 class="box-title">New/Edited Competencies</h3>
                         </div>
                         <div class="box-body table-responsive">
                             <div class="row">
                                 <div class="col-lg-12">
                                     <table class="table table-striped">
                                         <thead>
-                                        <th>Category</th>
-                                        <th>Title</th>
-                                        <th>Author</th>
-                                        <th>Date Created</th>
-                                        <th>Version</th>
-                                        <th>Actions</th>
+                                        <th class="col-md-2">Category</th>
+                                        <th class="col-md-3">Title</th>
+                                        <th class="col-md-2">Author</th>
+                                        <th class="col-md-2">Date Created</th>
+                                        <th class="col-md-1">Version</th>
+                                        <th class="col-md-2">Actions</th>
                                         </thead>
 
                                         {% for competence in signoff_competence %}
@@ -154,7 +153,7 @@
 
 
 
-            <h2 class="page-header"><i class="fa fa-graduation-cap"></i> Training</h2>
+            <h2 class="page-header"><i class="fa fa-graduation-cap"></i>My Training</h2>
 
             <div class="row">
                 <div class="col-lg-12">
@@ -198,14 +197,14 @@
                                 <table class="table table-striped">
                                     <thead>
 
-                                    <th>Category</th>
-                                    <th>Competence</th>
-                                    <th>Version</th>
-                                    <th>Status</th>
-                                    <th>Assigned By</th>
-                                    <th>Date Assigned</th>
-                                    <th>Progress</th>
-                                    <th>Actions</th>
+                                    <th class="col-md-1">Category</th>
+                                    <th class="col-md-2">Competence</th>
+                                    <th class="col-md-1">Version</th>
+                                    <th class="col-md-1">Status</th>
+                                    <th class="col-md-2">Assigned By</th>
+                                    <th class="col-md-2">Date Assigned</th>
+                                    <th class="col-md-1">Progress</th>
+                                    <th class="col-md-2">Actions</th>
                                     </thead>
                                     {% for assessment in assigned %}
 
@@ -254,7 +253,16 @@
                                                        href="{{ url_for('training.view_current_competence') }}?c_id={{ assessment.c_id }}&version={{ assessment.version }}"
                                                        class="btn btn-sm btn-flat btn-primary"><span
                                                             class="glyphicon glyphicon-eye-open"></span>
+
+
                                                     </a>
+
+                                                    <button data-toggle="tooltip" title="Abandon"
+                                                            version="{{ assessment.version }}"
+                                                            c_id="{{ assessment.c_id }}"
+                                                            class="btn btn-sm btn-warning btn-flat abandon_training"><i
+                                                            class="fa fa-user-times"></i></button>
+
                                                 </div>
                                             </td>
                                         </tr>
@@ -334,13 +342,13 @@
                             {% if complete|length > 0 %}
                                 <table class="table table-striped">
                                     <thead>
-                                    <th>Category</th>
-                                    <th>Competence</th>
-                                    <th>Version</th>
-                                    <th>Some Sub-Sections...</th>
-                                    <th>Date Complete</th>
-                                    <th>Earliest Date of Expiry</th>
-                                    <th>Actions</th>
+                                    <th class="col-md-1">Category</th>
+                                    <th class="col-md-2">Competence</th>
+                                    <th class="col-md-1">Version</th>
+                                    <th class="col-md-2">Some Sub-Sections...</th>
+                                    <th class="col-md-2">Date Complete</th>
+                                    <th class="col-md-2">Earliest Date of Expiry</th>
+                                    <th class="col-md-2">Actions</th>
                                     </thead>
                                     {% for i in complete %}
                                         <tr>
@@ -367,15 +375,16 @@
                                                        class="btn btn-sm btn-primary btn-flat "><span
                                                             class="glyphicon glyphicon-eye-open"></span></a>
 
-
-                                                    <a data-toggle="modal" data="" href=""
+                                                    <a data-toggle="modal" data=""
+                                                       href="{{ url_for('training.select_subsections') }}?c_id={{ i.c_id }}&version={{ i.version }}&action=reassess"
                                                        class="btn btn-sm btn-success btn-flat"><span
                                                             class="glyphicon glyphicon-repeat"></span></a>
 
-                                                    <a data-toggle="tooltip" title="Abandon" data="" href=""
-                                                       class="btn btn-sm btn-warning btn-flat"><i
-                                                            class="fa fa-user-times"></i></a>
-
+                                                    <a data-toggle="tooltip" title="Delete"
+                                                       class="btn btn-sm btn-flat btn-danger remove_training"
+                                                       id="{{ i.id }}"><i
+                                                            class="fa fa-remove"></i>
+                                                    </a>
                                                 </div>
 
                                             </td>
@@ -390,6 +399,146 @@
                     </div>
                 </div>
             </div>
+
+
+            <h2 class="page-header"><i class="fa fa-edit"></i> My Competencies</h2>
+
+
+            <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#tab_1" data-toggle="tab">In Progress
+                        <span class="badge bg-gray">{{ competences_incomplete|length }}</span>
+                    </a></li>
+                    <li><a href="#tab_2" data-toggle="tab">Complete <span
+                            class="badge bg-gray">{{ competences_complete|length }}</span></a></li>
+                    <li class="pull-right"><a href="{{ url_for('competence.add_competence') }}" class="text-muted"><i
+                            class="fa fa-plus"></i> Add Competence</a></li>
+
+                </ul>
+
+                <div class="tab-content table-responsive">
+                    <div class="tab-pane active" id="tab_1">
+                        {% if competences_incomplete|length != 0 %}
+                            <table class="table table-striped table-condensed competencies dataTable dt-responsive"
+                                   width="100%"
+                                   id="my_competencies_incomplete">
+
+
+                                <thead>
+                                <th class="col-md-1">Category</th>
+                                <th class="col-md-3">Competence</th>
+                                <th class="col-md-2">Date Created</th>
+                                <th class="col-md-2">Authoriser</th>
+                                {#                                <th>Q-Pulse Doc Number</th>#}
+                                <th class="col-md-2">Approval Status</th>
+                                <th class="col-md-2">Actions</th>
+
+                                </thead>
+                                {% for i in competences_incomplete %}
+                                    <tr>
+                                        <td>{{ i.category_rel.category }}</td>
+                                        <td>{{ i.title }}</td>
+                                        <td>{{ i.date_created.strftime('%d-%m-%Y') }}</td>
+                                        <td>{{ i.approve_rel.first_name }} {{ i.approve_rel.last_name }}</td>
+                                        {#                                        <td>{{ i.qpulsenum }}</td>#}
+                                        <td>{{ get_approval_status(i.approved)|safe }}</td>
+                                        <td>
+                                            <div class="btn-group" style="display: flex">
+                                                <a data-toggle="tooltip" title="View"
+                                                   href="{{ url_for('competence.view_competence') }}?c_id={{ i.c_id }}&version={{ i.intro }}"
+                                                   class="btn btn-sm btn-flat btn-primary"><span
+                                                        class="glyphicon glyphicon-eye-open"></span></a>
+
+
+
+                                                {% if i.approved != None %}
+                                                    <button data-toggle="tooltip" title="Edit"
+                                                            class="btn btn-sm btn-flat btn-success" disabled>
+                                                        <icon class="fa fa-edit"></icon>
+                                                    </button>
+                                                {% else %}
+
+                                                    <a data-toggle="tooltip" title="Edit"
+                                                       href="{{ url_for('competence.edit_competence') }}?ids={{ i.c_id }}"
+                                                       class="btn btn-sm btn-flat btn-success">
+                                                        <icon class="fa fa-edit"></icon>
+                                                    </a>
+                                                {% endif %}
+
+
+                                                <button data-toggle="tooltip" title="Send for approval"
+                                                        href=""
+                                                        class="btn btn-sm btn-flat btn-warning approval"
+                                                        id="approval_{{ i.id }}"
+                                                        {% if i.approved != None %}
+                                                        disabled
+                                                        {% endif %}
+                                                ><span
+                                                        class="glyphicon glyphicon-thumbs-up"></span>
+                                                </button>
+
+
+                                                <a data-toggle="tooltip" title="Delete"
+                                                   class="btn btn-sm btn-flat btn-danger remove_competence"
+                                                   id="{{ i.id }}"><i
+                                                        class="fa fa-remove"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+
+
+                                    </tr>
+                                {% endfor %}
+
+                            </table>
+                        {% endif %}
+                    </div>
+                    <div class="tab-pane" id="tab_2">
+                        <table class="table table-striped table-condensed competencies dataTable dt-responsive"
+                               id="my_competencies_complete">
+                            <thead>
+                            <th>Category</th>
+                            <th>Competence</th>
+                            <th>Date Created</th>
+                            <th>Authoriser</th>
+                            <th>Actions</th>
+                            </thead>
+                            {% for i in competences_complete %}
+                                <tr>
+                                    <td>{{ i.category_rel.category }}</td>
+                                    <td>{{ i.title }}</td>
+                                    <td>{{ i.date_created.strftime('%d-%m-%Y') }}</td>
+                                    <td>{{ i.approve_rel.first_name }} {{ i.approve_rel.last_name }}</td>
+                                    <td>
+                                        <div class="btn-group" style="display: flex">
+                                            <a data-toggle="tooltip" title="View"
+                                               href="{{ url_for('competence.view_competence') }}?c_id={{ i.c_id }}&version={{ i.intro }}"
+                                               class="btn btn-sm btn-flat btn-primary"><span
+                                                    class="glyphicon glyphicon-eye-open"></span></a>
+
+
+                                            <a data-toggle="tooltip" title="Edit"
+                                               href="{{ url_for('competence.edit_competence') }}?ids={{ i.c_id }}"
+                                               class="btn btn-sm btn-flat btn-success">
+                                                <icon
+                                                        class="fa fa-edit"></icon>
+                                            </a>
+
+                                            {#                                                <a data-toggle="tooltip" title="Delete"#}
+                                            {#                                                   class="btn btn-sm btn-flat btn-danger remove_competence"#}
+                                            {#                                                   id="{{ i.id }}"><i#}
+                                            {#                                                        class="fa fa-remove"></i>#}
+                                            {#                                                </a>#}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+
 
 
 
@@ -467,127 +616,9 @@
 
             {% endif %}
 
-            <h2 class="page-header"><i class="fa fa-edit"></i> My Competencies</h2>
-
-
-            <div class="nav-tabs-custom">
-                <ul class="nav nav-tabs">
-                    <li class="active"><a href="#tab_1" data-toggle="tab">In Progress
-                        <span class="badge bg-gray">{{ competences_incomplete|length }}</span>
-                    </a></li>
-                    <li><a href="#tab_2" data-toggle="tab">Complete <span
-                            class="badge bg-gray">{{ competences_complete|length }}</span></a></li>
-                    <li class="pull-right"><a href="{{ url_for('competence.add_competence') }}" class="text-muted"><i
-                            class="fa fa-plus"></i> Add Competence</a></li>
-
-                </ul>
-
-                <div class="tab-content table-responsive">
-                    <div class="tab-pane active" id="tab_1">
-                        {% if competences_incomplete|length != 0 %}
-                            <table class="table table-striped table-condensed competencies dataTable dt-responsive"
-                                   width="100%"
-                                   id="my_competencies_incomplete">
-
-
-                                <thead>
-                                <th>Category</th>
-                                <th>Competence</th>
-                                <th>Date Created</th>
-                                <th>Authoriser</th>
-                                {#                                <th>Q-Pulse Doc Number</th>#}
-                                <th>Actions</th>
-                                </thead>
-                                {% for i in competences_incomplete %}
-                                    <tr>
-                                        <td>{{ i.category_rel.category }}</td>
-                                        <td>{{ i.title }}</td>
-                                        <td>{{ i.date_created.strftime('%d-%m-%Y') }}</td>
-                                        <td>{{ i.approve_rel.first_name }} {{ i.approve_rel.last_name }}</td>
-                                        {#                                        <td>{{ i.qpulsenum }}</td>#}
-                                        <td>
-                                            <div class="btn-group" style="display: flex">
-                                                <a data-toggle="tooltip" title="View"
-                                                   href="{{ url_for('competence.view_competence') }}?c_id={{ i.c_id }}&version={{ i.intro }}"
-                                                   class="btn btn-sm btn-flat btn-primary"><span
-                                                        class="glyphicon glyphicon-eye-open"></span></a>
-
-
-                                                <a data-toggle="tooltip" title="Edit"
-                                                   href="{{ url_for('competence.edit_competence') }}?ids={{ i.c_id }}"
-                                                   class="btn btn-sm btn-flat btn-success">
-                                                    <icon
-                                                            class="fa fa-edit"></icon>
-                                                </a>
-
-                                                <a data-toggle="tooltip" title="Send for approval"
-                                                   href=""
-                                                   class="btn btn-sm btn-flat btn-warning"><span
-                                                        class="glyphicon glyphicon-thumbs-up"></span>
-                                                </a>
-
-                                                <a data-toggle="tooltip" title="Delete"
-                                                   class="btn btn-sm btn-flat btn-danger remove_competence"
-                                                   id="{{ i.id }}"><i
-                                                        class="fa fa-remove"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-
-
-                                    </tr>
-                                {% endfor %}
-
-                            </table>
-                        {% endif %}
-                    </div>
-                    <div class="tab-pane" id="tab_2">
-                        <table class="table table-striped table-condensed competencies dataTable dt-responsive"
-                               id="my_competencies_complete">
-                            <thead>
-                            <th>Category</th>
-                            <th>Competence</th>
-                            <th>Date Created</th>
-                            <th>Authoriser</th>
-                            <th>Actions</th>
-                            </thead>
-                            {% for i in competences_complete %}
-                                <tr>
-                                    <td>{{ i.category_rel.category }}</td>
-                                    <td>{{ i.title }}</td>
-                                    <td>{{ i.date_created.strftime('%d-%m-%Y') }}</td>
-                                    <td>{{ i.approve_rel.first_name }} {{ i.approve_rel.last_name }}</td>
-                                    <td>
-                                        <div class="btn-group" style="display: flex">
-                                            <a data-toggle="tooltip" title="View"
-                                               href="{{ url_for('competence.view_competence') }}?c_id={{ i.c_id }}&version={{ i.intro }}"
-                                               class="btn btn-sm btn-flat btn-primary"><span
-                                                    class="glyphicon glyphicon-eye-open"></span></a>
-
-
-                                            <a data-toggle="tooltip" title="Edit"
-                                               href="{{ url_for('competence.edit_competence') }}?ids={{ i.c_id }}"
-                                               class="btn btn-sm btn-flat btn-success">
-                                                <icon
-                                                        class="fa fa-edit"></icon>
-                                            </a>
-
-                                            {#                                                <a data-toggle="tooltip" title="Delete"#}
-                                            {#                                                   class="btn btn-sm btn-flat btn-danger remove_competence"#}
-                                            {#                                                   id="{{ i.id }}"><i#}
-                                            {#                                                        class="fa fa-remove"></i>#}
-                                            {#                                                </a>#}
-                                        </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-
-                        </table>
-                    </div>
-                </div>
-            </div>
         </section>
     </div>
+
 
     {#    <div class="modal modal-danger fade ui-front" id="notifications_modal" style="display: none;">#}
     {#        <div class="modal-dialog">#}
@@ -615,15 +646,39 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title"><i class="fa fa-exclamation-triangle text-red"></i> Are you sure you want to delete?</h4>
+                    <h4 class="modal-title"><i class="fa fa-exclamation-triangle text-red"></i> Are you sure you want to
+                        delete?</h4>
                 </div>
                 <div class="modal-body">
-                    This will <b>permanently</b> remove this competence!
+                    This will <b>permanently</b> remove this item! All data will be lost!
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger btn-flat pull-left" id="confirmed">Yes Delete
                     </button>
-                    <button type="button" class="btn btn-default btn-flat pull-right" id="close_confirm" >Close
+                    <button type="button" class="btn btn-default btn-flat pull-right" id="close_confirm">Close
+                    </button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+    <div class="modal modal-default" id="abandon_confirm" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><i class="fa fa-exclamation-triangle text-orange"></i> Are you sure you want
+                        to
+                        abandon this training?</h4>
+                </div>
+                <div class="modal-body">
+                    This will set the training to abandoned!
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning btn-flat pull-left" id="abandon_confirmed">Yes Abandon
+                    </button>
+                    <button type="button" class="btn btn-default btn-flat pull-right" id="abandon_close_confirm">Close
                     </button>
                 </div>
             </div>
@@ -638,19 +693,67 @@
     <script>
         $(document).ready(function () {
             {# function to remove competence that is not complete #}
+
+            $('.approval').click(function () {
+                id = $(this).attr('id')
+                console.log(id)
+                $.ajax({
+                    url: '{{ url_for("competence.send_for_approval") }}?id=' + id.replace('approval_', ''),
+                    success: function (response) {
+                        location.reload();
+                    },
+                });
+            });
+
             var id;
+            var url;
+            var version;
+            $('.abandon_training').click(function () {
+                id = $(this).attr('c_id');
+                version =  $(this).attr('version');
+                console.log(id);
+                $('#abandon_confirm').show();
+                url = '{{ url_for("training.abandon") }}?c_id=' + id + '&version=' + version;
+                console.log(url);
+
+            });
+
+            $('#abandon_confirmed').click(function () {
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    success: function (response) {
+                        location.reload();
+                    },
+                });
+            });
+
+            $('#abandon_close_confirm').click(function () {
+                $('#abandon_confirm').hide();
+            });
+
 
             $('.remove_competence').click(function () {
                 id = $(this).attr('id')
                 console.log(id)
                 $('#remove_confirm').show();
+                url = '{{ url_for("competence.delete") }}?c_id=' + id
 
             });
+
+            $('.remove_training').click(function () {
+                id = $(this).attr('id')
+                console.log(id)
+                $('#remove_confirm').show();
+                url = '{{ url_for("training.delete") }}?c_id=' + id
+
+            });
+
 
             $('#confirmed').click(function () {
                 $.ajax({
                     type: 'post',
-                    url: '{{ url_for("competence.delete") }}?c_id=' + id,
+                    url: url,
                     success: function (response) {
                         location.reload();
                     },
@@ -757,7 +860,7 @@
             var data = {
                 labels: ['Assigned', 'Active', 'Complete', 'Failed', 'Abandoned', 'Obselete', 'Expiring', 'Expired'],
                 datasets: [{
-                    data: [{{ assigned_count }}, {{ active_count }}, {{ complete_count }}, 0, 0, 0, 0, 0],
+                    data: [{{ assigned_count }}, {{ active_count }}, {{ complete_count }}, 0, {{ abandoned_count }}, 0, 0, 0],
                     label: 'Digital Goods',
                     fillColor: 'rgba(60,141,188,0.9)',
                     strokeColor: 'rgba(60,141,188,0.8)',

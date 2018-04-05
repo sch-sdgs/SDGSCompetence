@@ -40,8 +40,8 @@ def get_user_details():
 @admin_permission.require(http_exception=403)
 def check_line_manager():
     """
-    gets user details form active directory based on the username
-    :return: json of the results
+    checks if user is a line manager
+    :return: True or False
     """
     linemanager = request.args["linemanager"]
     if " " in linemanager:
@@ -416,7 +416,7 @@ def deletejobrole(id=None):
 def service():
     """
     administer the available services - a service is "Lab Services" "Constitutional" etc
-    :return:
+    :return: render template service.html
     """
     form = ServiceForm()
 
@@ -447,7 +447,7 @@ def service_edit(id=None):
         s.commit()
         return redirect(url_for('admin.service'))
 
-    return render_template("service_edit.html", form=form, id=id)
+    return render_template("shervice_edit.html", form=form, id=id)
 
 
 @admin.route('/service/delete/<id>', methods=['GET', 'POST'])

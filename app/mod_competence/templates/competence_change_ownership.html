@@ -1,0 +1,71 @@
+{% extends "base2.html" %}
+{% block content %}
+
+
+
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                <i class="fa fa-hand-o-left"></i> Change Competence Ownership
+                <small></small>
+            </h1>
+{#            <ol class="breadcrumb">#}
+{#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
+{#                <li class="active">Here</li>#}
+{#            </ol>#}
+            {% if message %}
+                <div class="alert alert-danger">
+                    <strong>Fail Whale!</strong> {{ message }}
+                </div>
+            {% endif %}
+           <h3><strong>Competencies:</strong> {{competences}}</h3>
+        </section>
+
+        <!-- Main content -->
+        <section class="content container-fluid">
+            <div class="box" id="training">
+
+                <div class="box-body">
+            <form action="{{ url_for('competence.change_ownership') }}?ids={{ ids }}" method="POST" class="form-horizontal">
+                <fieldset>
+
+                    <div class="form-group">
+                        {{ form.full_name.label(class_="col-lg-2 control-label") }}
+
+                        <div class="col-lg-10">
+                            {{ form.full_name(class_="form-control") }}
+
+                             <span class="help-block"><strong>Start typing and users will appear.</strong></span>
+                            <span class="help-block">WARNING! The owner of the listed competences will be changed.</span>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-lg-10 col-lg-offset-2">
+                            {{ form.submit(class_="btn btn-primary btn-flat") }}
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</section>
+    </div>
+
+<script>
+
+    $(function () {
+        $.ajax({
+            url: '{{ url_for("autocomplete") }}'
+        }).done(function (data) {
+            $('#full_name').autocomplete({
+                source: data.json_list,
+                minLength: 2
+
+            });
+        });
+    });
+</script>
+
+{% endblock %}

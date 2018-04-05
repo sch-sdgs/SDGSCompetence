@@ -1,12 +1,13 @@
 from flask import Flask, render_template, redirect, request, url_for, session, current_app, Blueprint, \
-    send_from_directory
+    send_from_directory, jsonify
 from flask_login import login_required, login_user, logout_user, LoginManager, UserMixin, \
     current_user
-from app.competence import s
+from app.competence import s,send_mail
 from app.models import *
 from sqlalchemy.sql.expression import func, and_, or_, case, exists, update
 from sqlalchemy.orm import aliased
-
+import datetime
+from dateutil.relativedelta import relativedelta
 import os
 from forms import *
 import uuid
@@ -182,20 +183,23 @@ def get_competence_summary_by_user(c_id, u_id,version):
                ValidityRef.months,
                func.max(Assessments.date_assigned).label('assigned'),
                func.max(Assessments.date_activated).label('activated'),
+               func.min(Assessments.date_expiry).label('expiry'),
                case([
                    (s.query(Assessments). \
                     outerjoin(Subsection, Subsection.id == Assessments.ss_id).\
                     filter(and_(Assessments.version==version,Assessments.user_id == u_id, Subsection.c_id == c_id,
                                 Assessments.date_completed == None)).exists(),
                     None)],
-                   else_=func.max(Assessments.date_completed)).label('completed'),
-               case([
-                   (s.query(Assessments). \
-                    outerjoin(Subsection, Subsection.id == Assessments.ss_id).\
-                    filter(and_(Assessments.version==version,Assessments.user_id == u_id, Subsection.c_id == c_id,
-                                Assessments.date_expiry == None)).exists(),
-                    None)],
-                   else_=func.min(Assessments.date_expiry)).label('expiry'))
+                   else_=func.max(Assessments.date_completed)).label('completed'))
+               # case([
+               #     (s.query(Assessments). \
+               #      outerjoin(Subsection, Subsection.id == Assessments.ss_id).\
+               #      filter(and_(Assessments.version==version,Assessments.user_id == u_id, Subsection.c_id == c_id,
+               #                  Assessments.date_expiry == None)).exists(),
+               #      None)],
+               #     else_=func.min(Assessments.date_expiry)).label('expiry'))
+    print "HERE"
+    print competence_result
     for comp in competence_result:
         print "HELLO"
         print comp
@@ -215,6 +219,7 @@ def activate_assessments(ids, u_id,version):
     print ids
     activated = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Active").first().id
     assigned = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Assigned").first().id
+
     print('activated = ' + str(activated))
     print('assigned = ' + str(assigned))
     print('query')
@@ -255,12 +260,13 @@ def filter_for_none(value):
 def reassessment():
     if request.method == 'GET':
         c_id = request.args.get('c_id')
+        version = request.args.get('version')
         print c_id
 
         assess_id_list = request.args.get('assess_id_list').split(',')
 
         u_id = current_user.database_id
-        competence_summary = get_competence_summary_by_user(c_id, u_id)
+        competence_summary = get_competence_summary_by_user(c_id, u_id,version)
 
         questions = s.query(QuestionsRef).filter(QuestionsRef.active == True)
         data = []
@@ -340,6 +346,8 @@ def view_current_competence():
         u_id = current_user.database_id
         competence_summary = get_competence_summary_by_user(c_id, u_id,version)
         section_list = get_competence_by_user(c_id, u_id,version)
+        print "HERE"
+        print competence_summary.activated
 
         # return template populated
         return render_template('complete_training.html', competence=c_id, u_id=u_id, user=competence_summary.user,
@@ -453,10 +461,19 @@ def self_complete(assess_id):
     c_id = request.args.get('c_id')
     version = request.args.get('version')
     status_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Complete").first().id
+
+    query = s.query(Assessments).filter(Assessments.id == assess_id).first()
+
+    for detail in query.ss_id_rel.c_id_rel.competence_detail:
+        if detail.intro <= query.version:
+            print "YOY"
+            print detail
+            months_valid = detail.validity_rel.months
+
     data = {'trainer_id': current_user.database_id,
             'date_of_training': datetime.date.today(),
             'date_completed': datetime.date.today(),
-            'date_expiry': datetime.date.today(),
+            'date_expiry': datetime.date.today() + relativedelta(months=months_valid),
             'signoff_id': current_user.database_id,
             'status': status_id,
             }
@@ -466,16 +483,36 @@ def self_complete(assess_id):
     s.commit()
     return redirect(url_for('training.view_current_competence')+"?c_id="+str(c_id)+"&version="+str(version))
 
+@training.route('/delete', methods=['GET', 'POST'])
+@login_required
+def delete():
+    pass
+
+@training.route('/abandon', methods=['GET', 'POST'])
+@login_required
+def abandon():
+    c_id = request.args["c_id"]
+    print "hello"
+    print c_id
+    version = request.args["version"]
+    abandon_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status=="Abandoned").first().id
+    data = {'status':abandon_id}
+    s.query(Assessments).join(Subsection).filter(and_(Subsection.c_id==c_id,Assessments.version==version)).update(data)
+    try:
+        s.commit()
+        return jsonify({"success": True})
+    except:
+        pass
+
+
+
+
 
 @training.route('/signoff_evidence/<string:action>/<int:evidence_id>', methods=['GET', 'POST'])
 @login_required
 def signoff_evidence(evidence_id,action):
 
-    #check = s.query(Assessments).filter(and_(Assessments.id==assess_id,Assessments.signoff_id==current_user.database_id)).count()
-    # if check == 1:
-    #     evidence_to_update = s.query(AssessmentEvidenceRelationship).filter(AssessmentEvidenceRelationship.assessment_id == assess_id).values(AssessmentEvidenceRelationship.evidence_id)
-    #     for evidence in evidence_to_update:
-    #         print evidence.evidence_id
+
     data = {
         'is_correct':1,
         'comments':request.form["comments"],
@@ -490,17 +527,35 @@ def signoff_evidence(evidence_id,action):
         date = None
 
     assessments_to_update = s.query(AssessmentEvidenceRelationship).filter(AssessmentEvidenceRelationship.evidence_id == evidence_id).all()
-    data = {
-        'date_completed':date,
-        'status':status
-    }
+
+
 
     for assessment in assessments_to_update:
         print "HERE"
         print status
         print assessment.assessment_id
+
+
+        query = s.query(Assessments).filter(Assessments.id == assessment.assessment_id).first()
+
+        for detail in query.ss_id_rel.c_id_rel.competence_detail:
+            if detail.intro <= query.version:
+                print "YOY"
+                print detail
+                months_valid = detail.validity_rel.months
+
+        data = {
+            'date_completed': date,
+            'status': status,
+            'date_expiry': datetime.datetime.now() + relativedelta(months=months_valid)
+        }
+
         s.query(Assessments).filter(Assessments.id ==assessment.assessment_id).update(data)
         s.commit()
+
+
+    send_mail(query.user_id, "Evidence Reviewed",
+              "Your evidence was reviewed by <b>" + current_user.full_name + "</b>")
 
     # else:
     #     print "NOT AUTHORISED"
@@ -570,12 +625,15 @@ def process_evidence():
             'status': status_id,
             }
 
+
     for assess_id in s_ids:
         s.query(Assessments).filter(Assessments.id == int(assess_id)).update(data)
 
     s.commit()
 
+
     uploaded_files = request.files.getlist("file")
+
     if len(uploaded_files) > 0:
 
         # generate uuid incase someone uploads file of same name and it's actually different - store real name in db
@@ -587,7 +645,11 @@ def process_evidence():
             s.add(u)
         s.commit()
 
-        return redirect(url_for('training.view_current_competence')+"?version="+str(version)+"&c_id="+str(c_id))
+
+    send_mail(request.form['trainer'], "Evidence awaiting your review",
+              "You have evidence uploaded by <b>" + current_user.full_name + "</b> awaiting your review.")
+
+    return redirect(url_for('training.view_current_competence')+"?version="+str(version)+"&c_id="+str(c_id))
 
 
 # @training.route('/uploader', methods=['GET', 'POST'])
@@ -670,7 +732,7 @@ def select_subsections():
             print ids
             return upload_evidence(c_id, ids,version)
         elif forward_action == "reassess":
-            return reassessment()
+            return redirect(url_for('training.reassessment')+"?c_id="+str(c_id)+"&version="+str(version)+"&assess_id_list="+",".join(ids))
 
         return redirect(url_for('training.view_current_competence', c_id=c_id, user=u_id,version=version))
 

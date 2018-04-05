@@ -36,7 +36,7 @@
                             <div class="form-group">
                                 {{ form.title.label(class_="col-lg-2 control-label") }}
                                 <div class="col-lg-10">
-                                    {{ form.title(class_="form-control") }}
+                                    {{ form.title(class_="form-control",required='required') }}
                                 </div>
                             </div>
 
@@ -44,7 +44,7 @@
                             <div class="form-group">
                                 {{ form.scope.label(class_="col-lg-2 control-label") }}
                                 <div class="col-lg-10">
-                                    {{ form.scope(class_="form-control") }}
+                                    {{ form.scope(class_="form-control",required='required') }}
                                 </div>
                             </div>
 
@@ -69,7 +69,7 @@
                              <div class="form-group">
                                 {{ form.approval.label(class_="col-lg-2 control-label") }}
                                 <div class="col-lg-10">
-                                    {{ form.approval(class_="form-control") }}
+                                    {{ form.approval(class_="form-control",required='required') }}
                                 </div>
                             </div>
 
@@ -149,6 +149,8 @@
         //This function checks whether the input is a valid Qpulse doc number and adds it to a list if correct, list items are displayed underneath if succesfully added
         $('#submit_document').click(function () {
 
+            $(this).html('<i class="fa fa-spin fa-refresh"></i>');
+
             $('#qpulse_error').hide();
 
             var previous_value = $('#doc_list').val();
@@ -175,6 +177,8 @@
                 contentType: "application/json",
                 success: function (response) {
                     console.log(response)
+
+                     $('#submit_document').html('Attach');
 
                     if (response.match(/This is not a valid QPulse Document/i)) {
                         $('#add_document_group').addClass("has-error");

@@ -10,10 +10,10 @@
 
             <h1>Reports By Section</h1>
             <small></small>
-            <ol class="breadcrumb">
-                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                <li class="active">Here</li>
-            </ol>
+{#            <ol class="breadcrumb">#}
+{#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
+{#                <li class="active">Here</li>#}
+{#            </ol>#}
             {% if message %}
                 <div class="alert alert-danger">
                     <strong>Fail Whale!</strong> {{ message }}
@@ -38,7 +38,8 @@
                             </div>
                             <div class="box-body">
 
-                                <canvas id="pieChartHistoric{{ data.service_id_rel.name | replace(" ","") }}" style="height: 188px; width: 377px;" width="471"
+                                <canvas id="pieChartHistoric{{ data.service_id_rel.name | replace(" ","") }}"
+                                        style="height: 188px; width: 377px;" width="471"
                                         height="235"></canvas>
 
                                 <script>
@@ -114,6 +115,16 @@
                                 </script>
 
                             </div>
+                            <table class="table">
+                                <tr>
+                                    <td>Expiring</td>
+                                    <td><span class="pull-right">{{ data.expiring }}</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Expired</td>
+                                    <td><span class="pull-right">{{ data.expired }}</span></td>
+                                </tr>
+                            </table>
                         </div>
                     </div>
                 {% endfor %}
@@ -205,14 +216,37 @@
                                 </script>
 
                             </div>
-                             <table class="table">
+                            <table class="table">
                                 <tr>
                                     <td>Expiring</td>
-                                    <td></td>
+                                    <td><span class="pull-right">{{ service[1]["Expiring"] }}
+                                        {% for data in historic %}
+                                            {% if data.service_id_rel.name | replace(" ","") == service[0] %}
+                                                {% if data.expiring > service[1]["Expiring"] %}
+                                                    <i class="fa fa-arrow-circle-down text-green"></i>
+                                                {% else %}
+                                                    <i class="fa fa-arrow-circle-up text-red"></i>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </span>
+
+                                    </td>
                                 </tr>
-                                 <tr>
+                                <tr>
                                     <td>Expired</td>
-                                    <td></td>
+                                    <td><span class="pull-right">{{ service[1]["Expired"] }}
+                                        {% for data in historic %}
+                                            {% if data.service_id_rel.name | replace(" ","") == service[0] %}
+                                                {% if data.expired > service[1]["Expired"] %}
+                                                    <i class="fa fa-arrow-circle-down text-green"></i>
+                                                {% else %}
+                                                    <i class="fa fa-arrow-circle-up text-red"></i>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                    </td>
                                 </tr>
                             </table>
                         </div>
@@ -240,7 +274,7 @@
                             {% endfor %}
 
                         </ul>
-                        <div class="tab-content" >
+                        <div class="tab-content">
                             {% for service in expired %}
                                 {% if loop.index == 1 %}
                                     <div class="tab-pane active" id="{{ service }}_expired">

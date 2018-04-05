@@ -1,0 +1,45 @@
+{% extends "base2.html" %}
+{% block content %}
+
+
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                <i class="fa fa-fw fa-video-camera"></i> Training Videos
+                <small></small>
+            </h1>
+{#            <ol class="breadcrumb">#}
+{#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
+{#                <li class="active">Here</li>#}
+{#            </ol>#}
+            {% if message %}
+                <div class="alert alert-danger">
+                    <strong>Fail Whale!</strong> {{ message }}
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- Main content -->
+        <section class="content container-fluid">
+            <div class="box box-primary" id="training">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Available Videos</h3>
+
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        {% for video in videos %}
+                            <div class="col-md-4">
+                                <blockquote class="embedly-card"><h4><a href="{{ video.embed_code }}">{{ title }}</a>
+                                </h4>
+                                </blockquote>
+                                <script async src="//cdn.embedly.com/widgets/platform.js" charset="UTF-8"></script>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                </div>
+        </section>
+    </div>
+{% endblock %}

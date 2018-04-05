@@ -43,13 +43,13 @@
                                                 <th style="width: 85%">
                                                     Area of Competence
                                                 </th>
-                                                {#                                                    <th style="width: 15%">Select All#}
-                                                {#                                                        <div class="material-switch pull-right">#}
-                                                {#                                                            <input type="checkbox" id="{{ section }}checkAll">#}
-                                                {#                                                            <label for="{{ section }}checkAll"#}
-                                                {#                                                                   class="label-success label-selectall"></label>#}
-                                                {#                                                        </div>#}
-                                                {#                                                    </th>#}
+{#                                                                                                    <th style="width: 15%">Select All#}
+{#                                                                                                        <div class="material-switch pull-right">#}
+{#                                                                                                            <input type="checkbox" id="{{ section }}checkAll">#}
+{#                                                                                                            <label for="{{ section }}checkAll"#}
+{#                                                                                                                   class="label-success label-selectall"></label>#}
+{#                                                                                                        </div>#}
+{#                                                                                                    </th>#}
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -58,7 +58,6 @@
                                                     <td>{{ make_status_label(sub['status'])|safe }} {{ sub["name"] }}</td>
                                                     <td>
                                                         <div class="material-switch pull-right">
-
                                                             {% if sub['status'] in required_status %}
                                                                 <input type="checkbox" id="{{ sub["id"] }}">
                                                             {% endif %}
@@ -136,7 +135,7 @@
                               action="{{ url_for('training.select_subsections', c_id=competence, user=user['id'], action=action, version=version ) }}"
                               method="post">
                             {{ form.ids }}
-                            {{ form.submit(class_="btn btn-success") }}
+                            {{ form.submit(class_="btn btn-flat btn-success") }}
                         </form>
                     </div>
                 </div>

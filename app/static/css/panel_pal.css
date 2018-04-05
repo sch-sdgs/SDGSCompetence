@@ -6,16 +6,18 @@ table.dataTable tbody tr.selected {
 }
 
 .blink {
-  animation: blinker 1s linear 3;
+    animation: blinker 1s linear 3;
 }
 
 @keyframes blinker {
-  50% { opacity: 0.0; }
+    50% {
+        opacity: 0.0;
+    }
 }
 
 .ui-autocomplete {
 
-
+    z-index: 2000 !important;
 
     padding: 4px 4px;
     position: absolute;
@@ -25,7 +27,7 @@ table.dataTable tbody tr.selected {
     border-color: rgba(0, 0, 0, 0.2);
     border-style: solid;
     border-width: 1px;
-border-radius: 0px;
+    border-radius: 0px;
     -webkit-border-radius: 0px;
     -moz-border-radius: 0px;
     /*-webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);*/
@@ -39,14 +41,14 @@ border-radius: 0px;
 }
 
 /*.ui-menu-item > a.ui-corner-all {*/
-    /*display: block;*/
-    /*padding: 3px 15px;*/
-    /*clear: both;*/
-    /*font-weight: normal;*/
-    /*line-height: 18px;*/
-    /*color: #555555;*/
-    /*white-space: nowrap;*/
-    /*text-decoration: none;*/
+/*display: block;*/
+/*padding: 3px 15px;*/
+/*clear: both;*/
+/*font-weight: normal;*/
+/*line-height: 18px;*/
+/*color: #555555;*/
+/*white-space: nowrap;*/
+/*text-decoration: none;*/
 /*}*/
 
 .ui-state-hover, .ui-state-active {
@@ -58,7 +60,6 @@ border-radius: 0px;
     -moz-border-radius: 0px;
     background-image: none;
 }
-
 
 .material-switch > input[type="checkbox"] {
     display: none;
@@ -78,11 +79,12 @@ border-radius: 0px;
     content: '';
     height: 16px;
     margin-top: -8px;
-    position:absolute;
+    position: absolute;
     opacity: 0.3;
     transition: all 0.4s ease-in-out;
     width: 40px;
 }
+
 .material-switch > label::after {
     background: rgb(255, 255, 255);
     border-radius: 16px;
@@ -96,10 +98,12 @@ border-radius: 0px;
     transition: all 0.3s ease-in-out;
     width: 24px;
 }
+
 .material-switch > input[type="checkbox"]:checked + label::before {
     background: inherit;
     opacity: 0.5;
 }
+
 .material-switch > input[type="checkbox"]:checked + label::after {
     background: inherit;
     left: 20px;

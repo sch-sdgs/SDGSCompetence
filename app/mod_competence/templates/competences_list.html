@@ -10,19 +10,20 @@
                 <i class="fa fa-fw fa-file-text-o"></i> All Competencies
                 <small>All the competencies available, previous versions, and those in progress.</small>
             </h1>
-{#            <ol class="breadcrumb">#}
-{#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
-{#                <li class="active">Here</li>#}
-{#            </ol>#}
-            {% if message %}
-                <div class="alert alert-danger">
-                    <strong>Fail Whale!</strong> {{ message }}
-                </div>
-            {% endif %}
+            {#            <ol class="breadcrumb">#}
+            {#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
+            {#                <li class="active">Here</li>#}
+            {#            </ol>#}
+
         </section>
 
         <!-- Main content -->
         <section class="content container-fluid">
+            {% if message %}
+                <div class="alert alert-{{ modifier }}">
+                    {{ message|safe }}
+                </div>
+            {% endif %}
             <div class="nav-tabs-custom">
                 <ul class="nav nav-tabs">
                     <li class="active"><a href="#tab_1" data-toggle="tab">Current Competencies</a></li>
@@ -129,9 +130,10 @@
                             <th>Category</th>
                             <th>Title</th>
                             <th>Creator</th>
-                            <th>Authorised By</th>
+                            <th>Apporved By</th>
+                            <th>Approval Status</th>
                             <th>Version</th>
-                            <th>Status</th>
+
                             </thead>
                             {% for competence in in_progress %}
                                 <tr>
@@ -141,17 +143,9 @@
                                     <td>{{ competence.title }}</td>
                                     <td>{{ competence.creator_rel.first_name }} {{ competence.creator_rel.last_name }}</td>
                                     <td>{{ competence.approve_rel.first_name }} {{ competence.approve_rel.last_name }}</td>
+                                    <td>{{ get_approval_status(competence.approved)|safe }}</td>
                                     <td>
                                         <small class="label bg-gray">v{{ competence.intro }}</small>
-                                    </td>
-                                    <td>
-                                        {% if competence.competence.obsolete %}
-                                            <p class="label label-danger">Inactive</p>
-                                        {% else %}
-                                            <p class="label label-success">Active</p>
-                                        {% endif %}
-
-
                                     </td>
                                 </tr>
                             {% endfor %}

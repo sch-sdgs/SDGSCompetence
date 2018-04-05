@@ -68,6 +68,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
 
     <script>
+
         $(function () {
             $("#accordion").accordion();
         });
@@ -198,6 +199,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 if (func == "download") {
                     console.log("download");
                     window.location.assign("{{ url_for('document.export_document_view') }}?c_id=" + ids + "&version=" + versions);
+                }
+                if (func == "change_ownership") {
+                    console.log("change_ownership");
+                    window.location.assign("{{ url_for('competence.change_ownership') }}?ids=" + ids.join(','));
                 }
 
             })
@@ -550,7 +555,7 @@ desired effect
                     <ul class="treeview-menu">
 
 
-                        <li><a href="}"><i class="fa fa-circle-o"></i>View Videos</a>
+                        <li><a href="{{ url_for('competence.videos') }}"><i class="fa fa-circle-o"></i>View Videos</a>
                         <li><a href=""><i class="fa fa-circle-o"></i>Add Video</a>
                         </li>
                     </ul>
@@ -570,10 +575,7 @@ desired effect
 
                                     <fieldset>
 
-                                        {% if message %}
-                                            <div class="alert alert-danger">
-                                                <strong>{{ modifier }}</strong> {{ message }}</div>
-                                        {% endif %}
+
                                         <div class="input-group">
                                             <input class="form-control" id="username1" name="username" type="text"
                                                    value=""

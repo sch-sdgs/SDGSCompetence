@@ -14,10 +14,10 @@
             {% endif %}
             <small></small>
             </h1>
-            <ol class="breadcrumb">
-                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                <li class="active">Here</li>
-            </ol>
+            {#            <ol class="breadcrumb">#}
+            {#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
+            {#                <li class="active">Here</li>#}
+            {#            </ol>#}
             {% if message %}
                 <div class="alert alert-danger">
                     <strong>Fail Whale!</strong> {{ message }}
@@ -26,15 +26,13 @@
 
             <h3>{{ title }}
                 <small class="label bg-gray">v{{ version }}</small>
-                <small class="pull-right"><a
-                        href="{{ url_for('document.export_document_view') }}?c_id={{ c_id }}&version={{ version }}"
-                        class="btn btn-flat btn-default"><i class="fa fa-download"></i> Download</a></small>
             </h3>
+
+
         </section>
 
         <!-- Main content -->
         <section class="content container-fluid">
-
 
             <div class="alert alert-success" role="alert" id="competence_activated" hidden>Success! You have
                 completed {{ title }}.
@@ -43,6 +41,39 @@
                 <div class="col-lg-2"></div>
                 <div class="col-lg-10">
                     <div id="selected_docs"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="box box-solid">
+                        <div class="box-body">
+                            <div class="btn-group pull-right">
+
+                                {% if approved == None %}
+                                    <button
+                                            class="btn btn-flat btn-warning approval" id="{{ id }}"><span
+                                            class="glyphicon glyphicon-thumbs-up"></span> Send
+                                        for Approval
+                                    </button>
+                                    <a
+                                            href="{{ url_for('competence.edit_competence') }}?ids={{ c_id }}&version={{ version }}"
+                                            class="btn btn-flat btn-primary"><i class="fa fa-pencil"></i> Edit</a>
+                                {% elif not approved %}
+                                    <button class="btn btn-flat btn-primary" disabled><i class="fa fa-pencil"></i> Edit
+                                    </button>
+                                {% elif approved %}
+                                    <a
+                                            href="{{ url_for('competence.edit_competence') }}?ids={{ c_id }}&version={{ version }}"
+                                            class="btn btn-flat btn-primary"><i class="fa fa-pencil"></i> Edit</a>
+                                {% endif %}
+
+                                <a
+                                        href="{{ url_for('document.export_document_view') }}?c_id={{ c_id }}&version={{ version }}"
+                                        class="btn btn-flat btn-default"><i class="fa fa-download"></i> Download</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -67,6 +98,10 @@
 
                     <div class="form-group">
                         <td><p><strong>Validity Period (months)</strong> : {{ val_period }}</p></td>
+                    </div>
+
+                    <div class="form-group">
+                        <td><p><strong>Approval Status</strong> : {{ get_approval_status(approved)|safe }}</p></td>
                     </div>
                 </div>
             </div>
@@ -220,9 +255,22 @@
                 {##}
                 {##}
                 {#                </script>#}
-                </div>
+
             {% endif %}
+        </section>
     </div>
 
+    <script>
+        $('.approval').click(function () {
+            id = $(this).attr('id')
+            console.log(id)
+            $.ajax({
+                url: '{{ url_for("competence.send_for_approval") }}?id=' + id.replace('approval_', ''),
+                success: function (response) {
+                    location.reload();
+                },
+            });
+        });
+    </script>
 
 {% endblock %}

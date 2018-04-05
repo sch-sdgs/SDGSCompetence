@@ -8,12 +8,14 @@
         <section class="content-header">
 
 
-            <h1><i class="fa fa-bell-o"></i> Notifications <small>All your notificiations.</small></h1>
+            <h1><i class="fa fa-bell-o"></i> Notifications
+                <small>All your notificiations.</small>
+            </h1>
 
-            <ol class="breadcrumb">
-                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                <li class="active">Here</li>
-            </ol>
+            {#            <ol class="breadcrumb">#}
+            {#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
+            {#                <li class="active">Here</li>#}
+            {#            </ol>#}
             {% if message %}
                 <div class="alert alert-danger">
                     <strong>Fail Whale!</strong> {{ message }}
@@ -24,6 +26,103 @@
 
         <!-- Main content -->
         <section class="content container-fluid">
+            <h3>Assessments</h3>
+            {% for alert in alerts["Assessments"] %}
+                <div class="box box-danger" id="training">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">{{ alert }}</h3>
+
+                    </div>
+                    <div class="box-body">
+
+                        <table class="table table-striped">
+                            <thead>
+                            <th class="col-md-5">Competence Title</th>
+                            <th class="col-md-5">Subsection</th>
+                            <th class="col-md-2">Expiry Date</th>
+                            </thead>
+                            {% for assessment in alerts["Assessments"][alert] %}
+                                {% for ass in assessment.ss_id_rel.c_id_rel.competence_detail %}
+                                    <tr>
+                                        <td>
+                                            {{ ass.title }}
+                                        </td>
+                                        <td>
+                                            {{ assessment.ss_id_rel.name }}
+                                        </td>
+                                        <td>
+                                            {{ assessment.date_expiry.strftime('%d-%m-%Y') }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+
+            {% endfor %}
+            <h3>For Sign-Off/Approval</h3>
+
+
+            <div class="box box-danger" id="training">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Evidence</h3>
+
+                </div>
+                <div class="box-body">
+
+                    <table class="table table-striped">
+                        <thead>
+                        <th class="col-md-5">Competence Title</th>
+                        <th class="col-md-5">Subsection</th>
+                        <th class="col-md-2">Date Training Completed</th>
+                        </thead>
+                        {% for evidence in alerts["Evidence Approval"] %}
+                            <tr>
+                                <td>
+                                    <strong>{{ evidence.assessments[0].assess_id_rel.ss_id_rel.c_id_rel.competence_detail[0].title }}:</strong>
+                                    <ul>
+                                        {% for i in evidence.assessments %}
+                                            <li>{{ i.assess_id_rel.ss_id_rel.name }}</li>
+                                        {% endfor %}
+                                    </ul>
+
+                                </td>
+                                <td>
+                                    {{ evidence.assessments[0].assess_id_rel.user_id_rel.first_name }} {{ evidence.assessments[0].assess_id_rel.user_id_rel.last_name }}
+                                </td>
+                                <td>
+                                    {{ evidence.assessments[0].assess_id_rel.date_of_training.strftime('%d-%m-%Y') }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+            <div class="box box-danger" id="training">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Competence Approval</h3>
+
+                </div>
+                <div class="box-body">
+
+                    <table class="table table-striped">
+                        <thead>
+                        <th class="col-md-5">Competence Title</th>
+                        <th class="col-md-5">Author</th>
+                        <th class="col-md-2"></th>
+                        </thead>
+                        {% for approval in alerts["Competence Approval"] %}
+                            <tr>
+                                <td>{{ approval.title }}</td>
+                                <td>{{ approval.creator_rel.first_name }} {{ approval.creator_rel.last_name }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+
+
         </section>
     </div>
 

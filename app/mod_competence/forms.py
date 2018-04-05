@@ -29,6 +29,9 @@ class AddCompetence(Form):
 class AddSection(Form):
     add_h_and_s = TextField("Add Health and Safety Hazard")
     choose_section = QuerySelectField("Add Section" ,query_factory=lambda:s.query(Section).filter(Section.constant == 0).all(), get_label="name") #All sections in database
+    choose_constant_section = QuerySelectField("Add Constant Section",
+                                      query_factory=lambda: s.query(Section).filter(Section.constant == 1).all(),
+                                      get_label="name")  # All sections in database
     competence_sections = QuerySelectField("Add Section" ,query_factory=lambda:s.query(Section).all(), get_label="name") #All sections that are added for that specific competency
     submit = SubmitField()
     constant_section=QuerySelectMultipleField("Test")

@@ -79,8 +79,11 @@ class User(UserMixin):
         :return: full name
         """
         user = s.query(Users).filter_by(login=self.id).first()
-        full_name = user.first_name + " " + user.last_name
-        return full_name
+        if user is not None:
+            full_name = user.first_name + " " + user.last_name
+            return full_name
+        else:
+            return False
 
     def is_authenticated(self, id, password):
         """
@@ -103,9 +106,8 @@ class User(UserMixin):
             roles = s.query(UserRolesRef).join(UserRoleRelationship).join(Users).filter(Users.login == id).all()
             for role in roles:
                 self.roles.append(role.role)
-            print self.roles
-            return True
 
+            return True
 
         else:
             return False
@@ -200,6 +202,17 @@ def utility_processor():
 
 @app.context_processor
 def utility_processor():
+    def friendly_date(date):
+      if type(date) == str:
+          result=date
+      else:
+          result = date.strftime("%d-%m-%Y")
+      return result
+
+    return dict(friendly_date=friendly_date)
+
+@app.context_processor
+def utility_processor():
     def count_active(c_id, u_id):
         """
         gets the percentage complete of any competence
@@ -277,13 +290,26 @@ def utility_processor():
         if signoff > 0:
             count+=signoff
             alerts["Evidence Approval"] = signoff
-        approval = s.query(CompetenceDetails).filter(CompetenceDetails.approve_id == current_user.database_id).filter(or_(CompetenceDetails.approved==None,CompetenceDetails.approved==0)).count()
+        approval = s.query(CompetenceDetails).filter(and_(CompetenceDetails.approve_id == current_user.database_id,CompetenceDetails.approved != None,CompetenceDetails.approved != 1)).count()
         if approval > 0:
             count += approval
             alerts["Competence Approval"] = approval
 
         return [count,alerts]
     return dict(notifications=notifications)
+
+@app.context_processor
+def utility_processor():
+    def get_approval_status(approved):
+        if approved == None:
+            return '<small class="label bg-gray">Not Submitted</small>'
+        elif approved == True:
+            return '<small class="label bg-green">Approved</small>'
+        elif approved == False:
+            return '<small class="label bg-orange">Awaiting Approval</small>'
+    return dict(get_approval_status=get_approval_status)
+
+
 
 
 #########
@@ -300,7 +326,6 @@ def autocomplete():
     users = s.query(Users.first_name, Users.last_name).filter(Users.active==1).all()
     user_list = []
     for i in users:
-        print i
         name = i[0] + " " + i[1]
         user_list.append(name)
 
@@ -413,6 +438,10 @@ def logout():
 
     return redirect(request.args.get('next') or '/')
 
+@app.route('/index')
+@login_required
+def home():
+    return redirect('/')
 
 @app.route('/')
 @login_required
@@ -429,6 +458,7 @@ def index():
     active_count = 0
     assigned_count = 0
     complete_count = 0
+    abandoned_count = 0
     for i in linereports:
         counts[i.id] = {}
         # TODO get competence because assessments is all subsections
@@ -454,6 +484,7 @@ def index():
         counts[i.id]["abandoned"] = len(
             s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id == i.id).filter(
                 Assessments.status == 4).all())
+        abandoned_count += counts[i.id]["abandoned"]
 
     competences_incomplete = s.query(CompetenceDetails).join(Competence).filter(
         CompetenceDetails.creator_id == current_user.database_id).filter(Competence.current_version != CompetenceDetails.intro).all()
@@ -506,16 +537,56 @@ def index():
 
 
     signoff = s.query(Evidence).filter(Evidence.signoff_id == current_user.database_id).filter(Evidence.is_correct == None).all()
-    signoff_competence = s.query(CompetenceDetails).filter(CompetenceDetails.approve_id == current_user.database_id).filter(or_(CompetenceDetails.approved==None,CompetenceDetails.approved==0)).all()
+    signoff_competence = s.query(CompetenceDetails).filter(and_(CompetenceDetails.approve_id == current_user.database_id,CompetenceDetails.approved != None,CompetenceDetails.approved != 1)).all()
 
     accept_form = RateEvidence()
     return render_template("index.html", complete=all_complete, accept_form=accept_form, signoff=signoff, assigned_count=assigned_count,
                            active_count=active_count, complete_count=complete_count, linereports=linereports,
                            linereports_inactive=linereports_inactive, competences_incomplete=competences_incomplete,
-                           competences_complete=competences_complete, counts=counts, assigned=all_assigned, active=active,signoff_competence=signoff_competence)
+                           competences_complete=competences_complete, abandoned_count=abandoned_count, counts=counts, assigned=all_assigned, active=active,signoff_competence=signoff_competence)
 
 
 @app.route('/notifications')
 @login_required
 def notifications():
-    return render_template("notifications.html")
+    expired = s.query(Assessments).filter(Assessments.user_id == current_user.database_id)
+    alerts = {}
+    alerts["Assessments"]={}
+    count = 0
+    for i in expired:
+        if i.date_expiry is not None:
+            if datetime.date.today() > i.date_expiry:
+                if "Assessments Expired" not in alerts["Assessments"]:
+                    alerts["Assessments"]["Assessments Expired"] = []
+                    alerts["Assessments"]["Assessments Expired"].append(i)
+                    count += 1
+                else:
+                    alerts["Assessments"]["Assessments Expired"].append(i)
+                    count += 1
+            elif datetime.date.today() + relativedelta(months=+6) > i.date_expiry:
+                if "Assessments Expiring" not in alerts["Assessments"]:
+                    alerts["Assessments"]["Assessments Expiring"] = []
+                    alerts["Assessments"]["Assessments Expiring"].append(i)
+                    count += 1
+                else:
+                    alerts["Assessments"]["Assessments Expiring"]
+                    count += 1
+
+    signoff = s.query(Evidence).filter(Evidence.signoff_id == current_user.database_id).filter(
+        Evidence.is_correct == None).count()
+    if signoff > 0:
+        count += signoff
+        signoff_query = s.query(Evidence).filter(Evidence.signoff_id == current_user.database_id).filter(
+            Evidence.is_correct == None).all()
+        alerts["Evidence Approval"] = signoff_query
+    approval = s.query(CompetenceDetails).filter(
+        and_(CompetenceDetails.approve_id == current_user.database_id, CompetenceDetails.approved != None,
+             CompetenceDetails.approved != 1)).count()
+    if approval > 0:
+        count += approval
+        approval_query = s.query(CompetenceDetails).filter(
+            and_(CompetenceDetails.approve_id == current_user.database_id, CompetenceDetails.approved != None,
+                 CompetenceDetails.approved != 1)).all()
+        alerts["Competence Approval"] = approval_query
+
+    return render_template("notifications.html",alerts=alerts)

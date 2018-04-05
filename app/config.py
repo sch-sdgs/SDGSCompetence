@@ -8,3 +8,9 @@ SQLALCHEMY_TRACK_MODIFICATIONS = True
 WHOOSH_BASE = os.path.join(basedir + '/app/resources/')
 UPLOAD_FOLDER = os.path.join(basedir + '/app/static/uploads')
 UPLOADED_FILES_DEST = os.path.join(basedir + '/app/static/uploads')
+
+MAIL_SERVER = 'smtp.sch.nhs.uk'
+MAIL_PORT = 25
+MAIL_USERNAME = None
+MAIL_PASSWORD = None
+

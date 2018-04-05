@@ -128,7 +128,7 @@ class CompetenceDetails(db.Model):
     creator_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=False)
     date_created = db.Column(db.DATE, unique=False, nullable=False)
     approve_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=True)
-    approved = db.Column(db.BOOLEAN, unique=False, default=False, nullable=True)
+    approved = db.Column(db.BOOLEAN, unique=False, default=None, nullable=True)
     date_of_approval = db.Column(db.DATE, unique=False, nullable=True)
     validity_period = db.Column(db.Integer, db.ForeignKey("validity_ref.id"), unique=False, nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey("competence_category.id"), unique=False, nullable=False)
@@ -143,7 +143,7 @@ class CompetenceDetails(db.Model):
     competence = db.relationship("Competence",  back_populates="competence_detail", lazy='joined')
 
     def __init__(self, c_id, title, scope, creator_id, validity_period, category_id, intro=1, approve_id=None,
-                 approved=False):
+                 approved=None):
         self.c_id = c_id
         self.title = title
         self.scope = scope
@@ -283,12 +283,13 @@ class Subsection(db.Model):
     s_id_rel = db.relationship("Section", lazy='joined', foreign_keys=[s_id])
     evidence_rel = db.relationship("EvidenceTypeRef", lazy='joined', foreign_keys=[evidence])
 
-    def __init__(self, c_id, s_id, name, evidence, comments):
+    def __init__(self, c_id, s_id, name, evidence, comments,intro=1):
         self.name = name
         self.c_id = c_id
         self.s_id = s_id
         self.evidence = evidence
         self.comments = comments
+        self.intro=intro
 
     def __repr__(self):
         return '<Subsection %r>' % self.c_id
@@ -539,21 +540,40 @@ class MonthlyReportNumbers(db.Model):
     active = db.Column(db.Integer, unique=False, nullable=False)
     expiring = db.Column(db.Integer, unique=False, nullable=False)
     expired = db.Column(db.Integer, unique=False, nullable=False)
+    abandoned = db.Column(db.Integer, unique=False, nullable=False)
     service_id = db.Column(db.Integer, db.ForeignKey("service.id"), unique=False, nullable=False)
 
     service_id_rel = db.relationship("Service", lazy='joined', foreign_keys=[service_id])
 
-    def __init__(self, date, assigned,active,expiring,expired):
+    def __init__(self, date, assigned,active,expiring,expired,service_id):
         self.date = datetime.datetime.today()
         self.assigned = assigned
         self.active = active
         self.expiring = expiring
         self.expired = expired
+        self.service_id = service_id
 
 
     def __repr__(self):
         return '<MonthlyReportNumbers %r>' % self.date
 
+class Videos(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DATETIME, unique=False, nullable=False)
+    c_id = db.Column(db.Integer, db.ForeignKey("competence_details.id"), unique=False, nullable=False)
+    title = db.Column(db.String(250), unique=True, nullable=False)
+    embed_code = db.Column(db.String(2000), unique=True, nullable=False)
+
+    competence_details = db.relationship("CompetenceDetails", lazy='joined', foreign_keys=[c_id])
+
+    def __init__(self,date,c_id,title,embed_code):
+        self.date = datetime.datetime.today()
+        self.c_id = c_id
+        self.title = title
+        self.embed_code = embed_code
+
+    def __repr__(self):
+        return '<Videos %r>' % self.title
 
 if enable_search:
     whooshalchemy.whoosh_index(app, Users)

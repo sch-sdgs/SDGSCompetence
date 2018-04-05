@@ -79,12 +79,14 @@
                         <h4>Discussion Evidence</h4>
                         <table class="table table-striped">
                             <tr>
-                                <td>{{ i.evidence_id_rel.evidence }}</td>
+                                <td colspan="2">{{ i.evidence_id_rel.evidence }}</td>
                             </tr>
                             {% if i.evidence_id_rel.comments %}
                                 <tr>
-                                    <td>Comments</td>
-                                    <td>{{ i.evidence_id_rel.comments }}</td>
+                                    <td>  <blockquote class="blockquote text-right">
+                                        <p class="mb-0">{{ i.evidence_id_rel.comments }}</p>
+                                        <footer class="blockquote-footer">{{  sub["assessor"] }}</footer>
+                                    </blockquote></td>
                                 </tr>
                             {% endif %}
                         </table>

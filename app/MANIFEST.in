@@ -1,0 +1,7 @@
+recursive-include app/mod_admin/templates *
+recursive-include app/mod_competence/templates *
+recursive-include app/mod_document/templates *
+recursive-include app/mod_training/templates *
+recursive-include app/resources *
+recursive-include app/templates *
+recursive-include app/static *

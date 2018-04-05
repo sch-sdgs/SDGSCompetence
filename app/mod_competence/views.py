@@ -7,7 +7,7 @@ from flask import render_template, request, url_for, redirect, Blueprint
 from flask.ext.login import login_required, current_user
 from app.views import get_competence_from_subsections, admin_permission
 from app.models import *
-from app.competence import s
+from app.competence import s,send_mail
 from forms import *
 import json
 from app.qpulseweb import *
@@ -15,6 +15,7 @@ from app.qpulse_details import QpulseDetails
 from collections import defaultdict
 from datetime import datetime as dt
 from dateutil.relativedelta import relativedelta
+from app.views import index
 
 competence = Blueprint('competence', __name__, template_folder='templates')
 
@@ -44,13 +45,14 @@ class ItemTableDocuments(Table):
     qpulseno = Col('QPulse ID')
     title = Col('QPulse Document Title')
 
+
 @competence.route('/remove', methods=['GET', 'POST'])
 def remove_subsection():
     print "HELLO"
     id = request.args["id"]
     version = request.args["version"]
     data = {
-        'last':version
+        'last': version
     }
     s.query(Subsection).filter(Subsection.id == id).update(data)
     try:
@@ -59,15 +61,17 @@ def remove_subsection():
     except:
         return "False"
 
+
 @competence.route('/list', methods=['GET', 'POST'])
-def list_comptencies():
+def list_comptencies(message=None, modifier=None):
     previous_data = s.query(CompetenceDetails).join(Competence).filter(
         Competence.current_version > CompetenceDetails.intro).all()
     current_data = s.query(CompetenceDetails).join(Competence).filter(
         Competence.current_version == CompetenceDetails.intro).all()
     in_progress = s.query(CompetenceDetails).join(Competence).filter(
-        Competence.current_version+1 == CompetenceDetails.intro).all()
-    return render_template('competences_list.html', current_data=current_data, previous_data=previous_data, in_progress=in_progress)
+        Competence.current_version + 1 == CompetenceDetails.intro).all()
+    return render_template('competences_list.html', current_data=current_data, previous_data=previous_data,
+                           in_progress=in_progress, message=message, modifier=modifier)
 
 
 @competence.route('/competent_staff', methods=['GET', 'POST'])
@@ -117,8 +121,6 @@ def activate():
 @competence.route('/deactivate', methods=['GET', 'POST'])
 def deactivate():
     ids = request.args["ids"].split(",")
-    print "HELLO"
-    print ids
     for id in ids:
         count = s.query(Competence).join(CompetenceDetails).filter(Competence.id == id).group_by(
             CompetenceDetails.id).filter(CompetenceDetails.creator_id == current_user.database_id).count()
@@ -135,7 +137,7 @@ def deactivate():
 def add_competence():
     form = AddCompetence()
     if request.method == 'POST':
-        title = request.form['title'].replace(":","-")
+        title = request.form['title'].replace(":", "-")
         scope = request.form['scope']
         val_period = request.form['validity_period']
         comp_category = request.form['competency_type']
@@ -152,7 +154,8 @@ def add_competence():
                               validity_period=val_period,
                               category_id=comp_category,
                               intro=1,
-                              approve_id=approval_id)
+                              approve_id=approval_id,
+                              approved=None)
         s.add(c)
         s.commit()
         c_id = c.id
@@ -200,9 +203,9 @@ def add_sections():
                 s.commit()
 
     ###This section pulls the entire competence into the view once created.
-    version = s.query(CompetenceDetails).filter(CompetenceDetails.c_id==c_id).order_by(
+    version = s.query(CompetenceDetails).filter(CompetenceDetails.c_id == c_id).order_by(
         CompetenceDetails.intro.desc()).first().intro
-    return redirect(url_for('competence.view_competence')+"?c_id=" + str(c_id) + "&version=" + str(version))
+    return redirect(url_for('competence.view_competence') + "?c_id=" + str(c_id) + "&version=" + str(version))
 
     ##Comptetence Details
 
@@ -268,7 +271,7 @@ def get_subsections(c_id, version):
     subsec_list = []
     subsecs = s.query(Subsection).join(Section).join(Competence).join(EvidenceTypeRef).filter(
         Subsection.c_id == c_id).filter(Section.constant == 0).filter(
-        and_(Subsection.intro <= version, or_(Subsection.last == None,Subsection.last == version))).values(
+        and_(Subsection.intro <= version, or_(Subsection.last == None, Subsection.last == version))).values(
         Section.name.label('sec_name'), Subsection.name.label('subsec_name'),
         Subsection.comments, EvidenceTypeRef.type)
     for sub in subsecs:
@@ -280,12 +283,25 @@ def get_constant_subsections(c_id, version):
     constant_subsec_list = []
     constant_subsecs = s.query(Subsection).join(Section).join(Competence).join(EvidenceTypeRef).filter(
         Subsection.c_id == c_id).filter(Section.constant == 1).filter(
-        and_(Subsection.intro <= version, or_(Subsection.last == None,Subsection.last == version))).values(
+        and_(Subsection.intro <= version, or_(Subsection.last == None, Subsection.last == version))).values(
         Section.name.label('sec_name'), Subsection.name.label('subsec_name'),
         Subsection.comments, EvidenceTypeRef.type)
     for constant_sub in constant_subsecs:
         constant_subsec_list.append(constant_sub)
     return constant_subsec_list
+
+
+
+
+@competence.route('/get_constant_subsections',methods=['GET', 'POST'])
+def get_constant_subsections_web():
+    id = request.args["id"]
+    result = []
+    subsections = s.query(ConstantSubsections).filter(ConstantSubsections.s_id==id).all()
+    for subsection in subsections:
+        print subsection.s_id
+        result.append({"name":subsection.item,"id":subsection.id})
+    return jsonify(result)
 
 
 @competence.route('/activate_comp', methods=['GET', 'POST'])
@@ -356,7 +372,13 @@ def add_sections_to_db():
     comments = request.json['comments']
     c_id = request.json['c_id']
     s_id = request.json['s_id']
-    sub = Subsection(name=name, evidence=int(evidence_id), comments=comments, c_id=c_id, s_id=s_id)
+    print request.json
+    if "version" in request.json:
+        version = request.json['version']
+    else:
+        version = 1
+
+    sub = Subsection(name=name, evidence=int(evidence_id), comments=comments, c_id=c_id, s_id=s_id,intro=version)
     s.add(sub)
     s.commit()
     result = s.query(Subsection).join(Competence).join(Section).join(EvidenceTypeRef).filter(
@@ -365,8 +387,23 @@ def add_sections_to_db():
 
     table = ItemTableSubsections(result, classes=['table', 'table-bordered', 'table-striped', 'section_' + str(s_id)])
     # print str(c_id) + ' ' + str(s_id) + ' ' + 'should add new subsection to selected section'
-    return jsonify(table)
+    if "plain" in request.args:
+        return jsonify({'id':s_id})
+    else:
+        return jsonify(table)
 
+
+@competence.route('/add_constant_subsection_to_db', methods=['GET', 'POST'])
+def add_constant_sections_to_db():
+    name = request.json['name']
+    id = request.json['id']
+    c_id = request.json['c_id']
+    s_id = request.json['s_id']
+    version = request.json['version']
+    sub = Subsection(name=name, c_id=c_id, s_id=s_id, evidence=4, comments=None, intro=version)
+    s.add(sub)
+    s.commit()
+    return jsonify({'id': sub.id})
 
 @competence.route('/autocomplete_docs', methods=['GET'])
 def document_autocomplete():
@@ -383,11 +420,12 @@ def document_autocomplete():
 
 @competence.route('/autocomplete_competence', methods=['GET'])
 def competence_name_autocomplete():
-    competencies = s.query(CompetenceDetails).join(Competence).filter(Competence.current_version == CompetenceDetails.intro).all()
+    competencies = s.query(CompetenceDetails).join(Competence).filter(
+        Competence.current_version == CompetenceDetails.intro).all()
     competence_list = []
     for i in competencies:
         competence_list.append(i.category_rel.category + ": " + i.title)
-        #competence_list.append({"label":i.category_rel.category + ": " + i.title,"value":i.id})
+        # competence_list.append({"label":i.category_rel.category + ": " + i.title,"value":i.id})
 
     return jsonify(json_list=competence_list)
 
@@ -402,20 +440,46 @@ def get_documents(c_id):
 
 
 @competence.route('/get_doc_name', methods=['POST', 'POST'])
-def get_doc_name():
+def get_doc_name(doc_id=None):
     d = QpulseDetails()
     details = d.Details()
     username = str(details[1])
     password = str(details[0])
-
-    doc_id = request.json['doc_id']
     q = QPulseWeb()
-    doc_name = q.get_doc_by_id(username=username, password=password, docNumber=doc_id)
-    print doc_name
-    if doc_name == "False":
-        return jsonify("This is not a valid QPulse Document")
+    if not doc_id:
+        doc_id = request.json['doc_id']
+        doc_name = q.get_doc_by_id(username=username, password=password, docNumber=doc_id)
+        if doc_name == "False":
+            return jsonify("This is not a valid QPulse Document")
+        else:
+            return jsonify(doc_name)
+
     else:
-        return jsonify(doc_name)
+        doc_name = q.get_doc_by_id(username=username, password=password, docNumber=doc_id)
+        return doc_name
+
+
+@competence.route('/remove_doc', methods=['POST', 'POST'])
+def remove_doc():
+    c_id = request.args["c_id"]
+    doc_number = request.args["doc_number"]
+    print c_id
+    print doc_number
+    s.query(Documents).filter(and_(Documents.c_id == c_id, Documents.qpulse_no == doc_number)).delete()
+    s.commit()
+    return jsonify({"success": True})
+
+
+@competence.route('/add_doc', methods=['POST', 'POST'])
+def add_doc():
+    c_id = request.args["c_id"]
+    doc_number = request.args["doc_number"]
+
+    if s.query(Documents).filter(and_(Documents.c_id == c_id, Documents.qpulse_no == doc_number)).count() == 0:
+        doc = Documents(c_id=c_id, qpulse_no=doc_number)
+        s.add(doc)
+        s.commit()
+        return jsonify({"success": True})
 
 
 # in jquery - if doc_name is not null, add doc name to list associated documents
@@ -449,6 +513,12 @@ def view_competence():
 
     get_comp_val_period = s.query(ValidityRef.months).join(CompetenceDetails).filter_by(c_id=c_id).filter(
         CompetenceDetails.intro == version).first()
+
+    approved = s.query(CompetenceDetails).filter_by(c_id=c_id).filter(
+        CompetenceDetails.intro == version).first().approved
+    id = s.query(CompetenceDetails).filter_by(c_id=c_id).filter(
+        CompetenceDetails.intro == version).first().id
+
     comp_val_period = int(get_comp_val_period[0])
 
     ##Creates a dictionary of the docs associated with a created competence
@@ -495,7 +565,18 @@ def view_competence():
 
     return render_template('competence_view.html', c_id=c_id, title=comp_title, version=version, scope=comp_scope,
                            category=comp_category, val_period=comp_val_period, docs=dict_docs, constants=dict_constants,
-                           subsections=dict_subsecs, review="yes")
+                           subsections=dict_subsecs, review="yes", approved=approved, id=id)
+
+
+@competence.route('/send_for_approval', methods=['GET'])
+def send_for_approval():
+    id = request.args["id"]
+    s.query(CompetenceDetails).filter(CompetenceDetails.id == id).update({"approved": 0})
+    s.commit()
+    competence = s.query(CompetenceDetails).filter(CompetenceDetails.id == id).first()
+    send_mail(competence.approve_id, "Competence awaiting your approval","You have a competence written by <b>" + current_user.full_name + "</b> to approve.")
+
+    return json.dumps({"success": True})
 
 
 @competence.route('/approve/<id>/<version>/<u_id>', methods=['GET'])
@@ -537,7 +618,13 @@ def approve(id=None, version=None, u_id=None):
     else:
         print "not allowed"
 
-    return render_template("index.html")
+    competence = s.query(CompetenceDetails).filter(CompetenceDetails.c_id == id).filter(CompetenceDetails.intro == version).first()
+    send_mail(competence.creator_id, "Competence Approved!",
+              "Your competence \""+competence.title+"\" has been approved by <b>" + current_user.full_name)
+
+    #return json.dumps({"success": True})
+    return redirect('/')
+
 
 @competence.route('/check_exists', methods=['GET', 'POST'])
 def check_exists():
@@ -546,15 +633,11 @@ def check_exists():
             category, competence = request.form["name"].split(": ")
             c_query = s.query(Competence).join(CompetenceDetails).filter(CompetenceDetails.title == competence).first()
             if c_query:
-                return json.dumps({'success': True}), 200, {'ContentType':'application/json'}
-
-
+                return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
 @competence.route('/assign_user_to_competence', methods=['GET', 'POST'])
 def assign_user_to_competence():
-
-
     ids = request.args["ids"].split(",")
     print ids
     if request.method == 'POST':
@@ -682,13 +765,13 @@ def make_user_competent():
                                ids=request.args["ids"])
 
 
-def assign_competence_to_user(user_id,competence_id):
-
+def assign_competence_to_user(user_id, competence_id):
     status_id = s.query(AssessmentStatusRef).filter_by(status="Assigned").first().id
     # TODO Not Working
     # gets subsections for competence
     current_version = s.query(Competence).filter(Competence.id == competence_id).first().current_version
-    sub_sections = s.query(Subsection).filter(Subsection.c_id == competence_id).filter(or_(Subsection.last == None,Subsection.last==current_version)).filter(
+    sub_sections = s.query(Subsection).filter(Subsection.c_id == competence_id).filter(
+        or_(Subsection.last == None, Subsection.last == current_version)).filter(
         Subsection.intro <= current_version).all()
     print "YOYOYO"
     print sub_sections
@@ -716,16 +799,23 @@ def assign_competence_to_user(user_id,competence_id):
             s.commit()
             assessment_ids.append(a.id)
 
+        assigner = s.query(Users).filter(Users.id == current_user.database_id).first()
+        send_mail(user_id,"Competence has been assigned to you","You have been assigned a competence by <b>"+assigner.first_name + " " + assigner.last_name +"</b>")
+
     return assessment_ids
 
 
 @competence.route('/edit', methods=['GET', 'POST'])
 def edit_competence():
     ids = request.args.get('ids').split(",")
+    # todo: CHECK HERE IF COMPETENCE IS IN APPROVAL???
+
     c_id = ids[0]
     # test_id = '18'
 
     form = EditCompetency()
+    subsection_form = AddSubsection()
+    section_form = AddSection()
     # get basic details for competence
     live = False
     current_version = s.query(Competence).filter(Competence.id == c_id).first().current_version
@@ -734,13 +824,14 @@ def edit_competence():
 
     comp_category = s.query(CompetenceCategory).join(CompetenceDetails).filter_by(c_id=c_id).order_by(
         CompetenceDetails.intro.desc()).first()
-    form.edit_competency_type.choices = s.query(CompetenceCategory).values(CompetenceCategory.id,CompetenceCategory.category)
+    form.edit_competency_type.choices = s.query(CompetenceCategory).values(CompetenceCategory.id,
+                                                                           CompetenceCategory.category)
     form.edit_competency_type.default = comp_category.id
 
     comp_val_period = s.query(ValidityRef).join(CompetenceDetails).filter_by(c_id=c_id).order_by(
         CompetenceDetails.intro.desc()).first()
 
-    form.edit_validity_period.choices = s.query(ValidityRef).values(ValidityRef.id,ValidityRef.months)
+    form.edit_validity_period.choices = s.query(ValidityRef).values(ValidityRef.id, ValidityRef.months)
     form.edit_validity_period.default = comp_val_period.id
 
     form.process()
@@ -751,79 +842,135 @@ def edit_competence():
     form.edit_title.data = comp.title
     form.edit_scope.data = comp.scope
 
-
-
     form.approval.data = comp.approve_rel.first_name + " " + comp.approve_rel.last_name
-    # documents=s.query(Documents.qpulse_no).filter_by(c_id=test_id).all()
-    # for i in documents:
-    #     print i[0]
-    #     form.ass_documents.data=i[0]
-
-    #get subsections
-    sub_result={}
-    subsections = s.query(Subsection).filter(Subsection.c_id==c_id).filter(Subsection.last==None).all()
+    doc_query = s.query(Documents.qpulse_no).filter_by(c_id=comp.id).all()
+    documents = []
+    for i in doc_query:
+        name = get_doc_name(doc_id=i)
+        documents.append([i.qpulse_no, name])
+    # get subsections
+    sub_result = {}
+    subsections = s.query(Subsection).filter(Subsection.c_id == c_id).filter(Subsection.last == None).all()
     for subsection in subsections:
         if subsection.s_id_rel.constant == 1:
             if "constant" not in sub_result:
                 sub_result["constant"] = {}
-            if subsection.s_id_rel.name not in sub_result["constant"]:
-                sub_result["constant"][subsection.s_id_rel.name] = []
-            sub_result["constant"][subsection.s_id_rel.name].append(subsection)
+            if (subsection.s_id_rel.name,subsection.s_id_rel.id) not in sub_result["constant"]:
+                sub_result["constant"][(subsection.s_id_rel.name,subsection.s_id_rel.id)] = []
+            sub_result["constant"][(subsection.s_id_rel.name,subsection.s_id_rel.id)].append(subsection)
         else:
             if "custom" not in sub_result:
                 sub_result["custom"] = {}
-            if subsection.s_id_rel.name not in sub_result["custom"]:
-                sub_result["custom"][subsection.s_id_rel.name] = []
-            sub_result["custom"][subsection.s_id_rel.name].append(subsection)
+            if (subsection.s_id_rel.name,subsection.s_id_rel.id) not in sub_result["custom"]:
+                sub_result["custom"][(subsection.s_id_rel.name,subsection.s_id_rel.id)] = []
+            sub_result["custom"][(subsection.s_id_rel.name,subsection.s_id_rel.id)].append(subsection)
 
-    return render_template('competence_edit.html', c_id=c_id, form=form, live=live, subsections=sub_result, version=comp.intro)
+    print sub_result
+    detail_id = create_copy_of_competence(c_id, current_version, comp.title, comp.scope, comp_val_period.id,
+                                          comp.category_id, comp.approve_id)
+
+    return render_template('competence_edit.html', c_id=c_id, form=form, live=live, detail_id=detail_id,
+                           subsections=sub_result, version=comp.intro, docs=json.dumps(documents),subsection_form=subsection_form,section_form=section_form)
+
+
+def create_copy_of_competence(c_id, current_version, title, scope, valid, type, approve_id):
+    print "hello"
+    query = s.query(CompetenceDetails).filter(CompetenceDetails.c_id == c_id).filter(
+        CompetenceDetails.intro == current_version + 1).first()
+    current = s.query(CompetenceDetails).filter(CompetenceDetails.c_id == c_id).filter(
+        CompetenceDetails.intro == current_version).first()
+    print query
+    if query is None:
+        # make a copy of the competence
+        c = CompetenceDetails(c_id=c_id, title=title, scope=scope, creator_id=current_user.database_id,
+                              validity_period=valid, category_id=type, intro=current_version + 1,
+                              approve_id=approve_id)
+        s.add(c)
+        s.query(CompetenceDetails).filter(CompetenceDetails.c_id == c_id).filter(
+            CompetenceDetails.intro == current_version).update({"last": current_version})
+        s.commit()
+
+        # copy docs across to new competence
+        print current.id
+        current_docs = s.query(Documents).filter(Documents.c_id == current.id).all()
+        for doc in current_docs:
+            d = Documents(c_id=c.id, qpulse_no=doc.qpulse_no)
+            s.add(d)
+            s.commit()
+        return c.id
+    else:
+        return query.id
+
+
+@competence.route('/change_ownership', methods=['GET', 'POST'])
+def change_ownership():
+    #TODO: should this only change ownership of the most recent version
+    form = UserAssignForm()
+    ids = request.args['ids']
+    if request.method == 'POST':
+        name = request.form["full_name"]
+        firstname, surname = name.split(" ")
+        new_creator_id = int(s.query(Users).filter_by(first_name=firstname, last_name=surname).first().id)
+        for id in ids.split(","):
+            data = {"creator_id": new_creator_id}
+            s.query(CompetenceDetails).filter(CompetenceDetails.c_id == id).update(data)
+
+        try:
+            s.commit()
+            return list_comptencies(message="<b>Success!</b> Ownership change to " + name, modifier="success")
+        except:
+            return list_comptencies(message="<b>Failed!</b> Ownership change to " + name + "failed", modifier="danger")
+
+    return render_template('competence_change_ownership.html', form=form, ids=ids)
+
 
 @competence.route('/edit_details', methods=['GET', 'POST'])
 def edit_details():
-
     c_id = request.args['c_id']
     version = request.args['version']
     title = request.form['edit_title']
     scope = request.form['edit_scope']
-    firstname,surname = request.form['approval'].split(" ")
+    firstname, surname = request.form['approval'].split(" ")
     valid = request.form['edit_validity_period']
     type = request.form['edit_competency_type']
     approve_id = int(s.query(Users).filter_by(first_name=firstname, last_name=surname).first().id)
-    data = {"title":title,
-            "scope":scope,
-            "approve_id":approve_id,
-            "validity_period":valid,
-            "category_id":type}
+    data = {"title": title,
+            "scope": scope,
+            "approve_id": approve_id,
+            "validity_period": valid,
+            "category_id": type}
     print data
 
     current_version = int(s.query(Competence).filter(Competence.id == c_id).first().current_version)
     print current_version
-    #competence hasn't been made live yet - it's at version 0
+    # competence hasn't been made live yet - it's at version 0
     if current_version == 0:
         print "I AM HERE"
         try:
             s.query(CompetenceDetails).filter(CompetenceDetails.c_id == c_id).update(data)
             s.commit()
-            return json.dumps({"success":True})
+            return json.dumps({"success": True})
         except:
             print "fail"
     else:
-        #check if a version exists above current version
-        check = s.query(CompetenceDetails).filter(CompetenceDetails.c_id == c_id).filter(CompetenceDetails.intro == current_version+1).count()
+        # check if a version exists above current version
+        check = s.query(CompetenceDetails).filter(CompetenceDetails.c_id == c_id).filter(
+            CompetenceDetails.intro == current_version + 1).count()
         if check == 0:
-            #make a copy of the competence
-            c = CompetenceDetails(c_id=c_id,title=title,scope=scope,creator_id=current_user.database_id,validity_period=valid,category_id=type,intro=current_version+1,approve_id=approve_id)
-            s.add(c)
-            s.query(CompetenceDetails).filter(CompetenceDetails.c_id == c_id).filter(
-                CompetenceDetails.intro == current_version).update({"last":current_version})
-            s.commit()
+            # make a copy of the competence
+            create_copy_of_competence(c_id, current_version, title, scope, valid, type, approve_id)
+            # c = CompetenceDetails(c_id=c_id, title=title, scope=scope, creator_id=current_user.database_id,
+            #                       validity_period=valid, category_id=type, intro=current_version + 1,
+            #                       approve_id=approve_id)
+            # s.add(c)
+            # s.query(CompetenceDetails).filter(CompetenceDetails.c_id == c_id).filter(
+            #     CompetenceDetails.intro == current_version).update({"last": current_version})
+            # s.commit()
 
-        s.query(CompetenceDetails).filter(CompetenceDetails.c_id == c_id).filter(CompetenceDetails.intro==current_version+1).update(data)
+        s.query(CompetenceDetails).filter(CompetenceDetails.c_id == c_id).filter(
+            CompetenceDetails.intro == current_version + 1).update(data)
         s.commit()
         return json.dumps({"success": True})
-
-
-
 
 
 @competence.route('/delete', methods=['GET', 'POST'])
@@ -832,28 +979,26 @@ def delete():
     print id
     c_id = s.query(CompetenceDetails).filter(CompetenceDetails.id == id).first().c_id
 
-    current_version = s.query(Competence).filter(Competence.id==c_id).first().current_version
+    current_version = s.query(Competence).filter(Competence.id == c_id).first().current_version
     s.query(Documents).filter(Documents.c_id == id).delete()
     s.commit()
-    s.query(CompetenceDetails).filter(CompetenceDetails.c_id==c_id).filter(CompetenceDetails.intro==current_version+1).delete()
+    s.query(CompetenceDetails).filter(CompetenceDetails.c_id == c_id).filter(
+        CompetenceDetails.intro == current_version + 1).delete()
     s.commit()
-    s.query(Subsection).filter(Subsection.c_id==c_id).filter(Subsection.intro==current_version+1).delete()
+    s.query(Subsection).filter(Subsection.c_id == c_id).filter(Subsection.intro == current_version + 1).delete()
     s.commit()
     if current_version == 0:
         s.query(Competence).filter(Competence.id == c_id).delete()
         s.commit()
 
-    return json.dumps({'success':True})
-
-
+    return json.dumps({'success': True})
 
 
 def nearest(items, pivot):
     return min(items, key=lambda x: abs(x - pivot))
 
 
-@competence.route('/report_by_section', methods=['GET', 'POST'])
-def report_by_section():
+def reporting():
     counts = {}
     expired = {}
     expiring = {}
@@ -871,6 +1016,7 @@ def report_by_section():
         counts[service]["Assigned"] = 0
         counts[service]["Expiring"] = 0
         counts[service]["Expired"] = 0
+        counts[service]["Abandoned"] = 0
 
         expired[service] = []
         expiring[service] = []
@@ -905,6 +1051,12 @@ def report_by_section():
                 else:
                     counts[service][i.status_rel.status] += 1
 
+    return [counts,expired,expiring,user_expired,user_expiring,change]
+
+@competence.route('/report_by_section', methods=['GET', 'POST'])
+def report_by_section():
+    counts, expired, expiring, user_expired, user_expiring, change = reporting()
+
     # get historic
     all_reports_date = [r.date for r in s.query(MonthlyReportNumbers.date)]
     most_recent_data = nearest(all_reports_date, datetime.datetime.now())
@@ -912,7 +1064,6 @@ def report_by_section():
         MonthlyReportNumbers.service_id.asc()).all()
 
     # for count in counts:
-
 
     return render_template('competence_report_by_section.html', counts=counts, historic=historic, expired=expired,
                            expiring=expiring,
@@ -964,11 +1115,12 @@ def competence_history():
                     ss.append('<p class="text-green">+ ' + j.name + "</p>")
                 elif j.last == i.intro - 1:
                     ss.append('<p class="text-red">- ' + j.name + "</p>")
-                # elif j.last == version:
-                #     ss.append('<p class="text-red">- ' + j.name + "</p>")
+                    # elif j.last == version:
+                    #     ss.append('<p class="text-red">- ' + j.name + "</p>")
 
-            events[i.date_of_approval].append(
-                ["Edited", "<b>Edited by</b> " + i.creator_rel.first_name + " " + i.creator_rel.last_name, ss])
+            if i.date_of_approval in events:
+                events[i.date_of_approval].append(
+                    ["Edited", "<b>Edited by</b> " + i.creator_rel.first_name + " " + i.creator_rel.last_name, ss])
         else:
             events[i.date_created].append(["Created",
                                            "<b>" + i.title + "</b> created by " + i.creator_rel.first_name + " " + i.creator_rel.last_name,
@@ -976,16 +1128,25 @@ def competence_history():
 
         title["previous"] = i.title
 
-   #these are current ongoing edits they are just assigned to todays date for display purposes
-    subsections = s.query(Subsection).filter(Subsection.c_id == c_id).filter(Subsection.last==version).all()
-    ss=[]
+        # these are current ongoing edits they are just assigned to todays date for display purposes
+    subsections = s.query(Subsection).filter(Subsection.c_id == c_id).filter(Subsection.last == version).all()
+    ss = []
     ss.append('<h4>Subsection(s) Edited</h4>')
     for j in subsections:
         ss.append('<p class="text-red">- ' + j.name + "</p>")
     if datetime.date.today() not in events:
-        events[datetime.date.today()]=[]
+        events[datetime.date.today()] = []
 
-    events[datetime.date.today()].insert(0,["Edited", "<b>Edited by</b> " + i.creator_rel.first_name + " " + i.creator_rel.last_name, ss])
+    events[datetime.date.today()].insert(0, ["Edited",
+                                             "<b>Edited by</b> " + i.creator_rel.first_name + " " + i.creator_rel.last_name,
+                                             ss])
 
     return render_template('competence_history.html',
                            events=OrderedDict(sorted(events.items(), key=lambda t: t[0], reverse=True)))
+
+
+
+@competence.route('/videos', methods=['GET', 'POST'])
+def videos():
+    videos = s.query(Videos).all()
+    return render_template("competence_videos.html",videos=videos)
