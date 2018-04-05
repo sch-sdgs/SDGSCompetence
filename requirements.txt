@@ -1,7 +1,6 @@
 flask-security
 bcrypt
 flask_principal
-atexit
 Flask==0.10.1
 Flask-SQLAlchemy==1.0
 Whoosh==2.6.0

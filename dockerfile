@@ -7,8 +7,6 @@ RUN apt-get -y install ca-certificates
 RUN apt-get -y install build-essential python-dev libssl-dev libffi-dev
 RUN apt-get -y install python-mysqldb
 
-COPY timeout.conf /etc/nginx/conf.d/timeout.conf
-
 COPY requirements.txt /tmp/
 
 COPY . /tmp/SDGSCompetence/
@@ -21,13 +19,12 @@ COPY ./app /app
 
 WORKDIR /tmp/SDGSCompetence
 
+WORKDIR /app
+
 RUN python setup.py install
 
 WORKDIR /tmp
 
-RUN apt-get install git
-
-WORKDIR /app
 
 ENV MESSAGE "SDGSCompetence is running..."
 
