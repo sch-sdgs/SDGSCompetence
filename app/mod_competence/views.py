@@ -583,8 +583,9 @@ def send_for_approval():
 def approve(id=None, version=None, u_id=None):
     user_allowed = s.query(CompetenceDetails).filter(CompetenceDetails.c_id == id).filter(
         CompetenceDetails.intro == version).first().approve_id
-    print user_allowed
-    print u_id
+    creator = s.query(CompetenceDetails).filter(CompetenceDetails.c_id == id).filter(
+        CompetenceDetails.intro == version).first()
+    full_name = creator.creator_rel.first_name + " " + creator.creator_rel.last_name
     if user_allowed == int(u_id):
         # update competence details with approval information
         data = {
@@ -611,6 +612,10 @@ def approve(id=None, version=None, u_id=None):
             "current_version": version
         }
         s.query(Competence).filter(Competence.id == id).update(data)
+
+        # make the creator competent
+        # print "hello"
+        make_user_competent(ids=[int(id)],users=[full_name])
         s.commit()
 
 
@@ -709,13 +714,20 @@ def assign_competences_to_user():
 
 @competence.route('/make_user_competent', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
-def make_user_competent():
+def make_user_competent(ids=None,users=None):
     form = UserAssignForm()
 
-    ids = request.args["ids"].split(",")
-
-    if request.method == 'POST':
-        users = request.form["user_list"].split(",")
+    if ids == None:
+        ids = request.args["ids"].split(",")
+    print ids
+    if request.method == 'POST' or ids != None:
+        print "heer"
+        print users
+        if users == None:
+            users = request.form["user_list"].split(",")
+        print "hello"
+        print ids
+        print users
         result = {}
         for user in users:
             failed = []
@@ -751,9 +763,12 @@ def make_user_competent():
             else:
                 failed.append(user)
                 failed.append(user)
-
-        return render_template('competence_assigned.html', result=result, failed=failed)
+        if ids == None:
+            return render_template('competence_assigned.html', result=result, failed=failed)
+        else:
+            return True
     else:
+        print "oh dear"
         query = s.query(Competence).join(CompetenceDetails).filter(Competence.id.in_(ids)).values(
             CompetenceDetails.title)
         comptences = []
