@@ -180,7 +180,7 @@
 
                      $('#submit_document').html('Attach');
 
-                    if (response.match(/This is not a valid QPulse Document/i)) {
+                    if (response["response"].match(/This is not a valid QPulse Document/i)) {
                         $('#add_document_group').addClass("has-error");
                         $('#submit_document').removeClass("btn-primary");
                         $('#submit_document').addClass("btn-danger");
@@ -197,7 +197,7 @@
                         $('#add_document_text').removeClass('text-red')
 
                         $('#doc_list').val(previous_value + sep + $('#add_document').val())
-                        $('#selected_docs').append('<a href="#" class="btn btn-success remove btn-flat" style="margin-top: 2px;" id="remove_document" doc_number="' + $('#add_document').val() + '">' + $('#add_document').val() + ': ' + response + ' <span class="glyphicon glyphicon-remove"></span> </a> ')
+                        $('#selected_docs').append('<a href="#" class="btn btn-success remove btn-flat" style="margin-top: 2px;" id="remove_document" doc_number="' + $('#add_document').val() + '">' + $('#add_document').val() + ': ' + response["response"] + ' <span class="glyphicon glyphicon-remove"></span> </a> ')
 
                     }
                 },
