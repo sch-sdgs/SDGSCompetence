@@ -449,6 +449,7 @@ def get_doc_name(doc_id=None):
     if not doc_id:
         doc_id = request.json['doc_id']
         doc_name = q.get_doc_by_id(username=username, password=password, docNumber=doc_id)
+        print q.get_doc_by_id(username=username, password=password, docNumber=doc_id)
         if doc_name == "False":
             return jsonify("This is not a valid QPulse Document")
         else:

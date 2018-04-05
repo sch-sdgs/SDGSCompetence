@@ -13,17 +13,15 @@ COPY . /tmp/SDGSCompetence/
 
 RUN pip install -U pip
 RUN pip install urllib3 pyasn1 ndg-httpsclient pyOpenSSL
-RUN pip install -r /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt --upgrade
 
 COPY ./app /app
 
 WORKDIR /tmp/SDGSCompetence
 
-WORKDIR /app
-
 RUN python setup.py install
 
-WORKDIR /tmp
+WORKDIR /app
 
 
 ENV MESSAGE "SDGSCompetence is running..."
