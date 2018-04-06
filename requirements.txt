@@ -1,6 +1,5 @@
 flask-security==3.0.0
 bcrypt==3.1.4
-flask_principal
 Flask==0.10.1
 flask_whooshalchemy
 sqlalchemy==1.0
@@ -23,6 +22,6 @@ apscheduler==2.1.2
 python-dateutil==2.5.3
 numpy==1.11.0
 pandas==0.18.1
-weasyprint==0.28
+weasyprint
 python-docx==0.8.5
-mysql-python==0.7.4
+mysql-python

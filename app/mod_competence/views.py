@@ -196,7 +196,7 @@ def add_sections():
                 print key, ":", value
                 s_id = key[0]
                 item_add = s.query(ConstantSubsections.item).filter_by(id=value).all()
-                evidence = s.query(EvidenceTypeRef.id).filter_by(type='Discussion').all()
+                evidence = s.query(EvidenceTypeRef.id).filter_by(type='Discussion').first().id
 
                 add_constant = Subsection(c_id=c_id, s_id=s_id, name=item_add, evidence=evidence, comments=None)
                 s.add(add_constant)
