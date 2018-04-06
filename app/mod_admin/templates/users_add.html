@@ -165,7 +165,7 @@
                 type: 'POST',
                 success: function (response) {
                     if (response != "False") {
-                        data = (JSON.parse(response));
+                        data = (JSON.parse(response["response"]));
                         $('.username').removeClass("has-error");
                         $('.username').addClass("has-success");
 //                        $('#autofill_section').hide();
@@ -212,8 +212,8 @@
                 type: 'POST',
                 success: function (response) {
                     console.log(response)
-                    if (response == true) {
-                        data = (JSON.parse(response));
+                    data = (JSON.parse(response["response"]));
+                    if (data == true) {
                         $('.linemanager').removeClass("has-error");
                         $('.linemanager').addClass("has-success");
                         $('#linemanager_text').text('Line Manager Found!');

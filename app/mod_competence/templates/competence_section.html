@@ -105,7 +105,7 @@
                                 dataType: "json",
                                 contentType: "application/json",
                                 success: function (response) {
-                                    var o = new Option(item, response);
+                                    var o = new Option(item, response["response"]);
                                     // $(o).html(item);
                                     $("#{{ result[section]['id'] }}_subsections").append(o);
 
@@ -170,7 +170,7 @@
                             success: function (response) {
                                 console.log(response);
 
-                                $('#section_list').append(response);
+                                $('#section_list').append(response["response"]);
                             },
                             error: function (xhr, status, error) {
                                 $('#trace').append("<p>" + error + "</p>");

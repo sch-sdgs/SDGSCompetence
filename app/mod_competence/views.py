@@ -301,7 +301,7 @@ def get_constant_subsections_web():
     for subsection in subsections:
         print subsection.s_id
         result.append({"name":subsection.item,"id":subsection.id})
-    return jsonify(result)
+    return jsonify({"response":result})
 
 
 @competence.route('/activate_comp', methods=['GET', 'POST'])
@@ -310,7 +310,7 @@ def activate_competency():
     # UPDATE Competence SET Competence.current_version = 1 WHERE Competence.id=c_id
     s.query(Competence).filter_by(id=c_id).update({"current_version": 1})
     s.commit()
-    return jsonify('Competence has been activated!')
+    return jsonify({"response":'Competence has been activated!'})
 
 
 @competence.route('/section', methods=['GET', 'POST'])
@@ -338,8 +338,8 @@ def get_section():
         table = '<table class="section_' + str(val) + '"></table>'
 
     # print str(c_id) + ' ' + str(val) + ' ' + 'should get subsections for selected section'
-    return jsonify(render_template('section.html', c_id=c_id, form=form, val=val, text=text, table=table,
-                                   subsection_form=subsection_form))
+    return jsonify({"response":render_template('section.html', c_id=c_id, form=form, val=val, text=text, table=table,
+                                   subsection_form=subsection_form)})
 
 
 @competence.route('/delete_subsection', methods=['GET', 'POST'])
@@ -361,7 +361,7 @@ def delete_subsection():
                                      classes=['table', 'table-striped', 'table-bordered', 'section_' + str(s_id)])
     else:
         table = '<table class="section_' + str(s_id) + '"></table>'
-    return jsonify(table)
+    return jsonify({"response":table})
 
 
 @competence.route('/add_subsection_to_db', methods=['GET', 'POST'])
@@ -390,7 +390,7 @@ def add_sections_to_db():
     if "plain" in request.args:
         return jsonify({'id':s_id})
     else:
-        return jsonify(table)
+        return jsonify({"response":table})
 
 
 @competence.route('/add_constant_subsection_to_db', methods=['GET', 'POST'])
@@ -436,7 +436,7 @@ def get_documents(c_id):
     docid = request.json['add_document']
     documents = s.query(Documents).join(Competence).filter(competence.id == c_id)
     table = ItemTableDocuments(documents, classes=['table', 'table-striped', docid])
-    return jsonify(table)
+    return jsonify({"response":table})
 
 
 @competence.route('/get_doc_name', methods=['POST', 'POST'])
@@ -492,7 +492,7 @@ def add_constant_subsection():
     add_constant = ConstantSubsections(s_id=s_id, item=item)
     s.add(add_constant)
     s.commit()
-    return jsonify(add_constant.id)
+    return jsonify({"response":add_constant.id})
 
 
 @competence.route('/view_competence', methods=['GET', 'POST'])

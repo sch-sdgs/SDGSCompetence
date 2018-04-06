@@ -33,7 +33,7 @@ def get_user_details():
     """
     username = request.args["username"]
     u = UserAuthentication().get_user_detail_from_username(username)
-    return jsonify(u);
+    return jsonify({"response":u});
 
 
 @admin.route('/check_line_manager', methods=['GET', 'POST'])
@@ -52,15 +52,15 @@ def check_line_manager():
             check_if_line_manager = s.query(UserRoleRelationship).filter_by(userrole_id=role_id).filter_by(
                 user_id=line_manager_query.id).count()
             if check_if_line_manager > 0:
-                return jsonify(True)
+                return jsonify({"response":True})
             else:
-                return jsonify(False)
+                return jsonify({"response":False})
         else:
-            return jsonify(False)
+            return jsonify({"response":False})
     elif linemanager == "":
-        return jsonify(False)
+        return jsonify({"response":False})
     else:
-        return jsonify(False)
+        return jsonify({"response":False})
 
 
 @admin.route('/')
@@ -279,8 +279,8 @@ def dropdown_choices():
     print "requesting"
     print request.json['question_id']
     choices = s.query(DropDownChoices).filter(DropDownChoices.question_id==request.json['question_id'])
-    print jsonify(render_template("dropdown_choices.html",data=choices))
-    return jsonify(render_template("dropdown_choices.html",data=choices))
+
+    return jsonify({"response":render_template("dropdown_choices.html",data=choices)})
 
 @admin.route('/dropdownchoices/delete', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
@@ -289,7 +289,7 @@ def delete_dropdown_choice():
     s.commit()
 
     choices = s.query(DropDownChoices).filter(DropDownChoices.question_id == request.json['question_id'])
-    return jsonify(render_template("dropdown_choices.html", data=choices))
+    return jsonify({"response":render_template("dropdown_choices.html", data=choices)})
 
 @admin.route('/questions',methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)

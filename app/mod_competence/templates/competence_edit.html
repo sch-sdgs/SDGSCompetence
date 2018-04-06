@@ -460,12 +460,12 @@
 
                 success: function (response) {
                     console.log(response)
-
-                    for (i = 0; i < response.length; i++) {
-                        console.log(response[i])
+                    var data = response["response"]
+                    for (i = 0; i < data.length; i++) {
+                        console.log(data[i])
                         $('#constant_subsections').append($('<option>', {
-                            value: response[i]['id'],
-                            text: response[i]['name']
+                            value: data[i]['id'],
+                            text: data[i]['name']
                         }));
                     }
                 }

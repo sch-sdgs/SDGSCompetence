@@ -146,7 +146,7 @@
                     contentType: "application/json",
                     success: function (response) {
                         $("#optionstable").children().remove();
-                        $("#optionstable").append(response);
+                        $("#optionstable").append(response["response"]);
                         $('#option').val("")
                         var row_count = $('#table tr').length;
                         if (row_count > 2) {
@@ -191,7 +191,7 @@
                 success: function (response) {
                     console.log(response);
                     $("#optionstable").children().remove();
-                    $("#optionstable").append(response);
+                    $("#optionstable").append(response["response"]);
                     $('#option').val("")
                     var row_count = $('#table tr').length;
                     if (row_count > 2) {

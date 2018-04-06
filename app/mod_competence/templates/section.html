@@ -137,7 +137,7 @@
                     success: function (response) {
 
                         console.log(response);
-                        $('.section_{{ val }}').replaceWith(response);
+                        $('.section_{{ val }}').replaceWith(response["response"]);
                     },
                     error: function (xhr, status, error) {
                         $('#trace').append("<p>" + error + "</p>");
@@ -172,7 +172,7 @@
                     success: function (response) {
                         $('.subsections').show();
 
-                        $('.section_{{ val }}').replaceWith(response);
+                        $('.section_{{ val }}').replaceWith(response["response"]);
                     },
                     error: function (xhr, status, error) {
                         $('#trace').append("<p>" + error + "</p>");
