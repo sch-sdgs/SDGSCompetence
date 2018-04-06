@@ -195,9 +195,10 @@ def add_sections():
             for value in f.getlist(key):
                 print key, ":", value
                 s_id = key[0]
-                item_add = s.query(ConstantSubsections.item).filter_by(id=value).all()
+                item_add = s.query(ConstantSubsections.item).filter_by(id=value).first().item
                 evidence = s.query(EvidenceTypeRef.id).filter_by(type='Discussion').first().id
-
+                print "ITS HERE"
+                print item_add
                 add_constant = Subsection(c_id=c_id, s_id=s_id, name=item_add, evidence=evidence, comments=None)
                 s.add(add_constant)
                 s.commit()
@@ -372,6 +373,8 @@ def add_sections_to_db():
     comments = request.json['comments']
     c_id = request.json['c_id']
     s_id = request.json['s_id']
+    print "IS IT HERE"
+    print name
     print request.json
     if "version" in request.json:
         version = request.json['version']
@@ -400,7 +403,8 @@ def add_constant_sections_to_db():
     c_id = request.json['c_id']
     s_id = request.json['s_id']
     version = request.json['version']
-
+    print "HERE"
+    print name
     if type(name) != unicode:
         name = name[0]
     else:
@@ -497,6 +501,8 @@ def add_doc():
 def add_constant_subsection():
     s_id = request.json['s_id']
     item = request.json['item']
+    print "HELLO HERE"
+    print item
     add_constant = ConstantSubsections(s_id=s_id, item=item)
     s.add(add_constant)
     s.commit()
