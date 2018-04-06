@@ -602,6 +602,7 @@
         $('.remove').click(function () {
             var remove = $(this).attr('id');
             var id = $(this).attr('id').split('_')[1];
+            console.log(id)
             $.ajax({
                 url: '{{ url_for("competence.remove_subsection") }}?id=' + id + '&version={{ version }}',
                 success: function (response) {
@@ -674,7 +675,7 @@
 
                     $('#submit_document').html('Attach');
 
-                    if (response.match(/This is not a valid QPulse Document/i)) {
+                    if (response["response"].match(/This is not a valid QPulse Document/i)) {
                         $('#add_document_group').addClass("has-error");
                         $('#submit_document').removeClass("btn-primary");
                         $('#submit_document').addClass("btn-danger");
@@ -685,7 +686,7 @@
                     }
                     else {
                         var url = "{{ url_for('competence.add_doc') }}?doc_number=" + doc_id + "&c_id={{ detail_id }}";
-                        var previous_response = response
+                        var previous_response = response["response"]
                         $.ajax({
                             type: "POST",
                             url: url,

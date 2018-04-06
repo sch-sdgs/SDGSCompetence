@@ -400,6 +400,16 @@ def add_constant_sections_to_db():
     c_id = request.json['c_id']
     s_id = request.json['s_id']
     version = request.json['version']
+    print "TESTING HERE"
+    print type(name)
+    print name
+    if type(name) != unicode:
+        name = name[0]
+    else:
+        name = name
+
+    print name
+
     sub = Subsection(name=name, c_id=c_id, s_id=s_id, evidence=4, comments=None, intro=version)
     s.add(sub)
     s.commit()
