@@ -52,7 +52,7 @@ def remove_subsection():
     id = request.args["id"]
     version = request.args["version"]
     data = {
-        'last': version
+        'last': int(version)-1
     }
     s.query(Subsection).filter(Subsection.id == id).update(data)
     try:
@@ -267,6 +267,10 @@ def add_sections():
     #                        category=comp_category, val_period=comp_val_period, docs=dict_docs, constants=dict_constants,
     #                        subsections=dict_subsecs, version=version)
 
+
+#todo - competence lifecycle:
+#create a competence - and approve - everything is at v1
+#edit the competence - everything gets copied and is at v2 - if you then delete last is v2 - but this is an issue.
 
 def get_subsections(c_id, version):
     subsec_list = []
@@ -895,11 +899,11 @@ def edit_competence():
             sub_result["custom"][(subsection.s_id_rel.name,subsection.s_id_rel.id)].append(subsection)
 
     print sub_result
-    detail_id = create_copy_of_competence(c_id, current_version, comp.title, comp.scope, comp_val_period.id,
+    competence_copy = create_copy_of_competence(c_id, current_version, comp.title, comp.scope, comp_val_period.id,
                                           comp.category_id, comp.approve_id)
 
-    return render_template('competence_edit.html', c_id=c_id, form=form, live=live, detail_id=detail_id,
-                           subsections=sub_result, version=comp.intro, docs=json.dumps(documents),subsection_form=subsection_form,section_form=section_form)
+    return render_template('competence_edit.html', c_id=c_id, form=form, live=live, detail_id=competence_copy[0],
+                           subsections=sub_result, version=competence_copy[1], docs=json.dumps(documents),subsection_form=subsection_form,section_form=section_form)
 
 
 def create_copy_of_competence(c_id, current_version, title, scope, valid, type, approve_id):
@@ -926,9 +930,9 @@ def create_copy_of_competence(c_id, current_version, title, scope, valid, type, 
             d = Documents(c_id=c.id, qpulse_no=doc.qpulse_no)
             s.add(d)
             s.commit()
-        return c.id
+        return (c.id,current_version+1)
     else:
-        return query.id
+        return (query.id,current_version+1)
 
 
 @competence.route('/change_ownership', methods=['GET', 'POST'])

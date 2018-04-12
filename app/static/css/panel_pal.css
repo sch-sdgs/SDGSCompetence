@@ -51,6 +51,13 @@ table.dataTable tbody tr.selected {
 /*text-decoration: none;*/
 /*}*/
 
+.row-eq-height {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+}
+
 .ui-state-hover, .ui-state-active {
     color: #ffffff;
     text-decoration: none;

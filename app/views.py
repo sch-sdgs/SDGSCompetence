@@ -11,10 +11,11 @@ from app.mod_training.views import get_competence_summary_by_user
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.sql.expression import func, and_, or_, case, exists, update,distinct
 import os
-
+from trello import TrelloApi
 from app.competence import app, s, db
 from app.models import *
-
+from app.competence import config
+import json
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -368,6 +369,20 @@ def autocomplete_competent_user(ss_id):
     return jsonify(users=user_list)
 
 
+@app.route('/check_valid_user', methods=['GET', 'POST'])
+def check_valid_user():
+    if " " in request.args["name"]:
+        first_name,last_name=request.args["name"].split(" ")
+        result = s.query(Users).filter(and_(Users.first_name == first_name,Users.last_name == last_name)).count()
+
+        if result == 0:
+            return jsonify({"response":False})
+        if result == 1:
+            return jsonify({"response":True})
+    else:
+        return jsonify({"response": False})
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """
@@ -590,3 +605,22 @@ def notifications():
         alerts["Competence Approval"] = approval_query
 
     return render_template("notifications.html",alerts=alerts)
+
+@app.route('/bug_reports', methods=['POST','GET'])
+@login_required
+def bug_reports():
+
+    trello = TrelloApi(config.TRELLO_APP_KEY,token='1c7e2c946ba584da3e125834ebc88f41f38a3f6286ee99e9a43682902ca82ccb')
+    token = trello.get_token_url('My App', expires='30days', write_access=True)
+
+    for i in trello.boards.get_list('59de4d6e5c1d9536f21019d9'):
+        if i["name"] == "Bug Reports":
+            list_id = i["id"]
+
+
+    if request.method == 'POST':
+        trello.cards.new(request.form["bug"] + "- " + current_user.full_name,list_id)
+
+    current_bugs = trello.lists.get_card(list_id=list_id)
+
+    return render_template("bug_reports.html",current_bugs=current_bugs)

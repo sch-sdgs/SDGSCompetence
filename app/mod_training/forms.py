@@ -20,7 +20,8 @@ class UploadEvidence(Form):
     datetrained = DateField('What date did you train?',
                      format='%Y-%m-%d', default=datetime.date.today)
     assessor = SelectField(label="Who will sign-off this evidence?")
-    evidence = TextAreaField(label="Evidence")
+    evidence_observation = TextAreaField(label="Evidence")
+    evidence_discussion = TextAreaField(label="Evidence")
     case = TextField(label="Case")
     result = TextField(label="Result")
     assid = HiddenField("AssesmentID")

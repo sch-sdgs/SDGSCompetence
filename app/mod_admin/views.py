@@ -622,6 +622,8 @@ def sections_edit(id=None):
     return render_template("sections_edit.html", form=form, id=id)
 
 
+
+
 @admin.route('/sections/delete/<id>', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def deletesection(id=None):
@@ -634,6 +636,67 @@ def deletesection(id=None):
     s.commit()
     return redirect(url_for('admin.sections'))
 
+@admin.route('/constant_subsections', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def constant_subsections():
+    """
+    administer sections - sections are "Health & Safety" "Knowledge & Understanding" etc
+    These can be flagged as constant - i.e they should appear on every competence
+    :return:
+    """
+    form = ConstantSubSectionForm()
+    form.section.choices = [(a.id, a.name) for a in s.query(Section).filter(Section.constant == 1).all()]
+    form.process()
+    if request.method == 'POST':
+
+        n = ConstantSubsections(item=request.form['name'], s_id=int(request.form['section']))
+        s.add(n)
+        s.commit()
+
+    subsections = s.query(ConstantSubsections).all()
+
+    return render_template("constant_subsections.html", form=form, data=subsections)
+
+
+@admin.route('/constant_subsections/edit/<id>', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def constant_subsections_edit(id=None):
+    """
+    edit sections
+    :param id: sections id
+    :return:
+    """
+    subsection_name = s.query(ConstantSubsections).filter_by(id=id).first()
+
+    form = ConstantSubSectionForm()
+    form.section.choices = [(a.id, a.name) for a in s.query(Section).filter(Section.constant==1).all()]
+    form.section.default = subsection_name.s_id
+    form.process()
+    form.name.data = subsection_name.item
+
+    ##todo here
+
+    if request.method == 'POST':
+
+        s.query(ConstantSubsections).filter_by(id=id).update({'item': request.form["name"], 's_id': request.form["section"]})
+        s.commit()
+        return redirect(url_for('admin.constant_subsections'))
+
+    return render_template("constant_subsections_edit.html", form=form, id=id)
+
+
+
+@admin.route('/constant_subsections/delete/<id>', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def delete_constant_subsection(id=None):
+    """
+    delete section
+    :param id: section id
+    :return:
+    """
+    s.query(ConstantSubsections).filter_by(id=id).delete()
+    s.commit()
+    return redirect(url_for('admin.constant_subsections'))
 
 @admin.route('/evidencetypes', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)

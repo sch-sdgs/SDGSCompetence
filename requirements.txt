@@ -25,3 +25,4 @@ pandas==0.18.1
 weasyprint
 python-docx==0.8.5
 mysql-python
+trello

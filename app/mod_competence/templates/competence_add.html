@@ -62,6 +62,7 @@
                                     <div class="input-group">
                                         {{ form.validity_period(class_="form-control") }}<span class="input-group-btn">
                                  <button class="btn btn-default btn-flat" type="button" disabled>Months</button>
+
                                  </span></div>
                                 </div>
                             </div>
@@ -70,6 +71,7 @@
                                 {{ form.approval.label(class_="col-lg-2 control-label") }}
                                 <div class="col-lg-10">
                                     {{ form.approval(class_="form-control",required='required',autocomplete="off") }}
+                                     <span class="help-block" id="invalid_user">Enter the person to authorise this document!</span>
                                 </div>
                             </div>
 
@@ -146,6 +148,34 @@
                 });
             });
         });
+
+        $('#approval').focusout(function () {
+            var url = '{{ url_for("check_valid_user") }}';
+            var data = {"name":$('#approval').val()}
+            console.log(data)
+            $.ajax({
+                type: "GET",
+                url: url,
+                data: data,
+                dataType: "json",
+                contentType: "application/json",
+                success: function (response) {
+                    console.log(response)
+                    result = response["response"]
+                    if (result == false) {
+                        $('#invalid_user').addClass('text-red');
+                        $('#invalid_user').text('Invalid User!');
+                        $('#approval').val('');;
+                    }
+                     if (result == true) {
+                     $('#invalid_user').addClass('text-green');
+                        $('#invalid_user').text('Valid User!');;
+                     }
+                }
+            });
+        });
+
+
         //This function checks whether the input is a valid Qpulse doc number and adds it to a list if correct, list items are displayed underneath if succesfully added
         $('#submit_document').click(function () {
 

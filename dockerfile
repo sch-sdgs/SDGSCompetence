@@ -7,6 +7,8 @@ RUN apt-get -y install ca-certificates
 RUN apt-get -y install build-essential python-dev libssl-dev libffi-dev
 RUN apt-get -y install python-mysqldb
 
+RUN mkdir /uploads
+
 COPY requirements.txt /tmp/
 
 COPY . /tmp/SDGSCompetence/

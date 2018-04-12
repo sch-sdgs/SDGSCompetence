@@ -46,7 +46,7 @@ def send_mail(user_id,subject,message):
     print message
     msg = Message('StarDB: '+subject, sender="SDGS-Bioinformatics@sch.nhs.uk", recipients=[recipient_user_name+"@sch.nhs.uk"])
     msg.body = 'text body'
-    msg.html = '<b>You have a notification on StarDB:</b><br><br>'+message+'<br><br>View all your notifications <a href="http://10.182.131.21/notifications">here</a>'
+    msg.html = '<b>You have a notification on StarDB:</b><br><br>'+message+'<br><br>View all your notifications <a href="http://stardb/notifications">here</a>'
 
     with app.app_context():
         mail.send(msg)

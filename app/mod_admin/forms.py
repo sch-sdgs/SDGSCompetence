@@ -52,6 +52,12 @@ class SectionForm(Form):
     constant=BooleanField("Applicable to all competencies?")
     submit = SubmitField()
 
+class ConstantSubSectionForm(Form):
+    name=TextField("SubSection Name",  [Required("Enter a Subsection Name")])
+    section=SelectField("Section")
+    submit = SubmitField()
+
+
 class ValidityPeriodForm(Form):
     months=TextField("Validity period (months)",  [Required("Enter a Duration in months")])
     submit = SubmitField()

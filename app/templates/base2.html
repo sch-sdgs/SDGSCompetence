@@ -560,6 +560,21 @@ desired effect
                         </li>
                     </ul>
                 </li>
+
+             <li class="treeview">
+                        <a href="#"><i class="fa fa-bug"></i> <span>Bug Reports</span>
+            <span class="pull-right-container">
+                <i class="fa fa-angle-left pull-right"></i>
+              </span>
+                        </a>
+                        <ul class="treeview-menu">
+
+                            <li><a href="{{ url_for('bug_reports') }}"><i class="fa fa-circle-o"></i>Submit Bug Report</a>
+                            </li>
+
+                        </ul>
+                    </li>
+
                 {% if "ADMIN" in current_user.roles %}
                     <li class="header">Admin</li>
                     <li class="treeview">
@@ -611,6 +626,8 @@ desired effect
                                 Types</a></li>
                             <li><a href="{{ url_for('admin.sections') }}"><i class="fa fa-circle-o"></i>Sections</a>
                             </li>
+                            <li><a href="{{ url_for('admin.constant_subsections') }}"><i class="fa fa-circle-o"></i>Constant Subsections</a>
+                            </li>
                             <li><a href="{{ url_for('admin.validityperiods') }}"><i class="fa fa-circle-o"></i>Validity
                                 Periods</a></li>
                             <li><a href="{{ url_for('admin.assessmentstatus') }}"><i class="fa fa-circle-o"></i>Assessment
@@ -639,6 +656,8 @@ desired effect
 
                         </ul>
                     </li>
+
+
 
                 {% endif %}
 

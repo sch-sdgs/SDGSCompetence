@@ -11,85 +11,156 @@
 
                 {% for i in sub['evidence'] %}
                     {% if i.evidence_id_rel.evidence_type_rel.type == "Upload" %}
-                        <h4>Uploaded Evidence</h4>
-                        <p>Files that can open in your browser will (i.e. images)...</p>
-                        <table class="table table-striped">
-                            <thead>
-                            <th>Filename</th>
-                            <th>Date Uploaded</th>
-                            </thead>
+                        <div class="box">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">
+                                    {% if i.evidence_id_rel.is_correct == 1 %}
+                                        <i class="fa fa-thumbs-up text-green"></i>
+                                    {% elif i.evidence_id_rel.is_correct == 0 %}
+                                        <i class="fa fa-thumbs-down text-red"></i>
+                                    {% else %}
+                                        <i class="fa fa-check-square-o text-gray"></i>
+                                    {% endif %}
+                                    Uploaded Evidence
+                                </h3><span
+                                    class="h3 box-title pull-right">{{ i.evidence_id_rel.date_completed.strftime('%d-%m-%Y') }}</span>
+                            </div>
+                            <div class="box-body">
+                                <p>Files that can open in your browser will (i.e. images)...</p>
+                                <table class="table table-striped">
+                                    <thead>
+                                    <th>Filename</th>
+                                    <th>Date Uploaded</th>
+                                    </thead>
 
-                            {% for u in get_uploads(i.evidence_id_rel.id) %}
-                                <tr>
-                                    <td>
-                                        <a href="{{ url_for('training.download',filename=u.uuid,alias=u.filename) }}">{{ u.filename }}</a>
-                                    </td>
-                                    <td>{{ u.date_uploaded }}</td>
-                                </tr>
-                            {% endfor %}
+                                    {% for u in get_uploads(i.evidence_id_rel.id) %}
+                                        <tr>
+                                            <td>
+                                                <a href="{{ url_for('training.download',filename=u.uuid,alias=u.filename) }}">{{ u.filename }}</a>
+                                            </td>
+                                            <td>{{ u.date_uploaded }}</td>
+                                        </tr>
+                                    {% endfor %}
 
 
-                        </table>
-                        {% if i.evidence_id_rel.comments %}
-                            <table class="table">
+                                </table>
+                                {% if i.evidence_id_rel.comments %}
+                                    <table class="table">
 
-                                <tr>
-                                    <td>
-                                    <blockquote class="blockquote text-right">
-                                        <p class="mb-0">{{ i.evidence_id_rel.comments }}</p>
-                                        <footer class="blockquote-footer">{{  sub["assessor"] }}</footer>
-                                    </blockquote>
-                                    </td>
-                                </tr>
-                            </table>
-                        {% endif %}
+                                        <tr>
+                                            <td>
+                                                <blockquote class="blockquote text-right">
+                                                    <p class="mb-0">{{ i.evidence_id_rel.comments }}</p>
+                                                    <footer class="blockquote-footer">{{ sub["assessor"] }}</footer>
+                                                </blockquote>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                {% endif %}
+                            </div>
+                        </div>
                     {% elif i.evidence_id_rel.evidence_type_rel.type == "Case" %}
-                        <h4>Case Based Evidence</h4>
-                        <table class="table table-striped">
-                            <tr>
-                                <td>Case</td>
-                                <td>{{ i.evidence_id_rel.evidence }}</td>
-                            </tr>
-                            <tr>
-                                <td>Result</td>
-                                <td>{{ i.evidence_id_rel.result }}</td>
-                            </tr>
-                            {% if i.evidence_id_rel.comments %}
-                                <tr>
-                                    <td>Comments</td>
-                                    <td>{{ i.evidence_id_rel.comments }}</td>
-                                </tr>
-                            {% endif %}
-                        </table>
+                        <div class="box">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">
+                                    {% if i.evidence_id_rel.is_correct == 1 %}
+                                        <i class="fa fa-thumbs-up text-green"></i>
+                                    {% elif i.evidence_id_rel.is_correct == 0 %}
+                                        <i class="fa fa-thumbs-down text-red"></i>
+                                    {% else %}
+                                        <i class="fa fa-check-square-o text-gray"></i>
+                                    {% endif %}
+                                    Case Based Evidence
+                                </h3><span
+                                    class="h3 box-title pull-right">{{ i.evidence_id_rel.date_completed.strftime('%d-%m-%Y') }}</span>
+                            </div>
+                            <div class="box-body">
+                                <table class="table table-striped">
+                                    <tr>
+                                        <td>Case</td>
+                                        <td>{{ i.evidence_id_rel.evidence }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Result</td>
+                                        <td>{{ i.evidence_id_rel.result }}</td>
+                                    </tr>
+                                    {% if i.evidence_id_rel.comments %}
+                                        <tr>
+                                            <td>Comments</td>
+                                            <td>{{ i.evidence_id_rel.comments }}</td>
+                                        </tr>
+                                    {% endif %}
+                                </table>
+                            </div>
+                        </div>
                     {% elif i.evidence_id_rel.evidence_type_rel.type == "Observation" %}
-                        <h4>Observation Evidence</h4>
-                        <table class="table table-striped">
-                            <tr>
-                                <td>Evidence</td>
-                                <td>{{ i.evidence_id_rel.evidence }}</td>
-                            </tr>
-                            {% if i.evidence_id_rel.comments %}
-                                <tr>
-                                    <td>Comments</td>
-                                    <td>{{ i.evidence_id_rel.comments }}</td>
-                                </tr>
-                            {% endif %}
-                        </table>
+                        <div class="box">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">
+                                    {% if i.evidence_id_rel.is_correct == 1 %}
+                                        <i class="fa fa-thumbs-up text-green"></i>
+                                    {% elif i.evidence_id_rel.is_correct == 0 %}
+                                        <i class="fa fa-thumbs-down text-red"></i>
+                                    {% else %}
+                                        <i class="fa fa-check-square-o text-gray"></i>
+                                    {% endif %}
+                                    Observation Evidence
+                                </h3><span
+                                    class="h3 box-title pull-right">{{ i.evidence_id_rel.date_completed.strftime('%d-%m-%Y') }}</span>
+                            </div>
+                            <div class="box-body">
+                                <table class="table table-striped">
+                                    <tr>
+                                        <td colspan="2"><b>Evidence Submitted by User:</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">{{ i.evidence_id_rel.evidence }}</td>
+                                    </tr>
+                                    {% if i.evidence_id_rel.comments %}
+                                        <tr>
+                                            <td colspan="2"><b>Comments from : {{ sub["assessor"] }}</b></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">{{ i.evidence_id_rel.comments }}</td>
+                                        </tr>
+                                    {% endif %}
+                                </table>
+                            </div>
+                        </div>
                     {% elif i.evidence_id_rel.evidence_type_rel.type == "Discussion" %}
-                        <h4>Discussion Evidence</h4>
-                        <table class="table table-striped">
-                            <tr>
-                                <td colspan="2">{{ i.evidence_id_rel.evidence }}</td>
-                            </tr>
-                            {% if i.evidence_id_rel.comments %}
-                                <tr>
-                                    <td>  <blockquote class="blockquote text-right">
-                                        <p class="mb-0">{{ i.evidence_id_rel.comments }}</p>
-                                        <footer class="blockquote-footer">{{  sub["assessor"] }}</footer>
-                                    </blockquote></td>
-                                </tr>
-                            {% endif %}
-                        </table>
+                        <div class="box">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">
+                                    {% if i.evidence_id_rel.is_correct == 1 %}
+                                        <i class="fa fa-thumbs-up text-green"></i>
+                                    {% elif i.evidence_id_rel.is_correct == 0 %}
+                                        <i class="fa fa-thumbs-down text-red"></i>
+                                    {% else %}
+                                        <i class="fa fa-check-square-o text-gray"></i>
+                                    {% endif %}
+                                    Discussion Evidence
+                                </h3><span
+                                    class="h3 box-title pull-right">{{ i.evidence_id_rel.date_completed.strftime('%d-%m-%Y') }}</span>
+                            </div>
+                            <div class="box-body">
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <td colspan="2"><b>Evidence Submitted by User:</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">{{ i.evidence_id_rel.evidence }}</td>
+                                    </tr>
+                                    {% if i.evidence_id_rel.comments %}
+                                        <tr>
+                                            <td colspan="2"><b>Comments from : {{ sub["assessor"] }}</b></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">{{ i.evidence_id_rel.comments }}</td>
+                                        </tr>
+                                    {% endif %}
+                                </table>
+                            </div>
+                        </div>
 
                     {% endif %}
                 {% endfor %}

@@ -513,16 +513,22 @@ def abandon():
 def signoff_evidence(evidence_id,action):
 
 
-    data = {
-        'is_correct':1,
-        'comments':request.form["comments"],
-    }
-    s.query(Evidence).filter(Evidence.id == evidence_id).update(data)
+
 
     if action == "accept":
+        data = {
+            'is_correct': 1,
+            'comments': request.form["comments"],
+        }
+        s.query(Evidence).filter(Evidence.id == evidence_id).update(data)
         status = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Complete").first().id
         date = datetime.date.today()
     elif action == "reject":
+        data = {
+            'is_correct': 0,
+            'comments': request.form["comments"],
+        }
+        s.query(Evidence).filter(Evidence.id == evidence_id).update(data)
         status = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Failed").first().id
         date = None
 
@@ -598,12 +604,16 @@ def process_evidence():
             result = None
 
         if evidence_type == "Discussion":
-            evidence = request.form['evidence']
+            evidence = request.form['evidence_discussion']
             result = None
 
         if evidence_type == "Observation":
-            evidence = request.form['evidence']
+            print "Observation"
+            print "HERE ME"
+            print request.form['evidence_observation']
+            evidence = request.form['evidence_observation']
             result = None
+
         e = Evidence(is_correct=None, signoff_id=request.form['assessor'], date=datetime.date.today(),
                      evidence=evidence, result=result,
                      comments=None, evidence_type_id=request.form["evidence_type"])
@@ -708,7 +718,7 @@ def select_subsections():
             required_status = ["Assigned"]
         elif forward_action == "evidence":
             heading = heading.format("Assign Evidence to")
-            required_status = ["Active","Failed"]
+            required_status = ["Active","Failed","Complete","Sign-Off"]
         elif forward_action == "reassess":
             heading = heading.format("Reassess")
             required_status = ["Complete"]
