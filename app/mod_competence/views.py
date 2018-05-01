@@ -739,13 +739,8 @@ def make_user_competent(ids=None,users=None):
         ids = request.args["ids"].split(",")
     print ids
     if request.method == 'POST' or ids != None:
-        print "heer"
-        print users
         if users == None:
             users = request.form["user_list"].split(",")
-        print "hello"
-        print ids
-        print users
         result = {}
         for user in users:
             failed = []
@@ -765,6 +760,8 @@ def make_user_competent(ids=None,users=None):
                             data = {'trainer_id': current_user.database_id,
                                     'date_of_training': datetime.date.today(),
                                     'date_completed': datetime.date.today(),
+                                    #todo make this expiry the length of the competence
+                                    #datetime.date.today() + relativedelta(months=+6)
                                     'date_expiry': dt.strptime('Dec 1 2200', '%b %d %Y'),
                                     'date_activated': datetime.date.today(),
                                     'signoff_id': current_user.database_id,
