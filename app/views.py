@@ -265,6 +265,18 @@ def utility_processor():
         return html
 
     return dict(check_expiry=check_expiry)
+@app.context_processor
+def utility_processor():
+    def assess_status(status):
+        if status == "Active":
+            html = '<span class="label label-warning">Active</span>'
+        elif status == "Complete":
+            html = '<span class="label label-success">Complete</span>'
+
+        return html
+
+    return dict(assess_status=assess_status)
+
 
 @app.context_processor
 def utility_processor():

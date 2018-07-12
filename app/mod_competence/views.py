@@ -79,9 +79,12 @@ def list_comptencies(message=None, modifier=None):
 def competent_staff():
     ids = request.args["ids"].split(",")
 
+
+
+
     competent_staff = s.query(Assessments).join(Subsection).join(Competence).join(CompetenceDetails).filter(
         Competence.id.in_(ids)).filter(Users.active == True).filter(
-        Assessments.status == 3).all()
+        or_(Assessments.status == 3,Assessments.status == 1)).all()
 
     result = {}
     competence = s.query(Competence).join(CompetenceDetails).filter(Competence.id.in_(ids)).group_by(

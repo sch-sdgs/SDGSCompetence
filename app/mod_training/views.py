@@ -213,11 +213,13 @@ def activate_assessments(ids, u_id,version):
 
     :return:
     """
+    print "here"
+    if ids[0] != "":
+        ids = [int(x) for x in ids]
+    else:
+        return False
 
-    print "FO SHO"
-    print ids
-    ids = [int(x) for x in ids]
-    print ids
+
     activated = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Active").first().id
     assigned = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Assigned").first().id
 
@@ -233,7 +235,7 @@ def activate_assessments(ids, u_id,version):
         update({Assessments.status: activated, Assessments.date_activated: datetime.date.today()},
                synchronize_session='fetch')
     s.commit()
-    print(statement)
+    return True
 
 
 ###########
@@ -790,7 +792,10 @@ def select_subsections():
         elif forward_action == "activate":
             print "THIS IS ME"
             print ids
-            activate_assessments(ids, u_id,version)
+            result = activate_assessments(ids, u_id,version)
+            if result == False:
+                return redirect(url_for('training.view_current_competence', c_id=c_id, user=u_id, version=version))
+
         elif forward_action == "evidence":
             print "HELLO"
             print ids
