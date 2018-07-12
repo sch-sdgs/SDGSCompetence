@@ -8,6 +8,7 @@ from flask.ext.login import login_required, current_user
 from app.views import get_competence_from_subsections, admin_permission
 from app.models import *
 from app.competence import s,send_mail
+from app import config
 from forms import *
 import json
 from app.qpulseweb import *
@@ -86,19 +87,29 @@ def competent_staff():
     competence = s.query(Competence).join(CompetenceDetails).filter(Competence.id.in_(ids)).group_by(
         CompetenceDetails.id).all()
     for k in competence:
+        print k.competence_detail[0].title
         result[k.competence_detail[0].title] = {}
 
         subsections = s.query(Subsection).filter_by(c_id=k.id).all()
         for j in subsections:
-            result[k.competence_detail[0].title][j.name] = []
+            print j.name
+            if j.s_id_rel.name not in result[k.competence_detail[0].title]:
+                result[k.competence_detail[0].title][j.s_id_rel.name] = {}
+            if j.name not in result[k.competence_detail[0].title][j.s_id_rel.name]:
+
+                result[k.competence_detail[0].title][j.s_id_rel.name][j.name]=[]
 
     print competent_staff
+    print result
     for i in competent_staff:
 
         if i.user_id_rel.active:
             c_name = i.ss_id_rel.c_id_rel.competence_detail[0].title
+            print c_name
             ss_name = i.ss_id_rel.name
-            result[c_name][ss_name].append(i)
+            print i.ss_id_rel.s_id_rel.name
+            print ss_name
+            result[c_name][i.ss_id_rel.s_id_rel.name][ss_name].append(i)
 
     return render_template('competent_staff.html', result=result)
 
@@ -159,11 +170,15 @@ def add_competence():
         s.add(c)
         s.commit()
         c_id = c.id
-        doclist = request.form['doc_list'].split(',')
-        for doc in doclist:
-            add_doc = Documents(c_id=c_id, qpulse_no=doc)
-            s.add(add_doc)
+
+        if config.QPULSE_MODULE != False:
+            doclist = request.form['doc_list'].split(',')
+            for doc in doclist:
+                add_doc = Documents(c_id=c_id, qpulse_no=doc)
+                s.add(add_doc)
+
         s.commit()
+
         add_section_form = AddSection()
 
         constants = s.query(Section).filter(Section.constant == 1).all()
@@ -179,7 +194,11 @@ def add_competence():
         # return render_template('competence_section.html', form=add_section_form, c_id=c_id, result=result)
         return render_template('competence_section.html', form=add_section_form, c_id=com.id, result=result)
 
-    return render_template('competence_add.html', form=form)
+    if config.QPULSE_MODULE == False:
+        form.documents.render_kw = {'disabled': 'disabled'}
+        form.add_document.render_kw = {'disabled': 'disabled'}
+
+    return render_template('competence_add.html', form=form, qpulse_module=config.QPULSE_MODULE)
 
 
 @competence.route('/addsections', methods=['GET', 'POST'])
@@ -596,6 +615,18 @@ def send_for_approval():
 
     return json.dumps({"success": True})
 
+@competence.route('/force_approve')
+def force_authorise():
+
+    check = s.query(CompetenceDetails).filter(CompetenceDetails.c_id == request.args["id"]).first()
+    if check.approved != 1:
+        approve(id=request.args["id"],version=request.args["version"],u_id=current_user.database_id)
+        return list_comptencies(message="<strong>Success!</strong> Competencies Force Authorised",modifier="success")
+    else:
+        return list_comptencies(message="<strong>Warning!</strong> Competencies Already Authorised",modifier="warning")
+
+
+
 
 @competence.route('/approve/<id>/<version>/<u_id>', methods=['GET'])
 def approve(id=None, version=None, u_id=None):
@@ -605,9 +636,17 @@ def approve(id=None, version=None, u_id=None):
         CompetenceDetails.intro == version).first()
     full_name = creator.creator_rel.first_name + " " + creator.creator_rel.last_name
     if user_allowed == int(u_id):
+        ok_go = True
+    elif "ADMIN" in current_user.roles:
+        ok_go = True
+    else:
+        ok_go = False
+
+
+    if ok_go == True:
         # update competence details with approval information
         data = {
-            "approve_id": u_id,
+            "approve_id": current_user.database_id,
             "date_of_approval": datetime.date.today(),
             "approved": True
 
@@ -633,7 +672,7 @@ def approve(id=None, version=None, u_id=None):
 
         # make the creator competent
         # print "hello"
-        make_user_competent(ids=[int(id)],users=[full_name])
+        # make_user_competent(ids=[int(id)],users=[full_name])
         s.commit()
 
 
@@ -647,6 +686,31 @@ def approve(id=None, version=None, u_id=None):
 
     #return json.dumps({"success": True})
     return redirect('/')
+
+@competence.route('/reject/<id>/<version>/<u_id>', methods=['GET'])
+def reject(id=None, version=None, u_id=None):
+    user_allowed = s.query(CompetenceDetails).filter(CompetenceDetails.c_id == id).filter(
+        CompetenceDetails.intro == version).first().approve_id
+    creator = s.query(CompetenceDetails).filter(CompetenceDetails.c_id == id).filter(
+        CompetenceDetails.intro == version).first()
+    full_name = creator.creator_rel.first_name + " " + creator.creator_rel.last_name
+    if user_allowed == int(u_id):
+        data = {
+            "approve_id": u_id,
+            "approved": None
+
+        }
+        s.query(CompetenceDetails).filter(CompetenceDetails.c_id == id).filter(
+            CompetenceDetails.intro == version).update(data)
+        s.commit()
+
+        competence = s.query(CompetenceDetails).filter(CompetenceDetails.c_id == id).filter(
+            CompetenceDetails.intro == version).first()
+        send_mail(competence.creator_id, "Competence Rejected!",
+                  "Your competence \"" + competence.title + "\" has been rejected by <b>" + current_user.full_name)
+
+        # return json.dumps({"success": True})
+        return redirect('/')
 
 
 @competence.route('/check_exists', methods=['GET', 'POST'])
@@ -737,8 +801,7 @@ def make_user_competent(ids=None,users=None):
 
     if ids == None:
         ids = request.args["ids"].split(",")
-    print ids
-    if request.method == 'POST' or ids != None:
+    if request.method == 'POST':
         if users == None:
             users = request.form["user_list"].split(",")
         result = {}
@@ -752,7 +815,9 @@ def make_user_competent(ids=None,users=None):
                 user_id = int(s.query(Users).filter_by(first_name=firstname, last_name=surname).first().id)
                 for c_id in ids:
                     final_ids = assign_competence_to_user(user_id, int(c_id))
-                    if final_ids:
+                    print "THIS ONE"
+                    print final_ids
+                    if final_ids is not None:
 
                         for ass_id in final_ids:
                             status_id = s.query(AssessmentStatusRef).filter(
@@ -775,13 +840,17 @@ def make_user_competent(ids=None,users=None):
                         comp = s.query(Competence).join(CompetenceDetails).filter(Competence.id == int(c_id)).first()
                         print comp.competence_detail
                         result[user].append(dict(comptence=comp.competence_detail[0].title, success=True))
+                    else:
+                        print "fail"
+                        return redirect(url_for('index'))
             else:
                 failed.append(user)
                 failed.append(user)
         if ids == None:
             return render_template('competence_assigned.html', result=result, failed=failed)
         else:
-            return True
+            print "HERE"
+            return render_template('competence_assigned.html', result=result, failed=failed)
     else:
         print "oh dear"
         query = s.query(Competence).join(CompetenceDetails).filter(Competence.id.in_(ids)).values(
@@ -815,8 +884,6 @@ def assign_competence_to_user(user_id, competence_id):
         sub_list.append(sub_section.id)
 
     assessment_ids = []
-    print "sub_list"
-    print sub_list
     check = s.query(Assessments).filter(Assessments.ss_id.in_(sub_list)).filter_by(user_id=user_id).filter(
         Assessments.version == current_version).count()
     if check == 0:
@@ -830,8 +897,13 @@ def assign_competence_to_user(user_id, competence_id):
             assessment_ids.append(a.id)
 
         assigner = s.query(Users).filter(Users.id == current_user.database_id).first()
-        send_mail(user_id,"Competence has been assigned to you","You have been assigned a competence by <b>"+assigner.first_name + " " + assigner.last_name +"</b>")
-
+        try:
+            send_mail(user_id,"Competence has been assigned to you","You have been assigned a competence by <b>"+assigner.first_name + " " + assigner.last_name +"</b>")
+        except:
+            s.rollback()
+    else:
+        assessment_ids = None
+    print "i did this"
     return assessment_ids
 
 

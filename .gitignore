@@ -5,3 +5,9 @@
 qpulse_details.py
 
 app/qpulse_details.py
+stardb
+
+build
+dist
+stardb
+StarDB.egg-info

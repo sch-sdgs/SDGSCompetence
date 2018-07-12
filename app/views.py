@@ -100,7 +100,8 @@ class User(UserMixin):
         if len(list(user)) == 0:
             return False
         else:
-            check_activdir = UserAuthentication().authenticate(id, password)
+            #check_activdir = UserAuthentication().authenticate(id, password)
+            check_activdir = True
 
         self.roles = []
         if check_activdir != "False":
@@ -505,6 +506,9 @@ def index():
         CompetenceDetails.creator_id == current_user.database_id).filter(Competence.current_version != CompetenceDetails.intro).all()
     competences_complete = s.query(CompetenceDetails).join(Competence).filter(
         CompetenceDetails.creator_id == current_user.database_id).filter(Competence.current_version == CompetenceDetails.intro).all()
+
+
+
 
     # assigned = s.query(Assessments).filter(Assessments.user_id == current_user.database_id).filter(
     #     or_(Assessments.status == 2, Assessments.status == 1, Assessments.status == 7)).filter(Competence.current_version==Assessments.version).all()

@@ -128,12 +128,9 @@
                                                         <a href="{{ url_for('competence.approve',id=competence.c_id,version=competence.intro,u_id=current_user.database_id) }}"
                                                            class="btn btn-sm btn-flat btn-success"><span
                                                                 class="glyphicon glyphicon-thumbs-up"></span> </a>
-
-                                                        <a data-toggle="modal" data=""
-                                                           href="#reject_{{ competence.id }}"
+                                                         <a href="{{ url_for('competence.reject',id=competence.c_id,version=competence.intro,u_id=current_user.database_id) }}"
                                                            class="btn btn-sm btn-flat btn-danger"><span
-                                                                class="glyphicon glyphicon-thumbs-down"></span>
-                                                        </a>
+                                                                class="glyphicon glyphicon-thumbs-down"></span> </a>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -379,10 +376,9 @@
                                                        href="{{ url_for('training.select_subsections') }}?c_id={{ i.c_id }}&version={{ i.version }}&action=reassess"
                                                        class="btn btn-sm btn-success btn-flat"><span
                                                             class="glyphicon glyphicon-repeat"></span></a>
-
                                                     <a data-toggle="tooltip" title="Delete"
                                                        class="btn btn-sm btn-flat btn-danger remove_training"
-                                                       id="{{ i.id }}"><i
+                                                       id="{{ i.c_id }}"><i
                                                             class="fa fa-remove"></i>
                                                     </a>
                                                 </div>
@@ -536,6 +532,7 @@
 
                         </table>
                     </div>
+
                 </div>
             </div>
 
@@ -743,6 +740,7 @@
 
             $('.remove_training').click(function () {
                 id = $(this).attr('id')
+                console.log("hello")
                 console.log(id)
                 $('#remove_confirm').show();
                 url = '{{ url_for("training.delete") }}?c_id=' + id

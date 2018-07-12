@@ -204,6 +204,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     console.log("change_ownership");
                     window.location.assign("{{ url_for('competence.change_ownership') }}?ids=" + ids.join(','));
                 }
+                if (func == "force_authorise") {
+                    console.log("force_authorise");
+                    window.location.assign("{{ url_for('competence.force_authorise') }}?id=" + ids.join(',') + "&version=" + versions) ;
+                }
 
             })
         });

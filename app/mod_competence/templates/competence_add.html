@@ -75,7 +75,7 @@
                                 </div>
                             </div>
 
-
+                            {% if qpulse_module != False %}
                             <div class="form-group">
                                 {{ form.add_document.label(class_="col-lg-2 control-label") }}
                                 <div class="col-lg-10">
@@ -92,6 +92,7 @@
                                     <div id="invalid_qpulse"></div>
                                 </div>
                             </div>
+                            {% endif %}
 
                             <div class="alert alert-danger" role="alert" id="qpulse_error" hidden>This is not a valid
                                 QPulse Document! Please try again.
