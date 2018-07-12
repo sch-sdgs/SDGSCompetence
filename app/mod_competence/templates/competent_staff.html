@@ -7,13 +7,13 @@
         <!-- Content Header (Page header) -->
         <section class="content-header">
             <h1>
-                Competent Staff
-                <small></small>
+                <i class="fa fa-users"></i> Competent Staff
+                <small>View all competent staff for 1 or more competencies</small>
             </h1>
-            <ol class="breadcrumb">
-                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                <li class="active">Here</li>
-            </ol>
+{#            <ol class="breadcrumb">#}
+{#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
+{#                <li class="active">Here</li>#}
+{#            </ol>#}
             {% if message %}
                 <div class="alert alert-danger">
                     <strong>Fail Whale!</strong> {{ message }}
@@ -29,7 +29,7 @@
                     <div class="col-lg-12">
                         <div class="box" id="training">
                             <div class="box-header with-border">
-                                <h3 class="no-padding no-margin no-pad-top"><i class="fa fa-fw fa-file-text-o"></i> {{ competence_name }}</h3>
+                                <h3 class="no-padding no-margin no-pad-top"><i class="fa fa-fw fa-file-text-o"></i> Competence: <strong>{{ competence_name }}</strong></h3>
 
                             </div>
                             <div class="box-body table-responsive">
@@ -40,7 +40,7 @@
 
                                     <div class="box box-solid bg-gray-light" id="training">
                                         <div class="box-header with-border">
-                                            <h4 class="no-padding no-margin no-pad-top text-black">{{ s }}</h4>
+                                            <h4 class="no-padding no-margin no-pad-top text-black"><i class="fa fa-fw fa-check-square-o"></i> Section: <strong>{{ s }}</strong></h4>
 
                                         </div>
                                         <div class="box-body table-responsive text-black">
@@ -48,17 +48,17 @@
 
                                             {% for ss in result[competence_name][s] %}
 
-                                                <li><h4 class="text-black">{{ ss }}</h4></li>
+                                                <li><h5 class="text-black">Sub-Section: <strong>{{ ss }}</strong></h5></li>
 
                                                 <table class="table table-striped">
 
 
-                                                    <thead>
-                                                    <th>Name</th>
-                                                    <th>Signed-off By</th>
-                                                    <th>Line Manager</th>
-                                                    <th>Expiry Date</th>
-                                                    <th>Status</th>
+                                                    <thead class="text-muted">
+                                                    <th class="thead-no-bold">Name</th>
+                                                    <th class="thead-no-bold">Signed-off By</th>
+                                                    <th class="thead-no-bold">Line Manager</th>
+                                                    <th class="thead-no-bold">Expiry Date</th>
+                                                    <th class="thead-no-bold">Status</th>
                                                     </thead>
                                                     {% for assessment in result[competence_name][s][ss] %}
 

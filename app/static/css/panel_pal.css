@@ -5,6 +5,10 @@ table.dataTable tbody tr.selected {
     background-color: #999999 !important;
 }
 
+.thead-no-bold{
+    font-weight: normal;
+}
+
 .blink {
     animation: blinker 1s linear 3;
 }
