@@ -44,6 +44,20 @@
                             <span class="help-block">This competence will be <strong>Assigned</strong>, but not <strong>Activated</strong>. Once the staff member commences this competence it will become active.</span>
                         </div>
                     </div>
+
+                     <div class="form-group">
+                                    {{ form.due_date.label(class_="col-lg-2 control-label") }}
+                                    <div class="col-lg-10">
+                                        <div class="input-group date">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-calendar"></i>
+                                            </div>
+                                            {{ form.due_date(required="required",class_="form-control pull-right",id="datepicker") }}
+                                        </div>
+                                    </div>
+                                    <!-- /.input group -->
+                                </div>
+
                     <div class="form-group">
                         <div class="col-lg-10 col-lg-offset-2">
                             {{ form.submit(class_="btn btn-primary") }}
@@ -57,6 +71,17 @@
 </div>
 
 <script>
+
+ $(function () {
+
+            //Date picker
+            $('#datepicker').datepicker({
+                autoclose: true,
+                format: 'dd/mm/yyyy'
+            })
+
+
+        })
     $(function () {
         $.ajax({
             url: '{{ url_for("competence.competence_name_autocomplete") }}'

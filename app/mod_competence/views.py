@@ -731,7 +731,9 @@ def assign_user_to_competence():
     ids = request.args["ids"].split(",")
     print ids
     if request.method == 'POST':
+        print "hello"
         print request.form["name"]
+        due_date = request.form["due_date"]
         category, competence = request.form["name"].split(": ")
         cat_id = s.query(CompetenceCategory).filter_by(category=category).first().id
         c_query = s.query(Competence).join(CompetenceDetails).filter(CompetenceDetails.title == competence).filter(
@@ -739,7 +741,7 @@ def assign_user_to_competence():
         c_id = c_query.id
 
         for user_id in ids:
-            assign_competence_to_user(int(user_id), int(c_id))
+            assign_competence_to_user(int(user_id), int(c_id), due_date)
         return "True"
 
     else:
@@ -761,6 +763,7 @@ def assign_competences_to_user():
 
     if request.method == 'POST':
         users = request.form["user_list"].split(",")
+        due_date = request.form["due_date"]
         result = {}
         for user in users:
             failed = []
@@ -771,7 +774,7 @@ def assign_competences_to_user():
             if count > 0:
                 user_id = int(s.query(Users).filter_by(first_name=firstname, last_name=surname).first().id)
                 for c_id in ids:
-                    final_id = assign_competence_to_user(user_id, int(c_id))
+                    final_id = assign_competence_to_user(user_id, int(c_id),due_date)
                     print final_id
                     if final_id:
                         comp = s.query(Assessments).filter(Assessments.id.in_(final_id)).first()
@@ -805,6 +808,7 @@ def make_user_competent(ids=None,users=None):
     if ids == None:
         ids = request.args["ids"].split(",")
     if request.method == 'POST':
+        due_date = request.form["due_date"]
         if users == None:
             users = request.form["user_list"].split(",")
         result = {}
@@ -817,7 +821,7 @@ def make_user_competent(ids=None,users=None):
             if count > 0:
                 user_id = int(s.query(Users).filter_by(first_name=firstname, last_name=surname).first().id)
                 for c_id in ids:
-                    final_ids = assign_competence_to_user(user_id, int(c_id))
+                    final_ids = assign_competence_to_user(user_id, int(c_id),due_date)
                     print "THIS ONE"
                     print final_ids
                     if final_ids is not None:
@@ -867,7 +871,7 @@ def make_user_competent(ids=None,users=None):
                                ids=request.args["ids"])
 
 
-def assign_competence_to_user(user_id, competence_id):
+def assign_competence_to_user(user_id, competence_id, due_date):
     status_id = s.query(AssessmentStatusRef).filter_by(status="Assigned").first().id
     # TODO Not Working
     # gets subsections for competence
@@ -893,7 +897,7 @@ def assign_competence_to_user(user_id, competence_id):
         for sub_section in sub_sections:
             print sub_section
             a = Assessments(status=status_id, ss_id=sub_section.id, user_id=int(user_id),
-                            assign_id=current_user.database_id, version=current_version)
+                            assign_id=current_user.database_id, version=current_version, due_date=datetime.datetime.strptime(due_date, '%d/%m/%Y'))
             print a
             s.add(a)
             s.commit()

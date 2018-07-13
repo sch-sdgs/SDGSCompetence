@@ -1,6 +1,6 @@
 from flask_wtf import Form
 from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
-from wtforms.fields import TextField, SubmitField, HiddenField, BooleanField, SelectField, TextAreaField, SelectMultipleField, Label
+from wtforms.fields import TextField, SubmitField, HiddenField, BooleanField, SelectField, TextAreaField, SelectMultipleField, Label, DateField
 from wtforms.validators import Required
 
 from app.competence import s
@@ -45,10 +45,12 @@ class AddSubsection(Form):
 
 class AssignForm(Form):
     name = TextField("Area of Competence")
+    due_date = DateField('Due Date', format='%Y-%m-%d')
     submit = SubmitField()
 
 class UserAssignForm(Form):
     full_name = TextField("Full Name")
+    due_date =  DateField('Due Date', format='%Y-%m-%d')
     submit = SubmitField()
 
 class EditCompetency(Form):

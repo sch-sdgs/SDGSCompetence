@@ -85,6 +85,7 @@
                         <thead>
                         <tr>
                             <th>Assigned</th>
+                            <th>Date Due</th>
                             <th>Validity</th>
                             <th>Activated</th>
                             <th>Completed</th>
@@ -94,6 +95,7 @@
                         <tbody>
                         <tr>
                             <td>{{ friendly_date(assigned) }}</td>
+                            <td>{{ check_due_date(assigned,due_date)|safe }}</td>
                             <td>{{ validity }} months</td>
                             <td>{{ friendly_date(activated) }}</td>
                             <td>{{ friendly_date(completed) }}</td>

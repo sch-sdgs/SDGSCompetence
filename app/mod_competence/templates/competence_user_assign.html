@@ -10,16 +10,16 @@
                 Assign User(s) to Competence
                 <small></small>
             </h1>
-            <ol class="breadcrumb">
-                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                <li class="active">Here</li>
-            </ol>
+{#            <ol class="breadcrumb">#}
+{#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
+{#                <li class="active">Here</li>#}
+{#            </ol>#}
             {% if message %}
                 <div class="alert alert-danger">
                     <strong>Fail Whale!</strong> {{ message }}
                 </div>
             {% endif %}
-           <h3><strong>Competencies:</strong> {{competences}}</h3>
+            <h3><strong>Competencies:</strong> {{ competences }}</h3>
         </section>
 
         <!-- Main content -->
@@ -27,92 +27,121 @@
             <div class="box" id="training">
 
                 <div class="box-body">
-            <form action="{{ url_for('competence.assign_competences_to_user') }}?ids={{ ids }}" method="POST" class="form-horizontal">
-                <fieldset>
+                    <form action="{{ url_for('competence.assign_competences_to_user') }}?ids={{ ids }}" method="POST"
+                          class="form-horizontal">
+                        <fieldset>
 
 
+                            <div class="form-group">
+                                {{ form.full_name.label(class_="col-lg-2 control-label") }}
 
-                    <div class="form-group">
-                        {{ form.full_name.label(class_="col-lg-2 control-label") }}
+                                <div class="col-lg-10">
+                                    <div class="input-group">
+                                        {{ form.full_name(class_="form-control") }}
 
-                        <div class="col-lg-10">
-                            <div class="input-group">
-                            {{ form.full_name(class_="form-control") }}
-
-                            <span class="input-group-btn"><button class="btn btn-primary btn-flat" id="add_user"
-                                                                      type="button">Assign</button></span>
+                                        <span class="input-group-btn"><button class="btn btn-primary btn-flat"
+                                                                              id="add_user"
+                                                                              type="button">Assign</button></span>
+                                    </div>
+                                    <span class="help-block"><strong>Start typing and users will appear.</strong></span>
+                                    <span class="help-block">These competence will be <strong>Assigned</strong>, but not <strong>Activated</strong>. Once the staff member commences this competence it will become active.</span>
+                                    <div id="selected_users"></div>
+                                    <input type="text" id="user_list" name="user_list" hidden required="required">
                                 </div>
-                             <span class="help-block"><strong>Start typing and users will appear.</strong></span>
-                            <span class="help-block">These competence will be <strong>Assigned</strong>, but not <strong>Activated</strong>. Once the staff member commences this competence it will become active.</span>
-                            <div id="selected_users"></div>
-                            <input type="text" id="user_list" name="user_list" hidden required="required">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-lg-10 col-lg-offset-2">
-                            {{ form.submit(class_="btn btn-primary btn-flat") }}
-                        </div>
-                    </div>
-                </fieldset>
-            </form>
-        </div>
+                            </div>
+
+
+                                <div class="form-group">
+                                    {{ form.due_date.label(class_="col-lg-2 control-label") }}
+                                    <div class="col-lg-10">
+                                        <div class="input-group date">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-calendar"></i>
+                                            </div>
+                                            {{ form.due_date(required="required",class_="form-control pull-right",id="datepicker") }}
+                                        </div>
+                                    </div>
+                                    <!-- /.input group -->
+                                </div>
+
+
+                            <div class="form-group">
+                                <div class="col-lg-10 col-lg-offset-2">
+                                    {{ form.submit(class_="btn btn-primary btn-flat") }}
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </section>
     </div>
-</section>
-    </div>
-
-<script>
 
 
+    <script>
+        $(function () {
+
+            //Date picker
+            $('#datepicker').datepicker({
+                autoclose: true,
+                format: 'dd/mm/yyyy'
+            })
 
 
-    function addUser() {
-        console.log('hello')
-        previous_value = $('#user_list').val()
-        if (previous_value == "") {
-            sep = ''
-        } else {
-            sep = ','
-        }
+        })
 
-        $('#user_list').val(previous_value + sep + $('#full_name').val() )
 
-        $('#selected_users').val( $('#add_document').val() )
-        $('#selected_users').append('<a href="#" class="btn btn-success btn-flat remove" id="remove_document" >' + $('#full_name').val() + ' <span class="glyphicon glyphicon-remove"></span> </a> ')
-        $('#full_name').val('')
 
-    };
+        function addUser() {
+            console.log('hello')
+            previous_value = $('#user_list').val()
+            if (previous_value == "") {
+                sep = ''
+            } else {
+                sep = ','
+            }
 
-    $('#add_user').click(function(){ addUser() });
+            $('#user_list').val(previous_value + sep + $('#full_name').val())
 
-    $("#full_name").keydown(function (e) {
-        if (e.key == 'Enter') {
-            e.preventDefault()
+            $('#selected_users').val($('#add_document').val())
+            $('#selected_users').append('<a href="#" class="btn btn-success btn-flat remove" id="remove_document" >' + $('#full_name').val() + ' <span class="glyphicon glyphicon-remove"></span> </a> ')
+            $('#full_name').val('')
+
+        };
+
+        $('#add_user').click(function () {
             addUser()
-        }
+        });
 
-    });
+        $("#full_name").keydown(function (e) {
+            if (e.key == 'Enter') {
+                e.preventDefault()
+                addUser()
+            }
 
-    $(document).on("click", '.remove' ,function(){
-        console.log("HELLO");
-        var docs = $('#user_list').val().split(',');
-        console.log(docs);
-        docs.splice( $.inArray($(this).attr('user_list'), docs),1  );
-        console.log(docs);
-        $('#user_list').val(docs.join());
-        $(this).remove();
-    });
+        });
 
-    $(function () {
-        $.ajax({
-            url: '{{ url_for("autocomplete") }}'
-        }).done(function (data) {
-            $('#full_name').autocomplete({
-                source: data.json_list,
-                minLength: 2
+        $(document).on("click", '.remove', function () {
+            console.log("HELLO");
+            var docs = $('#user_list').val().split(',');
+            console.log(docs);
+            docs.splice($.inArray($(this).attr('user_list'), docs), 1);
+            console.log(docs);
+            $('#user_list').val(docs.join());
+            $(this).remove();
+        });
 
+        $(function () {
+            $.ajax({
+                url: '{{ url_for("autocomplete") }}'
+            }).done(function (data) {
+                $('#full_name').autocomplete({
+                    source: data.json_list,
+                    minLength: 2
+
+                });
             });
         });
-    });
-</script>
+    </script>
 
 {% endblock %}

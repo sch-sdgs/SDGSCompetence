@@ -46,7 +46,7 @@
                                         <th class="col-md-6">Competence/Sub Section(s) Covered</th>
                                         <th class="col-md-2">Trainee</th>
                                         <th class="col-md-2">Date Trained</th>
-                                        <th  lass="col-md-2">Actions</th>
+                                        <th lass="col-md-2">Actions</th>
                                         </thead>
 
                                         {% for evidence in signoff %}
@@ -128,7 +128,7 @@
                                                         <a href="{{ url_for('competence.approve',id=competence.c_id,version=competence.intro,u_id=current_user.database_id) }}"
                                                            class="btn btn-sm btn-flat btn-success"><span
                                                                 class="glyphicon glyphicon-thumbs-up"></span> </a>
-                                                         <a href="{{ url_for('competence.reject',id=competence.c_id,version=competence.intro,u_id=current_user.database_id) }}"
+                                                        <a href="{{ url_for('competence.reject',id=competence.c_id,version=competence.intro,u_id=current_user.database_id) }}"
                                                            class="btn btn-sm btn-flat btn-danger"><span
                                                                 class="glyphicon glyphicon-thumbs-down"></span> </a>
                                                     </div>
@@ -155,22 +155,35 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="small-box bg-gray" id="training">
-                        <form id="quick_competence">
-                            <div class="box-body">
-                                <div class="input-group" id="name_group">
+                        <div class="box-body text-center">
+                            <form id="quick_competence" class="form-inline">
 
-
+                                <div class="input-group col-xs-8">
                                     <input type="text" name="name" id="name" class="form-control"
                                            placeholder="Quickly assign yourself some training here...  Just start typing the name of a competence.">
+                                </div>
 
-                             <span class="input-group-btn"><input type="submit" class="btn btn-primary btn-flat"
-                                                                  id="go"
-                                                                  type="button" value="Assign To Me"></span>
+                                <div class="input-group date col-xs-2">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                    </div>
+
+
+                                    <input type="text" required="required" class="form-control pull-right"
+                                           id="datepicker" name="due_date" data-date-format="dd/mm/yyyy">
 
                                 </div>
-                                <span class="text-red" id="name_text"></span>
-                            </div>
-                        </form>
+                                <div class="input-group col-xs-1">
+
+                                    <input type="submit" class="btn btn-primary btn-flat"
+                                           id="go"
+                                           type="button" value="Assign To Me">
+
+                                </div>
+                            </form>
+                            <span class="text-red" id="name_text"></span>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -200,11 +213,11 @@
                                     <th class="col-md-1">Status</th>
                                     <th class="col-md-2">Assigned By</th>
                                     <th class="col-md-2">Date Assigned</th>
+                                    <th class="col-md-2">Date Due</th>
                                     <th class="col-md-1">Progress</th>
                                     <th class="col-md-2">Actions</th>
                                     </thead>
                                     {% for assessment in assigned %}
-
 
                                         <tr>
                                             <td>{{ assessment.category }}</td>
@@ -217,6 +230,7 @@
                                             </td>
                                             <td>{{ assessment.user }}</td>
                                             <td>{{ assessment.assigned.strftime('%d-%m-%Y') }}</td>
+                                            <td>{{ check_due_date(assessment.assigned,assessment.due_date)|safe }}</td>
                                             <td>
 
                                                 <div class="progress progress-sm">
@@ -688,6 +702,20 @@
     <script src="/static/bower_components/chart.js/Chart.js"></script>
 
     <script>
+
+
+        $(function () {
+
+            //Date picker
+            $('#datepicker').datepicker({
+                autoclose: true,
+                format: 'dd/mm/yyyy'
+
+            })
+
+
+        })
+
         $(document).ready(function () {
             {# function to remove competence that is not complete #}
 
@@ -707,7 +735,7 @@
             var version;
             $('.abandon_training').click(function () {
                 id = $(this).attr('c_id');
-                version =  $(this).attr('version');
+                version = $(this).attr('version');
                 console.log(id);
                 $('#abandon_confirm').show();
                 url = '{{ url_for("training.abandon") }}?c_id=' + id + '&version=' + version;

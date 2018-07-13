@@ -314,6 +314,7 @@ class Assessments(db.Model):
     ss_id = db.Column(db.Integer, db.ForeignKey("subsection.id"), unique=False, nullable=False)
     signoff_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=False)
+    due_date = db.Column(db.DATE, unique=False, nullable=True)
     date_of_training = db.Column(db.DATE, unique=False, nullable=True)
     trainer_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=True)
     date_completed = db.Column(db.DATE, unique=False, nullable=True)
@@ -335,13 +336,14 @@ class Assessments(db.Model):
     evidence = db.relationship("AssessmentEvidenceRelationship", backref="assessments")
 
     def __init__(self, status, ss_id, user_id, assign_id, version, is_reassessment=0, date_completed=None, date_expiry=None,
-                 comments=None):
+                 comments=None, due_date=None):
         self.status = status
         self.ss_id = ss_id
         self.user_id = user_id
         self.date_completed = date_completed
         self.date_expiry = date_expiry
         self.comments = comments
+        self.due_date = due_date
         self.is_reassessment = is_reassessment
         self.date_assigned = str(datetime.datetime.now().strftime("%Y%m%d"))
         self.assign_id = assign_id

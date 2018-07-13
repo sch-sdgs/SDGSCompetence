@@ -265,6 +265,49 @@ def utility_processor():
         return html
 
     return dict(check_expiry=check_expiry)
+
+def percent_due_date(assigned_date,due_date):
+    days_passed_since_assignment = abs((assigned_date - datetime.date.today()).days)
+
+    total_days = abs((due_date - assigned_date).days)
+
+    percent = (days_passed_since_assignment / float(total_days)) * float(100)
+
+    return percent
+
+@app.context_processor
+def utility_processor():
+    def check_due_date(assigned_date,due_date):
+
+        percent = percent_due_date(assigned_date,due_date)
+
+        if percent > 90:
+            html = '<span class="label label-danger">'+due_date.strftime('%d-%m-%Y')+'</span>'
+        elif percent > 70:
+            html = '<span class="label label-warning">'+due_date.strftime('%d-%m-%Y')+'</span>'
+        elif percent > 0:
+            html = '<span class="label label-success">'+due_date.strftime('%d-%m-%Y')+'</span>'
+
+        return html
+
+        #return {"total_days":total_days,"days_passed":days_passed_since_assignment}
+
+
+        # if check_margin(expiry_date,0):
+        #     html = '<span class="label label-danger">Expired</span>'
+        # elif check_margin(expiry_date,5):
+        #     html = '<span class="label label-danger">Expiring Within 5 Days</span>'
+        # elif check_margin(expiry_date,30):
+        #     html = '<span class="label label-warning">Expiring Within 30 Days</span>'
+        # elif check_margin(expiry_date, 90):
+        #     html = '<span class="label label-info">Expiring Within Days</span>'
+        # else:
+        #     html = '<span class="label label-success">OK</span>'
+
+        #return html
+
+    return dict(check_due_date=check_due_date)
+
 @app.context_processor
 def utility_processor():
     def assess_status(status):
@@ -534,6 +577,7 @@ def index():
         .group_by(Competence.id)\
         .filter(or_(Assessments.status == 2, Assessments.status == 1, Assessments.status == 7))\
         .all()
+
 
     # assigned = s.query(Assessments).join(Subsection).join()
 

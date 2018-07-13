@@ -184,6 +184,7 @@ def get_competence_summary_by_user(c_id, u_id,version):
                ValidityRef.months,
                func.max(Assessments.date_assigned).label('assigned'),
                func.max(Assessments.date_activated).label('activated'),
+               func.max(Assessments.due_date).label('due_date'),
                func.min(Assessments.date_expiry).label('expiry'),
                case([
                    (s.query(Assessments). \
@@ -358,6 +359,7 @@ def view_current_competence():
                                title=competence_summary.title, validity=competence_summary.months,
                                scope=competence_summary.scope, section_list=section_list,
                                assigned=competence_summary.assigned,
+                               due_date=competence_summary.due_date,
                                activated=filter_for_none(competence_summary.activated),
                                completed=filter_for_none(competence_summary.completed),
                                expires=filter_for_none(competence_summary.expiry),version=competence_summary.version)
@@ -769,7 +771,6 @@ def select_subsections():
             required_status = None
             heading = heading.format("assign")
         elif forward_action == "activate":
-            print('here')
             heading = heading.format("Activate")
             required_status = ["Assigned"]
         elif forward_action == "evidence":
