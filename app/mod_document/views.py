@@ -20,6 +20,7 @@ from app.qpulse_details import QpulseDetails
 from forms import *
 from sqlalchemy.orm import aliased
 import uuid
+from app.mod_competence import views as competence_views
 
 document = Blueprint('document', __name__, template_folder='templates')
 
@@ -76,6 +77,12 @@ def get_qpulsenums(c_id):
         doc_list.append(i)
     return doc_list
 
+def get_latest_version(c_id):
+    version = s.query(Competence).filter(Competence.id==c_id).\
+        values(Competence.current_version)
+    for v in version:
+        return v
+
 # evidence query - would this need to be filtered for each sub section - leave until Natalie has finished
 
 # def get_evidence(c_id)
@@ -88,9 +95,7 @@ def get_qpulsenums(c_id):
 #            Evidence.s_id,
 #
 #            )
-
-    return
-
+#    return
 
 # methods
 
@@ -116,8 +121,21 @@ def export_document(c_id):
     document = Document()
 
     # Get variables using queries
+    #comp = get_doc_info(c_id)
+    #subsec = competence_views.get_subsections(c_id, v)
+    #qpulse = get_qpulsenums(c_id)
+
+    ## Get variables using competence_view query from mod_competence views
+    v = get_latest_version(c_id)
     comp = get_doc_info(c_id)
-    subsec = get_subsections(c_id)
+    print "get doc info returns: "
+    print comp
+    const = competence_views.get_constant_subsections(c_id, v)
+    print "get constant subsection returns: "
+    print const
+    subsec = competence_views.get_subsections(c_id, v)
+    print "competence get subsections returns: "
+    print subsec
     qpulse = get_qpulsenums(c_id)
 
     # Competence details
@@ -128,16 +146,30 @@ def export_document(c_id):
     scope = comp.scope
 
     # subsection details
-    subsec_dict = {}
+    subsection = {}
 
-    for sub in subsec:
-        sub_name = sub.subsec_name
+    for sub in subsec: ## This is each non-constant subsection
         sec_name = sub.sec_name
+        subsection_name = sub.subsec_name
         comments = sub.comments
-        constant = sub.constant
-        sub_id = sub.id
-        value_list = [sub_name, comments, constant, sub_id]
-        subsec_dict[sec_name]= value_list
+        evidence_type = sub.type
+        value_list = [subsection_name, comments, evidence_type]#, sub_version,constant, sub_id]
+        subsection.setdefault(sec_name,[]).append(value_list)
+    print "**************** This is everything in sub: "
+    print subsection
+
+    #constant section details
+    constant = {}
+
+    for c in const: # this is each constant subsection
+        sec_type = c.sec_name #section name
+        sec_name = c.subsec_name#name,
+        sec_comments = c.comments
+        evidence = c[3]
+        value_list = [sec_name, sec_comments, evidence]
+        constant.setdefault(sec_type,[]).append(value_list)
+    print "**************** This is everything in const: "
+    print constant
 
     #associated qpulse documents
     qpulse_list = {}
@@ -150,15 +182,12 @@ def export_document(c_id):
         qpulse_name = QPulseWeb().get_doc_by_id(username, password, qpulse_no)
         qpulse_list[qpulse_no]=qpulse_name
 
-    # evidence
-
+    # evidence - this will be for downloading completed competences
     evidence_list = {}
-
-
 
     print('***Rendering main document***')
     # Make main document
-    html_out = render_template('export_to_pdf.html', title=title, scope=scope, docid=docid ,version_no=version_no, author=author, subsec_dict=subsec_dict, qpulse_list=qpulse_list)
+    html_out = render_template('export_to_pdf.html', title=title, scope=scope, docid=docid ,version_no=version_no, author=author, subsection=subsection, constant=constant, qpulse_list=qpulse_list)
     html = HTML(string=html_out)
 
     main_doc = html.render(stylesheets=[CSS('static/css/simple_report.css')])
@@ -197,9 +226,11 @@ def export_document(c_id):
             page.links.extend(header_page.links)
             page.links.extend(footer_page.links)
 
-    file_name = str(uuid.uuid4())
-    main_doc.write_pdf(target=app.config["UPLOAD_FOLDER"]+"/"+file_name)
-    return file_name
+    outfile = str(uuid.uuid4())
+
+    out_name = main_doc.write_pdf(target=app.config["UPLOAD_FOLDER"]+"/"+ outfile)
+    return outfile
+    #return html_out
 
 #views
 @document.route('/export', methods=['GET', 'POST'])
@@ -213,6 +244,6 @@ def export_document_view():
         c_id = request.args.get('c_id')
         print('cid')
         print(c_id)
-        file_name = export_document(c_id)
+        outfile = export_document(c_id)
         uploads = app.config["UPLOAD_FOLDER"]
-        return send_from_directory(directory=uploads, filename=file_name, as_attachment=True, attachment_filename="competence_download.pdf")
+        return send_from_directory(directory=uploads, filename=outfile, as_attachment=True, attachment_filename="competence_download.pdf")
