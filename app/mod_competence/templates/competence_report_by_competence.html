@@ -1,0 +1,96 @@
+{% extends "base2.html" %}
+{% block content %}
+
+
+
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+
+
+            <h1>Reports By Competence</h1>
+            <small></small>
+            {#            <ol class="breadcrumb">#}
+            {#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
+            {#                <li class="active">Here</li>#}
+            {#            </ol>#}
+            {% if message %}
+                <div class="alert alert-danger">
+                    <strong>Fail Whale!</strong> {{ message }}
+                </div>
+            {% endif %}
+
+        </section>
+
+        <!-- Main content -->
+        <section class="content container-fluid">
+            <form id="quick_competence" class="form-inline">
+
+                <div class="input-group col-xs-12">
+                    <input type="text" name="name" id="name" class="form-control"
+                           placeholder="View reports on a specific competence..  Just start typing the name of a competence.">
+                </div>
+                <input type="submit" class="btn btn-primary btn-flat"
+                       id="go"
+                       type="button" value="Get Reports">
+            </form>
+        </section>
+    </div>
+
+
+
+
+    <script src="/static/bower_components/chart.js/Chart.js"></script>
+
+
+    <script>
+
+        $(function () {
+            $.ajax({
+                url: '{{ url_for("competence.competence_name_autocomplete") }}'
+            }).done(function (data) {
+                $('#name').autocomplete({
+                    source: data.json_list,
+                    minLength: 2
+
+                });
+            });
+        });
+
+
+        $(function () {
+
+            $('#quick_competence').on('submit', function (e) {
+
+                e.preventDefault();
+
+
+                $.ajax({
+                    type: 'post',
+                    data: $('#quick_competence').serialize(), url: '{{ url_for("competence.check_exists") }}',
+                    success: function (response) {
+
+
+                        $.ajax({
+                            type: 'post',
+                            data: $('#quick_competence').serialize(),
+                            url: '{{ url_for("competence.assign_user_to_competence") }}?ids={{ current_user.database_id }}',
+                            success: function (response) {
+                                location.reload();
+                            },
+
+                        });
+
+                    },
+                    error: function (error) {
+                        $('#name_group').addClass("has-error");
+                        $('#name_text').text('Hey! Competence Not Found!');
+                    },
+                });
+            });
+        });
+
+
+    </script>
+
+{% endblock %}

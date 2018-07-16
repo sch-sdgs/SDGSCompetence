@@ -80,11 +80,9 @@ def competent_staff():
     ids = request.args["ids"].split(",")
 
 
-
-
     competent_staff = s.query(Assessments).join(Subsection).join(Competence).join(CompetenceDetails).filter(
         Competence.id.in_(ids)).filter(Users.active == True).filter(
-        or_(Assessments.status == 3,Assessments.status == 1)).all()
+        or_(Assessments.status == 3,Assessments.status == 2,Assessments.status == 1)).all()
 
     result = {}
     competence = s.query(Competence).join(CompetenceDetails).filter(Competence.id.in_(ids)).group_by(
@@ -1179,6 +1177,17 @@ def report_by_section():
                            user_expired=sorted(user_expired.items(), key=lambda key: key[1], reverse=True)[:5],
                            user_expiring=sorted(user_expiring.items(), key=lambda key: key[1], reverse=True)[:5])
 
+@competence.route('/report_by_competence', methods=['GET', 'POST'])
+def report_by_competence():
+
+
+    return render_template('competence_report_by_competence.html')
+
+@competence.route('/report_by_user', methods=['GET', 'POST'])
+def report_by_user():
+
+
+    return render_template('competence_report_by_user.html')
 
 @competence.route('/history', methods=['GET', 'POST'])
 def competence_history():

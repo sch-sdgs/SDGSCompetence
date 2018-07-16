@@ -285,7 +285,7 @@ def utility_processor():
             html = '<span class="label label-danger">'+due_date.strftime('%d-%m-%Y')+'</span>'
         elif percent > 70:
             html = '<span class="label label-warning">'+due_date.strftime('%d-%m-%Y')+'</span>'
-        elif percent > 0:
+        elif percent >= 0:
             html = '<span class="label label-success">'+due_date.strftime('%d-%m-%Y')+'</span>'
 
         return html
@@ -315,6 +315,8 @@ def utility_processor():
             html = '<span class="label label-warning">Active</span>'
         elif status == "Complete":
             html = '<span class="label label-success">Complete</span>'
+        elif status == "Assigned":
+            html = '<span class="label label-default">Assigned</span>'
 
         return html
 

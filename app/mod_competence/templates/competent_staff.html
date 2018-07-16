@@ -84,7 +84,13 @@
                                                                 {% endif %}
 
                                                             </td>
-                                                            <td>{{ assess_status(assessment.status_rel.status)|safe }}</td>
+                                                            <td>{{ assess_status(assessment.status_rel.status)|safe }}
+                                                                {% if assessment.status_rel.status == "Assigned" or assessment.status_rel.status == "Active" %}
+
+                                                                    Date Due: {{ check_due_date(assessment.date_assigned,assessment.due_date)|safe }}
+
+                                                                {% endif %}
+                                                            </td>
                                                         </tr>
 
                                                     {% endfor %}
