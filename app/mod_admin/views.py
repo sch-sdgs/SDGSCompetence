@@ -72,6 +72,17 @@ def index():
     """
     return render_template("admin.html")
 
+@admin.route('/fix_section_sort_order')
+@admin_permission.require(http_exception=403)
+def fix_section_sort_order():
+    all = s.query(Subsection).all()
+    for i in all:
+        if s.query(SectionSortOrder).filter(SectionSortOrder.c_id == i.c_id).filter(SectionSortOrder.section_id == i.s_id).count() == 0:
+            add = SectionSortOrder(c_id=i.c_id,section_id=i.s_id,sort_order=0)
+            s.add(add)
+            s.commit()
+
+
 
 @admin.route('/users/view', methods=['GET', 'POST'])
 # @admin_permission.require(http_exception=403)

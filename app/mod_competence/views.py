@@ -105,8 +105,9 @@ def competent_staff():
             asc(SectionSortOrder.sort_order)).all()
         for x in for_order:
 
-            check = s.query(Subsection).filter(Subsection.s_id == x.section_id).filter(and_(Subsection.intro <= version,or_(Subsection.last > version,Subsection.last == None))).count()
-
+            check = s.query(Subsection).join(Competence).filter(Subsection.s_id == x.section_id).filter(and_(version <= Competence.current_version, Subsection.intro <= version,or_(Subsection.last > version,Subsection.last == None))).count()
+            print "CHECK:" +str(check)
+            print x.section_id_rel.name
             if check > 0 :
                 if x.section_id_rel.constant == 1:
                     result[k.competence_detail[0].title]["constant"][x.section_id_rel.name] = OrderedDict()
@@ -114,12 +115,15 @@ def competent_staff():
                     result[k.competence_detail[0].title]["custom"][x.section_id_rel.name] = OrderedDict()
 
         print result
-        subsections = s.query(Subsection).filter_by(c_id=k.id).filter(and_(Subsection.intro <= version,or_(Subsection.last >= version,Subsection.last == None))).all()
+        subsections = s.query(Subsection).join(Competence).filter(Subsection.c_id==k.id).filter(and_(version <= Competence.current_version,Subsection.intro <= version,or_(Subsection.last >= version,Subsection.last == None))).all()
         for j in subsections:
 
             print j.name
             print "hello"
             print j.s_id_rel.name
+            print "into:"+str(j.intro)
+            print "last:"+str(j.last)
+            print "current:"+str(j.c_id_rel.current_version)
             # if j.s_id_rel.name not in result[k.competence_detail[0].title]:
             #     result[k.competence_detail[0].title][j.s_id_rel.name] = {}
             if j.s_id_rel.constant==1:
@@ -139,12 +143,13 @@ def competent_staff():
             ss_name = i.ss_id_rel.name
             print i.ss_id_rel.s_id_rel.name
             print ss_name
-            if ss_name in result[c_name]["custom"][i.ss_id_rel.s_id_rel.name]:
-                result[c_name]["custom"][i.ss_id_rel.s_id_rel.name][ss_name].append(i)
+            if i.ss_id_rel.s_id_rel.name in result[c_name]["custom"]:
+                if ss_name in result[c_name]["custom"][i.ss_id_rel.s_id_rel.name]:
+                    result[c_name]["custom"][i.ss_id_rel.s_id_rel.name][ss_name].append(i)
             else:
                 result[c_name]["constant"][i.ss_id_rel.s_id_rel.name][ss_name].append(i)
 
-    print json.dumps(result,indent=4)
+
 
     return render_template('competent_staff.html', result=result)
 
