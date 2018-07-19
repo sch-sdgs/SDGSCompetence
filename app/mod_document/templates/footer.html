@@ -1,12 +1,18 @@
 <footer>
-<div id="page-footer">
-    <table id="footer" style="border: none">
-        <tr style="border: none">
-            <td style="border: none"><strong>Version number:</strong>{{ version_no }}</td>
+<div id="page-footer" style="width: 100%; margin: 0 auto;">
+    <table id="footer" style="word-wrap:break-word;border:solid black 1px;background-color: #f4f4f4">
+        <tr s>
+             <td><strong>Date of Issue:</strong> {{ date_of_issue }}</td>
+            <td><strong>Version number:</strong> {{ version_no }}</td>
         </tr>
-        <tr style="border: none">
-            <td style="border: none"><strong>Author:</strong>{{ author }}</td>
+        <tr>
+            <td ><strong>Author:</strong> {{ author }}</td>
+            <td ><strong>Authoriser:</strong> {{ authoriser }}</td>
         </tr>
+        <tr>
+            <td ><strong>Printed By:</strong> {{ full_name }}</td>
+        </tr>
+
     </table>
 </div>
 </footer>

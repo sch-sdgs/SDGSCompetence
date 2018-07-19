@@ -34,8 +34,11 @@
                             </div>
                             <div class="box-body table-responsive">
 
+                                {%  for type in ["constant","custom"] %}
 
-                                {% for s in result[competence_name] %}
+                                    <h3>{{ type|title }} Sections</h3>
+
+                                {% for s in result[competence_name][type] %}
 
 
                                     <div class="box box-solid bg-gray-light" id="training">
@@ -46,7 +49,7 @@
                                         <div class="box-body table-responsive text-black">
                                             <ul class="text-black">
 
-                                            {% for ss in result[competence_name][s] %}
+                                            {% for ss in result[competence_name][type][s] %}
 
                                                 <li><h5 class="text-black">Sub-Section: <strong>{{ ss }}</strong></h5></li>
 
@@ -60,7 +63,7 @@
                                                     <th class="thead-no-bold">Expiry Date</th>
                                                     <th class="thead-no-bold">Status</th>
                                                     </thead>
-                                                    {% for assessment in result[competence_name][s][ss] %}
+                                                    {% for assessment in result[competence_name][type][s][ss] %}
 
 
 
@@ -99,6 +102,7 @@
                                             </ul>
                                         </div>
                                     </div>
+                                                {% endfor %}
 
                                 {% endfor %}
 

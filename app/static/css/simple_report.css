@@ -23,7 +23,7 @@ body {
     color: #222;
     background: #fff;
     font-family: Arial;
-    margin-top: 1px;
+    margin-top: -50px;
     margin-bottom: 0px;
     margin-right: 0px;
     margin-left: 0px;
@@ -40,10 +40,12 @@ body {
 
     @bottom-right {
         content: "Page " counter(page) " of " counter(pages);
-        font-size: 75%;
+        font-size: 65%;
         color: #222;
-        background: #fff;
         font-family: Arial;
+        z-index: 1;
+        margin-right: 20px;
+        margin-top: 23px;
     }
 
     @bottom-left {
@@ -56,7 +58,7 @@ body {
     }
 	@top-center {
         content: element(header);
-        max-height:3cm;
+        max-height:2cm;
 		}
 }
 
@@ -372,10 +374,10 @@ th, td, caption {
 	You can zebra-stripe your tables in outdated browsers by adding
 	the class "even" to every other table row.
  */
-tbody tr:nth-child(even) td,
-tbody tr.even td {
-    background: #FFFFFF;
-}
+/*tbody tr:nth-child(even) td,*/
+/*tbody tr.even td {*/
+    /*background: #FFFFFF;*/
+/*}*/
 
 tfoot {
     font-style: italic;

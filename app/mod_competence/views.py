@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 from flask import Blueprint, jsonify
 from flask_table import Table, Col, ButtonCol
-from sqlalchemy import and_, or_, case, func
+from sqlalchemy import and_, or_, case, func, asc, desc
 from flask import render_template, request, url_for, redirect, Blueprint
 from flask.ext.login import login_required, current_user
 from app.views import get_competence_from_subsections, admin_permission
@@ -78,30 +78,59 @@ def list_comptencies(message=None, modifier=None):
 @competence.route('/competent_staff', methods=['GET', 'POST'])
 def competent_staff():
     ids = request.args["ids"].split(",")
+    version = request.args["version"]
 
 
     competent_staff = s.query(Assessments).join(Subsection).join(Competence).join(CompetenceDetails).filter(
-        Competence.id.in_(ids)).filter(Users.active == True).filter(
+        Competence.id.in_(ids)).filter(Assessments.version == version).filter(Users.active == True).filter(
         or_(Assessments.status == 3,Assessments.status == 2,Assessments.status == 1)).all()
 
-    result = {}
-    competence = s.query(Competence).join(CompetenceDetails).filter(Competence.id.in_(ids)).group_by(
-        CompetenceDetails.id).all()
+
+
+    result = OrderedDict()
+
+
+
+
+    competence = s.query(Competence).join(CompetenceDetails).filter(Competence.id.in_(ids)).filter(
+            Competence.current_version == version).group_by(
+            CompetenceDetails.id).all()
     for k in competence:
         print k.competence_detail[0].title
-        result[k.competence_detail[0].title] = {}
+        result[k.competence_detail[0].title]= OrderedDict()
+        result[k.competence_detail[0].title]["constant"] = OrderedDict()
+        result[k.competence_detail[0].title]["custom"] = OrderedDict()
 
-        subsections = s.query(Subsection).filter_by(c_id=k.id).all()
+        for_order = s.query(SectionSortOrder).filter(SectionSortOrder.c_id == k.id).order_by(
+            asc(SectionSortOrder.sort_order)).all()
+        for x in for_order:
+
+            check = s.query(Subsection).filter(Subsection.s_id == x.section_id).filter(and_(Subsection.intro <= version,or_(Subsection.last > version,Subsection.last == None))).count()
+
+            if check > 0 :
+                if x.section_id_rel.constant == 1:
+                    result[k.competence_detail[0].title]["constant"][x.section_id_rel.name] = OrderedDict()
+                else:
+                    result[k.competence_detail[0].title]["custom"][x.section_id_rel.name] = OrderedDict()
+
+        print result
+        subsections = s.query(Subsection).filter_by(c_id=k.id).filter(and_(Subsection.intro <= version,or_(Subsection.last >= version,Subsection.last == None))).all()
         for j in subsections:
-            print j.name
-            if j.s_id_rel.name not in result[k.competence_detail[0].title]:
-                result[k.competence_detail[0].title][j.s_id_rel.name] = {}
-            if j.name not in result[k.competence_detail[0].title][j.s_id_rel.name]:
 
-                result[k.competence_detail[0].title][j.s_id_rel.name][j.name]=[]
+            print j.name
+            print "hello"
+            print j.s_id_rel.name
+            # if j.s_id_rel.name not in result[k.competence_detail[0].title]:
+            #     result[k.competence_detail[0].title][j.s_id_rel.name] = {}
+            if j.s_id_rel.constant==1:
+                if j.name not in result[k.competence_detail[0].title]["constant"][j.s_id_rel.name]:
+                    result[k.competence_detail[0].title]["constant"][j.s_id_rel.name][j.name]=[]
+            else:
+                if j.name not in result[k.competence_detail[0].title]["custom"][j.s_id_rel.name]:
+                    result[k.competence_detail[0].title]["custom"][j.s_id_rel.name][j.name] = []
 
     print competent_staff
-    print result
+    print json.dumps(result,indent=4)
     for i in competent_staff:
 
         if i.user_id_rel.active:
@@ -110,7 +139,12 @@ def competent_staff():
             ss_name = i.ss_id_rel.name
             print i.ss_id_rel.s_id_rel.name
             print ss_name
-            result[c_name][i.ss_id_rel.s_id_rel.name][ss_name].append(i)
+            if ss_name in result[c_name]["custom"][i.ss_id_rel.s_id_rel.name]:
+                result[c_name]["custom"][i.ss_id_rel.s_id_rel.name][ss_name].append(i)
+            else:
+                result[c_name]["constant"][i.ss_id_rel.s_id_rel.name][ss_name].append(i)
+
+    print json.dumps(result,indent=4)
 
     return render_template('competent_staff.html', result=result)
 
@@ -222,6 +256,15 @@ def add_sections():
                 add_constant = Subsection(c_id=c_id, s_id=s_id, name=item_add, evidence=evidence, comments=None)
                 s.add(add_constant)
                 s.commit()
+                check = s.query(SectionSortOrder).filter(SectionSortOrder.c_id==c_id).filter(SectionSortOrder.section_id==s_id).count()
+                if check > 0:
+                    data = {"sort_order": 0}
+                    s.query(SectionSortOrder).filter(SectionSortOrder.c_id==c_id).filter(SectionSortOrder.section_id==s_id).update(data)
+                    s.commit()
+                else:
+                    sort_order = SectionSortOrder(c_id=c_id,section_id=s_id,sort_order=0)
+                    s.add(sort_order)
+                    s.commit()
 
     ###This section pulls the entire competence into the view once created.
     version = s.query(CompetenceDetails).filter(CompetenceDetails.c_id == c_id).order_by(
@@ -293,25 +336,42 @@ def add_sections():
 #edit the competence - everything gets copied and is at v2 - if you then delete last is v2 - but this is an issue.
 
 def get_subsections(c_id, version):
+    print type(version)
+    print type(c_id)
     subsec_list = []
-    subsecs = s.query(Subsection).join(Section).join(Competence).join(EvidenceTypeRef).filter(
+    subsecs = s.query(Subsection).join(Section).join(SectionSortOrder).join(Competence).join(EvidenceTypeRef).filter(
         Subsection.c_id == c_id).filter(Section.constant == 0).filter(
-        and_(Subsection.intro <= version, or_(Subsection.last == None, Subsection.last == version))).values(
+        and_(Subsection.intro <= version, or_(Subsection.last == None, Subsection.last == version))).order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).values(
         Section.name.label('sec_name'), Subsection.name.label('subsec_name'),
-        Subsection.comments, EvidenceTypeRef.type)
-    for sub in subsecs:
+        Subsection.comments, EvidenceTypeRef.type,SectionSortOrder.sort_order)
+
+    import operator
+
+    sorted_result = sorted(list(subsecs),
+                              key=lambda a: a.sort_order,
+                              reverse=False)
+
+    for sub in sorted_result:
+        print sub.sec_name
+        print sub.sort_order
         subsec_list.append(sub)
+
     return subsec_list
 
 
 def get_constant_subsections(c_id, version):
     constant_subsec_list = []
-    constant_subsecs = s.query(Subsection).join(Section).join(Competence).join(EvidenceTypeRef).filter(
+    constant_subsecs = s.query(Subsection).join(Section).join(SectionSortOrder).join(Competence).join(EvidenceTypeRef).filter(
         Subsection.c_id == c_id).filter(Section.constant == 1).filter(
-        and_(Subsection.intro <= version, or_(Subsection.last == None, Subsection.last == version))).values(
+        and_(Subsection.intro <= version, or_(Subsection.last == None, Subsection.last == version))).order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).values(
         Section.name.label('sec_name'), Subsection.name.label('subsec_name'),
-        Subsection.comments, EvidenceTypeRef.type)
-    for constant_sub in constant_subsecs:
+        Subsection.comments, EvidenceTypeRef.type,SectionSortOrder.sort_order)
+
+    sorted_result = sorted(list(constant_subsecs),
+                           key=lambda a: a.sort_order,
+                           reverse=False)
+
+    for constant_sub in sorted_result:
         constant_subsec_list.append(constant_sub)
     return constant_subsec_list
 
@@ -415,7 +475,7 @@ def add_sections_to_db():
     table = ItemTableSubsections(result, classes=['table', 'table-bordered', 'table-striped', 'section_' + str(s_id)])
     # print str(c_id) + ' ' + str(s_id) + ' ' + 'should add new subsection to selected section'
     if "plain" in request.args:
-        return jsonify({'id':s_id})
+        return jsonify({'id':sub.id})
     else:
         return jsonify({"response":table})
 
@@ -576,9 +636,11 @@ def view_competence():
         dict_docs[doc_id] = doc_name
 
     ##Get subsection details
-    dict_subsecs = {}
+    dict_subsecs = OrderedDict()
     subsections = get_subsections(c_id, version)
     for item in subsections:
+        print "OYOYOYOJOJOIL"
+        print item.sec_name
         sec_name = item.sec_name
         subsection_name = item.subsec_name
         comment = item.comments
@@ -588,9 +650,10 @@ def view_competence():
         dict_subsecs.setdefault(sec_name, []).append(subsection_data)
     print dict_subsecs
 
-    dict_constants = {}
+    dict_constants = OrderedDict()
     constants = get_constant_subsections(c_id, version)
     for item in constants:
+
         constant_sec_name = item.sec_name
         constant_subsection_name = item.subsec_name
         constant_comment = item.comments
@@ -794,9 +857,39 @@ def assign_competences_to_user():
             print i.title
             comptences.append(i.title)
 
+
         return render_template('competence_user_assign.html', form=form, competences=", ".join(comptences),
                                ids=request.args["ids"])
 
+@competence.route('/change_subsection_order', methods=['GET', 'POST'])
+def change_subsection_order():
+    data = request.json
+    for count,id in enumerate(data):
+        print count
+        print id
+        new_order = {"sort_order":count}
+        s.query(Subsection).filter(Subsection.id == id).update(new_order)
+    s.commit()
+
+@competence.route('/change_section_order', methods=['GET', 'POST'])
+def change_section_order():
+    data = request.json
+    for c_id in data:
+        print "c_id:"+str(c_id)
+        for count,name in enumerate(data[c_id]):
+            print count
+            section_id = s.query(Section).filter(Section.name == name).first().id
+            print "name:"+str(name)
+            print "section_id:"+str(section_id)
+
+            check = s.query(SectionSortOrder).filter(SectionSortOrder.c_id==c_id).filter(SectionSortOrder.section_id==section_id).count()
+            if check == 0:
+                new = SectionSortOrder(c_id=c_id,section_id=section_id,sort_order=count)
+                s.add(new)
+            else:
+                new_order = {"sort_order":count}
+                s.query(SectionSortOrder).filter(SectionSortOrder.c_id == c_id).filter(SectionSortOrder.section_id==section_id).update(new_order)
+    s.commit()
 
 @competence.route('/make_user_competent', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
@@ -806,7 +899,11 @@ def make_user_competent(ids=None,users=None):
     if ids == None:
         ids = request.args["ids"].split(",")
     if request.method == 'POST':
-        due_date = request.form["due_date"]
+        if "due_date" in request.form:
+            due_date = request.form["due_date"]
+        else:
+            due_date = datetime.date.today().strftime('%d/%m/%Y')
+        expiry_date = request.form["expiry_date"]
         if users == None:
             users = request.form["user_list"].split(",")
         result = {}
@@ -832,7 +929,7 @@ def make_user_competent(ids=None,users=None):
                                     'date_completed': datetime.date.today(),
                                     #todo make this expiry the length of the competence
                                     #datetime.date.today() + relativedelta(months=+6)
-                                    'date_expiry': dt.strptime('Dec 1 2200', '%b %d %Y'),
+                                    'date_expiry': datetime.datetime.strptime(expiry_date, '%d/%m/%Y'),
                                     'date_activated': datetime.date.today(),
                                     'signoff_id': current_user.database_id,
                                     'status': status_id,
@@ -956,8 +1053,18 @@ def edit_competence():
         name = get_doc_name(doc_id=i)
         documents.append([i.qpulse_no, name])
     # get subsections
-    sub_result = {}
-    subsections = s.query(Subsection).filter(Subsection.c_id == c_id).filter(Subsection.last == None).all()
+    sub_result = OrderedDict()
+    sub_result["constant"] = {}
+    sub_result["custom"] = OrderedDict()
+
+    for_order = s.query(SectionSortOrder).filter(SectionSortOrder.c_id == c_id).order_by(asc(SectionSortOrder.sort_order)).all()
+    for i in for_order:
+        if i.section_id_rel.constant == 1:
+            sub_result["constant"][(i.section_id_rel.name,i.section_id)]=[]
+        else:
+            sub_result["custom"][(i.section_id_rel.name, i.section_id)] = []
+
+    subsections = s.query(Subsection).filter(Subsection.c_id == c_id).filter(Subsection.last == None).order_by(asc(Subsection.c_id)).order_by(asc(Subsection.sort_order)).all()
     for subsection in subsections:
         if subsection.s_id_rel.constant == 1:
             if "constant" not in sub_result:

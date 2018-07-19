@@ -15,7 +15,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="/static/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="/static/bower_components/jquery/dist/jquery.js"></script>
 {##}
-    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <!-- Bootstrap 3.3.7 -->
     <script src="/static/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <!-- AdminLTE App -->
@@ -64,7 +64,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 
   <![endif]-->
-
+ <style>
+     #sortable { list-style-type: none; }
+  {##sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }#}
+  {##sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }#}
+  {##sortable li span { position: absolute; margin-left: -1.3em; }#}
+  </style>
     <!-- Google Font -->
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
@@ -181,7 +186,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 }
                 if (func == "competent_staff") {
                     console.log("competent_staff");
-                    window.location.assign("{{url_for('competence.competent_staff')}}?ids=" + ids.join(','));
+                    window.location.assign("{{url_for('competence.competent_staff')}}?ids=" + ids.join(',')+"&version="+versions);
                 }
                 if (func == "view_competence") {
                     console.log("view_competence");
@@ -374,7 +379,7 @@ desired effect
                                 <ul class="menu">
                                     {% for note in notes[1] %}
                                         <li><!-- start notification -->
-                                            <a href="#">
+                                            <a href="{{ url_for('notifications') }}">
                                                 <i class="fa fa-warning text-red"></i> {{ notes[1][note] }}
                                                 {{ note }}
                                             </a>

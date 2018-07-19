@@ -57,9 +57,11 @@
                 <div class="col-md-12">
                     <div class="box box-solid">
                         <div class="box-body">
-                            <button class="pull-right btn btn-warning btn-flat approval" id="approval_{{ detail_id }}"><i class="fa fa-thumbs-up"></i> Send
+                            <button class="pull-right btn btn-warning btn-flat approval" id="approval_{{ detail_id }}">
+                                <i class="fa fa-thumbs-up"></i> Send
                                 For
-                                Approval</button>
+                                Approval
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -146,9 +148,9 @@
                                     <div class="input-group" id="add_document_group">
                                         {{ form.add_document(class_="form-control") }}
 
-                                <span class="input-group-btn"><button class="btn btn-primary btn-flat"
-                                                                      id="submit_document"
-                                                                      type="button">Attach</button></span>
+                                        <span class="input-group-btn"><button class="btn btn-primary btn-flat"
+                                                                              id="submit_document"
+                                                                              type="button">Attach</button></span>
 
                                     </div>
                                     <span class="help-block"
@@ -178,7 +180,7 @@
                         </div>
                         <div class="box-body">
 
-                        <div class="form-group">
+                            <div class="form-group">
                                 <div class="input-group">
                                     {{ section_form.choose_constant_section(class_="form-control name") }}
                                     <span class="input-group-btn"><button class="btn btn-flat btn-primary "
@@ -190,42 +192,43 @@
 
                             <form action="{{ url_for('competence.edit_competence') }}?c_id={{ c_id }}"
                                   method="POST">
-                             <div id="constant_sections">
-                                <fieldset>
-                                    {% for section in subsections["constant"] %}
-                                        <h4 class="text-blue"><i
-                                                class="fa fa-fw fa-check-square-o"></i>{{ section[0] }}
+                                <div id="constant_sections">
+                                    <fieldset>
+                                        {% for section in subsections["constant"] %}
+                                            <h4 class="text-blue"><i
+                                                    class="fa fa-fw fa-check-square-o"></i>{{ section[0] }}
 
-                                            <button type="button" data-id="{{ section[1] }}"
-                                                    data-title="{{ section[0] }}"
-                                                    class="btn btn-xs btn-flat btn-primary pull-right constant_form_show">Add
-                                                Constant Subsection
-                                            </button>
+                                                <button type="button" data-id="{{ section[1] }}"
+                                                        data-title="{{ section[0] }}"
+                                                        class="btn btn-xs btn-flat btn-primary pull-right constant_form_show">
+                                                    Add
+                                                    Constant Subsection
+                                                </button>
 
-                                        </h4>
-                                        <div id="constant_subsections_list_{{ section[1] }}">
-                                            {% for subsection in subsections["constant"][section] %}
-                                                <div class="form-group">
-                                                    <div class="input-group">
-                                                        <input type="text" name="{{ subsection.id }}"
-                                                               id="{{ subsection.id }}"
-                                                               value="{{ subsection.name }}" class="form-control"
-                                                               disabled>
-                                                <span class="input-group-btn">
+                                            </h4>
+                                            <div id="constant_subsections_list_{{ section[1] }}">
+                                                {% for subsection in subsections["constant"][section] %}
+                                                    <div class="form-group">
+                                                        <div class="input-group">
+                                                            <input type="text" name="{{ subsection.id }}"
+                                                                   id="{{ subsection.id }}"
+                                                                   value="{{ subsection.name }}" class="form-control"
+                                                                   disabled>
+                                                            <span class="input-group-btn">
                                                   <button type="button" data-toggle="tooltip" title="Remove Subsection"
                                                           id="subsection_{{ subsection.id }}"
                                                           class="btn btn-flat btn-danger remove"><i
                                                           class="fa fa-remove"></i> </button>
                                                 </span>
+                                                        </div>
                                                     </div>
-                                                </div>
 
-                                            {% endfor %}
-                                        </div>
+                                                {% endfor %}
+                                            </div>
 
-                                    {% endfor %}
-                                </fieldset>
-                             </div>
+                                        {% endfor %}
+                                    </fieldset>
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -233,7 +236,8 @@
 
                     <div class="box box-primary" id="training">
                         <div class="box-header with-border">
-                            <h3 class="box-title">Edit Custom Sections</h3>
+                            <h3 class="box-title">Edit Custom Sections</h3><br>
+                            <small>The sections and subsections can be re-ordered by clicking and dragging.</small>
 
                         </div>
                         <div class="box-body">
@@ -251,40 +255,199 @@
                                   method="POST">
                                 <div id="custom_sections">
 
+                                    <table width="100%" id="sortable_section_table" cellspacing="5px"
+                                           style="border-collapse:separate; border-spacing:0 20px;">
+                                        {% for section in subsections["custom"] %}
 
-                                    {% for section in subsections["custom"] %}
-                                        <h4 class="text-blue"><i
-                                                class="fa fa-fw fa-check-square-o"></i>{{ section[0] }}
+                                            <tr class="sort_table" id="{{ section[0] }}">
+                                            <td style="padding: 5px; margin: 5px; border: 1pt dashed darkgrey;">
+                                            <h4 class="text-blue"><i
+                                                    class="fa fa-fw fa-check-square-o"></i>{{ section[0] }}
 
-                                            <button type="button" data-id="{{ section[1] }}"
-                                                    data-title="{{ section[0] }}"
-                                                    class="btn btn-xs btn-flat btn-primary pull-right subsection_form_show">Add
-                                                Subsection
-                                            </button>
+                                                <button type="button" data-id="{{ section[1] }}"
+                                                        data-title="{{ section[0] }}"
+                                                        class="btn btn-xs btn-flat btn-primary pull-right subsection_form_show">
+                                                    Add
+                                                    Subsection
+                                                </button>
 
-                                        </h4>
-                                        <div id="subsections_list_{{ section[1] }}">
-                                            {% for subsection in subsections["custom"][section] %}
-                                                <div class="form-group">
-                                                    <div class="input-group">
-                                                        <input type="text" name="{{ subsection.id }}"
-                                                               id="{{ subsection.id }}"
-                                                               value="{{ subsection.name }}" class="form-control"
-                                                               disabled>
-                                                <span class="input-group-btn">
+                                            </h4>
+                                            <div id="subsections_list_{{ section[1] }}">
+                                                <table width="100%" id="sortable_table_{{ section[1] }}"
+                                                       cellspacing="1px">
+                                                    {% for subsection in subsections["custom"][section] %}
+                                                        <tr class="sort" id="{{ subsection.id }}">
+                                                            <td style="display:inline; padding: 0px; margin: px; ">
+                                                                <div class="form-group ">
+                                                                    <div class="input-group">
+                                                            <span class="input-group-btn">
+                                                             <button type="button"
+                                                                     id="subsection_move_{{ subsection.id }}"
+                                                                     class="btn btn-flat btn-success"><i
+                                                                     class="fa fa-arrows-v"></i> </button>
+                                                            </span>
+                                                                        <input type="text" name="{{ subsection.id }}"
+                                                                               id="{{ subsection.id }}"
+                                                                               value="{{ subsection.name }}"
+                                                                               class="form-control"
+                                                                               disabled>
+
+                                                                        <span class="input-group-btn">
                                                   <button type="button" data-toggle="tooltip" title="Remove Subsection"
                                                           id="subsection_{{ subsection.id }}"
                                                           class="btn btn-flat btn-danger remove"><i
                                                           class="fa fa-remove"></i> </button>
                                                 </span>
-                                                    </div>
-                                                </div>
+
+                                                                    </div>
+                                                                </div>
+                                                                <script>
 
 
-                                            {% endfor %}
-                                        </div>
+                                                                    $(function () {
+                                                                        $('#sortable_table_{{ section[1] }}').sortable({
 
-                                    {% endfor %}
+                                                                            start: function (event, ui) {
+                                                                                ui.item.startPos = ui.item.index();
+                                                                                ui.placeholder.height(ui.item.height());
+                                                                            },
+                                                                            stop: function (event, ui) {
+                                                                                console.log("Start position: " + ui.item.startPos);
+                                                                                console.log("New position: " + ui.item.index());
+                                                                                data = get_order('#sortable_table_{{ section[1] }}')
+
+                                                                                $.ajax({
+                                                                                    type: "POST",
+                                                                                    url: "{{ url_for('competence.change_subsection_order') }}",
+                                                                                    data: JSON.stringify(data, null, '\t'),
+                                                                                    contentType: 'application/json;charset=UTF-8',
+                                                                                    success: function (result) {
+                                                                                        console.log(result);
+                                                                                    }
+                                                                                })
+
+                                                                                {#var children = $('#sortable_table_{{ section[1] }}').sortable('refreshPositions').children();#}
+                                                                                {##}
+                                                                                {#console.log('Positions: ');#}
+                                                                                {#//Loopp through each item in the children array and print out the text.#}
+                                                                                {#$.each(children, function () {#}
+                                                                                {#    console.log($(this).id);#}
+
+                                                                            },
+
+                                                                            items:
+                                                                                ".sort",
+                                                                            handle:
+                                                                                'button',
+                                                                            cursor:
+                                                                                'move',
+                                                                            cancel:
+                                                                                '',
+                                                                            placeholder:
+                                                                                'ui-state-highlight',
+                                                                            over:
+
+                                                                                function (event, ui) {
+                                                                                    var cl = ui.item.attr('class');
+                                                                                    console.log(cl)
+                                                                                    $('.ui-state-highlight').addClass(cl);
+                                                                                }
+                                                                        });
+                                                                    });</script>
+                                                            </td>
+                                                        </tr>
+
+
+                                                    {% endfor %}
+                                                </table>
+
+
+                                            </div>
+
+
+
+                                            <script>
+
+
+                                                function get_order(id) {
+                                                    var sortedIDs = $(id).sortable("toArray");
+                                                    console.log(sortedIDs)
+                                                    return sortedIDs
+                                                }
+
+                                                $(function () {
+                                                    $('#sortable_section_table').sortable({
+
+
+                                                        start: function (event, ui) {
+                                                            ui.item.startPos = ui.item.index();
+                                                            ui.placeholder.height(ui.item.height());
+                                                        },
+                                                        stop: function (event, ui) {
+                                                            console.log("Start position: " + ui.item.startPos);
+                                                            console.log("New position: " + ui.item.index());
+                                                            get_order('#sortable_section_table')
+
+                                                            data = {
+                                                            {{ c_id }}:
+                                                            get_order('#sortable_section_table')
+                                                        }
+                                                            console.log(data)
+                                                            $.ajax({
+                                                                type: "POST",
+                                                                url: "{{ url_for('competence.change_section_order') }}",
+                                                                data: JSON.stringify(data, null, '\t'),
+                                                                contentType: 'application/json;charset=UTF-8',
+                                                                success: function (result) {
+                                                                    console.log(result);
+                                                                }
+                                                            })
+                                                        },
+
+
+                                                        cursor: 'move',
+                                                        tolerance: 'pointer',
+                                                        revert: 50,
+                                                        refreshPositions: true,
+
+                                                        items: ".sort_table",
+                                                        placeholder: 'ui-state-highlight',
+                                                        over: function (event, ui) {
+                                                            var cl = ui.item.attr('class');
+                                                            console.log(cl)
+                                                            $('.ui-state-highlight').addClass(cl);
+                                                        }
+
+                                                    });
+                                                });
+
+
+                                                $("#sortable_section_table").sortable({});
+
+                                                {#var $sortableList = $("#sortable_section_table");#}
+                                                {##}
+                                                {#var sortEventHandler = function (event, ui) {#}
+                                                {#    console.log("New sort order!");#}
+                                                {##}
+                                                {#    $sortableList.on("sortchange", sortEventHandler);#}
+                                                {#    var arr = [];#}
+                                                {#    $("#sortable_section_table > tbody > tr").each(function () {#}
+                                                {#        arr.push(this.id);#}
+                                                {#    });#}
+                                                {##}
+                                                {#    console.log(arr);#}
+                                                {##}
+                                                {##}
+
+                                                // You can also set the event handler on an already existing Sortable widget this way:
+
+
+                                            </script>
+
+                                        {% endfor %}
+                                        </td></tr>
+
+                                    </table>
 
                                 </div>
                             </form>
@@ -310,39 +473,44 @@
                         <span aria-hidden="true">×</span></button>
                     <h4 class="modal-title">Adding Subsections for <span id="title"></span></h4>
                 </div>
-                <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="modal-body">
 
 
-                    <div class="form-group">
-                        {{ subsection_form.name.label(class_="col-lg-2 control-label") }}
-                        <div class="col-lg-10">
-                            {{ subsection_form.name(class_="form-control name") }}
+                        <div class="form-group">
+                            {{ subsection_form.name.label(class_="col-lg-2 control-label") }}
+                            <div class="col-lg-10">
+                                {{ subsection_form.name(class_="form-control name",required="required") }}
+                                <span class="help-block" id="required">This field is required</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        {{ subsection_form.evidence.label(class_="col-lg-2 control-label") }}
-                        <div class="col-lg-10">
-                            {{ subsection_form.evidence(class_="form-control evidence") }}
+                        <div class="form-group">
+                            {{ subsection_form.evidence.label(class_="col-lg-2 control-label") }}
+                            <div class="col-lg-10">
+                                {{ subsection_form.evidence(class_="form-control evidence",required="required") }}
+                                <span class="help-block" id="required">This field is required</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        {{ subsection_form.comments.label(class_="col-lg-2 control-label") }}
-                        <div class="col-lg-10">
-                            {{ subsection_form.comments(class_="form-control comments") }}
+                        <div class="form-group">
+                            {{ subsection_form.comments.label(class_="col-lg-2 control-label") }}
+                            <div class="col-lg-10">
+                                {{ subsection_form.comments(class_="form-control comments",required="required") }}
+                                <span class="help-block" id="required">This field is required</span>
+                            </div>
                         </div>
+
+                        <input name="section_id" id="section_id" type="hidden">
+
+
                     </div>
-
-                    <input name="section_id" id="section_id" type="hidden">
-
-
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary btn-flat pull-left" id="submit_subsection"
-                            type="button">Add Subsection
-                    </button>
-                    <button type="button" class="btn btn-default btn-flat pull-right" data-dismiss="modal">Close
-                    </button>
-                </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary btn-flat pull-left" id="submit_subsection"
+                                type="button">Add Subsection
+                        </button>
+                        <button type="button" class="btn btn-default btn-flat pull-right" data-dismiss="modal">Close
+                        </button>
+                    </div>
+                </form>
             </div>
             <!-- /.modal-content -->
         </div>
@@ -368,11 +536,11 @@
 
 
                             </select>
-                            <span class="help-block">If you want to add more click <a href="{{ url_for('admin.constant_subsections') }}">here</a></span>
+                            <span class="help-block">If you want to add more click <a
+                                    href="{{ url_for('admin.constant_subsections') }}">here</a></span>
 
                         </div>
                     </div>
-
 
 
                 </div>
@@ -394,16 +562,36 @@
 
 
     <script>
-         $('.approval').click(function () {
-                id = $(this).attr('id')
-                console.log(id)
-                $.ajax({
-                    url: '{{ url_for("competence.send_for_approval") }}?id=' + id.replace('approval_', ''),
-                    success: function (response) {
-                        window.location.replace('{{ url_for('home') }}');
-                    },
-                });
+        $(function () {
+            $('#sortable_form').sortable({
+                stop: function (e, ui) {
+                    if (ui.item.hasClass("id_2")) {
+                        alert('id 2');
+                        e.preventDefault();
+                    }
+                },
+                items: ".sort",
+                handle: 'button',
+                cancel: ''
             });
+        });
+        {#    $(function () {#}
+        {#        $("#sortable").sortable({ handle: 'button',#}
+        {#cancel: ''});#}
+        {#        $("#sortable").disableSelection();#}
+        {##}
+        {#    });#}
+
+        $('.approval').click(function () {
+            id = $(this).attr('id')
+            console.log(id)
+            $.ajax({
+                url: '{{ url_for("competence.send_for_approval") }}?id=' + id.replace('approval_', ''),
+                success: function (response) {
+                    window.location.replace('{{ url_for('home') }}');
+                },
+            });
+        });
         $("#submit_constant").click(function (e) {
             e.preventDefault();
             var id = id = $("#constant_subsections").val();
@@ -479,16 +667,22 @@
             var id = $('#choose_section').val();
             var title = $('#choose_section option:selected').text();
 
+            $('#sortable_section_table').append('<tr class="sort_table" id="' + title + '">\
+                                            <td style="padding: 5px; margin: 5px; border: 1pt dashed darkgrey;">\
+                                            <h4 class="text-blue"><i class="fa fa-fw fa-check-square-o"></i>' + title + '\
+                                                <button type="button" data-id="' + id + '" data-title="' + title + '" class="btn btn-xs btn-flat btn-primary pull-right subsection_form_show">Add Subsection</button>\
+                                            </h4><table width="100%" id="sortable_table_' + id + '" cellspacing="1px"></table>');
 
-            $('#custom_sections').append('<h4 class="text-blue"><i class="fa fa-fw fa-check-square-o"></i>' + title + '\
-                                            <button type="button" data-id="' + id + '"\
-                                                    data-title="' + title + '"\
-                                                    class="btn btn-xs btn-flat btn-primary pull-right subsection_form_show">Add\
-                                                Subsection\
-                                            </button>\
-                                        </h4>\
-                                        <div id="subsections_list_' + id + '">\
-                                                </div>');
+
+            {#$('#custom_sections').append('<h4 class="text-blue"><i class="fa fa-fw fa-check-square-o"></i>' + title + '\#}
+            {#                                <button type="button" data-id="' + id + '"\#}
+            {#                                        data-title="' + title + '"\#}
+            {#                                        class="btn btn-xs btn-flat btn-primary pull-right subsection_form_show">Add\#}
+            {#                                    Subsection\#}
+            {#                                </button>\#}
+            {#                            </h4>\#}
+            {#                            <div id="subsections_list_' + id + '">\#}
+            {#                                    </div>');#}
         })
 
         $(document).on('click', '#add_new_constant_section', function () {
@@ -516,51 +710,83 @@
         })
         //adds subsection to database
         $("#submit_subsection{{ val }}").click(function (e) {
-            e.preventDefault();
-            var dict = {
-                'name': $("#name").val(),
-                'evidence_id': $("#evidence").val(),
-                'comments': $("#comments").val(),
-                'c_id':{{ c_id }},
-                's_id': parseInt($("#section_id").val()),
-                'version': {{ version }}
-            };
-            var data = JSON.stringify(dict);
-            console.log(dict)
 
-            $.ajax({
-                type: "POST",
-                url: "{{ url_for('competence.add_sections_to_db') }}?plain=true",
-                data: data,
-                dataType: "json",
-                contentType: "application/json",
-                success: function (response) {
-                    var id = response["id"]
-                    $("#name").val('');
-                    $("#evidence").val('');
-                    $("#comments").val('');
-                    $('#subsections_list_' + parseInt($("#section_id").val())).append('<div class="form-group">\
-                                                        <div class="input-group">\
-                                                            <input type="text" name="' + id + '"\
-                                                                id="' + id + '"\
-                                                                value="' + dict["name"] + '" class="form-control" disabled>\
+            if ($(this).closest('form')[0].checkValidity()) {
+                e.preventDefault();
+
+
+                var dict = {
+                    'name': $("#name").val(),
+                    'evidence_id': $("#evidence").val(),
+                    'comments': $("#comments").val(),
+                    'c_id':{{ c_id }},
+                    's_id': parseInt($("#section_id").val()),
+                    'version': {{ version }}
+                };
+                var data = JSON.stringify(dict);
+                console.log(dict)
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url_for('competence.add_sections_to_db') }}?plain=true",
+                    data: data,
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (response) {
+                        var id = response["id"]
+                        console.log(response);
+                        $("#name").val('');
+                        $("#evidence").val('');
+                        $("#comments").val('');
+
+                        $('#sortable_table_' + parseInt($("#section_id").val())).append('<tr class="sort" >\
+                                                            <td style="display:inline; padding: 0px; margin: px; ">\
+                                                                <div class="form-group ">\
+                                                                    <div class="input-group">\
                                                             <span class="input-group-btn">\
-                                                                <button type="button" data-toggle="tooltip" title="Remove Subsection"\
-                                                                    id="subsection_' + id + '"\
-                                                                    class="btn btn-flat btn-danger remove">\
-                                                                    <i class="fa fa-remove"></i>\
-                                                                </button>\
+                                                             <button type="button" class="btn btn-flat btn-success" id="subsection_move_' + id + '"><i\
+                                                                     class="fa fa-arrows-v"></i> </button>\
                                                             </span>\
-                                                        </div>\
-                                                    </div>')
-                },
-                error: function (xhr, status, error) {
-                    $('#trace').append("<p>" + error + "</p>");
-                    $('#ajaxModal').modal('show');
-                    return false;
-                }
+                                                                        <input type="text" name="' + id + '"\
+                                                                               id="' + id + '"\
+                                                                               value="' + dict["name"] + '"\
+                                                                               class="form-control"\
+                                                                               disabled>\
+                                                                        <span class="input-group-btn">\
+                                                  <button type="button" data-toggle="tooltip" title="Remove Subsection"\
+                                                          id="subsection_' + id + '"\
+                                                          class="btn btn-flat btn-danger remove"><i\
+                                                          class="fa fa-remove"></i> </button>\
+                                                </span>\
+                                                                    </div>\
+                                                                </div>\
+                                                            </td>\
+                                                        </tr>')
 
-            });
+
+                        {#$('#subsections_list_' + parseInt($("#section_id").val())).append('<div class="form-group">\#}
+                        {#                                    <div class="input-group">\#}
+                        {#                                        <input type="text" name="' + id + '"\#}
+                        {#                                            id="' + id + '"\#}
+                        {#                                            value="' + dict["name"] + '" class="form-control" disabled>\#}
+                        {#                                        <span class="input-group-btn">\#}
+                        {#                                            <button type="button" data-toggle="tooltip" title="Remove Subsection"\#}
+                        {#                                                id="subsection_' + id + '"\#}
+                        {#                                                class="btn btn-flat btn-danger remove">\#}
+                        {#                                                <i class="fa fa-remove"></i>\#}
+                        {#                                            </button>\#}
+                        {#                                        </span>\#}
+                        {#                                    </div>\#}
+                        {#                                </div>')#}
+                    },
+                    error: function (xhr, status, error) {
+                        $('#trace').append("<p>" + error + "</p>");
+                        $('#ajaxModal').modal('show');
+                        return false;
+                    }
+
+                });
+            }
         });
 
 
@@ -602,17 +828,21 @@
             }, 1000);
 
         });
-        $('.remove').click(function () {
+        $(document).on('click', '.remove', function () {
             var remove = $(this).attr('id');
             var id = $(this).attr('id').split('_')[1];
             console.log(id)
+            var url = '{{ url_for("competence.remove_subsection") }}?id=' + id + '&version={{ version }}';
+            console.log(url);
             $.ajax({
-                url: '{{ url_for("competence.remove_subsection") }}?id=' + id + '&version={{ version }}',
+                url: url,
+
                 success: function (response) {
                     console.log("hello")
                     console.log('#' + remove)
                     $('#' + remove).remove();
                     $('#' + id).remove();
+                    $('#subsection_move_' + id).remove();
                     $(".tooltip").remove();
                 },
 

@@ -3,21 +3,18 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="static/css/simple_report.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/simple_report.css">
     <title>Export competence</title>
 </head>
 <body>
 
-<div class="panel" style="background-color: lightgrey; border:solid black 1px">
-    <h1><strong> Title: {{ title }}</strong></h1>
+<div style="background-color: #e7e7e7; border:solid black 1px; padding: 5px;margin-bottom: 10px">
+    <h1><strong>{{ title }}</strong></h1>
+    <p>{{ scope }}</p>
 </div>
 
-<div class="panel" style="border: solid black 1px">
+<div class="panel" style="border: solid black 1px; padding: 5px">
     <h2><strong> Trainee: </strong></h2>
-</div>
-<br/>
-<div class="panel" style="border: solid black 1px">
-    <h2><strong>Scope:</strong></h2><p>{{ scope }}</p>
 </div>
 <br/>
 <div class="panel" style="border: none">
@@ -41,21 +38,20 @@
     </table>
 </div>
 <br/>
-
 <h1>Compulsory Sections</h1>
 {% if constant %}
     {% for sec_type in constant %}
-        <div class="panel" >
+        <div class="panel">
             <table>
                 <tr>
                     <tr>
-                        <h2><strong>{{ sec_type }}</strong></h2>
+                <h2><strong>{{ sec_type }}</strong></h2>
                     </tr>
-                <tr>
-                    <td><p><strong>Area of Competence</strong></p></td>
-                    <td><p><strong>Comments</strong></p></td>
-                    <td><p><strong>Date discussed</strong></p></td>
-                    <td><p><strong>Trainer Initials</strong></p></td>
+                <tr style="background-color: #e7e7e7">
+                    <td><strong>Area of Competence</strong></td>
+                    <td><strong>Comments</strong></td>
+                    <td><strong>Date discussed</strong></td>
+                    <td><strong>Trainer Initials</strong></td>
                 </tr>
             {% for i in constant[sec_type] %}
                 <tr>
@@ -82,7 +78,7 @@
                 <tr>
                     <h2><strong>{{ subsection_name }} </strong></h2>
                 </tr>
-                <tr>
+                <tr style="background-color: #e7e7e7">
                     <td><p><strong>Area of Competence</strong></p></td>
                     <td><p><strong>Comments</strong></p></td>
                     <td><p><strong>Date discussed</strong></p></td>
@@ -107,29 +103,31 @@
     longer deemed competent and need to be reassessed. This is assuming NO major changes have been made to the
     procedure. </strong></p>
 <table>
-    <tr height="100">
+    <tr style="background-color: #e7e7e7" height="100">
         <td><strong>Date of reassessment</strong></td>
         <td><strong>Trainer</strong></td>
         <td><strong>Notes/Major changes Implemented (Y/N)</strong></td>
     </tr>
     <tr>
         <td>{{ placeholder_for_reassessment }}</td>
-        <td></td>
-        <td></td>
+        <td> </td>
+        <td> </td>
     </tr>
 
 </table>
 
-<p>Were all aspects conducted according to documented procedures? {{ reassess_outcome }} </p>
+<h1>About the Competence</h1>
+<ul>
+<li>Were all aspects conducted according to documented procedures? Y/N </li>
 
-<p>Are SOP's readily available, up to date, formatted in accordance with 999-0092h Content of Examination Procedures and
-    detailed enough to allow a consistency of application? {{ sop_status }} </p>
+<li>Are SOP's readily available, up to date, formatted in accordance with 999-0092h Content of Examination Procedures and
+    detailed enough to allow a consistency of application? Y/N </li>
 
-<p> If “NO” – have change requests (C/R) been raised? {{ sop_change_request }}
+    <li>If “NO” – have change requests (C/R) been raised? Y/N</li>
+</ul>
 
-
+<h1>Sign-Off</h1>
 <table>
-    <tr>SUCCESSFULLY COMPLETED</tr>
     <tr>
         <td>Signed: Trainee</td>
         <td></td>

@@ -9,6 +9,12 @@ table.dataTable tbody tr.selected {
     font-weight: normal;
 }
 
+.ui-state-highlight{
+    background: #f4f4f4;
+    /*border-collapse: collapse;*/
+    /*border: 1pt dashed darkgrey;*/
+}
+
 .blink {
     animation: blinker 1s linear 3;
 }

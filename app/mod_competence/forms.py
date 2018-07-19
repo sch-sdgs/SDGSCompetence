@@ -51,6 +51,7 @@ class AssignForm(Form):
 class UserAssignForm(Form):
     full_name = TextField("Full Name")
     due_date =  DateField('Due Date', format='%Y-%m-%d')
+    expiry_date = DateField('Expiry Date', format='%Y-%m-%d')
     submit = SubmitField()
 
 class EditCompetency(Form):

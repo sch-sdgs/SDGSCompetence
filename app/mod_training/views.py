@@ -4,7 +4,7 @@ from flask_login import login_required, login_user, logout_user, LoginManager, U
     current_user
 from app.competence import s,send_mail
 from app.models import *
-from sqlalchemy.sql.expression import func, and_, or_, case, exists, update
+from sqlalchemy.sql.expression import func, and_, or_, case, exists, update, asc
 from sqlalchemy.orm import aliased
 import datetime
 from dateutil.relativedelta import relativedelta
@@ -12,6 +12,7 @@ import os
 from forms import *
 import uuid
 import json
+from collections import OrderedDict
 from app.competence import config
 
 training = Blueprint('training', __name__, template_folder='templates')
@@ -98,22 +99,43 @@ def get_competence_by_user(c_id, u_id,version):
     competence_result = s.query(Assessments). \
         join(Subsection). \
         join(Section). \
+        join(SectionSortOrder). \
         join(Competence). \
         join(CompetenceDetails, and_(Competence.id==CompetenceDetails.c_id,CompetenceDetails.intro==version)). \
         join(AssessmentStatusRef, Assessments.status == AssessmentStatusRef.id). \
         join(EvidenceTypeRef). \
         filter(and_(Assessments.user_id == u_id, Competence.id == c_id, Assessments.version==version)). \
+        order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).\
         values(Assessments.id.label('ass_id'), Section.name, Section.constant, Subsection.id, Assessments.trainer_id, Assessments.signoff_id,
                Subsection.name.label('area_of_competence'), Subsection.comments.label('notes'), EvidenceTypeRef.type,
                AssessmentStatusRef.status, Assessments.date_of_training,
-               Assessments.date_completed, Assessments.date_expiry, Assessments.comments.label('training_comments'),Assessments.version)
+               Assessments.date_completed, Assessments.date_expiry, Assessments.comments.label('training_comments'),Assessments.version,SectionSortOrder.sort_order)
 
     print "COUNT"
     print competence_result
 
-    result = {'constant': {}, 'custom': {}}
+    result = {'constant': OrderedDict(), 'custom': OrderedDict()}
+
+    for_order = s.query(SectionSortOrder).filter(SectionSortOrder.c_id == c_id).order_by(
+        asc(SectionSortOrder.sort_order)).all()
+    for x in for_order:
+
+        check = s.query(Subsection).filter(Subsection.s_id == x.section_id).filter(
+            and_(Subsection.intro <= version, or_(Subsection.last > version, Subsection.last == None))).count()
+
+        if check > 0:
+            if x.section_id_rel.constant == 1:
+                result["constant"][x.section_id_rel.name] = OrderedDict()
+                result["constant"][x.section_id_rel.name] = {'complete': 0, 'total': 0, 'subsections': []}
+            else:
+                result["custom"][x.section_id_rel.name] = OrderedDict()
+                result["custom"][x.section_id_rel.name] = {'complete': 0, 'total': 0, 'subsections': []}
+
+    print json.dumps(result, indent=4)
+
     for c in competence_result:
-        print c
+        print "hello MEMEMME"
+        print c.name
         evidence = s.query(AssessmentEvidenceRelationship).filter(
             AssessmentEvidenceRelationship.assessment_id == c.ass_id).all()
         if c.constant:
@@ -154,6 +176,8 @@ def get_competence_by_user(c_id, u_id,version):
         subsection_list = result[d][c.name]['subsections']
         subsection_list.append(subsection)
         result[d][c.name]['subsections'] = subsection_list
+
+    print json.dumps(result,indent=4)
     return result
 
 

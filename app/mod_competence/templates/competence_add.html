@@ -10,10 +10,10 @@
                 Add Competency
                 <small></small>
             </h1>
-            <ol class="breadcrumb">
-                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                <li class="active">Here</li>
-            </ol>
+{#            <ol class="breadcrumb">#}
+{#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
+{#                <li class="active">Here</li>#}
+{#            </ol>#}
             {% if message %}
                 <div class="alert alert-danger">
                     <strong>Fail Whale!</strong> {{ message }}
@@ -67,31 +67,31 @@
                                 </div>
                             </div>
 
-                             <div class="form-group">
+                            <div class="form-group">
                                 {{ form.approval.label(class_="col-lg-2 control-label") }}
                                 <div class="col-lg-10">
                                     {{ form.approval(class_="form-control",required='required',autocomplete="off") }}
-                                     <span class="help-block" id="invalid_user">Enter the person to authorise this document!</span>
+                                    <span class="help-block" id="invalid_user">Enter the person to authorise this document. This cannot be you!</span>
                                 </div>
                             </div>
 
                             {% if qpulse_module != False %}
-                            <div class="form-group">
-                                {{ form.add_document.label(class_="col-lg-2 control-label") }}
-                                <div class="col-lg-10">
-                                    <div class="input-group" id="add_document_group">
-                                        {{ form.add_document(class_="form-control") }}
+                                <div class="form-group">
+                                    {{ form.add_document.label(class_="col-lg-2 control-label") }}
+                                    <div class="col-lg-10">
+                                        <div class="input-group" id="add_document_group">
+                                            {{ form.add_document(class_="form-control") }}
 
-                                <span class="input-group-btn"><button class="btn btn-primary btn-flat"
-                                                                      id="submit_document"
-                                                                      type="button">Attach</button></span>
+                                            <span class="input-group-btn"><button class="btn btn-primary btn-flat"
+                                                                                  id="submit_document"
+                                                                                  type="button">Attach</button></span>
 
+                                        </div>
+                                        <span class="help-block"
+                                              id="add_document_text">Please enter a Q-Pulse Document ID</span>
+                                        <div id="invalid_qpulse"></div>
                                     </div>
-                                    <span class="help-block"
-                                          id="add_document_text">Please enter a Q-Pulse Document ID</span>
-                                    <div id="invalid_qpulse"></div>
                                 </div>
-                            </div>
                             {% endif %}
 
                             <div class="alert alert-danger" role="alert" id="qpulse_error" hidden>This is not a valid
@@ -127,16 +127,16 @@
 
     <script>
         $(function () {
-        $.ajax({
-            url: '{{ url_for("autocomplete") }}'
-        }).done(function (data) {
-            $('#approval').autocomplete({
-                source: data.json_list,
-                minLength: 2
+            $.ajax({
+                url: '{{ url_for("autocomplete") }}'
+            }).done(function (data) {
+                $('#approval').autocomplete({
+                    source: data.json_list,
+                    minLength: 2
 
+                });
             });
         });
-    });
         //this function does autocomplete for existing documents in the database
         $(function () {
             $.ajax({
@@ -152,7 +152,7 @@
 
         $('#approval').focusout(function () {
             var url = '{{ url_for("check_valid_user") }}';
-            var data = {"name":$('#approval').val()}
+            var data = {"name": $('#approval').val()}
             console.log(data)
             $.ajax({
                 type: "GET",
@@ -166,16 +166,30 @@
                     if (result == false) {
                         $('#invalid_user').addClass('text-red');
                         $('#invalid_user').text('Invalid User!');
-                        $('#approval').val('');;
+                        $('#approval').val('');
+                        ;
                     }
-                     if (result == true) {
-                     $('#invalid_user').addClass('text-green');
-                        $('#invalid_user').text('Valid User!');;
-                     }
+                    if (result == true) {
+
+                        if('{{ current_user.full_name }}' == data["name"]){
+                            $('#invalid_user').addClass('text-red');
+                            $('#invalid_user').text('You cannot authorise a competencey you have authored!');
+                            $('#approval').val('');
+                        }else {
+                            $('#invalid_user').addClass('text-green');
+                            $('#invalid_user').text('Valid User!');
+                        }
+
+                        console.log('{{ current_user.full_name }}');
+                        console.log(data);
+
+
+                    }
                 }
             });
-        });
 
+
+        });
 
         //This function checks whether the input is a valid Qpulse doc number and adds it to a list if correct, list items are displayed underneath if succesfully added
         $('#submit_document').click(function () {
@@ -209,7 +223,7 @@
                 success: function (response) {
                     console.log(response)
 
-                     $('#submit_document').html('Attach');
+                    $('#submit_document').html('Attach');
 
                     if (response["response"].match(/This is not a valid QPulse Document/i)) {
                         $('#add_document_group').addClass("has-error");

@@ -278,6 +278,7 @@ class Subsection(db.Model):
     comments = db.Column(db.String(1000), unique=False, nullable=False)
     intro = db.Column(db.Integer, unique=False, nullable=False, default=1)
     last = db.Column(db.Integer, unique=False, nullable=True)
+    sort_order = db.Column(db.Integer, unique=False, nullable=True)
 
     c_id_rel = db.relationship("Competence", lazy='joined', foreign_keys=[c_id])
     s_id_rel = db.relationship("Section", lazy='joined', foreign_keys=[s_id])
@@ -295,10 +296,35 @@ class Subsection(db.Model):
         return '<Subsection %r>' % self.c_id
 
 
+
+class SectionSortOrder(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    c_id = db.Column(db.Integer, db.ForeignKey("competence.id"), unique=False, nullable=False)
+    section_id = db.Column(db.Integer, db.ForeignKey("section.id"), unique=False, nullable=False)
+    sort_order = db.Column(db.Integer, unique=False, nullable=False)
+
+    c_id_rel = db.relationship("Competence", lazy='joined', foreign_keys=[c_id])
+    section_id_rel = db.relationship("Section", lazy='joined', foreign_keys=[section_id])
+    # section_detail = db.relationship("Section", lazy='joined', back_populates="sort_order_rel")
+
+
+
+    def __init__(self, c_id, section_id, sort_order):
+        self.c_id = c_id
+        self.section_id = section_id
+        self.sort_order = sort_order
+
+    def __repr__(self):
+        return '<SectionSortOrder %r>' % self.section_id
+
 class Section(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(1000), unique=False, nullable=False)
     constant = db.Column(db.BOOLEAN, unique=False, nullable=False, default=True)
+
+    # sort_order_rel = db.relationship("SectionSortOrder", back_populates="section_detail", lazy='joined')
+
+    sort_order_rel = db.relationship("SectionSortOrder",backref="section_sort_order")
 
     def __init__(self, name, constant):
         self.name = name
@@ -306,6 +332,7 @@ class Section(db.Model):
 
     def __repr__(self):
         return '<Section %r>' % self.name
+
 
 
 class Assessments(db.Model):

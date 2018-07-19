@@ -34,17 +34,9 @@ def get_doc_info(c_id):
     :return:
     """
     print('query')
-    competence_list = s.query(Competence).\
-        join(CompetenceDetails).\
-        join(Users, CompetenceDetails.creator_rel). \
-        filter(Competence.id == c_id).\
-        values(CompetenceDetails.title,
-               CompetenceDetails.qpulsenum,
-               CompetenceDetails.scope,
-               (Users.first_name + ' ' + Users.last_name).label('name'),
-               Competence.current_version)
-    for c in competence_list:
-        return c
+    competence_list = s.query(CompetenceDetails).\
+        filter(Competence.id == c_id).first()
+    return competence_list
 
 def get_subsections(c_id):
     """
@@ -66,6 +58,8 @@ def get_subsections(c_id):
     subsection_list = []
     for i in subsections:
         subsection_list.append(i)
+    print "here"
+    print subsection_list
     return subsection_list
 
 def get_qpulsenums(c_id):
@@ -126,8 +120,11 @@ def export_document(c_id):
     #qpulse = get_qpulsenums(c_id)
 
     ## Get variables using competence_view query from mod_competence views
-    v = get_latest_version(c_id)
+    v = get_latest_version(c_id)[0]
+    print ":::::::::::"
+
     comp = get_doc_info(c_id)
+    print comp
     print "get doc info returns: "
     print comp
     const = competence_views.get_constant_subsections(c_id, v)
@@ -141,9 +138,11 @@ def export_document(c_id):
     # Competence details
     title = comp.title
     docid = comp.qpulsenum
-    version_no = comp.current_version
-    author = comp.name
+    version_no = comp.competence.current_version
+    author = comp.creator_rel.first_name + ' ' + comp.creator_rel.last_name
+    authoriser = comp.approve_rel.first_name + ' ' + comp.approve_rel.last_name
     scope = comp.scope
+    date_of_issue = comp.date_of_approval.strftime("%d-%m-%Y")
 
     # subsection details
     subsection = {}
@@ -187,7 +186,7 @@ def export_document(c_id):
 
     print('***Rendering main document***')
     # Make main document
-    html_out = render_template('export_to_pdf.html', title=title, scope=scope, docid=docid ,version_no=version_no, author=author, subsection=subsection, constant=constant, qpulse_list=qpulse_list)
+    html_out = render_template('export_to_pdf.html', title=title, scope=scope, docid=docid ,version_no=version_no, author=author, full_name=current_user.full_name, subsection=subsection, constant=constant, qpulse_list=qpulse_list)
     html = HTML(string=html_out)
 
     main_doc = html.render(stylesheets=[CSS('static/css/simple_report.css')])
@@ -206,7 +205,8 @@ def export_document(c_id):
     header_body = header_body.copy_with_children(header_body.all_children())
 
     # Template of footer
-    footer_out = render_template('footer.html', version_no=version_no, author=author)
+    print comp.approve_rel
+    footer_out = render_template('footer.html', version_no=version_no, author=author, full_name=current_user.full_name, authoriser=comp.approve_rel.first_name + " " + comp.approve_rel.last_name, date_of_issue=date_of_issue)
     footer_html = HTML(string=footer_out)
     footer = footer_html.render(stylesheets=[CSS('static/css/simple_report.css'), CSS(string='div {position: fixed; bottom: -2.1cm; left: 0cm;}')])
 

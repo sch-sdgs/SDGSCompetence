@@ -28,54 +28,84 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="box box-default" id="training">
-                            <div class="box-header with-border">
-                                <h3 class="box-title">Choose User (or multiple users!)
-                                </h3>
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Choose User (or multiple users!)
+                            </h3>
 
-                            </div>
-                            <div class="box-body">
+                        </div>
+                        <div class="box-body">
 
-                        <form action="{{ url_for('competence.make_user_competent') }}?ids={{ ids }}" method="POST"
-                              class="form-horizontal">
-                            <fieldset>
+                            <form action="{{ url_for('competence.make_user_competent') }}?ids={{ ids }}" method="POST"
+                                  class="form-horizontal">
+                                <fieldset>
 
 
-                                <div class="form-group">
-                                    <div class="col-lg-12">
-                                        <strong>Competencies:</strong> {{ competences }}
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    {{ form.full_name.label(class_="col-lg-2 control-label") }}
-
-                                    <div class="col-lg-10">
-                                        <div class="input-group">
-                                            {{ form.full_name(class_="form-control") }}
-
-                            <span class="input-group-btn"><button class="btn btn-flat btn-primary" id="add_user"
-                                                                  type="button">Assign</button></span>
+                                    <div class="form-group">
+                                        <div class="col-lg-12">
+                                            <strong>Competencies:</strong> {{ competences }}
                                         </div>
-                                        <span class="help-block"><strong>Start typing and users will appear.</strong></span>
-                            <span class="help-block"><strong>Only to be used by admins for testing or in exceptional circumstances.</strong>
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.full_name.label(class_="col-lg-2 control-label") }}
+
+                                        <div class="col-lg-10">
+                                            <div class="input-group">
+                                                {{ form.full_name(class_="form-control") }}
+
+                                                <span class="input-group-btn"><button class="btn btn-flat btn-primary"
+                                                                                      id="add_user"
+                                                                                      type="button">Assign</button></span>
+                                            </div>
+                                            <span class="help-block"><strong>Start typing and users will appear.</strong></span>
+                                            <span class="help-block"><strong>Only to be used by admins for testing or in exceptional circumstances.</strong>
                                 This competence will be assigned, completed and signed off for all users listed below.</span>
-                                        <div id="selected_users"></div>
-                                        <input type="text" id="user_list" name="user_list" hidden required="required">
+                                            <div id="selected_users"></div>
+                                            <input type="text" id="user_list" name="user_list" hidden
+                                                   required="required">
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="col-lg-10 col-lg-offset-2">
-                                        {{ form.submit(class_="btn btn-flat btn-primary") }}
+                                    <div class="form-group">
+                                        {{ form.expiry_date.label(class_="col-lg-2 control-label") }}
+
+                                        <div class="col-lg-10">
+
+                                            <div class="input-group date col-xs-2">
+                                                <div class="input-group-addon">
+                                                    <i class="fa fa-calendar"></i>
+                                                </div>
+
+
+                                                <input type="text" required="required" class="form-control pull-right"
+                                                       id="datepicker" name="expiry_date" data-date-format="dd/mm/yyyy"
+                                                       placeholder="Due Date">
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </fieldset>
-                        </form>
+                                    <div class="form-group">
+                                        <div class="col-lg-10 col-lg-offset-2">
+                                            {{ form.submit(class_="btn btn-flat btn-primary") }}
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
         </section>
     </div>
     <script>
 
+        $(function () {
+
+            //Date picker
+            $('#datepicker').datepicker({
+                autoclose: true,
+                format: 'dd/mm/yyyy'
+
+            })
+
+
+        })
 
         function addUser() {
             console.log('hello')
