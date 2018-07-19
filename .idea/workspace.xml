@@ -5,26 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4783f288-aaa5-4ace-9f51-c82da759ae56" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/competence.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/competence.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_competence/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_add.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_add.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_edit.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_edit.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_override.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_override.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competent_staff.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competent_staff.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_admin/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/mod_competence/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_document/templates/export_to_pdf.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_document/templates/export_to_pdf.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_document/templates/footer.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_document/templates/footer.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_document/templates/header.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_document/templates/header.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_document/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_document/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_training/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_training/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/static/css/panel_pal.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/static/css/panel_pal.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/static/css/simple_report.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/static/css/simple_report.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/templates/base2.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/base2.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/views.py" afterDir="false" />
     </list>
     <ignored path="SDGSCompetence.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -39,7 +22,7 @@
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/SDGSCompetence$views.coverage" NAME="views Coverage Results" MODIFIED="1519907271931" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/mod_competence" />
     <SUITE FILE_PATH="coverage/SDGSCompetence$competence.coverage" NAME="competence Coverage Results" MODIFIED="1507884822521" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
-    <SUITE FILE_PATH="coverage/SDGSCompetence$run.coverage" NAME="run Coverage Results" MODIFIED="1532005493875" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$run.coverage" NAME="run Coverage Results" MODIFIED="1532008611368" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
     <SUITE FILE_PATH="coverage/SDGSCompetence$views__1_.coverage" NAME="views (1) Coverage Results" MODIFIED="1508402811083" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
     <SUITE FILE_PATH="coverage/SDGSCompetence$SDGSCompetence.coverage" NAME="SDGSCompetence Coverage Results" MODIFIED="1526374279464" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/SDGSCompetence$activedirectory.coverage" NAME="activedirectory Coverage Results" MODIFIED="1508152364292" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
@@ -72,11 +55,23 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/mod_competence/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="269">
-              <caret line="342" column="36" selection-start-line="342" selection-start-column="36" selection-end-line="342" selection-end-column="36" />
+            <state relative-caret-position="393">
+              <caret line="151" lean-forward="true" selection-start-line="151" selection-end-line="151" />
+              <folding>
+                <element signature="e#0#35#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/mod_admin/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="432">
+              <caret line="84" lean-forward="true" selection-start-line="84" selection-end-line="84" />
               <folding>
                 <element signature="e#0#35#0" expanded="true" />
               </folding>
@@ -92,6 +87,15 @@
               <folding>
                 <element signature="e#0#137#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="run.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/run.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="105">
+              <caret line="8" column="65" lean-forward="true" selection-start-line="8" selection-start-column="65" selection-end-line="8" selection-end-column="65" />
             </state>
           </provider>
         </entry>
@@ -123,15 +127,6 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="base2.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/templates/base2.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="402">
-              <caret line="198" column="16" lean-forward="true" selection-start-line="198" selection-start-column="16" selection-end-line="198" selection-end-column="17" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="competence_add.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/mod_competence/templates/competence_add.html">
           <provider selected="true" editor-type-id="text-editor">
@@ -141,20 +136,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="config.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="config.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/config.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="6" selection-start-line="6" selection-end-line="6" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="competence_edit.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/mod_competence/templates/competence_edit.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="431">
-              <caret line="387" column="108" lean-forward="true" selection-start-line="387" selection-start-column="108" selection-end-line="387" selection-end-column="108" />
+            <state relative-caret-position="270">
+              <caret line="18" selection-start-line="18" selection-end-line="22" selection-end-column="32" />
             </state>
           </provider>
         </entry>
@@ -243,7 +229,6 @@
         <option value="$PROJECT_DIR$/app/mod_admin/templates/constant_subsections.html" />
         <option value="$PROJECT_DIR$/app/mod_admin/templates/constant_subsections_edit.html" />
         <option value="$PROJECT_DIR$/app/mod_admin/forms.py" />
-        <option value="$PROJECT_DIR$/app/mod_admin/views.py" />
         <option value="$PROJECT_DIR$/app/qpulse_details.py" />
         <option value="$PROJECT_DIR$/app/qpulseweb.py" />
         <option value="$USER_HOME$/Downloads/233-ensemble-annotated.vcf.json" />
@@ -275,8 +260,9 @@
         <option value="$PROJECT_DIR$/app/models.py" />
         <option value="$PROJECT_DIR$/app/mod_competence/templates/competent_staff.html" />
         <option value="$PROJECT_DIR$/app/mod_training/views.py" />
-        <option value="$PROJECT_DIR$/app/mod_competence/views.py" />
         <option value="$PROJECT_DIR$/app/config.py" />
+        <option value="$PROJECT_DIR$/app/mod_admin/views.py" />
+        <option value="$PROJECT_DIR$/app/mod_competence/views.py" />
       </list>
     </option>
   </component>
@@ -351,6 +337,12 @@
               <item name="SDGSCompetence" type="b2602c69:ProjectViewProjectNode" />
               <item name="SDGSCompetence" type="462c0819:PsiDirectoryNode" />
               <item name="app" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="SDGSCompetence" type="b2602c69:ProjectViewProjectNode" />
+              <item name="SDGSCompetence" type="462c0819:PsiDirectoryNode" />
+              <item name="app" type="462c0819:PsiDirectoryNode" />
+              <item name="mod_admin" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="SDGSCompetence" type="b2602c69:ProjectViewProjectNode" />
@@ -852,13 +844,6 @@
       <option name="presentableId" value="Default" />
       <updated>1507807214790</updated>
     </task>
-    <task id="LOCAL-00004" summary="Merge branch 'develop_Nichola' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;app/models.py&#10;#&#9;app/views.py&#10;">
-      <created>1507885559695</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1507885559695</updated>
-    </task>
     <task id="LOCAL-00005" summary="Merge branch 'develop_Nichola' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;app/models.py&#10;#&#9;app/views.py&#10;">
       <created>1507885584962</created>
       <option name="number" value="00005" />
@@ -1195,7 +1180,14 @@
       <option name="project" value="LOCAL" />
       <updated>1531735826126</updated>
     </task>
-    <option name="localTasksCounter" value="53" />
+    <task id="LOCAL-00053" summary="preparing for server release&#10;&#10;- fixing bugs&#10;- can't enter blank subsections&#10;- self sign-off for competence is now not allowed&#10;- Notifications link fixed&#10;- Due date tool tip on dashboard&#10;- sorting of sections and subsections - implementing on all screens&#10;- releasing new version for testing">
+      <created>1532006201570</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1532006201570</updated>
+    </task>
+    <option name="localTasksCounter" value="54" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -1207,10 +1199,10 @@
       <window_info anchor="bottom" id="Database Changes" order="13" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="10" weight="0.17775832" />
       <window_info anchor="bottom" id="Python Console" order="9" weight="0.32998997" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.47976878" visible="true" weight="0.43793103" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.47976878" visible="true" weight="0.43793103" />
       <window_info anchor="bottom" id="Terminal" order="11" />
       <window_info anchor="right" id="Remote Host" order="3" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16964717" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.16964717" />
       <window_info anchor="bottom" id="Docker" order="13" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="4" />
       <window_info anchor="bottom" id="Find" order="1" sideWeight="0.4946192" weight="0.40772316" />
@@ -1266,7 +1258,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Merge branch 'develop_lizzy' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;.gitignore&#10;#&#9;.idea/workspace.xml&#10;" />
     <MESSAGE value="way to assign assessments" />
     <MESSAGE value="Merge branch 'develop_Natalie' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml&#10;#&#9;app/mod_competence/views.py&#10;#&#9;app/run.py&#10;" />
     <MESSAGE value="Merge branch 'develop_Natalie' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;app/models.py&#10;" />
@@ -1291,7 +1282,8 @@
     <MESSAGE value="- starting work on the extra reporting requested" />
     <MESSAGE value="Merge branch 'develop_christine' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;app/run.py" />
     <MESSAGE value="preparing for server release" />
-    <option name="LAST_COMMIT_MESSAGE" value="preparing for server release" />
+    <MESSAGE value="preparing for server release&#10;&#10;- fixing bugs&#10;- can't enter blank subsections&#10;- self sign-off for competence is now not allowed&#10;- Notifications link fixed&#10;- Due date tool tip on dashboard&#10;- sorting of sections and subsections - implementing on all screens&#10;- releasing new version for testing" />
+    <option name="LAST_COMMIT_MESSAGE" value="preparing for server release&#10;&#10;- fixing bugs&#10;- can't enter blank subsections&#10;- self sign-off for competence is now not allowed&#10;- Notifications link fixed&#10;- Due date tool tip on dashboard&#10;- sorting of sections and subsections - implementing on all screens&#10;- releasing new version for testing" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1302,7 +1294,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/app/mod_admin/views.py</url>
-          <line>731</line>
+          <line>742</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
@@ -1320,7 +1312,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/app/mod_competence/views.py</url>
-          <line>893</line>
+          <line>898</line>
           <option name="timeStamp" value="6" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
@@ -1330,7 +1322,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/app/mod_competence/views.py</url>
-          <line>968</line>
+          <line>973</line>
           <option name="timeStamp" value="11" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
@@ -1348,13 +1340,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/stardb/lib/python2.7/site-packages/werkzeug/test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="13740">
-          <caret line="922" selection-start-line="922" selection-end-line="922" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/stardb/lib/python2.7/site-packages/sqlalchemy/engine/strategies.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1260">
@@ -1624,13 +1609,6 @@
     <entry file="file://$PROJECT_DIR$/app/main.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/run.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="8" column="65" lean-forward="true" selection-start-line="8" selection-start-column="65" selection-end-line="8" selection-end-column="65" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/mod_competence/templates/with_selected.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
@@ -1707,20 +1685,37 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/mod_competence/views.py">
+    <entry file="file://$PROJECT_DIR$/app/config.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="269">
-          <caret line="342" column="36" selection-start-line="342" selection-start-column="36" selection-end-line="342" selection-end-column="36" />
+        <state relative-caret-position="270">
+          <caret line="18" selection-start-line="18" selection-end-line="22" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/run.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="8" column="65" lean-forward="true" selection-start-line="8" selection-start-column="65" selection-end-line="8" selection-end-column="65" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="432">
+          <caret line="84" lean-forward="true" selection-start-line="84" selection-end-line="84" />
           <folding>
             <element signature="e#0#35#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/config.py">
+    <entry file="file://$PROJECT_DIR$/app/mod_competence/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="6" selection-start-line="6" selection-end-line="6" />
+        <state relative-caret-position="393">
+          <caret line="151" lean-forward="true" selection-start-line="151" selection-end-line="151" />
+          <folding>
+            <element signature="e#0#35#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
