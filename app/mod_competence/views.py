@@ -81,9 +81,9 @@ def competent_staff():
     version = request.args["version"]
 
 
-    competent_staff = s.query(Assessments).join(Subsection).join(Competence).join(CompetenceDetails).filter(
+    competent_staff = s.query(Assessments).join(AssessmentStatusRef).join(Subsection).join(Competence).join(CompetenceDetails).filter(
         Competence.id.in_(ids)).filter(Assessments.version == version).filter(Users.active == True).filter(
-        or_(Assessments.status == 3,Assessments.status == 2,Assessments.status == 1)).all()
+        or_(AssessmentStatusRef.status == "Complete",AssessmentStatusRef.status == "Assigned",AssessmentStatusRef.status == "Active",AssessmentStatusRef.status=="Four Year Due")).all()
 
 
 
@@ -149,7 +149,8 @@ def competent_staff():
             else:
                 result[c_name]["constant"][i.ss_id_rel.s_id_rel.name][ss_name].append(i)
 
-
+    print "THIS THIS THIS"
+    print result
 
     return render_template('competent_staff.html', result=result)
 
@@ -344,13 +345,16 @@ def get_subsections(c_id, version):
     print type(version)
     print type(c_id)
     subsec_list = []
+    print "ITS HERE"
+
+
     subsecs = s.query(Subsection).join(Section).join(SectionSortOrder).join(Competence).join(EvidenceTypeRef).filter(
-        Subsection.c_id == c_id).filter(Section.constant == 0).filter(
+        Subsection.c_id == c_id).filter(SectionSortOrder.c_id == c_id).filter(Section.constant == 0).filter(
         and_(Subsection.intro <= version, or_(Subsection.last == None, Subsection.last == version))).order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).values(
         Section.name.label('sec_name'), Subsection.name.label('subsec_name'),
         Subsection.comments, EvidenceTypeRef.type,SectionSortOrder.sort_order)
 
-    import operator
+
 
     sorted_result = sorted(list(subsecs),
                               key=lambda a: a.sort_order,
@@ -361,13 +365,15 @@ def get_subsections(c_id, version):
         print sub.sort_order
         subsec_list.append(sub)
 
+    print subsec_list
+
     return subsec_list
 
 
 def get_constant_subsections(c_id, version):
     constant_subsec_list = []
     constant_subsecs = s.query(Subsection).join(Section).join(SectionSortOrder).join(Competence).join(EvidenceTypeRef).filter(
-        Subsection.c_id == c_id).filter(Section.constant == 1).filter(
+        Subsection.c_id == c_id).filter(Section.constant == 1).filter(SectionSortOrder.c_id == c_id).filter(
         and_(Subsection.intro <= version, or_(Subsection.last == None, Subsection.last == version))).order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).values(
         Section.name.label('sec_name'), Subsection.name.label('subsec_name'),
         Subsection.comments, EvidenceTypeRef.type,SectionSortOrder.sort_order)
@@ -604,6 +610,10 @@ def view_competence():
     version = request.args["version"]
     get_comp_title = s.query(CompetenceDetails.title).filter_by(c_id=c_id).filter(
         CompetenceDetails.intro == version).first()
+
+    intro = s.query(CompetenceDetails.intro).filter_by(c_id=c_id).filter(
+        CompetenceDetails.intro == version).first().intro
+
     comp_title = ','.join(repr(x.encode('utf-8')) for x in get_comp_title).replace("'", "")
 
     get_comp_scope = s.query(CompetenceDetails.scope).filter_by(c_id=c_id).filter(
@@ -622,6 +632,18 @@ def view_competence():
     id = s.query(CompetenceDetails).filter_by(c_id=c_id).filter(
         CompetenceDetails.intro == version).first().id
 
+    print "APPROVAL"
+    if approved == False:
+        approver_id = s.query(CompetenceDetails).filter_by(c_id=c_id).filter(
+        CompetenceDetails.intro == version).first().approve_id
+        if approver_id == current_user.database_id:
+            approval_buttons = True
+        else:
+            approval_buttons = False
+    else:
+        approval_buttons = False
+
+
     comp_val_period = int(get_comp_val_period[0])
 
     ##Creates a dictionary of the docs associated with a created competence
@@ -636,16 +658,16 @@ def view_competence():
         password = str(details[0])
         q = QPulseWeb()
         doc_name = q.get_doc_by_id(username=username, password=password, docNumber=doc)
+        print "hey there"
 
-        print doc_id
-        dict_docs[doc_id] = doc_name
+        if doc_id is not "":
+            dict_docs[doc_id] = doc_name
 
     ##Get subsection details
     dict_subsecs = OrderedDict()
+
     subsections = get_subsections(c_id, version)
     for item in subsections:
-        print "OYOYOYOJOJOIL"
-        print item.sec_name
         sec_name = item.sec_name
         subsection_name = item.subsec_name
         comment = item.comments
@@ -669,9 +691,21 @@ def view_competence():
     print "###CONSTANTS###"
     print dict_constants
 
-    return render_template('competence_view.html', c_id=c_id, title=comp_title, version=version, scope=comp_scope,
+
+    if approved == None:
+        c_detail_id = s.query(CompetenceDetails).filter_by(c_id=c_id).filter(
+            CompetenceDetails.intro == version).first().id
+
+        feedback = s.query(CompetenceRejectionReasons).filter(CompetenceRejectionReasons.c_detail_id == c_detail_id).all()
+    else:
+        feedback = []
+
+
+
+
+    return render_template('competence_view.html', intro=intro, c_id=c_id, title=comp_title, version=version, scope=comp_scope,
                            category=comp_category, val_period=comp_val_period, docs=dict_docs, constants=dict_constants,
-                           subsections=dict_subsecs, review="yes", approved=approved, id=id)
+                           subsections=dict_subsecs, review="yes", approved=approved, id=id, approval_buttons=approval_buttons, feedback=feedback)
 
 
 @competence.route('/send_for_approval', methods=['GET'])
@@ -756,7 +790,7 @@ def approve(id=None, version=None, u_id=None):
     #return json.dumps({"success": True})
     return redirect('/')
 
-@competence.route('/reject/<id>/<version>/<u_id>', methods=['GET'])
+@competence.route('/reject/<id>/<version>/<u_id>', methods=['GET','POST'])
 def reject(id=None, version=None, u_id=None):
     user_allowed = s.query(CompetenceDetails).filter(CompetenceDetails.c_id == id).filter(
         CompetenceDetails.intro == version).first().approve_id
@@ -769,12 +803,19 @@ def reject(id=None, version=None, u_id=None):
             "approved": None
 
         }
-        s.query(CompetenceDetails).filter(CompetenceDetails.c_id == id).filter(
-            CompetenceDetails.intro == version).update(data)
-        s.commit()
+
 
         competence = s.query(CompetenceDetails).filter(CompetenceDetails.c_id == id).filter(
             CompetenceDetails.intro == version).first()
+
+
+        feedback = CompetenceRejectionReasons(c_detail_id=competence.id,date=datetime.date.today(),rejection_reason=request.form["feedback"])
+        s.add(feedback)
+        s.commit()
+
+        s.query(CompetenceDetails).filter(CompetenceDetails.c_id == id).filter(
+            CompetenceDetails.intro == version).update(data)
+        s.commit()
         send_mail(competence.creator_id, "Competence Rejected!",
                   "Your competence \"" + competence.title + "\" has been rejected by <b>" + current_user.full_name)
 
@@ -932,8 +973,6 @@ def make_user_competent(ids=None,users=None):
                             data = {'trainer_id': current_user.database_id,
                                     'date_of_training': datetime.date.today(),
                                     'date_completed': datetime.date.today(),
-                                    #todo make this expiry the length of the competence
-                                    #datetime.date.today() + relativedelta(months=+6)
                                     'date_expiry': datetime.datetime.strptime(expiry_date, '%d/%m/%Y'),
                                     'date_activated': datetime.date.today(),
                                     'signoff_id': current_user.database_id,
@@ -990,12 +1029,15 @@ def assign_competence_to_user(user_id, competence_id, due_date):
     for sub_section in sub_sections:
         sub_list.append(sub_section.id)
 
+    check = s.query(Assessments).join(AssessmentStatusRef).filter(Assessments.ss_id.in_(sub_list)).filter(Assessments.user_id==user_id).filter(
+        Assessments.version == current_version).filter(AssessmentStatusRef.status != "Obsolete").count()
+    print "HERE CHECK"
+    print check
     assessment_ids = []
-    check = s.query(Assessments).filter(Assessments.ss_id.in_(sub_list)).filter_by(user_id=user_id).filter(
-        Assessments.version == current_version).count()
     if check == 0:
         for sub_section in sub_sections:
-            print sub_section
+            print "MEMEMEMEME"
+            print sub_section.name
             a = Assessments(status=status_id, ss_id=sub_section.id, user_id=int(user_id),
                             assign_id=current_user.database_id, version=current_version, due_date=datetime.datetime.strptime(due_date, '%d/%m/%Y'))
             print a
@@ -1380,3 +1422,26 @@ def competence_history():
 def videos():
     videos = s.query(Videos).all()
     return render_template("competence_videos.html",videos=videos)
+
+@competence.route('/add_videos', methods=['GET', 'POST'])
+def add_videos():
+    if request.method == 'POST':
+        category, competence = request.form["name"].split(": ")
+        cat_id = s.query(CompetenceCategory).filter_by(category=category).first().id
+        c_query = s.query(CompetenceDetails).join(Competence).filter(CompetenceDetails.title == competence).filter(
+            CompetenceDetails.category_id == cat_id).filter(and_(CompetenceDetails.intro <= Competence.current_version,or_(CompetenceDetails.last >= Competence.current_version,CompetenceDetails.last == None))).first()
+        video = Videos(date=datetime.date.today(),c_id=c_query.id,title=request.form['title'],embed_code=request.form['code'])
+        s.add(video)
+        s.commit()
+        return render_template("competence_videos.html")
+    elif request.method == 'GET':
+        return render_template("competence_video_add.html")
+
+
+@competence.route('/remove_video/<id>', methods=['GET', 'POST'])
+def remove_video(id=None):
+    if 'ADMIN' in current_user.roles:
+        s.query(Videos).filter(Videos.id==id).delete()
+        s.commit()
+
+    return videos()

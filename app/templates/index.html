@@ -25,7 +25,7 @@
         <section class="content container-fluid">
 
 
-            {% if signoff or signoff_competence %}
+            {% if signoff or signoff_competence or signoff_reassessment|length > 0 %}
                 <h2 class="page-header"><i class="fa fa-pencil"></i> To Approve</h2>
 
                 {#            {% if signoff|length !=0 %}#}
@@ -93,6 +93,59 @@
                         </div>
                     </div>
                 {% endif %}
+
+                {% if signoff_reassessment|length > 0 %}
+                    <div class="box" id="training">
+                        <div class="box-header with-border">
+                            <h3 class="box-title"><i class="fa  fa-refresh"></i> Reassessments Sign-Off</h3>
+                        </div>
+                        <div class="box-body table-responsive">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <table class="table table-striped">
+                                        <thead>
+                                        <th class="col-md-2">Competence</th>
+                                        <th class="col-md-3">Date Completed</th>
+                                        <th class="col-md-2">Trainee</th>
+                                        <th class="col-md-1">Version</th>
+                                        <th class="col-md-2">Actions</th>
+                                        </thead>
+
+                                        {% for reassessment in signoff_reassessment %}
+                                            <tr>
+                                                {#                                            HERE YOU NEED TO GET THE RIGHT VERSION - I THINK THAT'S WHY THERE ARE TWO#}
+                                                <td>
+                                                    {% set current_version = reassessment.assessments_rel[0].assess_rel.ss_id_rel.c_id_rel.current_version %}
+                                                    {% for competence in reassessment.assessments_rel[0].assess_rel.ss_id_rel.c_id_rel.competence_detail %}
+
+                                                        {% if competence.intro <= current_version %}
+                                                            {% if competence.last == None or competence.last >= current_version %}
+                                                                {{ competence.title }}
+                                                            {% endif %}
+
+                                                        {% endif %}
+                                                    {% endfor %}
+
+
+                                                </td>
+                                                <td>{{ reassessment.date_completed }}</td>
+                                                <td>{{ reassessment.assessments_rel[0].assess_rel.user_id_rel.first_name }} {{ reassessment.assessments_rel[0].assess_rel.user_id_rel.last_name }}</td>
+                                                <td>{{ reassessment.assessments_rel[0].assess_rel.version }}</td>
+                                                <td><a href="{{ url_for('training.reassessment_view',reassess_id=reassessment.id) }}"
+                                                       class="btn btn-sm btn-flat btn-primary"><span
+                                                        class="glyphicon glyphicon-eye-open"></span> </a></td>
+                                            </tr>
+
+                                        {% endfor %}
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+
+
                 {% if signoff_competence %}
                     <div class="box" id="training">
                         <div class="box-header with-border">
@@ -128,9 +181,64 @@
                                                         <a href="{{ url_for('competence.approve',id=competence.c_id,version=competence.intro,u_id=current_user.database_id) }}"
                                                            class="btn btn-sm btn-flat btn-success"><span
                                                                 class="glyphicon glyphicon-thumbs-up"></span> </a>
-                                                        <a href="{{ url_for('competence.reject',id=competence.c_id,version=competence.intro,u_id=current_user.database_id) }}"
-                                                           class="btn btn-sm btn-flat btn-danger"><span
-                                                                class="glyphicon glyphicon-thumbs-down"></span> </a>
+
+
+                                                        <button
+                                                                class="btn btn-sm btn-flat btn-danger reject_button"
+                                                                data-button='{"id":{{ competence.c_id }}}'><span
+                                                                class="glyphicon glyphicon-thumbs-down"></span></button>
+
+
+                                                        <div class="modal modal-default reject_comment"
+                                                             id="reject_comment_{{ competence.c_id }}"
+                                                             style="display: none;">
+                                                            <div class="modal-dialog">
+
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h4 class="modal-title"><i
+                                                                                class="fa fa-exclamation-triangle text-red"></i>Competence
+                                                                            Rejection: {{ competence.title }}</h4>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <form class="form-horizontal" id="feedback_form"
+                                                                              action="{{ url_for('competence.reject',id=competence.c_id,version=competence.intro,u_id=current_user.database_id) }}"
+                                                                              enctype="multipart/form-data"
+                                                                              method="POST">
+
+
+                                                                            <div class="form-group">
+                                                                                <label class="col-lg-3 control-label">Enter
+                                                                                    Feedback</label>
+                                                                                <div class="col-lg-9"><textarea
+                                                                                        name="feedback" id="feedback"
+                                                                                        class="form-control"></textarea>
+                                                                                </div>
+                                                                            </div>
+                                                                            <input type="submit"
+                                                                                   class="btn btn-flat btn-danger"
+                                                                                   value="Reject Competence">
+                                                                            </input>
+
+
+                                                                        </form>
+
+
+                                                                    </div>
+                                                                    <div class="modal-footer">
+
+                                                                        <button type="button"
+                                                                                class="btn btn-default btn-flat pull-right close_confirm">
+                                                                            Close
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                                <!-- /.modal-content -->
+
+                                                            </div>
+                                                            <!-- /.modal-dialog -->
+                                                        </div>
+
                                                     </div>
                                                 </td>
                                             </tr>
@@ -141,8 +249,6 @@
                             </div>
                         </div>
                     </div>
-                {% else %}
-                    You have no competencies to approve.
                 {% endif %}
 
             {% endif %}
@@ -170,7 +276,8 @@
 
 
                                     <input type="text" required="required" class="form-control pull-right"
-                                           id="datepicker" name="due_date" data-date-format="dd/mm/yyyy" placeholder="Due Date">
+                                           id="datepicker" name="due_date" data-date-format="dd/mm/yyyy"
+                                           placeholder="Due Date">
 
                                 </div>
                                 <div class="input-group col-xs-1">
@@ -208,9 +315,8 @@
                                     <thead>
 
                                     <th class="col-md-1">Category</th>
-                                    <th class="col-md-2">Competence</th>
+                                    <th class="col-md-3">Competence</th>
                                     <th class="col-md-1">Version</th>
-                                    <th class="col-md-1">Status</th>
                                     <th class="col-md-2">Assigned By</th>
                                     <th class="col-md-2">Date Assigned</th>
                                     <th class="col-md-2">Date Due</th>
@@ -221,12 +327,13 @@
 
                                         <tr>
                                             <td>{{ assessment.category }}</td>
-                                            <td>{{ assessment.title }}</td>
-                                            <td>
-                                                <small class="label bg-gray">v{{ assessment.version }}</small>
+                                            <td>{{ assessment.title }}
+                                                 {% if assessment.is_reassessment_max %}
+                                                    <label class="label label-info">4yr</label>
+                                                {% endif %}
                                             </td>
                                             <td>
-
+                                                <small class="label bg-gray">v{{ assessment.version }}</small>
                                             </td>
                                             <td>{{ assessment.user }}</td>
                                             <td>{{ assessment.assigned.strftime('%d-%m-%Y') }}</td>
@@ -359,6 +466,7 @@
                                     <th class="col-md-2">Some Sub-Sections...</th>
                                     <th class="col-md-2">Date Complete</th>
                                     <th class="col-md-2">Earliest Date of Expiry</th>
+                                    <th class="col-md-2">Status</th>
                                     <th class="col-md-2">Actions</th>
                                     </thead>
                                     {% for i in complete %}
@@ -380,16 +488,19 @@
                                             <td>   {% if i.expiry != None %}
                                                 {{ i.expiry.strftime('%d-%m-%Y') }}
                                             {% endif %}</td>
+                                        <td>
+                                            {{ get_status(i.max_status)|safe }}
+                                        </td>
                                             <td>
                                                 <div class="btn-group" style="display: flex">
                                                     <a href="{{ url_for('training.view_current_competence') }}?c_id={{ i.c_id }}&version={{ i.version }}"
                                                        class="btn btn-sm btn-primary btn-flat "><span
                                                             class="glyphicon glyphicon-eye-open"></span></a>
 
-                                                    <a data-toggle="modal" data=""
-                                                       href="{{ url_for('training.select_subsections') }}?c_id={{ i.c_id }}&version={{ i.version }}&action=reassess"
-                                                       class="btn btn-sm btn-success btn-flat"><span
-                                                            class="glyphicon glyphicon-repeat"></span></a>
+{#                                                    <a data-toggle="modal" data=""#}
+{#                                                       href="{{ url_for('training.select_subsections') }}?c_id={{ i.c_id }}&version={{ i.version }}&action=reassess"#}
+{#                                                       class="btn btn-sm btn-success btn-flat"><span#}
+{#                                                            class="glyphicon glyphicon-repeat"></span></a>#}
                                                     <a data-toggle="tooltip" title="Delete"
                                                        class="btn btn-sm btn-flat btn-danger remove_training"
                                                        id="{{ i.c_id }}"><i
@@ -451,7 +562,14 @@
                                         <td>{{ i.date_created.strftime('%d-%m-%Y') }}</td>
                                         <td>{{ i.approve_rel.first_name }} {{ i.approve_rel.last_name }}</td>
                                         {#                                        <td>{{ i.qpulsenum }}</td>#}
-                                        <td>{{ get_approval_status(i.approved)|safe }}</td>
+                                        <td>{{ get_approval_status(i.approved)|safe }}
+
+                                            {% if i.rejection_rel|length > 0 and i.approved == None %}
+                                                <span class="label label-danger">Feedback Available</span>
+                                            {% endif %}
+
+
+                                        </td>
                                         <td>
                                             <div class="btn-group" style="display: flex">
                                                 <a data-toggle="tooltip" title="View"
@@ -666,7 +784,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger btn-flat pull-left" id="confirmed">Yes Delete
                     </button>
-                    <button type="button" class="btn btn-default btn-flat pull-right" id="close_confirm">Close
+                    <button type="button" class="btn btn-default btn-flat pull-right close_confirm">Close
                     </button>
                 </div>
             </div>
@@ -689,7 +807,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-warning btn-flat pull-left" id="abandon_confirmed">Yes Abandon
                     </button>
-                    <button type="button" class="btn btn-default btn-flat pull-right" id="abandon_close_confirm">Close
+                    <button type="button" class="btn btn-default btn-flat pull-right close_confirm">Close
                     </button>
                 </div>
             </div>
@@ -704,12 +822,13 @@
     <script>
 
 
-        $(function () {
+        $(document).ready(function () {
 
             //Date picker
             $('#datepicker').datepicker({
                 autoclose: true,
-                format: 'dd/mm/yyyy'
+                format: 'dd/mm/yyyy',
+                startDate: '+1d'
 
             })
 
@@ -717,6 +836,7 @@
         })
 
         $(document).ready(function () {
+
             {# function to remove competence that is not complete #}
 
             $('.approval').click(function () {
@@ -753,8 +873,11 @@
                 });
             });
 
-            $('#abandon_close_confirm').click(function () {
-                $('#abandon_confirm').hide();
+            $('.close_confirm').click(function () {
+
+
+                $(this).parent().parent().parent().parent().hide();
+
             });
 
 
@@ -772,6 +895,16 @@
                 console.log(id)
                 $('#remove_confirm').show();
                 url = '{{ url_for("training.delete") }}?c_id=' + id
+
+            });
+
+
+            $('.reject_button').click(function () {
+                id = $(this).attr('id')
+                var data = $.parseJSON($(this).attr('data-button'));
+                console.log(id)
+                console.log("hello")
+                $('#reject_comment_' + data["id"]).show();
 
             });
 
@@ -936,7 +1069,6 @@
             barChartOptions.datasetFill = false
             barChart.Bar(barChartData, barChartOptions)
         })
-
     </script>
 
 {% endblock %}

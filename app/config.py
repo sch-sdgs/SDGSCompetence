@@ -10,7 +10,8 @@ WHOOSH_BASE = os.path.join(basedir + '/app/resources/')
 UPLOAD_FOLDER = os.path.join('/uploads')
 UPLOADED_FILES_DEST = os.path.join('/uploads')
 QPULSE_MODULE=False
-#QPULSE_MODULE=True
+QPULSE_MODULE=True
+MAIL=True
 
 # MAIL_SERVER = 'smtp.sch.nhs.uk'
 # MAIL_PORT = 25

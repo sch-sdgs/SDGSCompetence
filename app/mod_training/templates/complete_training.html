@@ -16,6 +16,7 @@
                     <strong>Fail Whale!</strong> {{ message }}
                 </div>
             {% endif %}
+
         </section>
 
         <!-- Main content -->
@@ -32,6 +33,12 @@
 
                 </div>
             </div>
+
+        {% if four_year_check > 0 %}
+            <div class="alert alert-danger">
+                <i class="fa fa-exclamation-triangle"></i> <strong>4 Year Reassessment is Due!!!</strong> Please click the button below to set this training as obselete and assign yourself the latest version of this competence.
+                </div>
+        {% endif %}
 
             <div class="row">
                 <div class="col-md-12">
@@ -63,10 +70,30 @@
                                 {#                                        {% endfor %}#}
                                 {#                                    {% endfor %}#}
                                 {#                                {% endfor %}#}
-                                <a href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&version={{ version }}&action=reassess"
-                                   class="btn btn-success btn-flat pull-right">Reassess</a>
+                                {% if not reassessments and four_year_check == 0 %}
+                                    <a href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&version={{ version }}&action=reassess"
+                                       class="btn btn-success btn-flat pull-right">Reassess</a>
+                                {% endif %}
+
+                                {% set pending=[] %}
+                                {% for reassessment in reassessments %}
+                                    {% if reassessment.assessments_rel[0].assess_rel.ss_id_rel.c_id|int == competence|int %}
+                                        {% do  pending.append(reassessment.is_correct) %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% if None not in pending %}
+                                    {% if four_year_check == 0 %}
+                                    <a href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&version={{ version }}&action=reassess"
+                                       class="btn btn-success btn-flat pull-right">Reassess</a>
+                                        {% elif four_year_check > 0 %}
+                                        <a href=""
+                                       class="btn btn-danger btn-flat pull-right">4 Year Reassessment</a>
+
+                                        {% endif %}
+                                {% endif %}
 
                             {% endif %}
+
                         </div>
                     </div>
                 </div>
@@ -85,7 +112,9 @@
                         <thead>
                         <tr>
                             <th>Assigned</th>
-                            <th>Date Due</th>
+                            {% if completed == '-' %}
+                                <th>Date Due</th>
+                            {% endif %}
                             <th>Validity</th>
                             <th>Activated</th>
                             <th>Completed</th>
@@ -95,7 +124,9 @@
                         <tbody>
                         <tr>
                             <td>{{ friendly_date(assigned) }}</td>
-                            <td>{{ check_due_date(assigned,due_date)|safe }}</td>
+                            {% if completed == '-' %}
+                                <td>{{ check_due_date(assigned,due_date)|safe }}</td>
+                            {% endif %}
                             <td>{{ validity }} months</td>
                             <td>{{ friendly_date(activated) }}</td>
                             <td>{{ friendly_date(completed) }}</td>
@@ -106,6 +137,88 @@
                 </div>
 
             </div>
+
+            {% if reassessments %}
+
+                <div class="box box-default box-solid collapsed-box" id="training">
+                    <div class="box-header with-border">
+                        <h3 class="box-title"> <span class="glyphicon glyphicon-repeat"></span> Reassessment Record</h3>
+                        <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                </button>
+              </div>
+
+                    </div>
+
+                    <div class="box-body table-responsive no-padding">
+
+
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Date Completed</th>
+                                <th>Authoriser</th>
+                                <th>Comments</th>
+                                <th>View</th>
+
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for reassessment in reassessments %}
+                                <tr>
+                                    <td>
+                                        {{ get_reassessment_status(reassessment)|safe }}
+
+                                    </td>
+                                    <td>{{ reassessment.date_completed }}</td>
+                                    <td>{{ reassessment.signoff_id_rel.first_name }} {{ reassessment.signoff_id_rel.last_name }}</td>
+                                    <td>{{ reassessment.comments }}</td>
+                                    <td>
+                                        <a href="{{ url_for('training.reassessment_view',reassess_id=reassessment.id) }}"
+                                           class="btn btn-sm btn-flat btn-primary"><span
+                                                class="glyphicon glyphicon-eye-open"></span> </a></td>
+
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+        {% if videos|length >0 %}
+
+        <div class="box box-default box-solid collapsed-box">
+            <div class="box-header with-border">
+              <h3 class="box-title"><i class="fa fa-fw fa-video-camera"></i> Training Videos</h3>
+
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                </button>
+              </div>
+              <!-- /.box-tools -->
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body" style="display: none;">
+              <div class="row">
+                        {% for video in videos %}
+                            <div class="col-md-4">
+
+                                <iframe width="380" height="180" src="{{ video.embed_code|safe }}" frameborder="0"
+                                        allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                            <p class="text-muted text-center">{{ video.title }}</p>
+
+
+                            </div>
+                        {% endfor %}
+                    </div>
+            </div>
+            <!-- /.box-body -->
+          </div>
+        {% endif %}
 
             <h3>Common Sections</h3>
             {% for section in section_list['constant'] %}
@@ -140,7 +253,7 @@
                             <tr>
                                 <th class="col-md-4">Area of Competence</th>
                                 <th class="col-md-1">Status</th>
-                                <th class="col-md-5">Declaration</th>
+                                <th class="col-md-5">Self Declaration</th>
                                 <th class="col-md-2"></th>
 
                             </tr>
@@ -153,10 +266,7 @@
                                     <td>{{ make_status_label(sub['status'])|safe }}</td>
                                     {% if sub['status'] != "Complete" %}
                                         <td><input type="checkbox" class="check" id="check_{{ sub['id'] }}"> I
-                                            acknowledge I
-                                            have read the relevant documents and are aware of the health &
-                                            safety
-                                            implications
+                                            acknowledge this section
                                         </td>
                                         <td>
                                             <button role="button"
@@ -167,11 +277,7 @@
                                                 Section
                                         </td>
                                     {% else %}
-                                        <td colspan="2">I have acknowledged that I
-                                            have read the relevant documents and are aware of the health &
-                                            safety
-                                            implications
-                                        </td>
+                                        <td colspan="2">I acknowledge this section</td>
                                     {% endif %}
 
                                 </tr>
@@ -215,9 +321,10 @@
                             <thead>
                             <tr>
                                 <th class="col-md-3">Area of Competence</th>
-                                <th class="col-md-2">Notes</th>
+                                <th class="col-md-1">Notes</th>
                                 <th class="col-md-1">Status</th>
-                                <th class="col-md-1">Evidence Type</th>
+                                <th class="col-md-1">Suggested Evidence Type</th>
+                                <th class="col-md-1">Submitted Evidence Type</th>
                                 <th class="col-md-1">Trained By</th>
                                 <th class="col-md-1">Trained On</th>
                                 <th class="col-md-1">Assessed By</th>
@@ -233,11 +340,19 @@
                                     <td>{{ sub['notes'] }}</td>
                                     <td>{{ make_status_label(sub['status'])|safe }}</td>
                                     <td>{{ sub['evidence_type'] }}</td>
+
+                                    <td>{% if sub['evidence'] != '-' %}
+
+                                        {{ sub['evidence'][0].evidence_id_rel.evidence_type_rel.type }}
+
+                                    {% endif %}
+                                    </td>
                                     <td>{{ sub['trainer'] }}</td>
                                     <td>{{ sub['date_of_training'] }}</td>
                                     <td>{{ sub['assessor'] }}</td>
                                     <td>{{ sub['date_of_completion'] }}</td>
                                     <td>
+
 
                                         {% if sub['evidence'] == '-' %}
                                             <a class="btn btn-sm btn-default" disabled><span

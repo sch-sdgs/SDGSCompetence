@@ -1,0 +1,93 @@
+{% extends "base2.html" %}
+{% block content %}
+
+
+
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                Add Videos
+                <small></small>
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                <li class="active">Here</li>
+            </ol>
+            {% if message %}
+                <div class="alert alert-danger">
+                    <strong>Fail Whale!</strong> {{ message }}
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- Main content -->
+        <section class="content container-fluid">
+            <div class="box box-primary" id="training">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Enter Video Details</h3>
+
+                </div>
+                <div class="box-body">
+                    <form action="{{ url_for('competence.add_videos') }}" method="POST" class="form-horizontal">
+                        <fieldset>
+
+
+                            <div class="form-group">
+
+                                <label class="col-lg-2 control-label">Competence</label>
+                                <div class="col-lg-10">
+                                    <input type="text" name="name" id="name" class="form-control"
+                                           placeholder="Just start typing the name of a competence.">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+
+                                <label class="col-lg-2 control-label">Video Title</label>
+                                <div class="col-lg-10">
+                                    <input type="text" name="title" id="title" class="form-control"
+                                           placeholder="">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+
+                                <label class="col-lg-2 control-label">Full Embed Code (Include html)</label>
+                                <div class="col-lg-10">
+                                    <input type="text" name="code" id="code" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-lg-10 col-lg-offset-2">
+                                    <input type="submit" class="btn btn-primary btn-flat"
+                                           value="Add Video to Competence">
+
+                                </div>
+
+                            </div>
+
+                        </fieldset>
+                    </form>
+
+                </div>
+            </div>
+
+        </section>
+    </div>
+
+    <script>
+        $(function () {
+            $.ajax({
+                url: '{{ url_for("competence.competence_name_autocomplete") }}'
+            }).done(function (data) {
+                $('#name').autocomplete({
+                    source: data.json_list,
+                    minLength: 2
+
+                });
+            });
+        });
+    </script>
+{% endblock %}

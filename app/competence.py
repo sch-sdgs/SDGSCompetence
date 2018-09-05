@@ -5,20 +5,22 @@ import logging
 from logging.handlers import TimedRotatingFileHandler
 import inspect
 import itertools
+import time
 from functools import wraps
 from flask_login import current_user
 import app.config as config
 import datetime
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.sql.expression import and_
-
+from threading import Thread
 #define app and db session
 
 app = Flask(__name__)
 app.secret_key = 'development key'
 app.config.from_object(config)
 
-from models import db,Users,Assessments,Evidence,CompetenceDetails
+
+from models import db,Users,Assessments,Evidence,CompetenceDetails,AssessmentStatusRef
 
 print app.config
 
@@ -38,18 +40,28 @@ cron.start()
 
 from flask_mail import Mail,Message
 
-mail = Mail(app)
+mail = Mail()
+mail.init_app(app)
+
+
+def send_async_email(msg):
+    with app.test_request_context():
+        mail.send(msg)
 
 def send_mail(user_id,subject,message):
-    recipient_user_name = s.query(Users).filter(Users.id == int(user_id)).first().login
-    print "SENDING EMAIL"
-    print message
-    msg = Message('StarDB: '+subject, sender="SDGS-Bioinformatics@sch.nhs.uk", recipients=[recipient_user_name+"@sch.nhs.uk"])
-    msg.body = 'text body'
-    msg.html = '<b>You have a notification on StarDB:</b><br><br>'+message+'<br><br>View all your notifications <a href="'+request.url_root+'notifications">here</a>'
 
-    with app.app_context():
-        mail.send(msg)
+    if config.MAIL != False:
+        recipient_user_name = s.query(Users).filter(Users.id == int(user_id)).first().login
+        print "SENDING EMAIL"
+        print message
+        msg = Message('StarDB: '+subject, sender="SDGS-Bioinformatics@sch.nhs.uk", recipients=[recipient_user_name+"@sch.nhs.uk"])
+        msg.body = 'text body'
+        msg.html = '<b>You have a notification on StarDB:</b><br><br>'+message+'<br><br>View all your notifications <a href="'+request.url_root+'notifications">here</a>'
+        thr = Thread(target=send_async_email, args=[msg])
+        thr.start()
+
+
+
 
 def message(f):
     """
@@ -141,6 +153,11 @@ def check_notifications(user_id):
 
     return [count,alerts]
 
+
+#####
+# cron jobs to do things like check for expiring competencies, check for 4 year reassessments
+#####
+
 @cron.interval_schedule(days=7)
 def expiry_emailer():
     """
@@ -152,10 +169,46 @@ def expiry_emailer():
         if count > 0:
             lines=["<b>Outstanding notifications</b><br>"]
             for i in alerts:
-                lines.append(i+": "+str(alerts[i]))
+                with app.test_request_context():
+                    time.sleep(5)
+                    send_mail(user.id, "You have outstanding notifications!", "<br>".join(lines))
 
-            send_mail(user.id,"You have outstanding notifications!","<br>".join(lines))
 
+@cron.interval_schedule(days=1)
+def four_year_checker():
+    """
+    check assessments every day for 4 year expiry
+    """
+
+    #do 46 months to give 2 months warning
+    four_years_ago = datetime.date.today() - relativedelta(months=46)
+
+    assessments = s.query(Assessments).join(AssessmentStatusRef).filter(
+        AssessmentStatusRef.status == "Complete").filter(Assessments.date_completed <= four_years_ago)
+
+
+    done = []
+    for assessment in assessments:
+
+        #update assessment status to indicate that 4 year is now due (maybe set them all?)
+        status = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Four Year Due").first().id
+        data = { "status": status }
+        s.query(Assessments).filter(Assessments.id == assessment.id).update(data)
+
+        #only send email once for that competency
+        if str(assessment.user_id) + ":" + str(assessment.ss_id_rel.c_id) not in done:
+
+            lines = [assessment.ss_id_rel.c_id_rel.competence_detail[0].title + " is due for a four year reassessment."]
+            lines.append("You originally completed this competency on "+str(assessment.date_completed))
+            lines.append("Please arrange a suitable time with your trainer to reassess you competence fully.")
+
+            with app.test_request_context():
+                time.sleep(5)
+                send_mail(assessment.user_id ,"Four Year Competency Reassessment Required: "+ assessment.ss_id_rel.c_id_rel.competence_detail[0].title,"<br><br>".join(lines))
+
+        done.append(str(assessment.user_id) + ":" + str(assessment.ss_id_rel.c_id))
+
+    s.commit()
 
 
 # Shutdown your cron thread if the web process is stopped

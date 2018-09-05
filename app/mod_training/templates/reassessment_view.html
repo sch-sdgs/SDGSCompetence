@@ -1,0 +1,204 @@
+{% extends "base2.html" %}
+{% block content %}
+
+
+
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                <i class="fa  fa-refresh"></i> View Reassessment
+                <small></small>
+            </h1>
+            {#            <ol class="breadcrumb">#}
+            {#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
+            {#                <li class="active">Here</li>#}
+            {#            </ol>#}
+            {% if message %}
+                <div class="alert alert-danger">
+                    <strong>Fail Whale!</strong> {{ message }}
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- Main content -->
+        <section class="content container-fluid">
+
+            <h3>
+                <strong>Competence:</strong> {% set current_version = reassessment.assessments_rel[0].assess_rel.ss_id_rel.c_id_rel.current_version %}
+
+                {% for competence in reassessment.assessments_rel[0].assess_rel.ss_id_rel.c_id_rel.competence_detail %}
+
+                    {% if competence.intro <= current_version %}
+
+                        {{ competence.title }}
+                        {% if reassessment.is_correct == None %}
+                            <p class="label label-warning">Awaiting
+                                Sign-Off: {{ reassessment.signoff_id_rel.first_name }} {{ reassessment.signoff_id_rel.last_name }}</p>
+                            {% elif reassessment.is_correct == 0 %}
+                            <p class="label label-danger">Failed</p>
+                            {% elif reassessment.is_correct == 1 %}
+                            <p class="label label-success">Passed</p>
+                        {% endif %}
+                    {% endif %}
+
+                {% endfor %}</h3>
+            <h3>
+                <strong>Trainee:</strong> {{ reassessment.assessments_rel[0].assess_rel.user_id_rel.first_name }} {{ reassessment.assessments_rel[0].assess_rel.user_id_rel.last_name }}
+
+            </h3>
+
+        <h3>
+                <strong>Date:</strong> {{ reassessment.date_completed }}
+
+            </h3>
+
+
+            <div class="box box-primary" id="training">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Competence Subsections Covered</h3>
+
+                </div>
+                <div class="box-body">
+
+                    <ul>
+
+
+                        {% set questions = [] %}
+
+
+                        {% for reassessment in reassessment.assessments_rel %}
+                            <li><strong>{{ reassessment.assess_rel.ss_id_rel.name }}</strong> <br></li>
+
+
+                            {% do questions.append(reassessment.reassess_rel.reassessment_questions) %}
+
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="box box-primary" id="training">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Questions</h3>
+
+                </div>
+                <div class="box-body">
+
+                    {% for question in questions[0] %}
+
+                        <div class="box box-default" id="training">
+                            <div class="box-header ">
+                                <h3 class="box-title"><i
+                                        class="fa fa-question-circle"></i> {{ question.question_id_rel.question }}</h3>
+
+                            </div>
+                            <div class="box-body">
+                                {{ question.answer }}
+                            </div>
+                        </div>
+
+
+                    {% endfor %}
+
+                    {% if reassessment.is_correct == None and reassessment.signoff_id == current_user.database_id %}
+                        <button
+                                class="btn btn btn-flat btn-danger reject_button pull-right"
+                                data-button='{"id":}'><span
+                                class="glyphicon glyphicon-thumbs-down"></span> Reject
+                        </button>
+                        <a href="{{ url_for('training.accept_reassessment',id=reassessment.id) }}"
+                           class="btn btn btn-flat btn-success pull-right"><span
+                                class="glyphicon glyphicon-thumbs-up"></span> Approve </a>
+
+
+
+                    {% endif %}
+
+                </div>
+            </div>
+
+        </section>
+    </div>
+
+
+    <div class="modal modal-default reject_comment"
+         id="reject_comment"
+         style="display: none;">
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><i
+                            class="fa fa-exclamation-triangle text-red"></i>Reassessment
+                        Rejection:
+                 {% set current_version = reassessment.assessments_rel[0].assess_rel.ss_id_rel.c_id_rel.current_version %}
+
+                {% for competence in reassessment.assessments_rel[0].assess_rel.ss_id_rel.c_id_rel.competence_detail %}
+
+                    {% if competence.intro <= current_version %}
+
+                        {{ competence.title }}
+
+                    {% endif %}
+
+                {% endfor %}</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" id="feedback_form"
+                          action="{{ url_for('training.reject_reassessment',id=reassessment.id) }}"
+                          enctype="multipart/form-data"
+                          method="POST">
+
+
+                        <div class="form-group">
+                            <label class="col-lg-3 control-label">Enter
+                                Feedback</label>
+                            <div class="col-lg-9"><textarea
+                                    name="feedback" id="feedback"
+                                    class="form-control"></textarea>
+                            </div>
+                        </div>
+                        <input type="submit"
+                               class="btn btn-flat btn-danger"
+                               value="Reject Reassessment">
+                        </input>
+
+
+                    </form>
+
+
+                </div>
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-default btn-flat pull-right close_confirm">
+                        Close
+                    </button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <script>
+
+    $('.close_confirm').click(function () {
+
+
+                $(this).parent().parent().parent().parent().hide();
+
+            });
+
+    $('.reject_button').click(function () {
+
+                $('#reject_comment').show();
+
+            });
+
+
+    </script>
+
+{% endblock %}
+
+

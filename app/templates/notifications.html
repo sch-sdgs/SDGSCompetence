@@ -121,6 +121,42 @@
                     </table>
                 </div>
             </div>
+        <div class="box box-danger" id="training">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Reassessments Approval</h3>
+
+                </div>
+                <div class="box-body">
+
+                    <table class="table table-striped">
+                        <thead>
+                        <th class="col-md-5">Competence Title</th>
+                        <th class="col-md-5">Trainee</th>
+                        <th class="col-md-2">Completion Date</th>
+                        </thead>
+                        {% for reassessment in alerts["Reassessment Approval"] %}
+
+                            <tr>
+                             {% set current_version = reassessment.assessments_rel[0].assess_rel.ss_id_rel.c_id_rel.current_version %}
+                                                    {% for competence in reassessment.assessments_rel[0].assess_rel.ss_id_rel.c_id_rel.competence_detail %}
+
+                                                        {% if competence.intro <= current_version %}
+                                                            {% if competence.last == None or competence.last >= current_version %}
+                                                                <td>{{ competence.title }}</td>
+                                                            {% endif %}
+
+                                                        {% endif %}
+                                                    {% endfor %}
+
+
+
+                                <td>{{ reassessment.assessments_rel[0].assess_rel.user_id_rel.first_name }} {{ reassessment.assessments_rel[0].assess_rel.user_id_rel.last_name }}</td>
+                                <td>{{ reassessment.date_completed }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
 
 
         </section>

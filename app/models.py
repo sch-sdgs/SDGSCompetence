@@ -141,6 +141,7 @@ class CompetenceDetails(db.Model):
     category_rel = db.relationship("CompetenceCategory", lazy='joined', foreign_keys=[category_id])
     # c_id_rel = db.relationship("Competence", lazy='joined', foreign_keys=[c_id])
     competence = db.relationship("Competence",  back_populates="competence_detail", lazy='joined')
+    rejection_rel = db.relationship("CompetenceRejectionReasons", lazy='joined')
 
     def __init__(self, c_id, title, scope, creator_id, validity_period, category_id, intro=1, approve_id=None,
                  approved=None):
@@ -403,7 +404,8 @@ class ReassessmentQuestions(db.Model):
     reassessment_id = db.Column(db.Integer, db.ForeignKey("reassessments.id"), unique=False, nullable=False)
 
     question_id_rel = db.relationship("QuestionsRef", lazy='joined', foreign_keys=[question_id])
-    reassessment_id_rel = db.relationship("Reassessments", lazy='joined', foreign_keys=[reassessment_id])
+    reassessment_id_rel = db.relationship("Reassessments", lazy='joined', back_populates="reassessment_questions")
+
 
     def __init__(self, question_id, answer, reassessment_id):
         self.question_id = question_id
@@ -434,8 +436,13 @@ class Reassessments(db.Model):
     signoff_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=True)
     date_completed = db.Column(db.DATE, unique=False, nullable=True)
     is_correct = db.Column(db.BOOLEAN, unique=False, nullable=True)
+    comments = db.Column(db.String(1000), unique=False, nullable=True)
 
     signoff_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[signoff_id])
+    assessments_rel = db.relationship("AssessReassessRel", lazy='joined')
+    reassessment_questions = db.relationship("ReassessmentQuestions", back_populates="reassessment_id_rel")
+
+
 
     def __init__(self, signoff_id):
         self.signoff_id = signoff_id
@@ -603,6 +610,14 @@ class Videos(db.Model):
 
     def __repr__(self):
         return '<Videos %r>' % self.title
+
+class CompetenceRejectionReasons(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DATETIME, unique=False, nullable=False)
+    c_detail_id = db.Column(db.Integer, db.ForeignKey("competence_details.id"), unique=False, nullable=False)
+    rejection_reason = db.Column(db.String(2000), unique=True, nullable=False)
+
+    competence_details = db.relationship("CompetenceDetails", lazy='joined', foreign_keys=[c_detail_id])
 
 if enable_search:
     whooshalchemy.whoosh_index(app, Users)

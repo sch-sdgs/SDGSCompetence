@@ -9,10 +9,12 @@
 
             {% if review %}
                 <h1><i class="fa fa-fw fa-file-text-o"></i> View Competency
-                <small>Viewing the details of a single competency</small></h1>
+                    <small>Viewing the details of a single competency</small>
+                </h1>
             {% else %}
                 <h1><i class="fa fa-fw fa-file-text-o"></i> View Completed Competency
-                <small>Viewing the details of a single competency</small></h1>
+                    <small>Viewing the details of a single competency</small>
+                </h1>
             {% endif %}
 
             </h1>
@@ -62,6 +64,68 @@
                                             href="{{ url_for('competence.edit_competence') }}?ids={{ c_id }}&version={{ version }}"
                                             class="btn btn-flat btn-primary"><i class="fa fa-pencil"></i> Edit</a>
                                 {% elif not approved %}
+
+                                    {% if approval_buttons == True %}
+                                        <a href="{{ url_for('competence.approve',id=c_id,version=intro,u_id=current_user.database_id) }}"
+                                           class="btn  btn-flat btn-success"><span
+                                                class="glyphicon glyphicon-thumbs-up"></span> </a>
+
+                                         <button
+                                                                class="btn btn-flat btn-danger reject_button"
+                                                                id="reject_button"><span
+                                                                class="glyphicon glyphicon-thumbs-down"></span></button>
+
+                                        <div class="modal modal-default reject_comment"
+                                                             id="reject_comment" style="display: none;">
+                                                            <div class="modal-dialog">
+
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h4 class="modal-title"><i
+                                                                                class="fa fa-exclamation-triangle text-red"></i>Competence
+                                                                            Rejection</h4>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <form class="form-horizontal" id="feedback_form"
+                                                                              action="{{ url_for('competence.reject',id=c_id,version=intro,u_id=current_user.database_id) }}"
+                                                                              enctype="multipart/form-data"
+                                                                              method="POST">
+
+
+                                                                            <div class="form-group">
+                                                                                <label class="col-lg-3 control-label">Enter
+                                                                                    Feedback</label>
+                                                                                <div class="col-lg-9"><textarea
+                                                                                        name="feedback" id="feedback"
+                                                                                        class="form-control"></textarea>
+                                                                                </div>
+                                                                            </div>
+                                                                            <input type="submit"
+                                                                                   class="btn btn-flat btn-danger" value="Reject Competence">
+                                                                            </input>
+
+
+                                                                        </form>
+
+
+                                                                    </div>
+                                                                    <div class="modal-footer">
+
+                                                                        <button type="button"
+                                                                                class="btn btn-default btn-flat pull-right close_confirm">
+                                                                            Close
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                        </div>
+
+
+
+
+
+                                    {% endif %}
+
                                     <button class="btn btn-flat btn-primary" disabled><i class="fa fa-pencil"></i> Edit
                                     </button>
                                 {% elif approved %}
@@ -79,6 +143,27 @@
                 </div>
             </div>
 
+            {% if feedback|length > 0 %}
+                <div class="box box-danger" id="training">
+                    <div class="box-header with-border">
+
+
+                        <h3 class="box-title">Feedback</h3>
+
+                    </div>
+                    <div class="box-body">
+                        {% for feed in feedback %}
+                        <blockquote><p>
+                        {{ feed.rejection_reason }}
+                        </p>
+                            <small>{{ feed.date.strftime('%d-%m-%Y') }}</small>
+                            </blockquote>
+                        {% endfor %}
+
+
+                    </div>
+                </div>
+            {% endif %}
 
             <div class="box box-primary" id="training">
                 <div class="box-header with-border">
@@ -107,25 +192,30 @@
                     </div>
                 </div>
             </div>
-            <div class="box" id="training">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Associated Q-Pulse Documents</h3>
-
-                </div>
-                <div class="box-body">
-                    <div class="form-group">
+            {% if docs|length != 0 %}
+                <div class="box" id="training">
 
 
-                        {% for doc in docs %}
-                            <tr>
-                                <td><p>{{ doc }} : {{ docs[doc] }}</p></td>
-                            </tr>
-                        {% endfor %}
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Associated Q-Pulse Documents</h3>
+
                     </div>
+                    <div class="box-body">
+                        <div class="form-group">
 
 
+                            {% for doc in docs %}
+                                <tr>
+                                    <td><p><i class="fa fa-book"></i> <strong>{{ doc }}</strong> : {{ docs[doc] }}</p>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </div>
+
+
+                    </div>
                 </div>
-            </div>
+            {% endif %}
 
 
             <div class="box" id="training">
@@ -139,14 +229,14 @@
                     {% for constant_sec_name in constants %}
 
 
-                        <table class="table table-striped table-hover ">
+                        <table class="table table-striped">
                         <h4 class="text-blue"><i class="fa fa-fw fa-check-square-o"></i> {{ constant_sec_name }}</h4>
 
                         <thead>
                         <tr>
-                            <th class="col-md-5">Area of Competence</th>
+                            <th class="col-md-7">Area of Competence</th>
                             <th class="col-md-2">Evidence Type</th>
-                            <th class="col-md-5">Comments</th>
+                            <th class="col-md-3">Comments</th>
                         </tr>
                         </thead>
                         {% for i in  constants[constant_sec_name] %}
@@ -173,33 +263,33 @@
 
                 </div>
                 <div class="box-body">
-                    <div class="form-group">
 
-                        {% for sec_name in subsections %}
 
-                            <table class="table table-striped table-hover ">
-                            <h4 class="text-blue"><i class="fa fa-fw fa-check-square-o"></i> {{ sec_name }}</h4>
-                            <thead>
+                    {% for sec_name in subsections %}
+
+                        <table class="table table-striped">
+                        <h4 class="text-blue"><i class="fa fa-fw fa-check-square-o"></i> {{ sec_name }}</h4>
+                        <thead>
+                        <tr>
+                            <th class="col-md-7">Area of Competence</th>
+                            <th class="col-md-2">Evidence Type</th>
+                            <th class="col-md-3">Comments</th>
+                        </tr>
+                        </thead>
+                        {% for i in  subsections[sec_name] %}
+
                             <tr>
-                                <th class="col-md-5">Area of Competence</th>
-                                <th class="col-md-2">Evidence Type</th>
-                                <th class="col-md-5">Comments</th>
+                                <td> {{ i[0] }}</td>
+                                <td>{{ i[2] }}</td>
+                                <td> {{ i[1] }}</td>
                             </tr>
-                            </thead>
-                            {% for i in  subsections[sec_name] %}
-                                <tbody>
-                                <tr>
-                                    <td> {{ i[0] }}</td>
-                                    <td>{{ i[2] }}</td>
-                                    <td> {{ i[1] }}</td>
-                                </tr>
 
-                            {% endfor %}
                         {% endfor %}
+                    {% endfor %}
 
-                        </tbody>
-                        </table>
-                    </div>
+
+                    </table>
+
 
                 </div>
             </div>
@@ -263,6 +353,25 @@
     </div>
 
     <script>
+
+            $('#reject_button').click(function () {
+                id = $(this).attr('id')
+                console.log(id)
+                console.log("hello")
+                $('#reject_comment').show();
+
+            });
+
+
+
+            $('.close_confirm').click(function () {
+
+
+                $(this).parent().parent().parent().parent().hide();
+
+            });
+
+
         $('.approval').click(function () {
             id = $(this).attr('id')
             console.log(id)

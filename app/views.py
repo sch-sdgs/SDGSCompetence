@@ -15,6 +15,8 @@ from trello import TrelloApi
 from app.competence import app, s, db
 from app.models import *
 from app.competence import config
+import itertools
+
 import json
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -103,8 +105,13 @@ class User(UserMixin):
             #check_activdir = UserAuthentication().authenticate(id, password)
             check_activdir = True
 
+
         self.roles = []
         if check_activdir != "False":
+            data = {"last_login": datetime.date.today()}
+            s.query(Users).filter(Users.login == id).update(data)
+            s.commit()
+
             roles = s.query(UserRolesRef).join(UserRoleRelationship).join(Users).filter(Users.login == id).all()
             for role in roles:
                 self.roles.append(role.role)
@@ -113,6 +120,7 @@ class User(UserMixin):
 
         else:
             return False
+
 
     def is_active(self):
         return True
@@ -192,7 +200,9 @@ def utility_processor():
         """
         counts = s.query(Assessments)\
             .join(Subsection) \
+            .join(AssessmentStatusRef) \
             .filter(Assessments.version==version) \
+            .filter(AssessmentStatusRef.status != "Obsolete")\
             .filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id)) \
             .values((func.sum(case([(Assessments.date_completed == None, 0)], else_=1)) / func.count(
             Assessments.id) * 100).label('percentage'))
@@ -266,12 +276,32 @@ def utility_processor():
 
     return dict(check_expiry=check_expiry)
 
+@app.context_processor
+def utility_processor():
+    def get_reassessment_status(reassessment):
+
+
+        if reassessment.is_correct == None:
+            html = '<span class ="label label-warning">Awaiting Sign-Off</span>'
+        elif reassessment.is_correct == 1:
+            html = '<span class ="label label-success">Approved</span>'
+        elif reassessment.is_correct == 0:
+            html = '<span class ="label label-danger">Failed</span>'
+
+
+        return html
+
+    return dict(get_reassessment_status=get_reassessment_status)
+
 def percent_due_date(assigned_date,due_date):
     days_passed_since_assignment = abs((assigned_date - datetime.date.today()).days)
 
     total_days = abs((due_date - assigned_date).days)
 
-    percent = (days_passed_since_assignment / float(total_days)) * float(100)
+    if total_days == 0:
+        percent = 100
+    else:
+        percent = (days_passed_since_assignment / float(total_days)) * float(100)
 
     return percent
 
@@ -308,19 +338,38 @@ def utility_processor():
 
     return dict(check_due_date=check_due_date)
 
+
+def assess_status_method(status):
+    if status == "Active":
+        html = '<span class="label label-warning">Active</span>'
+    elif status == "Complete":
+        html = '<span class="label label-success">Complete</span>'
+    elif status == "Assigned":
+        html = '<span class="label label-default">Assigned</span>'
+    elif status == "Four Year Due":
+        html = '<span class="label label-danger">Four Year Due</span>'
+
+    return html
+
+
 @app.context_processor
 def utility_processor():
     def assess_status(status):
-        if status == "Active":
-            html = '<span class="label label-warning">Active</span>'
-        elif status == "Complete":
-            html = '<span class="label label-success">Complete</span>'
-        elif status == "Assigned":
-            html = '<span class="label label-default">Assigned</span>'
+        html = assess_status_method(status)
 
         return html
 
     return dict(assess_status=assess_status)
+
+@app.context_processor
+def utility_processor():
+    def get_status(status_id):
+        status = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.id==status_id).first().status
+        html = assess_status(status)
+
+        return html
+
+    return dict(get_status=get_status)
 
 
 @app.context_processor
@@ -353,6 +402,10 @@ def utility_processor():
         if approval > 0:
             count += approval
             alerts["Competence Approval"] = approval
+        reassessments = s.query(Reassessments).filter(Reassessments.signoff_id == current_user.database_id).filter(Reassessments.is_correct==None).count()
+        if reassessments > 0:
+            count += reassessments
+            alerts["Reassessment Approval"] = reassessments
 
         return [count,alerts]
     return dict(notifications=notifications)
@@ -598,9 +651,10 @@ def index():
         .join(Subsection)\
         .join(Competence)\
         .join(CompetenceDetails)\
+        .join(AssessmentStatusRef)\
         .filter(Assessments.user_id == current_user.database_id) \
         .group_by(Assessments.version) \
-        .filter(Assessments.status.in_([3])) \
+        .filter(AssessmentStatusRef.status.in_(["Complete","4 Year Due"])) \
         .all()
 
     print complete
@@ -614,13 +668,20 @@ def index():
 
 
     signoff = s.query(Evidence).filter(Evidence.signoff_id == current_user.database_id).filter(Evidence.is_correct == None).all()
-    signoff_competence = s.query(CompetenceDetails).filter(and_(CompetenceDetails.approve_id == current_user.database_id,CompetenceDetails.approved != None,CompetenceDetails.approved != 1)).all()
+    signoff_competence = s.query(CompetenceDetails).join(CompetenceRejectionReasons).filter(and_(CompetenceDetails.approve_id == current_user.database_id,CompetenceDetails.approved != None,CompetenceDetails.approved != 1)).all()
+    signoff_reassessment = s.query(Reassessments).join(AssessReassessRel).join(Assessments).filter(Reassessments.signoff_id==current_user.database_id).filter(Reassessments.is_correct == None).all()
+
+    # signoff_reassessments = {key: [i for i in value] for key, value in
+    #           itertools.groupby(signoff_reassessment, lambda item: item.assess_rel.user_id_rel )}
+
+
+
 
     accept_form = RateEvidence()
     return render_template("index.html", complete=all_complete, accept_form=accept_form, signoff=signoff, assigned_count=assigned_count,
                            active_count=active_count, complete_count=complete_count, linereports=linereports,
                            linereports_inactive=linereports_inactive, competences_incomplete=competences_incomplete,
-                           competences_complete=competences_complete, abandoned_count=abandoned_count, counts=counts, assigned=all_assigned, active=active,signoff_competence=signoff_competence)
+                           competences_complete=competences_complete, abandoned_count=abandoned_count, counts=counts, assigned=all_assigned, active=active,signoff_competence=signoff_competence,signoff_reassessment=signoff_reassessment)
 
 
 @app.route('/notifications')
@@ -665,6 +726,16 @@ def notifications():
             and_(CompetenceDetails.approve_id == current_user.database_id, CompetenceDetails.approved != None,
                  CompetenceDetails.approved != 1)).all()
         alerts["Competence Approval"] = approval_query
+
+    reassessments = s.query(Reassessments).filter(Reassessments.signoff_id == current_user.database_id).filter(
+        Reassessments.is_correct == None).count()
+    if reassessments > 0:
+        count += reassessments
+        reassessments_query = s.query(Reassessments).filter(Reassessments.signoff_id == current_user.database_id).filter(
+            Reassessments.is_correct == None).all()
+        alerts["Reassessment Approval"] = reassessments_query
+
+
 
     return render_template("notifications.html",alerts=alerts)
 

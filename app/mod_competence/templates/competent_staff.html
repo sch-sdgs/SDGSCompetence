@@ -93,6 +93,10 @@
                                                                     Date Due: {{ check_due_date(assessment.date_assigned,assessment.due_date)|safe }}
 
                                                                 {% endif %}
+                                                                {% if assessment.is_reassessment == True %}
+                                                                    <label class="label label-info">4yr</label>
+                                                                {% endif %}
+
                                                             </td>
                                                         </tr>
 

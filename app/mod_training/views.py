@@ -15,6 +15,7 @@ import json
 from collections import OrderedDict
 from app.competence import config
 
+
 training = Blueprint('training', __name__, template_folder='templates')
 
 
@@ -38,12 +39,14 @@ def utility_processor():
             html = '<span class="label label-success">' + status + '</span>'
         elif status == "Failed":
             html = '<span class="label label-danger">' + status + '</span>'
-        elif status == "Obselete":
+        elif status == "Obsolete":
             html = '<span class="label label-default">' + status + '</span>'
         elif status == "Abandoned":
             html = '<span class="label label-default">' + status + '</span>'
         elif status == "Sign-Off":
             html = '<span class="label label-primary">' + status + '</span>'
+        elif status == "Four Year Due":
+            html = '<span class="label label-danger">' + status + '</span>'
         return html
 
     return dict(make_status_label=make_status_label)
@@ -102,10 +105,11 @@ def get_competence_by_user(c_id, u_id,version):
         join(SectionSortOrder). \
         join(Competence). \
         join(CompetenceDetails, and_(Competence.id==CompetenceDetails.c_id,CompetenceDetails.intro==version)). \
-        join(AssessmentStatusRef, Assessments.status == AssessmentStatusRef.id). \
+        join(AssessmentStatusRef). \
         join(EvidenceTypeRef). \
+        filter(AssessmentStatusRef.status != "Obsolete" ). \
         filter(and_(Assessments.user_id == u_id, Competence.id == c_id, Assessments.version==version)). \
-        order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).\
+        order_by(asc(Section.name)).order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).\
         values(Assessments.id.label('ass_id'), Section.name, Section.constant, Subsection.id, Assessments.trainer_id, Assessments.signoff_id,
                Subsection.name.label('area_of_competence'), Subsection.comments.label('notes'), EvidenceTypeRef.type,
                AssessmentStatusRef.status, Assessments.date_of_training,
@@ -119,7 +123,6 @@ def get_competence_by_user(c_id, u_id,version):
     for_order = s.query(SectionSortOrder).filter(SectionSortOrder.c_id == c_id).order_by(
         asc(SectionSortOrder.sort_order)).all()
     for x in for_order:
-
         check = s.query(Subsection).filter(Subsection.s_id == x.section_id).filter(
             and_(Subsection.intro <= version, or_(Subsection.last > version, Subsection.last == None))).count()
 
@@ -136,8 +139,10 @@ def get_competence_by_user(c_id, u_id,version):
     for c in competence_result:
         print "hello MEMEMME"
         print c.name
+        print c.ass_id
         evidence = s.query(AssessmentEvidenceRelationship).filter(
             AssessmentEvidenceRelationship.assessment_id == c.ass_id).all()
+        print evidence
         if c.constant:
             d = 'constant'
         else:
@@ -177,7 +182,6 @@ def get_competence_by_user(c_id, u_id,version):
         subsection_list.append(subsection)
         result[d][c.name]['subsections'] = subsection_list
 
-    print json.dumps(result,indent=4)
     return result
 
 
@@ -200,6 +204,8 @@ def get_competence_summary_by_user(c_id, u_id,version):
         values((Users.first_name + ' ' + Users.last_name).label('user'),
                CompetenceDetails.title,
                Assessments.version,
+               func.max(Assessments.status).label('max_status'),
+               func.max(Assessments.is_reassessment).label('is_reassessment_max'),
                CompetenceDetails.qpulsenum,
                CompetenceDetails.category_rel,
                CompetenceDetails.scope,
@@ -224,11 +230,8 @@ def get_competence_summary_by_user(c_id, u_id,version):
                #                  Assessments.date_expiry == None)).exists(),
                #      None)],
                #     else_=func.min(Assessments.date_expiry)).label('expiry'))
-    print "HERE"
-    print competence_result
+
     for comp in competence_result:
-        print "HELLO"
-        print comp
         return comp
 
 
@@ -321,22 +324,23 @@ def reassessment():
 
         choices = []
         for user in competent_users:
-            choices.append((user.id, user.name))
+            if user.id != current_user.database_id:
+                choices.append((user.id, user.name))
         #todo append competence author
 
         form.signoff_id.choices = choices
         return render_template('reassessment.html', data=data, c_id=c_id, user_id=u_id,
                                competence_name=competence_summary.title, form=form,
-                               assess_id_list=','.join(assess_id_list))
+                               assess_id_list=','.join(assess_id_list),version=version)
 
     elif request.method == 'POST':
         print "now posting"
         questions = s.query(QuestionsRef).filter(QuestionsRef.active == True).all()
-        print questions
+
         signoff_id = request.form["signoff_id"]
-        print(request.form)
+
         assess_id_list = request.args.get('assess_id_list').split(',')
-        print signoff_id
+
         reassessment = Reassessments(signoff_id)
         s.add(reassessment)
         s.commit()
@@ -345,17 +349,28 @@ def reassessment():
             s.add(assess_rel)
         s.commit()
         for question in questions:
-            print(question)
+
             id = "answer" + str(question.id)
-            print id
+
             answer = request.form.get(id)
-            print(answer)
+
             reassess = ReassessmentQuestions(question_id=question.id, answer=answer, reassessment_id=reassessment.id)
             s.add(reassess)
+
+            s.query(Reassessments).filter(Reassessments.id == reassessment.id).update({"date_completed":datetime.date.today()})
+
             s.commit()
 
         return redirect(
-            url_for('training.view_current_competence', c_id=request.args.get('c_id'), user=request.args.get('u_id')))
+            url_for('training.view_current_competence', version= request.args.get('version'),c_id=request.args.get('c_id'), user=request.args.get('u_id')))
+
+@training.route('/reassessment_view/<int:reassess_id>', methods=['GET', 'POST'])
+@login_required
+def reassessment_view(reassess_id=None):
+
+    reassessment = s.query(Reassessments).join(AssessReassessRel).filter(Reassessments.id==reassess_id).group_by(AssessReassessRel.reassess_id).first()
+
+    return render_template('reassessment_view.html',reassessment=reassessment)
 
 
 @training.route('/view', methods=['GET', 'POST'])
@@ -376,7 +391,15 @@ def view_current_competence():
         section_list = get_competence_by_user(c_id, u_id,version)
         print "HERE"
         print competence_summary.activated
+        reassessments = s.query(Reassessments).join(AssessReassessRel).join(Assessments).join(AssessmentStatusRef).join(Subsection).join(Competence).filter(AssessmentStatusRef.status != "Obsolete").filter(Assessments.user_id==u_id).filter(Competence.id==c_id).filter(Assessments.version==version).all()
+        print "DETAILLLS"
+        detail_id = s.query(CompetenceDetails).join(Competence).filter(CompetenceDetails.c_id == c_id).filter(and_(CompetenceDetails.intro <= version,
+                                                                 or_(
+                                                                     CompetenceDetails.last >= version,
+                                                                     CompetenceDetails.last == None))).first().id
 
+        videos = s.query(Videos).filter(Videos.c_id==detail_id).all()
+        four_year_check = s.query(Assessments).join(Subsection).join(Competence).join(AssessmentStatusRef).filter(Assessments.user_id==u_id).filter(AssessmentStatusRef.status=="Four Year Due").filter(Competence.id==c_id).count()
         # return template populated
         return render_template('complete_training.html', competence=c_id, u_id=u_id, user=competence_summary.user,
                                number=competence_summary.qpulsenum,
@@ -386,7 +409,9 @@ def view_current_competence():
                                due_date=competence_summary.due_date,
                                activated=filter_for_none(competence_summary.activated),
                                completed=filter_for_none(competence_summary.completed),
-                               expires=filter_for_none(competence_summary.expiry),version=competence_summary.version)
+                               expires=filter_for_none(competence_summary.expiry),
+                               version=competence_summary.version,
+                               reassessments=reassessments,videos=videos,four_year_check=four_year_check)
 
 
 @training.route('/upload')
@@ -424,6 +449,64 @@ def upload_evidence(c_id=None, s_ids=None,version=None):
     return render_template('upload_evidence.html', c_id=c_id, u_id=u_id, user=competence_summary.user, version=version,
                            number=competence_summary.qpulsenum,
                            title=competence_summary.title, validity=competence_summary.months, form=form, s_ids=s_ids, s_names=names)
+
+@training.route('/reassessment_reject/<int:id>', methods=['GET', 'POST'])
+def reject_reassessment(id=None):
+
+    data = {
+        'is_correct':0,
+        'comments':request.form['feedback']
+    }
+
+    s.query(Reassessments).filter(Reassessments.id == id).update(data)
+    s.commit()
+
+    return redirect('/index')
+
+@training.route('/reassessment_accept/<int:id>', methods=['GET', 'POST'])
+def accept_reassessment(id=None):
+    ###this method needs to do all the updating to the assessemenst to give a new expiry date
+    authoriser = s.query(Reassessments).filter(Reassessments.signoff_id==current_user.database_id).filter(Reassessments.id==id).count()
+    if authoriser == 1:
+
+        data = {
+            'is_correct':1,
+            'comments':'Accepted'
+        }
+
+        s.query(Reassessments).filter(Reassessments.id == id).update(data)
+        s.commit()
+
+
+
+        for i in s.query(Reassessments).join(AssessReassessRel).join(Assessments).filter(Reassessments.id == id).all():
+            print "HERE"
+            for j in i.assessments_rel:
+                current_version = j.assess_rel.ss_id_rel.c_id_rel.current_version
+                print "CURRENT"
+                print current_version
+                for detail in j.assess_rel.ss_id_rel.c_id_rel.competence_detail:
+                    if detail.intro <= current_version:
+                        print "CURRENT EXPIRY"
+                        print i.date_completed
+                        new_expiry = i.date_completed + relativedelta(months=detail.validity_rel.months)
+                        print "NEW_EXPIRY"
+                        print new_expiry
+
+
+                print j.assess_id
+
+                data = {
+                    'date_expiry':new_expiry
+                }
+                s.query(Assessments).filter(Assessments.id == j.assess_id).update(data)
+
+
+        s.commit()
+
+
+    return redirect('/index')
+
 
 
 @training.route('/uploads/<path:filename>/<path:alias>', methods=['GET', 'POST'])
@@ -877,5 +960,76 @@ def bulk_distribute():
     elif request.method == "POST":
         for i in zip(request.form.getlist('assid'), request.form.getlist('trainer'), request.form.getlist('assessor')):
             print i
+
+@training.route('/four_year_activate/<c_id>', methods=['GET', 'POST'])
+@login_required
+def four_year_activate(c_id = None):
+    """
+    set all assessments in current competency to obselete and assign the latest version of
+    the competency to the user - probably need to check if competence exists anymore?
+    :return:
+    """
+    #get assessment ids for user and competence
+
+    assessments = s.query(Assessments).\
+        join(Subsection).\
+        join(Competence).\
+        join(AssessmentStatusRef).\
+        filter(or_(AssessmentStatusRef.status == "Complete",AssessmentStatusRef.status == "Four Year Due")).\
+        filter(Competence.id==c_id).\
+        filter(Assessments.user_id == current_user.database_id).all()
+
+    # set current assessments in this competency to obselete
+    status_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Obsolete").first().id
+    data = { 'status': status_id }
+    for assessment in assessments:
+        print "setting " + assessment.ss_id_rel.name + " to obsolete"
+        s.query(Assessments).filter(Assessments.id == assessment.id).update(data)
+    s.commit()
+
+    # assign user new assessments in the latest version of the competency and set them to active
+    from app.mod_competence.views import assign_competence_to_user
+    due_date = datetime.date.today() + relativedelta(months=1)
+    assessment_ids = assign_competence_to_user(current_user.database_id,c_id,due_date.strftime("%d/%m/%Y"))
+
+    data = {'is_reassessment':True}
+
+    for i in assessment_ids:
+        s.query(Assessments).filter(Assessments.id == i).update(data)
+    s.commit()
+
+
+@training.route('/test', methods=['GET', 'POST'])
+def test():
+    four_years_ago = datetime.date.today() - relativedelta(months=48)
+
+    print four_years_ago
+
+    assessments = s.query(Assessments).join(AssessmentStatusRef).filter(
+        AssessmentStatusRef.status == "Complete").filter(Assessments.date_completed <= four_years_ago)
+
+
+    done = []
+    for assessment in assessments:
+
+        #update assessment status to indicate that 4 year is now due (maybe set them all?)
+        status = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Four Year Due").first().id
+        data = { "status": status }
+        s.query(Assessments).filter(Assessments.id == assessment.id).update(data)
+
+        #only send email once for that competency
+        if str(assessment.user_id) + ":" + str(assessment.ss_id_rel.c_id) not in done:
+
+            lines = [assessment.ss_id_rel.c_id_rel.competence_detail[0].title + " is due for a four year reassessment."]
+            lines.append("You originally completed this competency on "+str(assessment.date_completed))
+            lines.append("Please arrange a suitable time with your trainer to reassess you competence fully.")
+
+            print send_mail(assessment.user_id ,"Four Year Competency Reassessment Required: "+ assessment.ss_id_rel.c_id_rel.competence_detail[0].title,"<br><br>".join(lines))
+
+        done.append(str(assessment.user_id) + ":" + str(assessment.ss_id_rel.c_id))
+
+    s.commit()
+
+
 
 
