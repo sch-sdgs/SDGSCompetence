@@ -13,12 +13,14 @@ import datetime
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.sql.expression import and_
 from threading import Thread
+from jinja2 import Environment
 #define app and db session
 
 app = Flask(__name__)
 app.secret_key = 'development key'
 app.config.from_object(config)
 
+app.jinja_env.add_extension('jinja2.ext.do')
 
 from models import db,Users,Assessments,Evidence,CompetenceDetails,AssessmentStatusRef
 
