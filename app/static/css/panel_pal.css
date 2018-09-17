@@ -20,10 +20,18 @@ table.dataTable tbody tr.selected {
     animation: blinker 1s linear 3;
 }
 
+.pad_bottom {
+    margin-bottom: 5px;
+}
+
 @keyframes blinker {
     50% {
         opacity: 0.0;
     }
+}
+
+.login-page {
+    background-color: #e5e5e5;
 }
 
 .ui-autocomplete {

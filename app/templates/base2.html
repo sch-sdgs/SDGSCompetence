@@ -51,7 +51,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     {% if "ADMIN" in current_user.roles %}
         <link rel="stylesheet" href="/static/dist/css/skins/skin-black.min.css">
     {% else %}
-        <link rel="stylesheet" href="/static/dist/css/skins/skin-blue.min.css">
+        <link rel="stylesheet" href="/static/dist/css/skins/skin-black.min.css">
     {% endif %}
 
     <!-- REQUIRED JS SCRIPTS -->
@@ -293,7 +293,7 @@ desired effect
 {% if "ADMIN" in current_user.roles %}
     <body class="hold-transition skin-black fixed">
 {% else %}
-    <body class="hold-transition skin-blue fixed">
+    <body class="hold-transition skin-black fixed">
 {% endif %}
 <div class="wrapper">
 
@@ -305,8 +305,9 @@ desired effect
             <!-- mini logo for sidebar mini 50x50 pixels -->
             <span class="logo-mini"><span class="glyphicon glyphicon-star"></span></span>
             <!-- logo for regular state and mobile devices -->
-            <span class="logo-lg"><span class="glyphicon glyphicon-star text-yellow"></span> Competence<b>DB</b> <span
-                    class="badge bg-grey">BETA</span></span>
+{#            <span class="logo-lg"><span class="glyphicon glyphicon-star text-yellow"></span> Competence<b>DB</b> <span#}
+{#                    class="badge bg-grey">BETA</span></span>#}
+            <span class="logo-lg"><img width="100%" height="100%" src="/static/images/logo.png"></span>
         </a>
 
         <!-- Header Navbar -->
@@ -630,6 +631,7 @@ desired effect
                             </li>
                             <li><a href="{{ url_for('admin.users_view') }}"><i class="fa fa-circle-o"></i>View Users</a>
                             <li><a href="{{ url_for('admin.users_add') }}"><i class="fa fa-circle-o"></i>Add User</a>
+                            <li><a href="{{ url_for('admin.bulk_user_upload') }}"><i class="fa fa-circle-o"></i>Bulk User Upload</a>
                             </li>
                         </ul>
                     </li>
@@ -788,7 +790,7 @@ desired effect
     <footer class="main-footer">
         <!-- To the right -->
         <div class="pull-right hidden-xs">
-            v0.0
+            v0.1
         </div>
         <!-- Default to the left -->
         <strong>Copyright &copy; 2018 <a href="#">Sheffield Diagnostic Genetics Service</a>.</strong> All rights

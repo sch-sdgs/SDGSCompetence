@@ -34,11 +34,13 @@
                 </div>
             </div>
 
-        {% if four_year_check > 0 %}
-            <div class="alert alert-danger">
-                <i class="fa fa-exclamation-triangle"></i> <strong>4 Year Reassessment is Due!!!</strong> Please click the button below to set this training as obselete and assign yourself the latest version of this competence.
+            {% if four_year_check > 0 %}
+                <div class="alert alert-danger">
+                    <i class="fa fa-exclamation-triangle"></i> <strong>4 Year Reassessment is Due!!!</strong> Please
+                    click the button below to set this training as obselete and assign yourself the latest version of
+                    this competence.
                 </div>
-        {% endif %}
+            {% endif %}
 
             <div class="row">
                 <div class="col-md-12">
@@ -73,24 +75,27 @@
                                 {% if not reassessments and four_year_check == 0 %}
                                     <a href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&version={{ version }}&action=reassess"
                                        class="btn btn-success btn-flat pull-right">Reassess</a>
-                                {% endif %}
-
-                                {% set pending=[] %}
-                                {% for reassessment in reassessments %}
-                                    {% if reassessment.assessments_rel[0].assess_rel.ss_id_rel.c_id|int == competence|int %}
-                                        {% do  pending.append(reassessment.is_correct) %}
-                                    {% endif %}
-                                {% endfor %}
-                                {% if None not in pending %}
-                                    {% if four_year_check == 0 %}
-                                    <a href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&version={{ version }}&action=reassess"
-                                       class="btn btn-success btn-flat pull-right">Reassess</a>
+                                {% else %}
+                                    {% set pending=[] %}
+                                    {% for reassessment in reassessments %}
+                                        {% if reassessment.assessments_rel[0].assess_rel.ss_id_rel.c_id|int == competence|int %}
+                                            {% do pending.append(reassessment.is_correct) %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if None not in pending %}
+                                        {% if four_year_check == 0 %}
+                                            <a href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&version={{ version }}&action=reassess"
+                                               class="btn btn-success btn-flat pull-right">Reassess</a>
                                         {% elif four_year_check > 0 %}
-                                        <a href=""
-                                       class="btn btn-danger btn-flat pull-right">4 Year Reassessment</a>
+                                            <a href=""
+                                               class="btn btn-danger btn-flat pull-right">4 Year Reassessment</a>
 
                                         {% endif %}
+                                    {% endif %}
+
                                 {% endif %}
+
+
 
                             {% endif %}
 
@@ -142,11 +147,12 @@
 
                 <div class="box box-default box-solid collapsed-box" id="training">
                     <div class="box-header with-border">
-                        <h3 class="box-title"> <span class="glyphicon glyphicon-repeat"></span> Reassessment Record</h3>
+                        <h3 class="box-title"><span class="glyphicon glyphicon-repeat"></span> Reassessment Record</h3>
                         <div class="box-tools pull-right">
-                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
-                </button>
-              </div>
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i
+                                    class="fa fa-plus"></i>
+                            </button>
+                        </div>
 
                     </div>
 
@@ -189,36 +195,37 @@
 
             {% endif %}
 
-        {% if videos|length >0 %}
+            {% if videos|length >0 %}
 
-        <div class="box box-default box-solid collapsed-box">
-            <div class="box-header with-border">
-              <h3 class="box-title"><i class="fa fa-fw fa-video-camera"></i> Training Videos</h3>
+                <div class="box box-default box-solid collapsed-box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title"><i class="fa fa-fw fa-video-camera"></i> Training Videos</h3>
 
-              <div class="box-tools pull-right">
-                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
-                </button>
-              </div>
-              <!-- /.box-tools -->
-            </div>
-            <!-- /.box-header -->
-            <div class="box-body" style="display: none;">
-              <div class="row">
-                        {% for video in videos %}
-                            <div class="col-md-4">
-
-                                <iframe width="380" height="180" src="{{ video.embed_code|safe }}" frameborder="0"
-                                        allow="autoplay; encrypted-media" allowfullscreen></iframe>
-                            <p class="text-muted text-center">{{ video.title }}</p>
-
-
-                            </div>
-                        {% endfor %}
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i
+                                    class="fa fa-plus"></i>
+                            </button>
+                        </div>
+                        <!-- /.box-tools -->
                     </div>
-            </div>
-            <!-- /.box-body -->
-          </div>
-        {% endif %}
+                    <!-- /.box-header -->
+                    <div class="box-body" style="display: none;">
+                        <div class="row">
+                            {% for video in videos %}
+                                <div class="col-md-4">
+
+                                    <iframe width="380" height="180" src="{{ video.embed_code|safe }}" frameborder="0"
+                                            allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                                    <p class="text-muted text-center">{{ video.title }}</p>
+
+
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+            {% endif %}
 
             <h3>Common Sections</h3>
             {% for section in section_list['constant'] %}

@@ -1,0 +1,47 @@
+{% extends "base2.html" %}
+{% block content %}
+
+
+
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                Bulk Upload Users
+                <small></small>
+            </h1>
+
+
+        </section>
+
+        <!-- Main content -->
+        <section class="content container-fluid">
+            <div class="box" id="training">
+
+                <div class="box-body">
+                    <p>To add multiple users - Upload a csv file with the following format:</p>
+                    <pre><code>firstname,lasname,employee_number,role,linemanager_initials,band</code></pre>
+
+                    N.B. You have to do this TWICE with the same file, the 1st time adds the users, the 2nd time sorts out line managers.<br><br>
+
+                <form action="/transform" method="post" enctype="multipart/form-data" class="form-horizontal">
+                    <fieldset>
+                    <div class="form-group">
+                        <label for="data_file" class="col-md-2 control-label">Upload CSV File</label>
+                        <div class="col-lg-10">
+                        <input class="form-control" type="file" name="data_file" />
+                            </div>
+                        </div>
+                         <div class="form-group">
+                        <div class="col-lg-10 col-lg-offset-2">
+                    <input class="form-control btn btn-primary" type="submit" />
+                            </div>
+                             </div>
+                    </fieldset>
+                </form>
+
+</div>
+    </div>
+
+
+{% endblock %}}

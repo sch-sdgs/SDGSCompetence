@@ -100,3 +100,7 @@ h4{
     margin-left: auto;
     margin-right: auto;
 }
+
+.pad_bottom {
+    margin-bottom: 5px;
+}

@@ -48,6 +48,7 @@ class ItemTableDocuments(Table):
 
 
 @competence.route('/remove', methods=['GET', 'POST'])
+@login_required
 def remove_subsection():
     print "HELLO"
     id = request.args["id"]
@@ -64,6 +65,7 @@ def remove_subsection():
 
 
 @competence.route('/list', methods=['GET', 'POST'])
+@login_required
 def list_comptencies(message=None, modifier=None):
     previous_data = s.query(CompetenceDetails).join(Competence).filter(
         Competence.current_version > CompetenceDetails.intro).all()
@@ -76,6 +78,7 @@ def list_comptencies(message=None, modifier=None):
 
 
 @competence.route('/competent_staff', methods=['GET', 'POST'])
+@login_required
 def competent_staff():
     ids = request.args["ids"].split(",")
     version = request.args["version"]
@@ -156,6 +159,7 @@ def competent_staff():
 
 
 @competence.route('/activate', methods=['GET', 'POST'])
+@login_required
 def activate():
     ids = request.args["ids"].split(",")
     for id in ids:
@@ -171,6 +175,7 @@ def activate():
 
 
 @competence.route('/deactivate', methods=['GET', 'POST'])
+@login_required
 def deactivate():
     ids = request.args["ids"].split(",")
     for id in ids:
@@ -186,6 +191,7 @@ def deactivate():
 
 
 @competence.route('/add', methods=['GET', 'POST'])
+@login_required
 def add_competence():
     form = AddCompetence()
     if request.method == 'POST':
@@ -198,6 +204,11 @@ def add_competence():
         com = Competence()
         s.add(com)
         s.commit()
+        #prevent resubmissions with a count
+
+        if s.query(CompetenceDetails).filter(CompetenceDetails.title == title).count() != 0:
+            from app.views import index
+            return index(message="This competence already exists - please try editing the existing competence or deleting it!")
 
         c = CompetenceDetails(c_id=com.id,
                               title=title,
@@ -243,6 +254,7 @@ def add_competence():
 
 
 @competence.route('/addsections', methods=['GET', 'POST'])
+@login_required
 def add_sections():
     print "hello"
 
@@ -254,7 +266,7 @@ def add_sections():
             print(len(f.getlist(key)))
             for value in f.getlist(key):
                 print key, ":", value
-                s_id = key[0]
+                s_id = key.split("_")[0]
                 item_add = s.query(ConstantSubsections.item).filter_by(id=value).first().item
                 evidence = s.query(EvidenceTypeRef.id).filter_by(type='Discussion').first().id
                 print "ITS HERE"
@@ -262,6 +274,7 @@ def add_sections():
                 add_constant = Subsection(c_id=c_id, s_id=s_id, name=item_add, evidence=evidence, comments=None)
                 s.add(add_constant)
                 s.commit()
+
                 check = s.query(SectionSortOrder).filter(SectionSortOrder.c_id==c_id).filter(SectionSortOrder.section_id==s_id).count()
                 if check > 0:
                     data = {"sort_order": 0}
@@ -390,6 +403,7 @@ def get_constant_subsections(c_id, version):
 
 
 @competence.route('/get_constant_subsections',methods=['GET', 'POST'])
+@login_required
 def get_constant_subsections_web():
     id = request.args["id"]
     result = []
@@ -401,6 +415,7 @@ def get_constant_subsections_web():
 
 
 @competence.route('/activate_comp', methods=['GET', 'POST'])
+@login_required
 def activate_competency():
     c_id = request.json['c_id']
     # UPDATE Competence SET Competence.current_version = 1 WHERE Competence.id=c_id
@@ -410,6 +425,7 @@ def activate_competency():
 
 
 @competence.route('/section', methods=['GET', 'POST'])
+@login_required
 def get_section():
     if request.method == 'POST':
         # add subsection section database
@@ -439,6 +455,7 @@ def get_section():
 
 
 @competence.route('/delete_subsection', methods=['GET', 'POST'])
+@login_required
 def delete_subsection():
     print request.json
     c_id = request.json['c_id']
@@ -461,6 +478,7 @@ def delete_subsection():
 
 
 @competence.route('/add_subsection_to_db', methods=['GET', 'POST'])
+@login_required
 def add_sections_to_db():
     # method adds subsections to database
     name = request.json['name']
@@ -479,6 +497,12 @@ def add_sections_to_db():
     sub = Subsection(name=name, evidence=int(evidence_id), comments=comments, c_id=c_id, s_id=s_id,intro=version)
     s.add(sub)
     s.commit()
+
+    sort_order = SectionSortOrder(c_id=c_id, section_id=s_id, sort_order=0)
+    s.add(sort_order)
+    s.commit()
+
+
     result = s.query(Subsection).join(Competence).join(Section).join(EvidenceTypeRef).filter(
         Competence.id == c_id).filter(Section.id == s_id). \
         values(Subsection.id, Subsection.name, EvidenceTypeRef.type, Subsection.comments)
@@ -492,6 +516,7 @@ def add_sections_to_db():
 
 
 @competence.route('/add_constant_subsection_to_db', methods=['GET', 'POST'])
+@login_required
 def add_constant_sections_to_db():
     name = request.json['name']
     id = request.json['id']
@@ -506,13 +531,19 @@ def add_constant_sections_to_db():
         name = name
 
     print name
-
+    print "DEBUG"
     sub = Subsection(name=name, c_id=c_id, s_id=s_id, evidence=4, comments=None, intro=version)
     s.add(sub)
     s.commit()
+
+    sort_order = SectionSortOrder(c_id=c_id, section_id=s_id, sort_order=0)
+    s.add(sort_order)
+    s.commit()
+
     return jsonify({'id': sub.id})
 
 @competence.route('/autocomplete_docs', methods=['GET'])
+@login_required
 def document_autocomplete():
     doc_id = request.args.get('add_document')
 
@@ -526,6 +557,7 @@ def document_autocomplete():
 
 
 @competence.route('/autocomplete_competence', methods=['GET'])
+@login_required
 def competence_name_autocomplete():
     competencies = s.query(CompetenceDetails).join(Competence).filter(
         Competence.current_version == CompetenceDetails.intro).all()
@@ -538,6 +570,7 @@ def competence_name_autocomplete():
 
 
 @competence.route('/get_docs', methods=['GET'])
+@login_required
 def get_documents(c_id):
     c_id = 1
     docid = request.json['add_document']
@@ -547,6 +580,7 @@ def get_documents(c_id):
 
 
 @competence.route('/get_doc_name', methods=['POST', 'POST'])
+@login_required
 def get_doc_name(doc_id=None):
     d = QpulseDetails()
     details = d.Details()
@@ -567,6 +601,7 @@ def get_doc_name(doc_id=None):
 
 
 @competence.route('/remove_doc', methods=['POST', 'POST'])
+@login_required
 def remove_doc():
     c_id = request.args["c_id"]
     doc_number = request.args["doc_number"]
@@ -578,6 +613,7 @@ def remove_doc():
 
 
 @competence.route('/add_doc', methods=['POST', 'POST'])
+@login_required
 def add_doc():
     c_id = request.args["c_id"]
     doc_number = request.args["doc_number"]
@@ -593,6 +629,7 @@ def add_doc():
 # -if doc name is null, state "This is not an existing document in Qpulse"
 
 @competence.route('/add_constant', methods=['GET', 'POST'])
+@login_required
 def add_constant_subsection():
     s_id = request.json['s_id']
     item = request.json['item']
@@ -605,6 +642,7 @@ def add_constant_subsection():
 
 
 @competence.route('/view_competence', methods=['GET', 'POST'])
+@login_required
 def view_competence():
     c_id = request.args["c_id"]
     version = request.args["version"]
@@ -667,12 +705,15 @@ def view_competence():
     dict_subsecs = OrderedDict()
 
     subsections = get_subsections(c_id, version)
+    print "WHAT"
+    print subsections
     for item in subsections:
         sec_name = item.sec_name
         subsection_name = item.subsec_name
         comment = item.comments
         evidence_type = item.type
         subsection_data = [subsection_name, comment, evidence_type]
+        print "WTF???"
         print subsection_data
         dict_subsecs.setdefault(sec_name, []).append(subsection_data)
     print dict_subsecs
@@ -709,6 +750,7 @@ def view_competence():
 
 
 @competence.route('/send_for_approval', methods=['GET'])
+@login_required
 def send_for_approval():
     id = request.args["id"]
     s.query(CompetenceDetails).filter(CompetenceDetails.id == id).update({"approved": 0})
@@ -719,6 +761,7 @@ def send_for_approval():
     return json.dumps({"success": True})
 
 @competence.route('/force_approve')
+@login_required
 def force_authorise():
 
     check = s.query(CompetenceDetails).filter(CompetenceDetails.c_id == request.args["id"]).first()
@@ -732,6 +775,7 @@ def force_authorise():
 
 
 @competence.route('/approve/<id>/<version>/<u_id>', methods=['GET'])
+@login_required
 def approve(id=None, version=None, u_id=None):
     user_allowed = s.query(CompetenceDetails).filter(CompetenceDetails.c_id == id).filter(
         CompetenceDetails.intro == version).first().approve_id
@@ -791,6 +835,7 @@ def approve(id=None, version=None, u_id=None):
     return redirect('/')
 
 @competence.route('/reject/<id>/<version>/<u_id>', methods=['GET','POST'])
+@login_required
 def reject(id=None, version=None, u_id=None):
     user_allowed = s.query(CompetenceDetails).filter(CompetenceDetails.c_id == id).filter(
         CompetenceDetails.intro == version).first().approve_id
@@ -824,6 +869,7 @@ def reject(id=None, version=None, u_id=None):
 
 
 @competence.route('/check_exists', methods=['GET', 'POST'])
+@login_required
 def check_exists():
     if request.method == 'POST':
         if ":" in request.form["name"]:
@@ -834,6 +880,7 @@ def check_exists():
 
 
 @competence.route('/assign_user_to_competence', methods=['GET', 'POST'])
+@login_required
 def assign_user_to_competence():
     ids = request.args["ids"].split(",")
     print ids
@@ -863,6 +910,7 @@ def assign_user_to_competence():
 
 
 @competence.route('/assign_competences_to_user', methods=['GET', 'POST'])
+@login_required
 def assign_competences_to_user():
     form = UserAssignForm()
 
@@ -908,6 +956,7 @@ def assign_competences_to_user():
                                ids=request.args["ids"])
 
 @competence.route('/change_subsection_order', methods=['GET', 'POST'])
+@login_required
 def change_subsection_order():
     data = request.json
     for count,id in enumerate(data):
@@ -918,6 +967,7 @@ def change_subsection_order():
     s.commit()
 
 @competence.route('/change_section_order', methods=['GET', 'POST'])
+@login_required
 def change_section_order():
     data = request.json
     for c_id in data:
@@ -1057,6 +1107,7 @@ def assign_competence_to_user(user_id, competence_id, due_date):
 
 
 @competence.route('/edit', methods=['GET', 'POST'])
+@login_required
 def edit_competence():
     ids = request.args.get('ids').split(",")
     # todo: CHECK HERE IF COMPETENCE IS IN APPROVAL???
@@ -1164,6 +1215,7 @@ def create_copy_of_competence(c_id, current_version, title, scope, valid, type, 
 
 
 @competence.route('/change_ownership', methods=['GET', 'POST'])
+@login_required
 def change_ownership():
     #TODO: should this only change ownership of the most recent version
     form = UserAssignForm()
@@ -1186,6 +1238,7 @@ def change_ownership():
 
 
 @competence.route('/edit_details', methods=['GET', 'POST'])
+@login_required
 def edit_details():
     c_id = request.args['c_id']
     version = request.args['version']
@@ -1235,6 +1288,7 @@ def edit_details():
 
 
 @competence.route('/delete', methods=['GET', 'POST'])
+@login_required
 def delete():
     id = request.args.get('c_id')
     print id
@@ -1315,6 +1369,7 @@ def reporting():
     return [counts,expired,expiring,user_expired,user_expiring,change]
 
 @competence.route('/report_by_section', methods=['GET', 'POST'])
+@login_required
 def report_by_section():
     counts, expired, expiring, user_expired, user_expiring, change = reporting()
 
@@ -1332,18 +1387,21 @@ def report_by_section():
                            user_expiring=sorted(user_expiring.items(), key=lambda key: key[1], reverse=True)[:5])
 
 @competence.route('/report_by_competence', methods=['GET', 'POST'])
+@login_required
 def report_by_competence():
 
 
     return render_template('competence_report_by_competence.html')
 
 @competence.route('/report_by_user', methods=['GET', 'POST'])
+@login_required
 def report_by_user():
 
 
     return render_template('competence_report_by_user.html')
 
 @competence.route('/history', methods=['GET', 'POST'])
+@login_required
 def competence_history():
     events = {}
     ids = request.args.get('ids').split(",")
@@ -1419,11 +1477,13 @@ def competence_history():
 
 
 @competence.route('/videos', methods=['GET', 'POST'])
+@login_required
 def videos():
     videos = s.query(Videos).all()
     return render_template("competence_videos.html",videos=videos)
 
 @competence.route('/add_videos', methods=['GET', 'POST'])
+@login_required
 def add_videos():
     if request.method == 'POST':
         category, competence = request.form["name"].split(": ")
@@ -1439,6 +1499,7 @@ def add_videos():
 
 
 @competence.route('/remove_video/<id>', methods=['GET', 'POST'])
+@login_required
 def remove_video(id=None):
     if 'ADMIN' in current_user.roles:
         s.query(Videos).filter(Videos.id==id).delete()

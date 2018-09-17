@@ -102,22 +102,7 @@ app.register_blueprint(competence,url_prefix='/competence')
 app.register_blueprint(document, url_prefix='/document')
 
 
-@cron.interval_schedule(days=30)
-def report_scheduler():
-    """
-    runs reporting method from mod_competence
-    """
 
-    counts, expired, expiring, user_expired, user_expiring, change = reporting()
-    for service in counts:
-        db_service = re.sub(r"(\w)([A-Z])", r"\1 \2", service)
-        service_id = s.query(Service).filter(Service.name == db_service).first().id
-        m = MonthlyReportNumbers(service_id=service_id,date=datetime.date.today(),assigned=counts[service]["Assigned"],active=counts[service]["Active"],expiring=counts[service]["Expiring"],expired=counts[service]["Expired"])
-        s.add(m)
-    try:
-        s.commit()
-    except:
-        print "error"
 
 def check_notifications(user_id):
     expired = s.query(Assessments).filter(Assessments.user_id == user_id)
@@ -157,6 +142,23 @@ def check_notifications(user_id):
 #####
 # cron jobs to do things like check for expiring competencies, check for 4 year reassessments
 #####
+
+@cron.interval_schedule(days=30)
+def report_scheduler():
+    """
+    runs reporting method from mod_competence - adds numbers to monthly reports table
+    """
+
+    counts, expired, expiring, user_expired, user_expiring, change = reporting()
+    for service in counts:
+        db_service = re.sub(r"(\w)([A-Z])", r"\1 \2", service)
+        service_id = s.query(Service).filter(Service.name == db_service).first().id
+        m = MonthlyReportNumbers(service_id=service_id,date=datetime.date.today(),assigned=counts[service]["Assigned"],active=counts[service]["Active"],expiring=counts[service]["Expiring"],expired=counts[service]["Expired"])
+        s.add(m)
+    try:
+        s.commit()
+    except:
+        print "error"
 
 @cron.interval_schedule(days=7)
 def expiry_emailer():

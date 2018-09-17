@@ -14,16 +14,16 @@
             {#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
             {#                <li class="active">Here</li>#}
             {#            </ol>#}
-            {% if message %}
-                <div class="alert alert-danger">
-                    <strong>Fail Whale!</strong> {{ message }}
-                </div>
-            {% endif %}
+
         </section>
 
         <!-- Main content -->
         <section class="content container-fluid">
-
+            {% if message %}
+                <div class="alert alert-danger">
+                    <strong>Oooops!</strong> {{ message }}
+                </div>
+            {% endif %}
 
             {% if signoff or signoff_competence or signoff_reassessment|length > 0 %}
                 <h2 class="page-header"><i class="fa fa-pencil"></i> To Approve</h2>
@@ -131,9 +131,10 @@
                                                 <td>{{ reassessment.date_completed }}</td>
                                                 <td>{{ reassessment.assessments_rel[0].assess_rel.user_id_rel.first_name }} {{ reassessment.assessments_rel[0].assess_rel.user_id_rel.last_name }}</td>
                                                 <td>{{ reassessment.assessments_rel[0].assess_rel.version }}</td>
-                                                <td><a href="{{ url_for('training.reassessment_view',reassess_id=reassessment.id) }}"
+                                                <td>
+                                                    <a href="{{ url_for('training.reassessment_view',reassess_id=reassessment.id) }}"
                                                        class="btn btn-sm btn-flat btn-primary"><span
-                                                        class="glyphicon glyphicon-eye-open"></span> </a></td>
+                                                            class="glyphicon glyphicon-eye-open"></span> </a></td>
                                             </tr>
 
                                         {% endfor %}
@@ -256,11 +257,11 @@
 
 
 
-            <h2 class="page-header"><i class="fa fa-graduation-cap"></i>My Training</h2>
+            <h2 class="page-header"><i class="fa fa-graduation-cap"></i>Ongoing Training</h2>
 
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="small-box bg-gray" id="training">
+                    <div class="small-box box-solid bg-light-blue-gradient" id="training">
                         <div class="box-body text-center">
                             <form id="quick_competence" class="form-inline">
 
@@ -328,7 +329,7 @@
                                         <tr>
                                             <td>{{ assessment.category }}</td>
                                             <td>{{ assessment.title }}
-                                                 {% if assessment.is_reassessment_max %}
+                                                {% if assessment.is_reassessment_max %}
                                                     <label class="label label-info">4yr</label>
                                                 {% endif %}
                                             </td>
@@ -387,56 +388,6 @@
 
                                     {% endfor %}
 
-                                    {#                                    {% for assessment in assigned %}#}
-                                    {##}
-                                    {#                                        {% for details in assessment.ss_id_rel.c_id_rel.competence_detail %}#}
-                                    {#                                            <tr>#}
-                                    {#                                                <td>{{ details.title }}</td>#}
-                                    {#                                                <td><small class="label bg-gray">v{{ details.intro }}</small></td>#}
-                                    {#                                                <td>#}
-                                    {##}
-                                    {#                                                </td>#}
-                                    {#                                                <td>{{ assessment.assign_id_rel.first_name }} {{ assessment.assign_id_rel.last_name }}</td>#}
-                                    {#                                                <td>{{ assessment.date_assigned }}</td>#}
-                                    {#                                                <td>#}
-                                    {##}
-                                    {#                                                    <div class="progress">#}
-                                    {#                                                        <div class="progress-bar progress-bar-success progress-bar-striped"#}
-                                    {#                                                             role="progressbar" aria-valuenow="60"#}
-                                    {#                                                             aria-valuemin="0"#}
-                                    {#                                                             aria-valuemax="100"#}
-                                    {#                                                             style="width: {{ get_percent(details.c_id,current_user.database_id) }}%;">#}
-                                    {#                                                            <span class="sr-only">60% Complete</span>#}
-                                    {#                                                        </div>#}
-                                    {#                                                    </div>#}
-                                    {##}
-                                    {##}
-                                    {#                                                </td>#}
-                                    {#                                                <td>#}
-                                    {#                                                    {% if count_active(details.c_id,current_user.database_id) != 100 %}#}
-                                    {#                                                        <a href="{{ url_for('training.select_subsections') }}?u_id={{ current_user.database_id }}&c_id={{ details.c_id }}&action=activate"#}
-                                    {#                                                           class="btn btn-xs btn-flat btn-primary"><span#}
-                                    {#                                                                class="glyphicon glyphicon-play"></span>#}
-                                    {#                                                            Activate</a>#}
-                                    {#                                                    {% else %}#}
-                                    {#                                                        <a#}
-                                    {#                                                                class="btn btn-xs btn-flat btn-primary" disabled><span#}
-                                    {#                                                                class="glyphicon glyphicon-remove"></span>#}
-                                    {#                                                            All Active</a>#}
-                                    {##}
-                                    {#                                                    {% endif %}#}
-                                    {##}
-                                    {#                                                </td>#}
-                                    {##}
-                                    {##}
-                                    {#                                                <td>#}
-                                    {#                                                    <a href="{{ url_for('training.view_current_competence') }}?c_id={{ details.c_id }}"#}
-                                    {#                                                       class="btn btn-xs btn-flat btn-primary"><span#}
-                                    {#                                                            class="glyphicon glyphicon-eye-open"></span>#}
-                                    {#                                                        View</a></td>#}
-                                    {#                                            </tr>#}
-                                    {#                                        {% endfor %}#}
-                                    {#                                    {% endfor %}#}
                                 </table>
                             {% endif %}
                         </div>
@@ -444,77 +395,115 @@
                 </div>
 
             </div>
+
+            <h2 class="page-header"><i class="fa fa-thumbs-o-up"></i> Complete Training</h2>
             <div class="row">
                 <div class="col-lg-12">
 
 
-                    <div class="box" id="training">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">Complete Training</h3>
-                            <div class="box-tools pull-right">
-                                <small class="label pull-right bg-black">{{ complete|length }}</small>
-                            </div>
-                        </div>
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#tab_1_complete" data-toggle="tab" aria-expanded="true">Complete
+                                <span class="badge bg-gray">{{ complete|length }}</span>
+                            </a></li>
+                            <li class=""><a href="#tab_2_complete" data-toggle="tab" aria-expanded="false">Obsolete
+                                <span class="badge bg-gray">{{ obsolete|length }}</span></a></li>
 
-                        <div class="box-body table-responsive">
-                            {% if complete|length > 0 %}
-                                <table class="table table-striped">
-                                    <thead>
-                                    <th class="col-md-1">Category</th>
-                                    <th class="col-md-2">Competence</th>
-                                    <th class="col-md-1">Version</th>
-                                    <th class="col-md-2">Some Sub-Sections...</th>
-                                    <th class="col-md-2">Date Complete</th>
-                                    <th class="col-md-2">Earliest Date of Expiry</th>
-                                    <th class="col-md-2">Status</th>
-                                    <th class="col-md-2">Actions</th>
-                                    </thead>
-                                    {% for i in complete %}
-                                        <tr>
-                                            <td>{{ i.category }}</td>
-                                            <td>{{ i.title }}</td>
-                                            <td>
-                                                <small class="label bg-gray">v{{ i.version }}</small>
-                                            </td>
-                                            {% if i != None %}
-                                                <td>{{ check_expiry(i.expiry)|safe }}</td>
-                                            {% endif %}
 
-                                            <td>
-                                                {% if i.completed != None %}
-                                                    {{ i.completed.strftime('%d-%m-%Y') }}
+                        </ul>
+
+                        <div class="tab-content table-responsive">
+                            <div class="tab-pane active" id="tab_1_complete">
+
+                                {% if complete|length > 0 %}
+                                    <table class="table table-striped">
+                                        <thead>
+                                        <th class="col-md-1">Category</th>
+                                        <th class="col-md-2">Competence</th>
+                                        <th class="col-md-1">Version</th>
+                                        <th class="col-md-2">Some Sub-Sections...</th>
+                                        <th class="col-md-2">Date Complete</th>
+                                        <th class="col-md-2">Earliest Date of Expiry</th>
+                                        <th class="col-md-2">Status</th>
+                                        <th class="col-md-2">Actions</th>
+                                        </thead>
+                                        {% for i in complete %}
+                                            <tr>
+                                                <td>{{ i.category }}</td>
+                                                <td>{{ i.title }}</td>
+                                                <td>
+                                                    <small class="label bg-gray">v{{ i.version }}</small>
+                                                </td>
+                                                {% if i != None %}
+                                                    <td>{{ check_expiry(i.expiry)|safe }}</td>
                                                 {% endif %}
-                                            </td>
-                                            <td>   {% if i.expiry != None %}
-                                                {{ i.expiry.strftime('%d-%m-%Y') }}
-                                            {% endif %}</td>
-                                        <td>
-                                            {{ get_status(i.max_status)|safe }}
-                                        </td>
-                                            <td>
-                                                <div class="btn-group" style="display: flex">
-                                                    <a href="{{ url_for('training.view_current_competence') }}?c_id={{ i.c_id }}&version={{ i.version }}"
-                                                       class="btn btn-sm btn-primary btn-flat "><span
-                                                            class="glyphicon glyphicon-eye-open"></span></a>
 
-{#                                                    <a data-toggle="modal" data=""#}
-{#                                                       href="{{ url_for('training.select_subsections') }}?c_id={{ i.c_id }}&version={{ i.version }}&action=reassess"#}
-{#                                                       class="btn btn-sm btn-success btn-flat"><span#}
-{#                                                            class="glyphicon glyphicon-repeat"></span></a>#}
-                                                    <a data-toggle="tooltip" title="Delete"
-                                                       class="btn btn-sm btn-flat btn-danger remove_training"
-                                                       id="{{ i.c_id }}"><i
-                                                            class="fa fa-remove"></i>
-                                                    </a>
-                                                </div>
+                                                <td>
+                                                    {% if i.completed != None %}
+                                                        {{ i.completed.strftime('%d-%m-%Y') }}
+                                                    {% endif %}
+                                                </td>
+                                                <td>   {% if i.expiry != None %}
+                                                    {{ i.expiry.strftime('%d-%m-%Y') }}
+                                                {% endif %}</td>
+                                                <td>
+                                                    {{ get_status(i.max_status)|safe }}
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group" style="display: flex">
+                                                        <a href="{{ url_for('training.view_current_competence') }}?c_id={{ i.c_id }}&version={{ i.version }}"
+                                                           class="btn btn-sm btn-primary btn-flat "><span
+                                                                class="glyphicon glyphicon-eye-open"></span></a>
 
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </table>
-                            {% else %}
-                                You have no complete training.
-                            {% endif %}
+                                                        {#                                                    <a data-toggle="modal" data=""#}
+                                                        {#                                                       href="{{ url_for('training.select_subsections') }}?c_id={{ i.c_id }}&version={{ i.version }}&action=reassess"#}
+                                                        {#                                                       class="btn btn-sm btn-success btn-flat"><span#}
+                                                        {#                                                            class="glyphicon glyphicon-repeat"></span></a>#}
+                                                        <a data-toggle="tooltip" title="Delete"
+                                                           class="btn btn-sm btn-flat btn-danger remove_training"
+                                                           id="{{ i.c_id }}"><i
+                                                                class="fa fa-remove"></i>
+                                                        </a>
+                                                    </div>
+
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </table>
+                                {% else %}
+                                    You have no complete training.
+                                {% endif %}
+
+                            </div>
+                            <div class="tab-pane" id="tab_2_complete">
+
+                                {% if obsolete|length > 0 %}
+                                    <table class="table table-striped">
+                                        <thead>
+                                        <th class="col-md-1">Category</th>
+                                        <th class="col-md-2">Competence</th>
+                                        <th class="col-md-1">Version</th>
+                                        <th class="col-md-2">Date Complete</th>
+                                        </thead>
+                                        {% for i in obsolete %}
+                                            <tr>
+                                                <td>{{ i.ss_id_rel.c_id_rel.competence_detail[0].category_rel.category }}</td>
+                                                <td>{{ i.ss_id_rel.c_id_rel.competence_detail[0].title }}</td>
+                                                <td>
+                                                    <small class="label bg-gray">v{{ i.version }}</small>
+                                                </td>
+                                                <td>
+                                                    {{ i.date_completed }}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </table>
+                                {% else %}
+                                    You have no obsolete training.
+                                {% endif %}
+
+                            </div>
+
 
                         </div>
                     </div>
@@ -622,6 +611,7 @@
                         {% endif %}
                     </div>
                     <div class="tab-pane" id="tab_2">
+
                         <table class="table table-striped table-condensed competencies dataTable dt-responsive"
                                id="my_competencies_complete">
                             <thead>
@@ -663,6 +653,11 @@
                             {% endfor %}
 
                         </table>
+                        <br>
+                        <small>* Please note, if your competence has transferred ownsership or has been edited by
+                            another user it will no longer display here.
+                        </small>
+
                     </div>
 
                 </div>
@@ -675,37 +670,105 @@
 
                 <h2 class="page-header"><i class="fa fa-users"></i> My Team</h2>
                 <div class="row">
-                    <div class="col-md-5">
-                        <div class="box" id="training">
-                            <div class="box-header with-border">
-                                <h3 class="box-title">Summary</h3>
-                            </div>
+                    <div class="col-md-12">
+                        <div class="box box-solid bg-gray-light" id="training">
                             <div class="box-body">
+                                {% for report in linereports %}
 
+                                    <button class="btn btn-default pad_bottom"><i
+                                            class="fa fa-user"></i> {{ report.first_name }} {{ report.last_name }}
+                                    </button>
 
-                                <div class="chart">
-                                    <canvas id="barChart" style="height: 300px; width: 497px;" width="621"
-                                            height="300"></canvas>
-                                </div>
-
+                                {% endfor %}
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                <div class="col-md-6">
+                    <div class="box box-solid bg-gray-light" id="training">
+                        <div class="box-header">
+                            <h3 class="box-title text-black"><i class="fa fa-bar-chart"></i> Competence Status
+                                Summary</h3>
+                        </div>
+                        <div class="box-body">
+
+
+                            <div class="chart">
+                                <canvas id="barChart" style="height: 300px; width: 497px;" width="621"
+                                        height="300"></canvas>
+                            </div>
+                            <small>* This is a count of total assessments and not total competencies.</small><br>
+                            <small>† This includes expired/expiring competencies.</small>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-md-6">
+                    <div class="box box-solid bg-red-gradient" id="training">
+                        <div class="box-header">
+                            <h3 class="box-title"><i class="fa fa-calendar-times-o"></i> Expiring/Expired
+                                Competencies</h3>
+                        </div>
+                        <div class="box-body">
+                            <table class="table table-condensed">
+                                <thead>
+                                <th>User</th>
+                                <th>Expiring</th>
+                                <th>Expired</th>
+                                </thead>
+
+                                {% for report in linereports %}
+                                    {% if "expiring" in counts[report.id] or "expired" in counts[report.id] %}
+                                    <tr>
+                                        <td>{{ report.first_name }} {{ report.last_name }}</td>
+                                        <td>
+                                            {% if "expiring" in counts[report.id] %}
+                                                {{ counts[report.id]["expiring"] }}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if "expired" in counts[report.id] %}
+                                                {{ counts[report.id]["expired"] }}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                {% endfor %}
+
+
+                                </table>
+
+                        <small>* This is a count of total assessments and not total competencies.</small>
+
                         </div>
 
                     </div>
-                    <div class="col-md-7">
+                </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
 
 
-                        <div class="box" id="training">
+                        <div class="box collapsed-box" id="training">
                             <div class="box-header with-border">
-                                <h3 class="box-title">Details</h3>
+                                <h3 class="box-title">Detailed Counts</h3>
+                                <div class="pull-right box-tools">
+
+                <button type="button" class="btn btn-default btn-flat btn-sm pull-right" data-widget="collapse" data-toggle="tooltip" title="" style="margin-right: 5px;" data-original-title="Collapse">
+                  <i class="fa fa-plus"></i></button>
+              </div>
+
                             </div>
                             <div class="box-body table-responsive ">
+
                                 <table class="table table-hover no-padding">
                                     <thead>
                                     <th class="col-md-3">Name</th>
                                     <th class="col-md-1">Assigned</th>
                                     <th class="col-md-1">Active</th>
-                                    <th class="col-md-1">Complete</th>
+                                    <th class="col-md-1">Sign-Off</th>
+                                    <th class="col-md-1">Complete †</th>
                                     <th class="col-md-1">Failed</th>
                                     <th class="col-md-2">Abandoned</th>
                                     <th class="col-md-1">Obsolete</th>
@@ -717,12 +780,13 @@
                                             <td>{{ report.first_name }} {{ report.last_name }}</td>
                                             <td>{{ counts[report.id]["assigned"] }}</td>
                                             <td>{{ counts[report.id]["active"] }}</td>
+                                            <td>{{ counts[report.id]["sign-off"] }}</td>
                                             <td>{{ counts[report.id]["complete"] }}</td>
                                             <td>{{ counts[report.id]["failed"] }}</td>
                                             <td>{{ counts[report.id]["abandoned"] }}</td>
                                             <td>{{ counts[report.id]["obsolete"] }}</td>
-                                            <td></td>
-                                            <td></td>
+                                            <td>{% if "expiring" in counts[report.id] %}{{ counts[report.id]["expiring"] }}{% else %}0{% endif %}</td>
+                                            <td>{% if "expired" in counts[report.id] %}{{ counts[report.id]["expired"] }}{% else %}0{% endif %}</td>
 
                                         </tr>
                                     {% endfor %}
@@ -734,6 +798,10 @@
                                             view.</p>
                                     </div>
                                 {% endif %}
+
+                                <small>* This is a count of total assessments and not total competencies.</small><br>
+                            <small>† This includes expired/expiring competencies.</small>
+
                             </div>
                         </div>
 
@@ -1017,9 +1085,9 @@
              */
 
             var data = {
-                labels: ['Assigned', 'Active', 'Complete', 'Failed', 'Abandoned', 'Obselete', 'Expiring', 'Expired'],
+                labels: ['Assigned', 'Active', 'Sign-Off', 'Complete †', 'Failed', 'Abandoned', 'Obselete', 'Expiring', 'Expired'],
                 datasets: [{
-                    data: [{{ assigned_count }}, {{ active_count }}, {{ complete_count }}, 0, {{ abandoned_count }}, 0, 0, 0],
+                    data: [{{ assigned_count }}, {{ active_count }}, {{ signoff_count }}, {{ complete_count }}, {{ failed_count }}, {{ abandoned_count }}, 0, {{ expiring_count }}, {{ expired_count }}],
                     label: 'Digital Goods',
                     fillColor: 'rgba(60,141,188,0.9)',
                     strokeColor: 'rgba(60,141,188,0.8)',
@@ -1035,9 +1103,9 @@
             var barChartCanvas = $('#barChart').get(0).getContext('2d')
             var barChart = new Chart(barChartCanvas)
             var barChartData = data
-            barChartData.datasets[0].fillColor = '#00a65a'
-            barChartData.datasets[0].strokeColor = '#00a65a'
-            barChartData.datasets[0].pointColor = '#00a65a'
+            barChartData.datasets[0].fillColor = '#ffcc00'
+            barChartData.datasets[0].strokeColor = '#8c8c8c'
+            barChartData.datasets[0].pointColor = '#ffcc00'
             var barChartOptions = {
                 //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
                 scaleBeginAtZero: true,
@@ -1046,7 +1114,7 @@
                 //String - Colour of the grid lines
                 scaleGridLineColor: 'rgba(0,0,0,.05)',
                 //Number - Width of the grid lines
-                scaleGridLineWidth: 1,
+                scaleGridLineWidth: 0,
                 //Boolean - Whether to show horizontal lines (except X axis)
                 scaleShowHorizontalLines: true,
                 //Boolean - Whether to show vertical lines (except Y axis)
@@ -1054,7 +1122,7 @@
                 //Boolean - If there is a stroke on each bar
                 barShowStroke: true,
                 //Number - Pixel width of the bar stroke
-                barStrokeWidth: 2,
+                barStrokeWidth: 1,
                 //Number - Spacing between each of the X value sets
                 barValueSpacing: 5,
                 //Number - Spacing between data sets within X values

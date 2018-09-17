@@ -888,7 +888,7 @@ def transform(text_file_contents):
 
 @admin.route('/bulk_user_upload')
 @admin_permission.require(http_exception=403)
-def form():
+def bulk_user_upload():
     """
     upload csv file of users to add to database
     csv format must be:

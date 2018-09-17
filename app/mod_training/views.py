@@ -16,6 +16,7 @@ from collections import OrderedDict
 from app.competence import config
 
 
+
 training = Blueprint('training', __name__, template_folder='templates')
 
 
@@ -192,7 +193,6 @@ def get_competence_summary_by_user(c_id, u_id,version):
     :param u_id:
     :return:
     """
-    print "YOYOYOY"
     competence_result = s.query(Assessments).outerjoin(Users, Users.id == Assessments.user_id).outerjoin(Subsection). \
         outerjoin(Section).outerjoin(Competence, Subsection.c_id == Competence.id). \
         outerjoin(CompetenceDetails,and_(Competence.id==CompetenceDetails.c_id,CompetenceDetails.intro==version)). \
@@ -218,9 +218,10 @@ def get_competence_summary_by_user(c_id, u_id,version):
                func.min(Assessments.date_expiry).label('expiry'),
                case([
                    (s.query(Assessments). \
-                    outerjoin(Subsection, Subsection.id == Assessments.ss_id).\
-                    filter(and_(Assessments.version==version,Assessments.user_id == u_id, Subsection.c_id == c_id,
-                                Assessments.date_completed == None)).exists(),
+                    outerjoin(Subsection, Subsection.id == Assessments.ss_id). \
+                    # filter(and_(Assessments.version==version,Assessments.user_id == u_id, Subsection.c_id == c_id)).exists(),
+                     filter(and_(Assessments.version==version,Assessments.user_id == u_id, Subsection.c_id == c_id,
+                                 Assessments.date_completed == None)).exists(),
                     None)],
                    else_=func.max(Assessments.date_completed)).label('completed'))
                # case([
@@ -290,8 +291,19 @@ def filter_for_none(value):
 @login_required
 def reassessment():
     if request.method == 'GET':
+
         c_id = request.args.get('c_id')
         version = request.args.get('version')
+
+        current_version = s.query(Competence).filter(Competence.id == c_id).first().current_version
+        print "YEAH"
+        print version
+        print current_version
+        print "----"
+        if int(version) < int(current_version):
+            from app.views import index
+            return index(message="There is a new version of this competence so it cannot be re-assessed!")
+
         print c_id
 
         assess_id_list = request.args.get('assess_id_list').split(',')

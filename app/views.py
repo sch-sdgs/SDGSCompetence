@@ -365,7 +365,7 @@ def utility_processor():
 def utility_processor():
     def get_status(status_id):
         status = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.id==status_id).first().status
-        html = assess_status(status)
+        html = assess_status_method(status)
 
         return html
 
@@ -571,7 +571,7 @@ def home():
 
 @app.route('/')
 @login_required
-def index():
+def index(message=None):
     """
     displays the users dashboard
     :return: template index.html
@@ -585,35 +585,74 @@ def index():
     assigned_count = 0
     complete_count = 0
     abandoned_count = 0
+    signoff_count = 0
+    failed_count = 0
+    expiring_count = 0
+    expired_count = 0
+
     for i in linereports:
         counts[i.id] = {}
         # TODO get competence because assessments is all subsections
 
         counts[i.id]["assigned"] = len(
-            s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id == i.id).filter(
+            s.query(Assessments).filter(Assessments.user_id == i.id).filter(
                 Assessments.status == 2).all())
         assigned_count += counts[i.id]["assigned"]
         counts[i.id]["active"] = len(
-            s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id == i.id).filter(
+            s.query(Assessments).filter(Assessments.user_id == i.id).filter(
                 Assessments.status == 1).all())
         active_count += counts[i.id]["active"]
+        counts[i.id]["sign-off"] = len(
+            s.query(Assessments).filter(Assessments.user_id == i.id).filter(
+                Assessments.status == 7).all())
+        signoff_count += counts[i.id]["sign-off"]
         counts[i.id]["complete"] = len(
-            s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id == i.id).filter(
+            s.query(Assessments).filter(Assessments.user_id == i.id).filter(
                 Assessments.status == 3).all())
         complete_count += counts[i.id]["complete"]
         counts[i.id]["failed"] = len(
-            s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id == i.id).filter(
+            s.query(Assessments).filter(Assessments.user_id == i.id).filter(
                 Assessments.status == 5).all())
+        failed_count += counts[i.id]["failed"]
         counts[i.id]["obsolete"] = len(
-            s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id == i.id).filter(
+            s.query(Assessments).filter(Assessments.user_id == i.id).filter(
                 Assessments.status == 6).all())
         counts[i.id]["abandoned"] = len(
-            s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id == i.id).filter(
+            s.query(Assessments).filter(Assessments.user_id == i.id).filter(
                 Assessments.status == 4).all())
         abandoned_count += counts[i.id]["abandoned"]
 
+    expired = s.query(Assessments).filter(Assessments.user_id == current_user.database_id)
+    alerts = {}
+    alerts["Assessments"] = {}
+    for i in linereports:
+        ass = s.query(Assessments).filter(Assessments.user_id == i.id).all()
+        for j in ass:
+            if j.date_expiry is not None:
+                if datetime.date.today() > j.date_expiry:
+                    if "expired" not in counts[i.id]:
+                        counts[i.id]["expired"] = 0
+                        counts[i.id]["expired"] += 1
+                    else:
+                        counts[i.id]["expired"] += 1
+
+                    expired_count += 1
+
+                elif datetime.date.today() + relativedelta(months=+6) > j.date_expiry:
+                    if "expiring" not in counts[i.id]:
+                        counts[i.id]["expiring"] = 0
+                        counts[i.id]["expiring"] += 1
+
+                    else:
+                        counts[i.id]["expiring"] += 1
+                    expiring_count += 1
+
+
     competences_incomplete = s.query(CompetenceDetails).join(Competence).filter(
-        CompetenceDetails.creator_id == current_user.database_id).filter(Competence.current_version != CompetenceDetails.intro).all()
+        CompetenceDetails.creator_id == current_user.database_id).filter(Competence.current_version != CompetenceDetails.intro).filter(CompetenceDetails.date_of_approval == None).all()
+
+
+
     competences_complete = s.query(CompetenceDetails).join(Competence).filter(
         CompetenceDetails.creator_id == current_user.database_id).filter(Competence.current_version == CompetenceDetails.intro).all()
 
@@ -654,8 +693,9 @@ def index():
         .join(AssessmentStatusRef)\
         .filter(Assessments.user_id == current_user.database_id) \
         .group_by(Assessments.version) \
-        .filter(AssessmentStatusRef.status.in_(["Complete","4 Year Due"])) \
+        .filter(AssessmentStatusRef.status.in_(["Complete","Four Year Due"])) \
         .all()
+
 
     print complete
     all_complete = []
@@ -665,10 +705,33 @@ def index():
         result = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
         if result.completed != None:
             all_complete.append(result)
+    print all_complete
+    obsolete = s.query(Assessments) \
+        .join(Subsection) \
+        .join(Competence) \
+        .join(CompetenceDetails) \
+        .join(AssessmentStatusRef) \
+        .filter(Assessments.user_id == current_user.database_id) \
+        .filter(and_(CompetenceDetails.intro <= Assessments.version,or_(CompetenceDetails.last >= Assessments.version,CompetenceDetails.last==None)))\
+        .group_by(Competence.id) \
+        .filter(AssessmentStatusRef.status.in_(["Obsolete"])) \
+        .all()
+
+    # print "HELLO"
+    # print obsolete
+    # all_obsolete = []
+    # for i in obsolete:
+    #     print "OBSOLETE"
+    #     print i
+    #     result = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
+    #     if result.completed != None:
+    #         all_obsolete.append(result)
 
 
     signoff = s.query(Evidence).filter(Evidence.signoff_id == current_user.database_id).filter(Evidence.is_correct == None).all()
-    signoff_competence = s.query(CompetenceDetails).join(CompetenceRejectionReasons).filter(and_(CompetenceDetails.approve_id == current_user.database_id,CompetenceDetails.approved != None,CompetenceDetails.approved != 1)).all()
+    signoff_competence = s.query(CompetenceDetails).filter(and_(CompetenceDetails.approve_id == current_user.database_id,CompetenceDetails.approved != None,CompetenceDetails.approved != 1)).all()
+    print "SIGN_OFF"
+    print signoff_competence
     signoff_reassessment = s.query(Reassessments).join(AssessReassessRel).join(Assessments).filter(Reassessments.signoff_id==current_user.database_id).filter(Reassessments.is_correct == None).all()
 
     # signoff_reassessments = {key: [i for i in value] for key, value in
@@ -678,8 +741,8 @@ def index():
 
 
     accept_form = RateEvidence()
-    return render_template("index.html", complete=all_complete, accept_form=accept_form, signoff=signoff, assigned_count=assigned_count,
-                           active_count=active_count, complete_count=complete_count, linereports=linereports,
+    return render_template("index.html", message=message, expiring_count=expiring_count, expired_count=expired_count, complete=all_complete, obsolete=obsolete, accept_form=accept_form, signoff=signoff, assigned_count=assigned_count,
+                           active_count=active_count, signoff_count=signoff_count, failed_count=failed_count, complete_count=complete_count, linereports=linereports,
                            linereports_inactive=linereports_inactive, competences_incomplete=competences_incomplete,
                            competences_complete=competences_complete, abandoned_count=abandoned_count, counts=counts, assigned=all_assigned, active=active,signoff_competence=signoff_competence,signoff_reassessment=signoff_reassessment)
 
