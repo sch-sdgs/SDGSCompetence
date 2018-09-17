@@ -5,15 +5,9 @@
     <bookmark url="file://$PROJECT_DIR$/app/templates/index.html" description="&#10;" line="190" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4783f288-aaa5-4ace-9f51-c82da759ae56" name="Default" comment="version 0.1">
-      <change afterPath="$PROJECT_DIR$/app/static/images/logo-sm.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/static/images/logo.png" afterDir="false" />
+    <list default="true" id="4783f288-aaa5-4ace-9f51-c82da759ae56" name="Default" comment="missing jinja extension &quot;do&quot;">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/competence.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/competence.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_assign.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_assign.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/templates/base2.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/base2.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <ignored path="SDGSCompetence.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -66,24 +60,24 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="css" value="45" />
-          <entry key="html" value="5995" />
+          <entry key="html" value="5999" />
           <entry key="py" value="8596" />
-          <entry key="txt" value="65" />
+          <entry key="txt" value="93" />
           <entry key="vmoptions" value="19" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="CSS" value="45" />
-          <entry key="HTML" value="5995" />
-          <entry key="PLAIN_TEXT" value="84" />
+          <entry key="HTML" value="5999" />
+          <entry key="PLAIN_TEXT" value="112" />
           <entry key="Python" value="8596" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="css" value="4" />
-          <entry key="html" value="45" />
+          <entry key="html" value="47" />
           <entry key="js" value="1" />
           <entry key="png" value="1" />
           <entry key="py" value="26" />
@@ -94,7 +88,7 @@
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="CSS" value="4" />
-          <entry key="HTML" value="45" />
+          <entry key="HTML" value="47" />
           <entry key="Image" value="1" />
           <entry key="JavaScript" value="1" />
           <entry key="PLAIN_TEXT" value="4" />
@@ -108,6 +102,15 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/templates/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="88">
+              <caret line="294" column="26" lean-forward="true" selection-start-line="294" selection-start-column="26" selection-end-line="294" selection-end-column="26" />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/config.py">
           <provider selected="true" editor-type-id="text-editor">
@@ -162,27 +165,23 @@
           <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/competence.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="374">
-              <caret line="22" selection-start-line="22" selection-end-line="22" />
+            <state relative-caret-position="51">
+              <caret line="3" column="14" lean-forward="true" selection-start-line="3" selection-start-column="14" selection-end-line="3" selection-end-column="14" />
               <folding>
-                <element signature="e#0#32#0" expanded="true" />
                 <marker date="1537195740962" expanded="true" signature="5343:5344" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/mod_training/templates/complete_training.html">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/templates/base2.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="209">
-              <caret line="57" lean-forward="true" selection-start-line="57" selection-end-line="57" />
-              <folding>
-                <element signature="e#15621#15649#0#HTML" expanded="true" />
-              </folding>
+            <state relative-caret-position="269">
+              <caret line="793" column="18" selection-start-line="793" selection-start-column="18" selection-end-line="793" selection-end-column="18" />
             </state>
           </provider>
         </entry>
@@ -192,15 +191,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="476">
               <caret line="28" selection-start-line="28" selection-end-line="28" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/templates/base2.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="638">
-              <caret line="333" column="73" lean-forward="true" selection-start-line="333" selection-start-column="73" selection-end-line="333" selection-end-column="73" />
             </state>
           </provider>
         </entry>
@@ -217,7 +207,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>reassessment</find>
       <find>signoff_competence</find>
       <find>'/reassessment'</find>
       <find>('/'&quot;</find>
@@ -247,6 +236,7 @@
       <find>collap</find>
       <find>do</find>
       <find>jinja</find>
+      <find>v0.</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$/app/static</dir>
@@ -312,9 +302,9 @@
         <option value="$PROJECT_DIR$/app/views.py" />
         <option value="$PROJECT_DIR$/app/mod_competence/templates/competence_assign.html" />
         <option value="$PROJECT_DIR$/app/templates/index.html" />
-        <option value="$PROJECT_DIR$/app/templates/base2.html" />
         <option value="$PROJECT_DIR$/requirements.txt" />
         <option value="$PROJECT_DIR$/app/competence.py" />
+        <option value="$PROJECT_DIR$/app/templates/base2.html" />
       </list>
     </option>
   </component>
@@ -702,13 +692,6 @@
       <option name="presentableId" value="Default" />
       <updated>1507807214790</updated>
     </task>
-    <task id="LOCAL-00010" summary="working on users in admin module">
-      <created>1508142106171</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1508142106171</updated>
-    </task>
     <task id="LOCAL-00011" summary="Merge branch 'develop_Nichola' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;app/models.py&#10;">
       <created>1508143070776</created>
       <option name="number" value="00011" />
@@ -1045,7 +1028,14 @@
       <option name="project" value="LOCAL" />
       <updated>1537191974951</updated>
     </task>
-    <option name="localTasksCounter" value="59" />
+    <task id="LOCAL-00059" summary="missing jinja extension &quot;do&quot;">
+      <created>1537195758968</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1537195758971</updated>
+    </task>
+    <option name="localTasksCounter" value="60" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -1116,7 +1106,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="working on dashboard" />
     <MESSAGE value="Merge branch 'develop_Nichola' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml&#10;#&#9;app/run.py&#10;&#10;Matt changes - all actions etc!" />
     <MESSAGE value="Merge branch 'develop_Natalie' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml&#10;" />
     <MESSAGE value="working on editing and little niggles" />
@@ -1141,7 +1130,8 @@
     <MESSAGE value="- fixing issue with competence listings" />
     <MESSAGE value="lots of work on reassessments and 4yr reassessments" />
     <MESSAGE value="version 0.1" />
-    <option name="LAST_COMMIT_MESSAGE" value="version 0.1" />
+    <MESSAGE value="missing jinja extension &quot;do&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="missing jinja extension &quot;do&quot;" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1503,33 +1493,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/templates/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="88">
-          <caret line="294" column="26" lean-forward="true" selection-start-line="294" selection-start-column="26" selection-end-line="294" selection-end-column="26" />
-          <folding>
-            <element signature="e#10640#10661#0#HTML" expanded="true" />
-            <element signature="e#12133#12155#0#HTML" expanded="true" />
-            <element signature="e#21249#21344#0#HTML" expanded="true" />
-            <element signature="e#21730#21751#0#HTML" expanded="true" />
-            <element signature="e#27696#27717#0#HTML" expanded="true" />
-            <element signature="e#34350#34371#0#HTML" expanded="true" />
-            <element signature="e#38362#38383#0#HTML" expanded="true" />
-            <element signature="e#42417#42453#0#HTML" expanded="true" />
-            <element signature="e#45377#45403#0#HTML" expanded="true" />
-            <element signature="e#49685#49707#0#HTML" expanded="true" />
-            <element signature="e#50677#50699#0#HTML" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/templates/base2.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="638">
-          <caret line="333" column="73" lean-forward="true" selection-start-line="333" selection-start-column="73" selection-end-line="333" selection-end-column="73" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/mod_training/templates/complete_training.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="209">
@@ -1591,12 +1554,25 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/competence.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="22" selection-start-line="22" selection-end-line="22" />
+        <state relative-caret-position="51">
+          <caret line="3" column="14" lean-forward="true" selection-start-line="3" selection-start-column="14" selection-end-line="3" selection-end-column="14" />
           <folding>
-            <element signature="e#0#32#0" expanded="true" />
             <marker date="1537195740962" expanded="true" signature="5343:5344" ph="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="88">
+          <caret line="294" column="26" lean-forward="true" selection-start-line="294" selection-start-column="26" selection-end-line="294" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/base2.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="269">
+          <caret line="793" column="18" selection-start-line="793" selection-start-column="18" selection-end-line="793" selection-end-column="18" />
         </state>
       </provider>
     </entry>
