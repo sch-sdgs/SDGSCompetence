@@ -672,12 +672,27 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="box box-solid bg-gray-light" id="training">
+                         <div class="box-header">
+                            <h3 class="box-title text-black"><i class="fa fa-link"></i> Quick Links</h3>
+                        </div>
                             <div class="box-body">
                                 {% for report in linereports %}
 
-                                    <button class="btn btn-default pad_bottom"><i
-                                            class="fa fa-user"></i> {{ report.first_name }} {{ report.last_name }}
-                                    </button>
+                                    <div class="btn-group">
+                                      <button type="button" class="btn btn-default dropdown-toggle pad_bottom" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i
+                                            class="fa fa-user"></i> {{ report.first_name }} {{ report.last_name }} <span class="caret"></span>
+                                      </button>
+                                      <ul class="dropdown-menu">
+                                        <li><a href="{{ url_for('competence.assign_user_to_competence') }}?ids={{ report.id }}">Assign a Competence</a></li>
+                                          <li role="separator" class="divider"></li>
+                                          <li><a class="text-gray" href="#">View User Report</a></li>
+
+                                      </ul>
+                                    </div>
+
+
+
 
                                 {% endfor %}
                             </div>

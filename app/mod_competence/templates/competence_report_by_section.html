@@ -8,7 +8,7 @@
         <section class="content-header">
 
 
-            <h1>Reports By Section</h1>
+            <h1><i class="fa fa-fw fa-paper-plane-o"></i> Reports By Section</h1>
             <small></small>
 {#            <ol class="breadcrumb">#}
 {#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
@@ -224,6 +224,8 @@
                                             {% if data.service_id_rel.name | replace(" ","") == service[0] %}
                                                 {% if data.expiring > service[1]["Expiring"] %}
                                                     <i class="fa fa-arrow-circle-down text-green"></i>
+                                                {% elif data.expiring == service[1]["Expiring"] %}
+                                                    <i class="fa fa-minus-circle text-default"></i>
                                                 {% else %}
                                                     <i class="fa fa-arrow-circle-up text-red"></i>
                                                 {% endif %}
@@ -238,8 +240,10 @@
                                     <td><span class="pull-right">{{ service[1]["Expired"] }}
                                         {% for data in historic %}
                                             {% if data.service_id_rel.name | replace(" ","") == service[0] %}
-                                                {% if data.expired > service[1]["Expired"] %}
+                                                 {% if data.expiring > service[1]["Expired"] %}
                                                     <i class="fa fa-arrow-circle-down text-green"></i>
+                                                {% elif data.expiring == service[1]["Expired"] %}
+                                                    <i class="fa fa-minus-circle text-default"></i>
                                                 {% else %}
                                                     <i class="fa fa-arrow-circle-up text-red"></i>
                                                 {% endif %}
