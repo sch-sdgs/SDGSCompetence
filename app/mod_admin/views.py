@@ -15,6 +15,7 @@ import csv
 from app.activedirectory import UserAuthentication
 import codecs
 import json
+from passlib.hash import bcrypt
 
 admin = Blueprint('admin', __name__, template_folder='templates')
 
@@ -984,3 +985,27 @@ def transform_view():
                     s.query(Users).filter_by(id=user_id).update({'band': band})
 
     print s.commit()
+
+
+@admin.route('/qpulse_details', methods=["GET","POST"])
+@admin_permission.require(http_exception=403)
+def qpulse_details():
+    form = QPulseDetailsForm()
+    message=None
+    if request.method == 'POST':
+        if request.form["password"] == request.form["password_reenter"]:
+            check = s.query(QPulseDetails).count()
+            if check == 0:
+                q = QPulseDetails(username=request.form["username"],password=request.form["password"])
+                s.add(q)
+                s.commit()
+                message = "Username and/or password added"
+            else:
+                data = { "username": request.form["username"], "password": request.form["password"]}
+                s.query(QPulseDetails).filter(QPulseDetails.id==1).update(data)
+                s.commit()
+                message = "Username and/or password updated"
+        else:
+            message="Passwords don't match!"
+
+    return render_template("qpulse_details_admin.html", form=form, message=message)

@@ -637,10 +637,14 @@ def delete():
 
                 #remove_evidence_rel
                 print "removing evidence rel"
+
                 s.query(AssessmentEvidenceRelationship).filter_by(id=evidence_rel.id).delete()
                 s.commit()
+
+                print s.query(AssessmentEvidenceRelationship).filter_by(id=evidence_rel.id).all()
+
                 # remove evidence
-                print "removing eveidne record in db"
+                print "removing evidence record in db"
                 s.query(Evidence).filter_by(id=evidence_rel.evidence_id).delete()
                 s.commit()
 
@@ -1044,4 +1048,9 @@ def test():
 
 
 
+@training.route('/user_report/<id>', methods=['GET'])
+def user_report(id=None):
+    user = s.query(Users).filter(Users.id==id).first()
+    assessments = s.query(Assessments).filter(Assessments.user_id==id).all
+    return render_template("user_report.html",assessments=assessments,user=user)
 

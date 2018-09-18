@@ -1,0 +1,112 @@
+{% extends "base2.html" %}
+{% block content %}
+
+
+
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                <i class="fa fa-user"></i> User Report
+                <small>View & Download an individuals competence record.</small>
+            </h1>
+            {#            <ol class="breadcrumb">#}
+            {#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
+            {#                <li class="active">Here</li>#}
+            {#            </ol>#}
+            {% if message %}
+                <div class="alert alert-danger">
+                    <strong>Fail Whale!</strong> {{ message }}
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- Main content -->
+
+        <section class="content container-fluid">
+
+            <p class="text-red">Under Construction</p>
+
+            <h2><strong>User:</strong> {{ user.first_name }} {{ user.last_name }}</h2> <button class="btn btn-default btn-flat pull-right"><i class="fa fa-download"></i> Download as PDF</button>
+            <h3><i class="fa fa-mortar-board"></i> Training Status</h3>
+            <div class="box box-solid bg-green-gradient">
+                <div class="box-header">
+                    <h3 class="box-title">Complete Competencies</h3>
+                </div>
+                <div class="box-body">
+
+                </div>
+            </div>
+            <div class="box box-solid bg-yellow-gradient">
+                <div class="box-header">
+                    <h3 class="box-title">On-going Competencies</h3>
+                </div>
+                <div class="box-body">
+
+                </div>
+            </div>
+            <div class="box box-solid bg-red-gradient">
+                <div class="box-header">
+                    <h3 class="box-title">Expiring or Expired Competencies</h3>
+                </div>
+                <div class="box-body">
+
+                </div>
+            </div>
+            <h3><i class="fa fa-pie-chart"></i> Analytics</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="box box-solid bg-gray-light">
+                        <div class="box-header text-black">
+                            <h3 class="box-title">Time to Completion</h3>
+                            <small class="text-gray">How long does it usually take xxx to complete a competence?</small>
+                        </div>
+                        <div class="box-body">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="box box-solid bg-gray-light">
+                        <div class="box-header text-black">
+                            <h3 class="box-title">Due Dates</h3>
+                            <small class="text-gray">Does xxx hit due date targets?</small>
+                        </div>
+                        <div class="box-body">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="box box-solid bg-gray-light">
+                        <div class="box-header text-black">
+                            <h3 class="box-title">Accuracy</h3>
+                            <small class="text-gray">Is evidence usually signed-off 1st time?</small>
+                        </div>
+                        <div class="box-body">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="box box-solid bg-gray-light">
+                        <div class="box-header text-black">
+                            <h3 class="box-title">Contribution</h3>
+                            <small class="text-gray">How many competencies did the user make, edit? How many did they
+                                sign-off? Did they sign-off evidence?
+                            </small>
+                        </div>
+                        <div class="box-body">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </section>
+    </div>
+
+{% endblock %}

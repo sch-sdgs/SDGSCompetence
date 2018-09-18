@@ -174,11 +174,8 @@ def export_document(c_id):
     qpulse_list = {}
 
     for qpulse_no in qpulse:
-        d = QpulseDetails()
-        details = d.Details()
-        username = str(details[1])
-        password = str(details[0])
-        qpulse_name = QPulseWeb().get_doc_by_id(username, password, qpulse_no)
+        d = s.query(QPulseDetails).first()
+        qpulse_name = QPulseWeb().get_doc_by_id(d.username, d.password, qpulse_no)
         qpulse_list[qpulse_no]=qpulse_name
 
     # evidence - this will be for downloading completed competences

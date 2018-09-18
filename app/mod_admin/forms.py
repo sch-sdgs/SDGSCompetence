@@ -1,6 +1,6 @@
 from flask_wtf import Form
 from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
-from wtforms.fields import TextField, SubmitField, HiddenField, BooleanField, SelectMultipleField, SelectField, TextAreaField
+from wtforms.fields import TextField, SubmitField, HiddenField, BooleanField, SelectMultipleField, SelectField, TextAreaField,PasswordField
 from wtforms.validators import Required
 
 from app.competence import s
@@ -87,3 +87,9 @@ class DropDownForm(Form):
 class SubSectionAutoComplete(Form):
     phrase = TextAreaField("Phrase(s)", [Required("Enter a phrase")])
     submit = SubmitField()
+
+class QPulseDetailsForm(Form):
+    username = TextField("Q-Pulse Username")
+    password = PasswordField("Q-Pulse Password")
+    password_reenter = PasswordField("Re-Enter Q-Pulse Password")
+    submit = SubmitField("Update Details")

@@ -498,9 +498,17 @@ def add_sections_to_db():
     s.add(sub)
     s.commit()
 
-    sort_order = SectionSortOrder(c_id=c_id, section_id=s_id, sort_order=0)
-    s.add(sort_order)
-    s.commit()
+    check = s.query(SectionSortOrder).filter(SectionSortOrder.c_id == c_id).filter(
+        SectionSortOrder.section_id == s_id).count()
+    if check > 0:
+        data = {"sort_order": 0}
+        s.query(SectionSortOrder).filter(SectionSortOrder.c_id == c_id).filter(
+            SectionSortOrder.section_id == s_id).update(data)
+        s.commit()
+    else:
+        sort_order = SectionSortOrder(c_id=c_id, section_id=s_id, sort_order=0)
+        s.add(sort_order)
+        s.commit()
 
 
     result = s.query(Subsection).join(Competence).join(Section).join(EvidenceTypeRef).filter(
@@ -582,21 +590,21 @@ def get_documents(c_id):
 @competence.route('/get_doc_name', methods=['POST', 'POST'])
 @login_required
 def get_doc_name(doc_id=None):
-    d = QpulseDetails()
-    details = d.Details()
-    username = str(details[1])
-    password = str(details[0])
+    details = s.query(QPulseDetails).first()
+
+
     q = QPulseWeb()
     if not doc_id:
         doc_id = request.json['doc_id']
-        doc_name = q.get_doc_by_id(username=username, password=password, docNumber=doc_id)
+
+        doc_name = q.get_doc_by_id(username=details.username, password=details.password, docNumber=doc_id)
         if doc_name == "False":
             return jsonify({"response":"This is not a valid QPulse Document"})
         else:
             return jsonify({"response":doc_name})
 
     else:
-        doc_name = q.get_doc_by_id(username=username, password=password, docNumber=doc_id)
+        doc_name = q.get_doc_by_id(username=details.username, password=details.password, docNumber=doc_id)
         return doc_name
 
 
@@ -690,10 +698,9 @@ def view_competence():
         c_id=c_id)
     for doc in docs:
         doc_id = ','.join(repr(x.encode('utf-8')) for x in doc).replace("'", "")
-        d = QpulseDetails()
-        details = d.Details()
-        username = str(details[1])
-        password = str(details[0])
+        d = s.query(QPulseDetails).first()
+        username = d.username
+        password = d.password
         q = QPulseWeb()
         doc_name = q.get_doc_by_id(username=username, password=password, docNumber=doc)
         print "hey there"
@@ -1149,7 +1156,8 @@ def edit_competence():
     documents = []
     for i in doc_query:
         name = get_doc_name(doc_id=i)
-        documents.append([i.qpulse_no, name])
+        if name != False:
+            documents.append([i.qpulse_no, name])
     # get subsections
     sub_result = OrderedDict()
     sub_result["constant"] = {}

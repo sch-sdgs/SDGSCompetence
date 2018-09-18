@@ -2,6 +2,7 @@ import datetime
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import backref
 from competence import app
+from passlib.hash import bcrypt
 
 db = SQLAlchemy(app)
 
@@ -618,6 +619,21 @@ class CompetenceRejectionReasons(db.Model):
     rejection_reason = db.Column(db.String(2000), unique=True, nullable=False)
 
     competence_details = db.relationship("CompetenceDetails", lazy='joined', foreign_keys=[c_detail_id])
+
+
+class QPulseDetails(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), unique=False, nullable=False)
+    password = db.Column(db.String(100), unique=False, nullable=False)
+
+
+def __init__(self, username, password):
+    self.username = username
+    self.password = password
+
+
+def __repr__(self):
+    return "<User(username ='%s', password='%s')>" % (self.username, self.password)
 
 if enable_search:
     whooshalchemy.whoosh_index(app, Users)

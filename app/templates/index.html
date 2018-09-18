@@ -689,7 +689,7 @@
                                       <ul class="dropdown-menu">
                                         <li><a href="{{ url_for('competence.assign_user_to_competence') }}?ids={{ report.id }}">Assign a Competence</a></li>
                                           <li role="separator" class="divider"></li>
-                                          <li><a class="text-gray" href="#">View User Report</a></li>
+                                          <li><a href="{{ url_for('training.user_report',id=report.id) }}">View User Report</a></li>
 
                                       </ul>
                                     </div>
