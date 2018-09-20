@@ -32,7 +32,7 @@
                         {% for video in videos %}
                             <div class="col-md-4">
 
-                                <iframe width="360" height="200" src="{{ video.embed_code|safe }}" frameborder="0"
+                                <iframe width="360" height="200" src="https://www.youtube.com/embed/{{ video.embed_code|safe }}" frameborder="0"
                                         allow="autoplay; encrypted-media" allowfullscreen></iframe>
                                 <p class="text-muted"><strong>Title: </strong>{{ video.title }}<br> <strong>Competence: </strong>{{ video.competence_details.title }}<a href="{{ url_for('competence.remove_video',id=video.id)}}" class="btn btn-sm btn-flat btn-danger pull-right"><i class="fa fa-remove"></i> Remove</a><br><br></p>
                             {% if "ADMIN" in current_user.roles %}

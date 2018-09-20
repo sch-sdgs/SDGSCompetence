@@ -4,7 +4,9 @@ table.dataTable tbody tr.selected {
     color: white !important;
     background-color: #999999 !important;
 }
-
+.blank_row {
+  line-height: 10px;
+}
 .thead-no-bold{
     font-weight: normal;
 }

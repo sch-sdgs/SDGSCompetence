@@ -1501,7 +1501,7 @@ def add_videos():
         video = Videos(date=datetime.date.today(),c_id=c_query.id,title=request.form['title'],embed_code=request.form['code'])
         s.add(video)
         s.commit()
-        return render_template("competence_videos.html")
+        return redirect(url_for('competence.videos'))
     elif request.method == 'GET':
         return render_template("competence_video_add.html")
 

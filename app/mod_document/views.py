@@ -21,6 +21,7 @@ from forms import *
 from sqlalchemy.orm import aliased
 import uuid
 from app.mod_competence import views as competence_views
+from collections import OrderedDict
 
 document = Blueprint('document', __name__, template_folder='templates')
 
@@ -47,8 +48,11 @@ def get_subsections(c_id):
     """
     subsections = s.query(Subsection). \
         join(Section). \
+        join(SectionSortOrder). \
         join(Competence).\
-        filter(Subsection.c_id == c_id). \
+        filter(Subsection.c_id == c_id).\
+        order_by(SectionSortOrder.sort_order.asc()).\
+        order_by(Subsection.sort_order.asc()). \
         values(Subsection.name.label('subsec_name'),
                Subsection.comments,
                Section.name.label('sec_name'),
@@ -145,7 +149,7 @@ def export_document(c_id):
     date_of_issue = comp.date_of_approval.strftime("%d-%m-%Y")
 
     # subsection details
-    subsection = {}
+    subsection = OrderedDict()
 
     for sub in subsec: ## This is each non-constant subsection
         sec_name = sub.sec_name
@@ -158,7 +162,7 @@ def export_document(c_id):
     print subsection
 
     #constant section details
-    constant = {}
+    constant = OrderedDict()
 
     for c in const: # this is each constant subsection
         sec_type = c.sec_name #section name
@@ -183,7 +187,7 @@ def export_document(c_id):
 
     print('***Rendering main document***')
     # Make main document
-    html_out = render_template('export_to_pdf.html', title=title, scope=scope, docid=docid ,version_no=version_no, author=author, full_name=current_user.full_name, subsection=subsection, constant=constant, qpulse_list=qpulse_list)
+    html_out = render_template('export_to_pdf.html', title=title, validity_period=comp.validity_rel.months, scope=scope, docid=docid ,version_no=version_no, author=author, full_name=current_user.full_name, subsection=subsection, constant=constant, qpulse_list=qpulse_list)
     html = HTML(string=html_out)
 
     main_doc = html.render(stylesheets=[CSS('static/css/simple_report.css')])
@@ -239,8 +243,10 @@ def export_document_view():
     print(request.method)
     if request.method == 'GET':
         c_id = request.args.get('c_id')
+        version = request.args.get('version')
         print('cid')
         print(c_id)
         outfile = export_document(c_id)
         uploads = app.config["UPLOAD_FOLDER"]
-        return send_from_directory(directory=uploads, filename=outfile, as_attachment=True, attachment_filename="competence_download.pdf")
+        filename = s.query(CompetenceDetails).filter(CompetenceDetails.c_id==c_id).first().title
+        return send_from_directory(directory=uploads, filename=outfile, as_attachment=True, attachment_filename=filename)

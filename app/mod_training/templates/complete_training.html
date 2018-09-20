@@ -214,7 +214,7 @@
                             {% for video in videos %}
                                 <div class="col-md-4">
 
-                                    <iframe width="380" height="180" src="{{ video.embed_code|safe }}" frameborder="0"
+                                    <iframe width="380" height="180" src="https://www.youtube.com/embed/{{ video.embed_code|safe }}" frameborder="0"
                                             allow="autoplay; encrypted-media" allowfullscreen></iframe>
                                     <p class="text-muted text-center">{{ video.title }}</p>
 

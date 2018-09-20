@@ -7,13 +7,13 @@
         <!-- Content Header (Page header) -->
         <section class="content-header">
             <h1>
-                Add Videos
+                <i class="fa fa-fw fa-video-camera"></i> Add Videos
                 <small></small>
             </h1>
-            <ol class="breadcrumb">
-                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                <li class="active">Here</li>
-            </ol>
+{#            <ol class="breadcrumb">#}
+{#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
+{#                <li class="active">Here</li>#}
+{#            </ol>#}
             {% if message %}
                 <div class="alert alert-danger">
                     <strong>Fail Whale!</strong> {{ message }}
@@ -53,9 +53,10 @@
 
                             <div class="form-group">
 
-                                <label class="col-lg-2 control-label">Full Embed Code (Include html)</label>
+                                <label class="col-lg-2 control-label">YouTube Id</label>
                                 <div class="col-lg-10">
                                     <input type="text" name="code" id="code" class="form-control">
+                                    <span class="help-block">i.e. <strike>https://youtu.be/</strike>Y8rtYbKoook - <strong>See Below!</strong></span>
                                 </div>
                             </div>
 
@@ -71,6 +72,50 @@
                         </fieldset>
                     </form>
 
+                </div>
+            </div>
+            <div class="box box-default" id="training">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-info-circle"></i> Finding Video ID in YouTube</h3>
+
+                </div>
+                <div class="box-body">
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="thumbnail">
+                                <a href="/static/images/youtube_share_1.png">
+                                    <img src="/static/images/youtube_share_1.png" alt="youtube_share_1"
+                                         style="width:100%">
+                                    <div class="caption">
+                                        <p>1. Click the "Share" button.</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="thumbnail">
+                                <a href="/static/images/youtube_share_2.png">
+                                    <img src="/static/images/youtube_share_2.png" alt="youtube_share_2"
+                                         style="width:100%">
+                                    <div class="caption">
+                                        <p>2. Copy the ID from the URL it provides.</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="thumbnail">
+                                <a href="/static/images/youtube_share_3.png">
+                                    <img src="/static/images/youtube_share_3.png" alt="youtube_share_2"
+                                         style="width:100%">
+                                    <div class="caption">
+                                        <p>3. Paste the YouTube ID into the form!</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

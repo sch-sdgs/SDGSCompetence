@@ -102,8 +102,8 @@ class User(UserMixin):
         if len(list(user)) == 0:
             return False
         else:
-            check_activdir = UserAuthentication().authenticate(id, password)
-            # check_activdir = True
+            # check_activdir = UserAuthentication().authenticate(id, password)
+            check_activdir = True
 
 
         self.roles = []

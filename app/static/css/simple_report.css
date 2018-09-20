@@ -17,6 +17,9 @@ html {
     font-size: 100.01%;
 
 }
+.blank_row {
+  line-height: 20px;
+}
 
 body {
     font-size: 75%;
