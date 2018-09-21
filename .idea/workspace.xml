@@ -5,19 +5,13 @@
     <bookmark url="file://$PROJECT_DIR$/app/templates/index.html" description="&#10;" line="190" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4783f288-aaa5-4ace-9f51-c82da759ae56" name="Default" comment="- added q-pulse password editing facility&#10;- fixing bugs in sort order that caused competencies to be displayed multiple time.">
+    <list default="true" id="4783f288-aaa5-4ace-9f51-c82da759ae56" name="Default" comment="- sorted order on download pdf fixed&#10;- added statement to pdf&#10;- fixed videos">
+      <change afterPath="$PROJECT_DIR$/app/static/images/youtube_share_1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/static/images/youtube_share_2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/static/images/youtube_share_3.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_video_add.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_video_add.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_videos.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_videos.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_competence/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_document/templates/export_to_pdf.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_document/templates/export_to_pdf.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_document/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_document/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_training/templates/complete_training.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_training/templates/complete_training.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_training/templates/user_report.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_training/templates/user_report.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/static/css/panel_pal.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/static/css/panel_pal.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/static/css/simple_report.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/static/css/simple_report.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/templates/base2.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/base2.html" afterDir="false" />
     </list>
     <ignored path="SDGSCompetence.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -71,24 +65,24 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="css" value="50" />
-          <entry key="html" value="7830" />
+          <entry key="html" value="7831" />
           <entry key="py" value="10394" />
-          <entry key="txt" value="261" />
+          <entry key="txt" value="344" />
           <entry key="vmoptions" value="19" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="CSS" value="50" />
-          <entry key="HTML" value="7830" />
-          <entry key="PLAIN_TEXT" value="280" />
+          <entry key="HTML" value="7831" />
+          <entry key="PLAIN_TEXT" value="363" />
           <entry key="Python" value="10394" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="css" value="6" />
-          <entry key="html" value="61" />
+          <entry key="html" value="62" />
           <entry key="js" value="1" />
           <entry key="png" value="1" />
           <entry key="py" value="37" />
@@ -99,7 +93,7 @@
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="CSS" value="6" />
-          <entry key="HTML" value="61" />
+          <entry key="HTML" value="62" />
           <entry key="Image" value="1" />
           <entry key="JavaScript" value="1" />
           <entry key="PLAIN_TEXT" value="4" />
@@ -138,14 +132,23 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/mod_document/templates/export_to_pdf.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="101" column="81" selection-start-line="101" selection-start-column="81" selection-end-line="101" selection-end-column="81" />
+            <state relative-caret-position="389">
+              <caret line="105" column="51" selection-start-line="105" selection-start-column="51" selection-end-line="105" selection-end-column="51" />
               <folding>
                 <element signature="n#style#0;n#tr#0;n#table#0;n#body#0;n#html#0;n#!!top" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/templates/base2.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="459">
+              <caret line="795" column="18" selection-start-line="795" selection-start-column="18" selection-end-line="795" selection-end-column="18" />
             </state>
           </provider>
         </entry>
@@ -177,11 +180,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/config.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="119">
-              <caret line="7" column="37" lean-forward="true" selection-start-line="7" selection-start-column="37" selection-end-line="7" selection-end-column="37" />
+            <state relative-caret-position="102">
+              <caret line="6" lean-forward="true" selection-start-line="6" selection-end-line="6" />
             </state>
           </provider>
         </entry>
@@ -195,15 +198,6 @@
                 <element signature="e#0#99#0" expanded="true" />
                 <marker date="1537455287525" expanded="true" signature="3978:3984" ph="..." />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/mod_competence/templates/competence_videos.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="578">
-              <caret line="34" column="100" selection-start-line="34" selection-start-column="70" selection-end-line="34" selection-end-column="100" />
             </state>
           </provider>
         </entry>
@@ -315,18 +309,18 @@
         <option value="$PROJECT_DIR$/app/models.py" />
         <option value="$PROJECT_DIR$/app/mod_admin/views.py" />
         <option value="$PROJECT_DIR$/app/mod_competence/templates/with_selected.html" />
-        <option value="$PROJECT_DIR$/app/templates/base2.html" />
         <option value="$PROJECT_DIR$/app/mod_competence/templates/competence_videos.html" />
         <option value="$PROJECT_DIR$/app/mod_training/templates/complete_training.html" />
         <option value="$PROJECT_DIR$/app/mod_competence/views.py" />
         <option value="$PROJECT_DIR$/app/mod_competence/templates/competence_video_add.html" />
         <option value="$PROJECT_DIR$/app/mod_training/templates/user_report.html" />
-        <option value="$PROJECT_DIR$/app/config.py" />
         <option value="$PROJECT_DIR$/app/views.py" />
         <option value="$PROJECT_DIR$/app/mod_document/views.py" />
         <option value="$PROJECT_DIR$/app/static/css/panel_pal.css" />
         <option value="$PROJECT_DIR$/app/static/css/simple_report.css" />
         <option value="$PROJECT_DIR$/app/mod_document/templates/export_to_pdf.html" />
+        <option value="$PROJECT_DIR$/app/templates/base2.html" />
+        <option value="$PROJECT_DIR$/app/config.py" />
       </list>
     </option>
   </component>
@@ -380,10 +374,10 @@
     </packageJsonPaths>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="721" />
-    <option name="y" value="309" />
-    <option name="width" value="1440" />
-    <option name="height" value="1036" />
+    <option name="x" value="683" />
+    <option name="y" value="85" />
+    <option name="width" value="1593" />
+    <option name="height" value="1193" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -734,13 +728,6 @@
       <option name="presentableId" value="Default" />
       <updated>1507807214790</updated>
     </task>
-    <task id="LOCAL-00014" summary="Merge branch 'develop_Nichola' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;app/templates/base.html&#10;">
-      <created>1508176672078</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1508176672078</updated>
-    </task>
     <task id="LOCAL-00015" summary="Merge branch 'develop_Nichola' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;app/templates/base.html&#10;">
       <created>1508176700623</created>
       <option name="number" value="00015" />
@@ -1077,19 +1064,26 @@
       <option name="project" value="LOCAL" />
       <updated>1537271580983</updated>
     </task>
-    <option name="localTasksCounter" value="63" />
+    <task id="LOCAL-00063" summary="- sorted order on download pdf fixed&#10;- added statement to pdf&#10;- fixed videos">
+      <created>1537468517641</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1537468517641</updated>
+    </task>
+    <option name="localTasksCounter" value="64" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="721" y="309" width="1440" height="1036" extended-state="0" />
+    <frame x="683" y="85" width="1593" height="1193" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.84131324" visible="true" weight="0.20028612" />
-      <window_info id="Structure" order="1" sideWeight="0.15868673" side_tool="true" visible="true" weight="0.20028612" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.8412162" visible="true" weight="0.18052869" />
+      <window_info id="Structure" order="1" sideWeight="0.15878378" side_tool="true" visible="true" weight="0.18052869" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" sideWeight="0.4946192" weight="0.40677965" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.47976878" visible="true" weight="0.22563559" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.47904578" visible="true" weight="0.1934605" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -1099,7 +1093,7 @@
       <window_info anchor="bottom" id="Python Console" order="9" weight="0.32998997" />
       <window_info anchor="bottom" id="Version Control" order="10" weight="0.17731172" />
       <window_info anchor="bottom" id="Terminal" order="11" />
-      <window_info anchor="bottom" id="Event Log" order="12" sideWeight="0.5202312" side_tool="true" weight="0.41593695" />
+      <window_info anchor="bottom" id="Event Log" order="12" sideWeight="0.52095425" side_tool="true" visible="true" weight="0.1934605" />
       <window_info anchor="bottom" id="Docker" order="13" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="14" show_stripe_button="false" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
@@ -1107,7 +1101,7 @@
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Remote Host" order="3" />
       <window_info anchor="right" id="SciView" order="4" />
-      <window_info anchor="right" id="Database" order="5" visible="true" weight="0.057939913" />
+      <window_info anchor="right" id="Database" order="5" visible="true" weight="0.05222437" />
     </layout>
     <layout-to-restore>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.23343849" />
@@ -1148,7 +1142,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="lots of bug fixes. approching release." />
     <MESSAGE value="once a competence is approved creator is automatically made competent" />
     <MESSAGE value="getting ready for docker deployment" />
     <MESSAGE value="finnally running in docker - now qpulse issue" />
@@ -1173,7 +1166,8 @@
     <MESSAGE value="v0.1.1" />
     <MESSAGE value="- added q-pulse password editing facility&#10;- fixing bugs in sort order that caused competencies to be displayed multiple time." />
     <MESSAGE value="v0.1.2" />
-    <option name="LAST_COMMIT_MESSAGE" value="v0.1.2" />
+    <MESSAGE value="- sorted order on download pdf fixed&#10;- added statement to pdf&#10;- fixed videos" />
+    <option name="LAST_COMMIT_MESSAGE" value="- sorted order on download pdf fixed&#10;- added statement to pdf&#10;- fixed videos" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1521,13 +1515,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/templates/base2.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="13821">
-          <caret line="813" column="54" selection-start-line="813" selection-start-column="54" selection-end-line="813" selection-end-column="54" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/forms.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -1549,13 +1536,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1904">
           <caret line="112" column="81" selection-start-line="112" selection-start-column="81" selection-end-line="112" selection-end-column="81" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/config.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="37" lean-forward="true" selection-start-line="7" selection-start-column="37" selection-end-line="7" selection-end-column="37" />
         </state>
       </provider>
     </entry>
@@ -1614,11 +1594,25 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/mod_document/templates/export_to_pdf.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="101" column="81" selection-start-line="101" selection-start-column="81" selection-end-line="101" selection-end-column="81" />
+        <state relative-caret-position="389">
+          <caret line="105" column="51" selection-start-line="105" selection-start-column="51" selection-end-line="105" selection-end-column="51" />
           <folding>
             <element signature="n#style#0;n#tr#0;n#table#0;n#body#0;n#html#0;n#!!top" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/base2.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="795" column="18" selection-start-line="795" selection-start-column="18" selection-end-line="795" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" lean-forward="true" selection-start-line="6" selection-end-line="6" />
         </state>
       </provider>
     </entry>
