@@ -36,7 +36,7 @@ def get_doc_info(c_id):
     """
     print('query')
     competence_list = s.query(CompetenceDetails).\
-        filter(Competence.id == c_id).first()
+        filter(CompetenceDetails.id == c_id).first()
     return competence_list
 
 def get_subsections(c_id):
