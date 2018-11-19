@@ -30,12 +30,13 @@ class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     first_name = StringField('First Name', validators=[DataRequired()])
     last_name = StringField('Last Name', validators=[DataRequired()])
-    service_id = StringField('Service', validators=[DataRequired()])
+
     jobrole = QuerySelectMultipleField("Job Role", query_factory=lambda: s.query(JobRoles).all(), get_label="job")
     userrole = QuerySelectMultipleField("User Role", query_factory=lambda: s.query(UserRolesRef).all(),
                                         get_label="role")
     service_id = QuerySelectField("Department", query_factory=lambda: s.query(Service).all(),
                                get_label="name")
+    organisation = StringField('Organisation', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField(

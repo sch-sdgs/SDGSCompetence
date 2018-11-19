@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request, url_for, session, current_app, jsonify
+from flask import flash,Flask, render_template, redirect, request, url_for, session, current_app, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_required, login_user, logout_user, LoginManager, UserMixin, \
     current_user
@@ -35,6 +35,51 @@ admin_permission = Permission(RoleNeed('ADMIN'))
 privilege_perminssion = Permission(RoleNeed('PRIVILEGE'))
 
 
+@app.route('/setup', methods=['GET', 'POST'])
+def setup():
+    form = RegistrationForm()
+    if request.method == 'GET':
+        db.create_all()
+        db.session.commit()
+
+        if s.query(Users).count()==0:
+
+            #create required roles
+            roles = ["USER","LINEMANAGER","ADMIN","PRIVILEDGE"]
+            for role in roles:
+                if s.query(UserRolesRef).filter(UserRolesRef.role==role).count() == 0:
+                    r = UserRolesRef(role=role)
+                    s.add(r)
+                s.commit
+
+            #create statuses
+            statuses = ["Abandoned","Active","Assigned","Complete","Failed","Four Year Due","Obelete","Sign-Off"]
+            for status in statuses:
+                if s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == status).count() == 0:
+                    st = AssessmentStatusRef(status=status)
+                    s.add(st)
+            s.commit()
+
+
+            return render_template("setup.html",form=form)
+        else:
+            return render_template("login.html",form=Login())
+    if request.method == 'POST':
+        if s.query(Users).count() == 0:
+            user = Users(login=form.username.data, email=form.email.data, first_name=form.first_name.data,
+                         password=form.password.data, last_name=form.last_name.data, serviceid=None, active=True)
+
+
+            s.add(user)
+            role_id = s.query(UserRolesRef).filter(UserRolesRef.role=="ADMIN").first().id
+            role = UserRoleRelationship(user_id=user.id,userrole_id=role_id)
+            s.add(role)
+
+            c = Config(key="ORGANISATION",value=form.organisation.data)
+            s.add(c)
+            s.commit()
+            return render_template("login.html", form=Login())
+
 @login_manager.user_loader
 def load_user(user_id):
     return User(user_id)
@@ -50,12 +95,16 @@ def register():
     form = RegistrationForm()
     if request.method == 'POST':
         print form.username.data
-        user = Users(login=form.username.data, email=form.email.data, first_name=form.first_name.data, password=form.password.data, last_name=form.last_name.data , serviceid=form.service_id.data.id, active=True)
+        if form.service_id.data:
+            service_id = form.service_id.data.id
+        else:
+            service_id = None
+        user = Users(login=form.username.data, email=form.email.data, first_name=form.first_name.data, password=form.password.data, last_name=form.last_name.data , serviceid=service_id, active=True)
         print user
         s.add(user)
 
         s.commit()
-        # flash('Congratulations, you are now a registered user!')
+        flash('Congratulations, you are now a registered user!','success')
         return redirect(url_for('login'))
     if "invite_id" in request.args:
         invite_id = request.args["invite_id"]
@@ -134,15 +183,22 @@ class User(UserMixin):
         :param password: password
         :return: True/False user is authenticated
         """
+
+        #check user is registered
         user = s.query(Users).filter_by(login=id).all()
         if len(list(user)) == 0:
             return False
+        #check if using active directory
+        print "HERE"
+        print config.ACTIVE_DIRECTORY
+        if config.ACTIVE_DIRECTORY:
+            check = UserAuthentication().authenticate(id, password)
         else:
-            check_activdir = UserAuthentication().authenticate(id, password)
+            check = self.check_password(user[0].password)
 
-
-        self.roles = []
-        if check_activdir != "False":
+        print "HERE"
+        print check
+        if check:
             data = {"last_login": datetime.date.today()}
             s.query(Users).filter(Users.login == id).update(data)
             s.commit()
@@ -152,12 +208,9 @@ class User(UserMixin):
                 self.roles.append(role.role)
 
             return True
-
         else:
-            if self.check_password(user[0].password):
-                return True
-            else:
-                return False
+            return False
+
 
 
     def is_active(self):
@@ -554,9 +607,8 @@ def login():
             else:
                 return redirect(url_for('index'))
         else:
-            print config
-            print "hello"
-            return render_template("login.html", org=config.ORGANISATION, form=form, modifier="Oh Snap!", message="Wrong username or password")
+            flash("Wrong username or password!","danger")
+            return render_template("login.html", org=config.ORGANISATION, form=form)
 
 
 @app.route('/login_as', methods=['GET', 'POST'])

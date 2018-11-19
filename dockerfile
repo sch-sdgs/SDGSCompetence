@@ -1,5 +1,5 @@
 
-FROM tiangolo/uwsgi-nginx-flask:flask
+FROM tiangolo/uwsgi-nginx-flask::python2.7
 
 RUN apt-get update
 RUN apt-get -y install default-jdk
@@ -25,6 +25,7 @@ RUN python setup.py install
 
 WORKDIR /app
 
+COPY nginx.conf /etc/nginx/conf.d/
 
 ENV MESSAGE "SDGSCompetence is running..."
 

@@ -792,8 +792,24 @@ desired effect
     </aside>
 
     <div id="all_content">
+        <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+         {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="callout callout-{{ category }}">
+
+                        <p>{{ message }}</p>
+                    </div>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
         {% block content %}
         {% endblock %}
+        </section>
+    </div>
     </div>
 
     <!-- Main Footer -->

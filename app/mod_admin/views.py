@@ -1,7 +1,9 @@
 from collections import OrderedDict
 from sqlalchemy.orm import load_only
+from sqlalchemy.sql.expression import exists
+from sqlalchemy import exc
 from flask import Blueprint
-from flask import render_template, request, url_for, redirect, Blueprint, jsonify, make_response
+from flask import flash,render_template, request, url_for, redirect, Blueprint, jsonify, make_response
 from flask_login import login_required, current_user
 from app.views import admin_permission
 from forms import *
@@ -166,7 +168,7 @@ def send_invite():
         invite = Invites(first_name=form.firstname.data,last_name=form.surname.data,email=form.email.data,invite_id=id,userid=current_user.database_id)
         s.add(invite)
         s.commit()
-        send_mail_unknown(form.email.data, "Register for CompetenceDB",'You are invited to register for CompetenceDB. <br><br> Go to this address: <a href="http://register?invite_id=' + id + '">http://register?invite_id=' + id + '</a>')
+        send_mail_unknown(form.email.data, "Register for CompetenceDB",'You are invited to register for CompetenceDB. <br><br> Go to this address: <a href="'+request.url_root+'register?invite_id=' + id + '">'+request.url_root+'register?invite_id=' + id + '</a>')
         return redirect(url_for('admin.invites'))
     else:
         return render_template("user_invite.html", form=form)
@@ -193,10 +195,13 @@ def change_password():
                 s.query(Users).filter(Users.id == current_user.database_id).update(data)
                 s.commit()
                 send_mail_unknown(user.email,"CompetenceDB: Password Changed","You password on CompetenceDB has been changed successfully.")
+                flash("Password successfully changed!","success")
                 return render_template("change_password.html", form=form, level="success", message="Password Successfully Changed")
             else:
+                flash("Old Password Incorrect!", "warning")
                 return render_template("change_password.html", form=form, level="danger", message="Old Password Incorrect")
         else:
+            flash("New Passwords Do Not Match!", "warning")
             return render_template("change_password.html", form=form, level="danger", message="New Passwords Do Not Match")
     else:
         return render_template("change_password.html",form=form)
@@ -213,61 +218,64 @@ def request_reset_password():
                 pwalready = s.query(PWReset).filter_by(user_id=user.id).first()
                 # if the key hasn't been used yet, just send the same key.
                 if pwalready.has_activated == False:
-                    pwalready.datetime = datetime.now()
+                    pwalready.datetime = datetime.datetime.now()
                     key = pwalready.reset_key
                 else:
                     key = str(uuid.uuid4())
                     pwalready.reset_key = key
-                    pwalready.datetime = datetime.now()
+                    pwalready.datetime = datetime.datetime.now()
                     pwalready.has_activated = False
             else:
                 key = str(uuid.uuid4())
                 user_reset = PWReset(reset_key=key, user_id=user.id)
                 s.add(user_reset)
             s.commit()
-        send_mail_unknown(request.form["email"],"CompetenceDB Password Reset",url_for("admin.reset_password",  id = (str(key))))
+            message = "You have requested to reset your password on CompetenceDB. Please visit this URL to complete the reset process:<br><br>http://"+request.host+url_for("admin.reset_password",  id = (str(key)))
+            send_mail_unknown(request.form["email"],"CompetenceDB Password Reset",message)
+            flash("Please check your email for instructions on how to reset your password! (It could be in your Junk folder!)", "success")
+            return render_template("request_reset_password.html", form=form)
+        else:
+            flash("Your email was never registered.", "danger")
+            return render_template("request_reset_password.html", form=form)
     else:
         return render_template("request_reset_password.html",form=form)
 
 @admin.route('/users/reset_password/<id>', methods=['GET', 'POST'])
 def reset_password(id):
     if request.method == "POST":
-        if request.form["password"] != request.form["password2"]:
-            # flash("Your password and password verification didn't match."
-            #       , "danger")
+        if request.form["new_password"] != request.form["new_password_check"]:
+            flash("Your password and password verification didn't match."
+                  , "danger")
             return redirect(url_for("pwreset_get", id=id))
-            # if len(request.form["password"]) < 8:
-            #     flash("Your password needs to be at least 8 characters", "danger")
-            #     return redirect(url_for("pwreset_get", id=id))
-            user_reset = session.query(PWReset).filter_by(reset_key=id).one()
-            try:
-                exists(session.query(User).filter_by(id=user_reset.user_id)
-                       .update({'password':
-                                    generate_password_hash(request.form["password"])}))
-                session.commit(exists)
-            except IntegrityError:
-                # flash("Something went wrong", "danger")
-                session.rollback()
-                return redirect(url_for("entries"))
-            user_reset.has_activated = True
-            session.commit()
-            # flash("Your new password is saved.", "success")
-            return redirect(url_for("login"))
+            if len(request.form["password"]) < 8:
+                flash("Your password needs to be at least 8 characters", "danger")
+                return redirect(url_for("pwreset_get", id=id))
+        user_reset = s.query(PWReset).filter_by(reset_key=id).one()
+        try:
+            s.query(Users).filter_by(id=user_reset.user_id).update({'password': generate_password_hash(request.form["new_password"])})
+        except exc.IntegrityError:
+            flash("Something went wrong", "danger")
+            s.rollback()
+            return redirect(url_for("entries"))
+        user_reset.has_activated = True
+        s.commit()
+        flash("Your new password is saved.", "success")
+        return redirect(url_for("login"))
 
     else:
         key = id
         pwresetkey = s.query(PWReset).filter_by(reset_key=id).first()
-        generated_by = time.datetime.utcnow().replace(tzinfo=pytz.utc) - timedelta(hours=24)
+        generated_by = datetime.datetime.utcnow().replace(tzinfo=pytz.utc) - timedelta(hours=24)
         if pwresetkey.has_activated is True:
-            # flash("You already reset your password with the URL you are using." +
-            #       "If you need to reset your password again, please make a" +
-            #       " new request here.", "danger")
-            return redirect(url_for("reset_password"))
+            flash("You already reset your password with the URL you are using." +
+                  "If you need to reset your password again, please make a" +
+                  " new request here.", "danger")
+            return redirect(url_for("admin.request_reset_password"))
         if pwresetkey.datetime.replace(tzinfo=pytz.utc) < generated_by:
             # flash("Your password reset link expired.  Please generate a new one" +
             #       " here.", "danger")
-            return redirect(url_for("reset_password"))
-        return render_template('reset_password.html', id=key)
+            return redirect(url_for("admin.request_reset_password"))
+        return render_template('reset_password.html', id=id, form=ReserPassword())
 
 
 @admin.route('/users/add', methods=['GET', 'POST'])

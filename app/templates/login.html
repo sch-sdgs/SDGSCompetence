@@ -88,6 +88,17 @@
     <div class="login-box-body">
         <p><strong>Organisation:</strong> {{ org }}</p>
         <p class="login-box-msg">Sign in to start your session</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="callout callout-{{ category }}">
+
+                        <p>{{ message }}</p>
+                    </div>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
         {% if message %}
             <div class="alert alert-danger"><strong>{{ modifier }}</strong> {{ message }}</div>
         {% endif %}
@@ -99,9 +110,9 @@
             <div class="form-group has-feedback">
                 {{ form.password(class_="form-control") }}
                 <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-                {% if session['activedirectopry'] %}
+{#                {% if session['activedirectory'] %}#}
                 <span class="help-block pull-right">Click <a href="{{ url_for('admin.request_reset_password') }}">here</a> to reset your password</span>
-            {% endif %}
+{#            {% endif %}#}
             </div>
             <div class="row">
 {#<div class="g-recaptcha" data-sitekey="6LdbkXsUAAAAAD0tspBrFRUctY_DfrQUZ6jht67S"></div>#}

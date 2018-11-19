@@ -1,0 +1,135 @@
+{% extends "login_base.html" %}
+
+{% block content %}
+    <div class="login-box">
+        <div class="login-logo">
+            <img src="/static/images/logo.png" height="100%" width="100%">
+        </div>
+        <!-- /.login-logo -->
+        <div class="login-box-body">
+            <h2>Setup Competence DB</h2>
+        <h3>Tasks</h3>
+            <ul>
+                <li class="text-green">Database Created <i class="fa fa-check-square"></i></li>
+                <li class="text-green">User Roles Created <i class="fa fa-check-square"></i></li>
+                <li class="text-green">Assessment Statuses Created <i class="fa fa-check-square"></i> </li>
+            </ul>
+        <h3>Create an Admin User (You)</h3>
+            <form action="{{ url_for('setup') }}" method="post">
+                {{ form.hidden_tag() }}
+                <p>
+                    {{ form.username.label }}<br>
+                    {{ form.username(size=50) }}<br>
+                    {% for error in form.username.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
+                <p>
+                    {{ form.first_name.label }}<br>
+                    {{ form.first_name(size=50) }}<br>
+                    {% for error in form.first_name.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
+                <p>
+                    {{ form.last_name.label }}<br>
+                    {{ form.last_name(size=50) }}<br>
+                    {% for error in form.last_name.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
+                    {{ form.email.label }}<br>
+                    {{ form.email(size=50) }}<br>
+                    {% for error in form.email.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
+                </p>
+                    {{ form.organisation.label }}<br>
+                    {{ form.organisation(size=50) }}<br>
+                </p>
+                <p>
+                    {{ form.password.label }}<br>
+                    {{ form.password(size=50) }}<br>
+                    {% for error in form.password.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
+                <p>
+                    {{ form.password2.label }}<br>
+                    {{ form.password2(size=50) }}<br>
+                    <span class="help-block"><div id="divCheckPasswordMatch"></div></span>
+                    {% for error in form.password2.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
+
+
+
+            <p>
+{#                    {{ form.agree.label }}<br>#}
+                    {{ form.agree() }} I have read and understood the GDPR/Privacy statement <a data-toggle="modal" data-target="#modal-default">
+                here
+              </a><br>
+{#                    {% for error in form.password2.errors %}#}
+{#                        <span style="color: red;">[{{ error }}]</span>#}
+{#                    {% endfor %}#}
+                </p>
+                <p>{{ form.submit(class="btn btn-warning btn-block btn-flat",disabled="disabled") }}</p>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-default" style="display: none;">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span></button>
+                <h4 class="modal-title">GDPR/Privacy Statement</h4>
+              </div>
+              <div class="modal-body">
+                <p>One fine body…</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+            <!-- /.modal-content -->
+          </div>
+          <!-- /.modal-dialog -->
+        </div>
+
+<script>
+$(document).ready(function () {
+  $('#agree').click(function () {
+      console.log("hello")
+    $('#submit').prop("disabled", !$("#agree").prop("checked"));
+  })
+});
+
+function checkPasswordMatch() {
+    var password = $("#password").val();
+    var confirmPassword = $("#password2").val();
+
+    if (password != confirmPassword) {
+        $("#divCheckPasswordMatch").html("Passwords do not match!");
+        $("#divCheckPasswordMatch").removeClass("text-green").addClass("text-red");
+    }
+    else {
+        $("#divCheckPasswordMatch").html("Passwords match.");
+        $("#divCheckPasswordMatch").removeClass("text-red").addClass("text-green");
+    }
+
+}
+
+$(document).ready(function () {
+   $("#password, #password2").keyup(checkPasswordMatch);
+});
+
+
+</script>
+
+
+</script>
+{% endblock %}

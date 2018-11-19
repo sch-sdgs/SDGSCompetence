@@ -4,32 +4,69 @@
     <bookmark url="file://$PROJECT_DIR$/app/competence.py" line="13" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4783f288-aaa5-4ace-9f51-c82da759ae56" name="Default" comment="- Document title fixed in pdf download">
-      <change afterPath="$PROJECT_DIR$/app/mod_admin/templates/change_password.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/mod_admin/templates/request_reset_password.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/mod_admin/templates/reset_password.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/mod_admin/templates/user_invite.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/mod_admin/templates/user_invites.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/static/images/brc_logo.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/templates/login_base.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/templates/register.html" afterDir="false" />
+    <list default="true" id="4783f288-aaa5-4ace-9f51-c82da759ae56" name="Default" comment="- adding setup method to create db tables">
+      <change afterPath="$PROJECT_DIR$/app/nginx.conf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/templates/setup.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/competence.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/competence.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_admin/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/forms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_admin/templates/assessmentstatus.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/templates/assessmentstatus.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_admin/templates/change_password.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/templates/change_password.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_admin/templates/competencetypes.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/templates/competencetypes.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_admin/templates/constant_subsections.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/templates/constant_subsections.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_admin/templates/evidencetypes.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/templates/evidencetypes.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_admin/templates/jobroles.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/templates/jobroles.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_admin/templates/qpulse_details_admin.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/templates/qpulse_details_admin.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_admin/templates/questions.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/templates/questions.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_admin/templates/questions_edit.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/templates/questions_edit.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_admin/templates/request_reset_password.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/templates/request_reset_password.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_admin/templates/reset_password.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/templates/reset_password.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_admin/templates/sections.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/templates/sections.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_admin/templates/service.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/templates/service.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_admin/templates/subsection_autocomplete.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/templates/subsection_autocomplete.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_admin/templates/user_invite.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/templates/user_invite.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_admin/templates/user_invites.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/templates/user_invites.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_admin/templates/userroles.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/templates/userroles.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_admin/templates/users_add.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/templates/users_add.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_admin/templates/users_edit.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/templates/users_edit.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_admin/templates/users_view.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/templates/users_view.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_admin/templates/validityperiods.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/templates/validityperiods.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/mod_admin/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_add.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_add.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_assign.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_assign.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_assigned.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_assigned.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_change_ownership.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_change_ownership.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_edit.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_edit.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_competence/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_document/templates/export_to_pdf.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_document/templates/export_to_pdf.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_document/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_document/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_history.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_history.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_override.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_override.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_report_by_competence.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_report_by_competence.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_report_by_section.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_report_by_section.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_report_by_user.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_report_by_user.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_section.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_section.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_user_assign.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_user_assign.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_video_add.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_video_add.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_videos.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_videos.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_view.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_view.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competences_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competences_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competent_staff.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competent_staff.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_training/templates/complete_training.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_training/templates/complete_training.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_training/templates/reassessment.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_training/templates/reassessment.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_training/templates/reassessment_view.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_training/templates/reassessment_view.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_training/templates/select_subsections.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_training/templates/select_subsections.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_training/templates/upload_evidence.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_training/templates/upload_evidence.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_training/templates/user_report.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_training/templates/user_report.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/run.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/run.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/static/css/panel_pal.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/static/css/panel_pal.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/static/css/simple_report.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/static/css/simple_report.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/templates/404.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/404.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/templates/500.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/500.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/templates/base2.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/base2.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/templates/bug_reports.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/bug_reports.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/templates/bulk_upload_users.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/bulk_upload_users.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/templates/notifications.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/notifications.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <ignored path="SDGSCompetence.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -41,7 +78,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/SDGSCompetence$run.coverage" NAME="run Coverage Results" MODIFIED="1542577158421" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$run.coverage" NAME="run Coverage Results" MODIFIED="1542631332381" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
     <SUITE FILE_PATH="coverage/SDGSCompetence$views.coverage" NAME="views Coverage Results" MODIFIED="1519907271931" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/mod_competence" />
     <SUITE FILE_PATH="coverage/SDGSCompetence$competence.coverage" NAME="competence Coverage Results" MODIFIED="1507884822521" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
     <SUITE FILE_PATH="coverage/SDGSCompetence$views__1_.coverage" NAME="views (1) Coverage Results" MODIFIED="1508402811083" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
@@ -85,41 +122,47 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
+          <entry key="conf" value="86" />
           <entry key="css" value="88" />
-          <entry key="html" value="10141" />
-          <entry key="py" value="14111" />
-          <entry key="txt" value="382" />
+          <entry key="dockerfile" value="36" />
+          <entry key="html" value="10487" />
+          <entry key="py" value="16080" />
+          <entry key="txt" value="569" />
           <entry key="vmoptions" value="19" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="CSS" value="88" />
-          <entry key="HTML" value="10141" />
-          <entry key="PLAIN_TEXT" value="401" />
-          <entry key="Python" value="14111" />
+          <entry key="HTML" value="10487" />
+          <entry key="PLAIN_TEXT" value="710" />
+          <entry key="Python" value="16080" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
+          <entry key="conf" value="1" />
           <entry key="css" value="10" />
-          <entry key="html" value="81" />
+          <entry key="dockerfile" value="2" />
+          <entry key="html" value="98" />
+          <entry key="ini" value="1" />
           <entry key="js" value="1" />
           <entry key="log" value="1" />
           <entry key="png" value="1" />
-          <entry key="py" value="71" />
-          <entry key="txt" value="1" />
+          <entry key="py" value="87" />
+          <entry key="txt" value="2" />
           <entry key="vmoptions" value="3" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="CSS" value="10" />
-          <entry key="HTML" value="81" />
+          <entry key="HTML" value="98" />
           <entry key="Image" value="1" />
+          <entry key="Ini" value="1" />
           <entry key="JavaScript" value="1" />
-          <entry key="PLAIN_TEXT" value="5" />
-          <entry key="Python" value="71" />
+          <entry key="PLAIN_TEXT" value="9" />
+          <entry key="Python" value="87" />
         </counts>
       </usages-collector>
     </session>
@@ -130,49 +173,19 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/config.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="347">
-              <caret line="21" column="24" selection-start-line="21" selection-start-column="24" selection-end-line="21" selection-end-column="24" />
-              <folding>
-                <marker date="1542577954518" expanded="true" signature="452:540" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/app/templates/login.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="280">
-              <caret line="119" column="60" selection-start-line="119" selection-start-column="60" selection-end-line="119" selection-end-column="60" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/static/css/panel_pal.css">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="350">
-              <caret line="44" lean-forward="true" selection-start-line="44" selection-end-line="44" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/stardb/lib/python2.7/site-packages/flask_mail.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="163">
-              <caret line="426" selection-start-line="426" selection-end-line="426" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/templates/base2.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="208">
-              <caret line="697" lean-forward="true" selection-start-line="697" selection-end-line="697" />
+            <state relative-caret-position="240">
+              <caret line="799" column="59" lean-forward="true" selection-start-line="799" selection-start-column="59" selection-end-line="799" selection-end-column="59" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/templates/login.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="131">
+              <caret line="85" column="10" selection-start-line="85" selection-start-column="10" selection-end-line="85" selection-end-column="10" />
             </state>
           </provider>
         </entry>
@@ -180,22 +193,38 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/mod_admin/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="202">
-              <caret line="228" column="9" lean-forward="true" selection-start-line="228" selection-start-column="9" selection-end-line="228" selection-end-column="9" />
+            <state relative-caret-position="408">
+              <caret line="24" lean-forward="true" selection-start-line="24" selection-end-line="24" />
               <folding>
                 <element signature="e#0#35#0" expanded="true" />
-                <marker date="1542573360541" expanded="true" signature="8166:11598" ph="..." />
-                <marker date="1542573360541" expanded="true" signature="9603:11598" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/user_invites.html">
+        <entry file="file://$PROJECT_DIR$/app/nginx.conf">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="148">
-              <caret line="28" column="106" selection-start-line="28" selection-start-column="106" selection-end-line="28" selection-end-column="106" />
+            <state relative-caret-position="374">
+              <caret line="22" column="50" lean-forward="true" selection-start-line="22" selection-start-column="50" selection-end-line="22" selection-end-column="50" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/dockerfile">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="459">
+              <caret line="27" column="34" selection-start-line="27" selection-start-column="34" selection-end-line="27" selection-end-column="34" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/stardb/lib/python2.7/site-packages/werkzeug/wrappers.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="231">
+              <caret line="619" column="8" selection-start-line="619" selection-start-column="8" selection-end-line="619" selection-end-column="8" />
             </state>
           </provider>
         </entry>
@@ -203,34 +232,34 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="129">
-              <caret line="34" column="57" selection-start-line="34" selection-start-column="57" selection-end-line="34" selection-end-column="57" />
+            <state relative-caret-position="415">
+              <caret line="248" column="7" selection-start-line="248" selection-start-column="7" selection-end-line="248" selection-end-column="7" />
               <folding>
                 <element signature="e#0#99#0" expanded="true" />
-                <marker date="1542576976942" expanded="true" signature="5454:5460" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/competence.py">
+        <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/users_view.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="379">
-              <caret line="34" lean-forward="true" selection-start-line="34" selection-end-line="34" />
-              <folding>
-                <element signature="e#0#40#0" expanded="true" />
-                <marker date="1542577154460" expanded="true" signature="5781:5782" ph="..." />
-              </folding>
+            <state relative-caret-position="85">
+              <caret line="5" lean-forward="true" selection-start-line="5" selection-end-line="5" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/request_reset_password.html">
+        <entry file="file://$PROJECT_DIR$/app/templates/base.html">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/templates/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="145">
-              <caret line="9" column="59" selection-start-line="9" selection-start-column="59" selection-end-line="9" selection-end-column="59" />
+            <state relative-caret-position="255">
+              <caret line="15" column="29" selection-start-line="15" selection-start-column="29" selection-end-line="15" selection-end-column="29" />
             </state>
           </provider>
         </entry>
@@ -247,16 +276,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>qpulse_de</find>
-      <find>Database</find>
-      <find>QpulseDetails</find>
-      <find>sort</find>
-      <find>sort_order</find>
-      <find>SectionSortOrder(</find>
-      <find>download</find>
-      <find>QpulseDe</find>
-      <find>edit_</find>
-      <find>v0.0</find>
       <find>video</find>
       <find>competence_dow</find>
       <find>details</find>
@@ -277,10 +296,24 @@
       <find>def log</find>
       <find>config</find>
       <find>qP</find>
+      <find>HERE</find>
+      <find>register</find>
+      <find>flash</find>
+      <find>change_pass</find>
+      <find>&lt;div class=&quot;content-wrapper&quot;&gt;         &lt;!-- Content Header (Page header) --&gt;         &lt;section class=&quot;content-header&quot;&gt;</find>
+      <find>Oh Snap</find>
+      <find>&lt;div class=&quot;content-wrapper&quot;&gt;</find>
+      <find>&lt;!-- Content Header (Page header) --&gt;</find>
+      <find>&lt;section class=&quot;content-header&quot;&gt;</find>
+      <find>you are in</find>
     </findStrings>
+    <replaceStrings>
+      <replace />
+    </replaceStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$/app/static</dir>
       <dir>$PROJECT_DIR$</dir>
+      <dir>$PROJECT_DIR$/app</dir>
     </dirStrings>
   </component>
   <component name="Git.Settings">
@@ -294,13 +327,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/app/mod_competence/templates/competence_add.html" />
-        <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/app/qpulseweb.py" />
-        <option value="$PROJECT_DIR$/app/qpulse_details.py" />
-        <option value="$PROJECT_DIR$/app/mod_competence/templates/competence_view.html" />
-        <option value="$PROJECT_DIR$/app/mod_competence/templates/competence_user_assign.html" />
-        <option value="$PROJECT_DIR$/app/mod_training/templates/reassessment.html" />
         <option value="$PROJECT_DIR$/app/mod_training/templates/reassesment_view.html" />
         <option value="$PROJECT_DIR$/stardb/lib/python2.7/site-packages/flask/app.py" />
         <option value="$PROJECT_DIR$/app/templates/notifications.html" />
@@ -313,8 +339,6 @@
         <option value="$PROJECT_DIR$/app/static/css/status.css" />
         <option value="$PROJECT_DIR$/app/mod_competence/templates/competence_report_by_section.html" />
         <option value="$PROJECT_DIR$/app/mod_competence/templates/competence_assign.html" />
-        <option value="$PROJECT_DIR$/requirements.txt" />
-        <option value="$PROJECT_DIR$/app/templates/index.html" />
         <option value="$PROJECT_DIR$/app/mod_training/views.py" />
         <option value="$PROJECT_DIR$/app/mod_admin/templates/qpulse_details_admin.html" />
         <option value="$PROJECT_DIR$/app/mod_competence/templates/with_selected.html" />
@@ -329,22 +353,31 @@
         <option value="$PROJECT_DIR$/app/mod_document/views.py" />
         <option value="$PROJECT_DIR$/app/mod_competence/views.py" />
         <option value="$PROJECT_DIR$/app/mod_admin/templates/user_invite.html" />
-        <option value="$PROJECT_DIR$/app/forms.py" />
         <option value="$PROJECT_DIR$/app/mod_admin/templates/user_invites.html" />
         <option value="$PROJECT_DIR$/app/templates/login_base.html" />
         <option value="$PROJECT_DIR$/app/templates/register.html" />
-        <option value="$PROJECT_DIR$/app/models.py" />
-        <option value="$PROJECT_DIR$/app/mod_admin/templates/change_password.html" />
-        <option value="$PROJECT_DIR$/app/mod_admin/views.py" />
-        <option value="$PROJECT_DIR$/app/mod_admin/templates/reset_password.html" />
         <option value="$PROJECT_DIR$/app/mod_admin/forms.py" />
-        <option value="$PROJECT_DIR$/app/mod_admin/templates/request_reset_password.html" />
-        <option value="$PROJECT_DIR$/app/views.py" />
-        <option value="$PROJECT_DIR$/app/competence.py" />
-        <option value="$PROJECT_DIR$/app/config.py" />
         <option value="$PROJECT_DIR$/app/static/css/panel_pal.css" />
-        <option value="$PROJECT_DIR$/app/templates/base2.html" />
+        <option value="$PROJECT_DIR$/requirements.txt" />
+        <option value="$PROJECT_DIR$/app/main.py" />
+        <option value="$PROJECT_DIR$/app/templates/setup.html" />
+        <option value="$PROJECT_DIR$/app/models.py" />
+        <option value="$PROJECT_DIR$/app/forms.py" />
+        <option value="$PROJECT_DIR$/app/config.py" />
+        <option value="$PROJECT_DIR$/app/competence.py" />
+        <option value="$PROJECT_DIR$/app/mod_admin/templates/request_reset_password.html" />
+        <option value="$PROJECT_DIR$/app/mod_admin/templates/reset_password.html" />
         <option value="$PROJECT_DIR$/app/templates/login.html" />
+        <option value="$PROJECT_DIR$/app/mod_admin/templates/change_password.html" />
+        <option value="$PROJECT_DIR$/app/mod_training/templates/select_subsections.html" />
+        <option value="$PROJECT_DIR$/app/templates/index.html" />
+        <option value="$PROJECT_DIR$/app/views.py" />
+        <option value="$PROJECT_DIR$/app/templates/base2.html" />
+        <option value="$PROJECT_DIR$/app/mod_admin/templates/users_view.html" />
+        <option value="$PROJECT_DIR$/app/mod_admin/views.py" />
+        <option value="$PROJECT_DIR$/app/uwsgi.ini" />
+        <option value="$PROJECT_DIR$/app/nginx.conf" />
+        <option value="$PROJECT_DIR$/dockerfile" />
       </list>
     </option>
   </component>
@@ -398,10 +431,10 @@
     </packageJsonPaths>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="706" />
-    <option name="y" value="370" />
-    <option name="width" value="1440" />
-    <option name="height" value="877" />
+    <option name="x" value="727" />
+    <option name="y" value="342" />
+    <option name="width" value="1649" />
+    <option name="height" value="1087" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -435,51 +468,6 @@
               <item name="SDGSCompetence" type="462c0819:PsiDirectoryNode" />
               <item name="app" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="SDGSCompetence" type="b2602c69:ProjectViewProjectNode" />
-              <item name="SDGSCompetence" type="462c0819:PsiDirectoryNode" />
-              <item name="app" type="462c0819:PsiDirectoryNode" />
-              <item name="mod_admin" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="SDGSCompetence" type="b2602c69:ProjectViewProjectNode" />
-              <item name="SDGSCompetence" type="462c0819:PsiDirectoryNode" />
-              <item name="app" type="462c0819:PsiDirectoryNode" />
-              <item name="mod_admin" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="SDGSCompetence" type="b2602c69:ProjectViewProjectNode" />
-              <item name="SDGSCompetence" type="462c0819:PsiDirectoryNode" />
-              <item name="app" type="462c0819:PsiDirectoryNode" />
-              <item name="mod_competence" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="SDGSCompetence" type="b2602c69:ProjectViewProjectNode" />
-              <item name="SDGSCompetence" type="462c0819:PsiDirectoryNode" />
-              <item name="app" type="462c0819:PsiDirectoryNode" />
-              <item name="static" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="SDGSCompetence" type="b2602c69:ProjectViewProjectNode" />
-              <item name="SDGSCompetence" type="462c0819:PsiDirectoryNode" />
-              <item name="app" type="462c0819:PsiDirectoryNode" />
-              <item name="static" type="462c0819:PsiDirectoryNode" />
-              <item name="css" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="SDGSCompetence" type="b2602c69:ProjectViewProjectNode" />
-              <item name="SDGSCompetence" type="462c0819:PsiDirectoryNode" />
-              <item name="app" type="462c0819:PsiDirectoryNode" />
-              <item name="static" type="462c0819:PsiDirectoryNode" />
-              <item name="images" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="SDGSCompetence" type="b2602c69:ProjectViewProjectNode" />
-              <item name="SDGSCompetence" type="462c0819:PsiDirectoryNode" />
-              <item name="app" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -489,6 +477,11 @@
   <component name="PropertiesComponent">
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="WebServerToolWindowFactoryState" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.highlight.mappings" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.highlight.symlinks" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
@@ -739,13 +732,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1507807214790</updated>
-    </task>
-    <task id="LOCAL-00017" summary="Merge branch 'develop_lizzy' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;.gitignore&#10;#&#9;.idea/workspace.xml&#10;">
-      <created>1508329064444</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1508329064444</updated>
     </task>
     <task id="LOCAL-00018" summary="Merge branch 'develop_lizzy' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;.gitignore&#10;#&#9;.idea/workspace.xml&#10;">
       <created>1508329093740</created>
@@ -1083,18 +1069,26 @@
       <option name="project" value="LOCAL" />
       <updated>1537801072714</updated>
     </task>
-    <option name="localTasksCounter" value="66" />
+    <task id="LOCAL-00066" summary="- adding authentication outside of active directory&#10;- fix to pdf header&#10;- fix to competences that are abandoned">
+      <created>1542620252947</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1542620252947</updated>
+    </task>
+    <option name="localTasksCounter" value="67" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="706" y="370" width="1440" height="877" extended-state="0" />
+    <frame x="727" y="342" width="1649" height="1087" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.6439024" visible="true" weight="0.32546496" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.6439024" visible="true" weight="0.28313628" />
       <window_info id="Structure" order="1" sideWeight="0.35609755" side_tool="true" weight="0.20028612" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.4946192" weight="0.40677965" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.8540773" visible="true" weight="0.35031846" />
+      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.4946192" weight="0.40643862" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.8540773" visible="true" weight="0.2763819" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -1110,7 +1104,7 @@
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Remote Host" order="3" />
+      <window_info anchor="right" id="Remote Host" order="3" weight="0.3297568" />
       <window_info anchor="right" id="SciView" order="4" />
       <window_info anchor="right" id="Database" order="5" weight="0.080829754" />
     </layout>
@@ -1153,7 +1147,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="getting ready for docker deployment" />
     <MESSAGE value="finnally running in docker - now qpulse issue" />
     <MESSAGE value="weird bug in getting qpulse doc name - for some reason jsonify had stopped working on the string? so now chnaged to dict" />
     <MESSAGE value="jsonify issues fixed, added versions to all requirements" />
@@ -1178,7 +1171,8 @@
     <MESSAGE value="v0.1.2" />
     <MESSAGE value="- sorted order on download pdf fixed&#10;- added statement to pdf&#10;- fixed videos" />
     <MESSAGE value="- Document title fixed in pdf download" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Document title fixed in pdf download" />
+    <MESSAGE value="- adding authentication outside of active directory&#10;- fix to pdf header&#10;- fix to competences that are abandoned" />
+    <option name="LAST_COMMIT_MESSAGE" value="- adding authentication outside of active directory&#10;- fix to pdf header&#10;- fix to competences that are abandoned" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1189,7 +1183,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/app/mod_admin/views.py</url>
-          <line>866</line>
+          <line>874</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
@@ -1241,17 +1235,22 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/app/views.py</url>
-          <line>789</line>
+          <line>841</line>
           <option name="timeStamp" value="18" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/app/config.py</url>
-          <line>15</line>
+          <line>16</line>
           <option name="timeStamp" value="19" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/app/mod_admin/forms.py</url>
           <option name="timeStamp" value="20" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/app/config.py</url>
+          <line>6</line>
+          <option name="timeStamp" value="21" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/app/mod_competence/templates/competence_edit.html</url>
@@ -1262,132 +1261,7 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/app/mod_competence/templates/competence_assigned.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="527">
-          <caret line="31" lean-forward="true" selection-start-line="31" selection-end-line="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/mod_competence/templates/competence_user_assign.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="490">
-          <caret line="35" column="91" lean-forward="true" selection-start-line="35" selection-start-column="91" selection-end-line="35" selection-end-column="91" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/mod_competence/templates/competence_assign.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
-          <caret line="27" column="38" lean-forward="true" selection-start-line="27" selection-start-column="38" selection-end-line="27" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/mod_training/templates/select_subsections.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="258">
-          <caret line="146" column="10" selection-start-line="146" selection-start-column="10" selection-end-line="146" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requirements.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="476">
-          <caret line="28" selection-start-line="28" selection-end-line="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/stardb/lib/python2.7/site-packages/flask/app.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="453">
-          <caret line="276" column="53" lean-forward="true" selection-start-line="276" selection-start-column="53" selection-end-line="276" selection-end-column="53" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/mod_competence/templates/competent_staff.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1050">
-          <caret line="91" lean-forward="true" selection-start-line="91" selection-end-line="91" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/admin.html">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/assessmentstatus.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="84" column="7" lean-forward="true" selection-end-line="89" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/qpulse_details_admin.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="436">
-          <caret line="43" column="82" selection-start-line="43" selection-start-column="82" selection-end-line="43" selection-end-column="82" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/mod_competence/templates/competence_view.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="500">
-          <caret line="47" column="22" selection-start-line="47" selection-start-column="22" selection-end-line="47" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/mod_competence/templates/with_selected.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="17" column="56" selection-start-line="17" selection-start-column="56" selection-end-line="17" selection-end-column="56" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/mod_training/templates/user_report.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="16" column="28" selection-start-line="16" selection-start-column="28" selection-end-line="16" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/mod_competence/templates/competence_videos.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="578">
-          <caret line="34" column="100" selection-start-line="34" selection-start-column="70" selection-end-line="34" selection-end-column="100" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/mod_competence/templates/competence_video_add.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1904">
-          <caret line="112" column="81" selection-start-line="112" selection-start-column="81" selection-end-line="112" selection-end-column="81" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/mod_training/templates/complete_training.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4063">
-          <caret line="239" column="56" selection-start-line="239" selection-start-column="56" selection-end-line="239" selection-end-column="56" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/mod_competence/templates/competence_edit.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="502" selection-start-line="502" selection-end-line="502" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/qpulse_details.py" />
-    <entry file="file://$PROJECT_DIR$/app/qpulseweb.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="25" column="24" selection-start-line="25" selection-start-column="24" selection-end-line="25" selection-end-column="24" />
-          <folding>
-            <element signature="e#0#30#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/stardb/lib/python2.7/site-packages/flask_principal.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1700">
@@ -1432,25 +1306,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/run.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="8" column="49" selection-start-line="8" selection-start-column="49" selection-end-line="8" selection-end-column="49" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/PerformanceSummary.log">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/activedirectory.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="5" selection-start-line="5" selection-end-line="5" />
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/users_add.html">
       <provider selected="true" editor-type-id="text-editor">
@@ -1476,37 +1333,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/forms.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3">
-          <caret line="16" column="40" lean-forward="true" selection-start-line="16" selection-start-column="40" selection-end-line="16" selection-end-column="40" />
-          <folding>
-            <element signature="e#1#27#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/templates/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="11543">
-          <caret line="679" column="30" lean-forward="true" selection-start-line="679" selection-start-column="30" selection-end-line="679" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/static/css/status.css">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1615">
           <caret line="95" selection-start-line="95" selection-end-line="95" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="247">
-          <caret line="269" column="34" selection-start-line="269" selection-start-column="34" selection-end-line="269" selection-end-column="34" />
-          <folding>
-            <element signature="e#0#15#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1517,31 +1347,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/templates/register.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="223">
-          <caret line="60" column="90" lean-forward="true" selection-start-line="60" selection-start-column="20" selection-end-line="60" selection-end-column="90" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/change_password.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="17" selection-start-column="12" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/templates/login_base.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="108">
           <caret line="8" column="107" selection-start-line="8" selection-start-column="107" selection-end-line="8" selection-end-column="107" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/reset_password.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="9" column="12" selection-start-line="9" selection-start-column="12" selection-end-line="9" selection-end-column="55" />
         </state>
       </provider>
     </entry>
@@ -1556,25 +1365,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/request_reset_password.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="145">
-          <caret line="9" column="59" selection-start-line="9" selection-start-column="59" selection-end-line="9" selection-end-column="59" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="202">
-          <caret line="228" column="9" lean-forward="true" selection-start-line="228" selection-start-column="9" selection-end-line="228" selection-end-column="9" />
-          <folding>
-            <element signature="e#0#35#0" expanded="true" />
-            <marker date="1542573360541" expanded="true" signature="8166:11598" ph="..." />
-            <marker date="1542573360541" expanded="true" signature="9603:11598" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/user_invites.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="148">
@@ -1582,32 +1372,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="129">
-          <caret line="34" column="57" selection-start-line="34" selection-start-column="57" selection-end-line="34" selection-end-column="57" />
-          <folding>
-            <element signature="e#0#99#0" expanded="true" />
-            <marker date="1542576976942" expanded="true" signature="5454:5460" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/competence.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="379">
-          <caret line="34" lean-forward="true" selection-start-line="34" selection-end-line="34" />
-          <folding>
-            <element signature="e#0#40#0" expanded="true" />
-            <marker date="1542577154460" expanded="true" signature="5781:5782" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/static/css/panel_pal.css">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="350">
-          <caret line="44" lean-forward="true" selection-start-line="44" selection-end-line="44" />
+          <caret line="44" selection-start-line="44" selection-end-line="44" />
         </state>
       </provider>
     </entry>
@@ -1618,27 +1386,244 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/requirements.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="11" selection-start-line="2" selection-start-column="11" selection-end-line="2" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/qpulseweb.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="425">
+          <caret line="25" column="24" selection-start-line="25" selection-start-column="24" selection-end-line="25" selection-end-column="24" />
+          <folding>
+            <element signature="e#0#30#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/run.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" selection-start-line="2" selection-end-line="2" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/register.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1020">
+          <caret line="60" column="90" lean-forward="true" selection-end-line="134" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/stardb/lib/python2.7/site-packages/flask/exthook.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="161">
+          <caret line="70" selection-start-line="70" selection-end-line="70" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/activedirectory.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="442">
+          <caret line="28" selection-start-line="28" selection-end-line="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/setup.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="290">
+          <caret line="48" column="56" selection-start-line="48" selection-start-column="56" selection-end-line="48" selection-end-column="56" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="203">
+          <caret line="22" column="35" lean-forward="true" selection-start-line="22" selection-start-column="35" selection-end-line="22" selection-end-column="35" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+            <marker date="1542626141712" expanded="true" signature="419:765" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/login_as.html">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/stardb/lib/python2.7/site-packages/flask/app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="473">
+          <caret line="1999" selection-start-line="1999" selection-end-line="1999" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/competence.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="368">
+          <caret line="70" column="86" lean-forward="true" selection-start-line="70" selection-start-column="56" selection-end-line="70" selection-end-column="86" />
+          <folding>
+            <element signature="e#0#40#0" expanded="true" />
+            <marker date="1542627490469" expanded="true" signature="5781:5782" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/config.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="347">
-          <caret line="21" column="24" selection-start-line="21" selection-start-column="24" selection-end-line="21" selection-end-column="24" />
+        <state relative-caret-position="255">
+          <caret line="15" column="1" lean-forward="true" selection-start-line="15" selection-start-column="1" selection-end-line="15" selection-end-column="1" />
           <folding>
-            <marker date="1542577954518" expanded="true" signature="452:540" ph="..." />
+            <marker date="1542627046702" expanded="true" signature="570:664" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/stardb/lib/python2.7/site-packages/sqlalchemy/sql/selectable.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="435">
+          <caret line="2461" column="36" lean-forward="true" selection-start-line="2461" selection-start-column="36" selection-end-line="2461" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="279">
+          <caret line="34" column="63" lean-forward="true" selection-start-line="34" selection-start-column="63" selection-end-line="34" selection-end-column="63" />
+          <folding>
+            <element signature="e#1#27#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/request_reset_password.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="12" lean-forward="true" selection-start-line="9" selection-start-column="12" selection-end-line="19" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/reset_password.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/change_password.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="48" lean-forward="true" selection-start-line="9" selection-start-column="48" selection-end-line="9" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/admin.html">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/assessmentstatus.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" selection-start-line="5" selection-end-line="7" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_training/templates/select_subsections.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="8" column="39" lean-forward="true" selection-start-line="8" selection-start-column="39" selection-end-line="8" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/accept_modal.html">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/audit.html">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/base.html">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="15" column="29" selection-start-line="15" selection-start-column="29" selection-end-line="15" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/login.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="131">
+          <caret line="85" column="10" selection-start-line="85" selection-start-column="10" selection-end-line="85" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/stardb/lib/python2.7/site-packages/werkzeug/wrappers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="231">
+          <caret line="619" column="8" selection-start-line="619" selection-start-column="8" selection-end-line="619" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="415">
+          <caret line="248" column="7" selection-start-line="248" selection-start-column="7" selection-end-line="248" selection-end-column="7" />
+          <folding>
+            <element signature="e#0#99#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/templates/base2.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="208">
-          <caret line="697" lean-forward="true" selection-start-line="697" selection-end-line="697" />
+        <state relative-caret-position="240">
+          <caret line="799" column="59" lean-forward="true" selection-start-line="799" selection-start-column="59" selection-end-line="799" selection-end-column="59" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/templates/login.html">
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/users_view.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="280">
-          <caret line="119" column="60" selection-start-line="119" selection-start-column="60" selection-end-line="119" selection-end-column="60" />
+        <state relative-caret-position="85">
+          <caret line="5" lean-forward="true" selection-start-line="5" selection-end-line="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/uwsgi.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="14" selection-start-line="2" selection-start-column="14" selection-end-line="2" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="24" lean-forward="true" selection-start-line="24" selection-end-line="24" />
+          <folding>
+            <element signature="e#0#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/nginx.conf">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="22" column="50" lean-forward="true" selection-start-line="22" selection-start-column="50" selection-end-line="22" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dockerfile">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="27" column="34" selection-start-line="27" selection-start-column="34" selection-end-line="27" selection-end-column="34" />
         </state>
       </provider>
     </entry>

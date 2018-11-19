@@ -15,6 +15,17 @@ else:
     enable_search = True
     import flask_whooshalchemy as whooshalchemy
 
+class Config(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String(1000), unique=True, nullable=False)
+    value = db.Column(db.String(1000), unique=True, nullable=False)
+
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
+
+    def __repr__(self):
+        return '<Config %r>' % self.organisation
 
 class UserRolesRef(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -36,7 +47,6 @@ class ValidityRef(db.Model):
 
     def __repr__(self):
         return '<ValidityRef %r>' % self.months
-
 
 class QuestionsRef(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -220,7 +230,7 @@ class Users(db.Model):
     email = db.Column(db.String(1000), unique=False, nullable=False)
     password = db.Column(db.String(1000), unique=False, nullable=True)
     staff_no = db.Column(db.String(1000), unique=False, nullable=True)
-    band = db.Column(db.String(3), unique=False, nullable=False)
+    band = db.Column(db.String(3), unique=False, nullable=True)
     date_created = db.Column(db.DATE, unique=False, nullable=False)
     last_login = db.Column(db.DATE, unique=False, nullable=True)
     active = db.Column(db.BOOLEAN, unique=False, default=True, nullable=False)
