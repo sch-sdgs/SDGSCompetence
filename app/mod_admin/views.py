@@ -15,7 +15,11 @@ import csv
 from app.activedirectory import UserAuthentication
 import codecs
 import json
+import uuid
+from app.competence import send_mail_unknown
 from passlib.hash import bcrypt
+import pytz
+from datetime import timedelta
 
 admin = Blueprint('admin', __name__, template_folder='templates')
 
@@ -145,6 +149,125 @@ def users_toggle_active(id=None):
         s.query(Users).filter_by(id=id).update({'active': True})
         s.commit()
         return redirect(url_for('admin.users_view'))
+
+@admin.route('/users/invites', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def invites():
+    data = s.query(Invites).all()
+    users = s.query(Users.email).all()
+    return render_template("user_invites.html", data=data,users=[value for value, in users])
+
+@admin.route('/users/send_invite', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def send_invite():
+    form = UserForm()
+    if request.method == 'POST':
+        id = str(uuid.uuid4())
+        invite = Invites(first_name=form.firstname.data,last_name=form.surname.data,email=form.email.data,invite_id=id,userid=current_user.database_id)
+        s.add(invite)
+        s.commit()
+        send_mail_unknown(form.email.data, "Register for CompetenceDB",'You are invited to register for CompetenceDB. <br><br> Go to this address: <a href="http://register?invite_id=' + id + '">http://register?invite_id=' + id + '</a>')
+        return redirect(url_for('admin.invites'))
+    else:
+        return render_template("user_invite.html", form=form)
+
+@admin.route('/users/resend_invite', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def resend_invite():
+    pass
+
+@admin.route('/users/delete_invite', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def delete_invite():
+    pass
+
+@admin.route('/users/change_password', methods=['GET', 'POST'])
+def change_password():
+    form = ChangePassword()
+    if request.method == 'POST':
+        if request.form["new_password"] == request.form["new_password_check"]:
+            user = s.query(Users).filter(Users.id == current_user.database_id).first()
+            existing_password = user.password
+            if check_password_hash(existing_password,request.form["old_password"]):
+                data = {"password":generate_password_hash(request.form["new_password"])}
+                s.query(Users).filter(Users.id == current_user.database_id).update(data)
+                s.commit()
+                send_mail_unknown(user.email,"CompetenceDB: Password Changed","You password on CompetenceDB has been changed successfully.")
+                return render_template("change_password.html", form=form, level="success", message="Password Successfully Changed")
+            else:
+                return render_template("change_password.html", form=form, level="danger", message="Old Password Incorrect")
+        else:
+            return render_template("change_password.html", form=form, level="danger", message="New Passwords Do Not Match")
+    else:
+        return render_template("change_password.html",form=form)
+
+@admin.route('/users/request_reset_password', methods=['GET', 'POST'])
+def request_reset_password():
+    form = ReserPassword()
+    if request.method == 'POST':
+        if s.query(Users).filter_by(email=request.form["email"]).first():
+            user = s.query(Users).filter_by(email=request.form["email"]).one()
+            # check if user already has reset their password, so they will update
+            # the current key instead of generating a separate entry in the table.
+            if s.query(PWReset).filter_by(user_id=user.id).first():
+                pwalready = s.query(PWReset).filter_by(user_id=user.id).first()
+                # if the key hasn't been used yet, just send the same key.
+                if pwalready.has_activated == False:
+                    pwalready.datetime = datetime.now()
+                    key = pwalready.reset_key
+                else:
+                    key = str(uuid.uuid4())
+                    pwalready.reset_key = key
+                    pwalready.datetime = datetime.now()
+                    pwalready.has_activated = False
+            else:
+                key = str(uuid.uuid4())
+                user_reset = PWReset(reset_key=key, user_id=user.id)
+                s.add(user_reset)
+            s.commit()
+        send_mail_unknown(request.form["email"],"CompetenceDB Password Reset",url_for("admin.reset_password",  id = (str(key))))
+    else:
+        return render_template("request_reset_password.html",form=form)
+
+@admin.route('/users/reset_password/<id>', methods=['GET', 'POST'])
+def reset_password(id):
+    if request.method == "POST":
+        if request.form["password"] != request.form["password2"]:
+            # flash("Your password and password verification didn't match."
+            #       , "danger")
+            return redirect(url_for("pwreset_get", id=id))
+            # if len(request.form["password"]) < 8:
+            #     flash("Your password needs to be at least 8 characters", "danger")
+            #     return redirect(url_for("pwreset_get", id=id))
+            user_reset = session.query(PWReset).filter_by(reset_key=id).one()
+            try:
+                exists(session.query(User).filter_by(id=user_reset.user_id)
+                       .update({'password':
+                                    generate_password_hash(request.form["password"])}))
+                session.commit(exists)
+            except IntegrityError:
+                # flash("Something went wrong", "danger")
+                session.rollback()
+                return redirect(url_for("entries"))
+            user_reset.has_activated = True
+            session.commit()
+            # flash("Your new password is saved.", "success")
+            return redirect(url_for("login"))
+
+    else:
+        key = id
+        pwresetkey = s.query(PWReset).filter_by(reset_key=id).first()
+        generated_by = time.datetime.utcnow().replace(tzinfo=pytz.utc) - timedelta(hours=24)
+        if pwresetkey.has_activated is True:
+            # flash("You already reset your password with the URL you are using." +
+            #       "If you need to reset your password again, please make a" +
+            #       " new request here.", "danger")
+            return redirect(url_for("reset_password"))
+        if pwresetkey.datetime.replace(tzinfo=pytz.utc) < generated_by:
+            # flash("Your password reset link expired.  Please generate a new one" +
+            #       " here.", "danger")
+            return redirect(url_for("reset_password"))
+        return render_template('reset_password.html', id=key)
 
 
 @admin.route('/users/add', methods=['GET', 'POST'])

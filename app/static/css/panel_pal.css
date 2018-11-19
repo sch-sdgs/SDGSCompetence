@@ -4,6 +4,9 @@ table.dataTable tbody tr.selected {
     color: white !important;
     background-color: #999999 !important;
 }
+
+
+
 .blank_row {
   line-height: 10px;
 }
@@ -33,7 +36,7 @@ table.dataTable tbody tr.selected {
 }
 
 .login-page {
-    background-color: #e5e5e5;
+    background-color: #c6c6c6;
 }
 
 .ui-autocomplete {

@@ -75,16 +75,18 @@
     <!-- Google Font -->
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
-
+{#<script src='https://www.google.com/recaptcha/api.js'></script>#}
 
 </head>
 <body class="hold-transition login-page">
 <div class="login-box">
     <div class="login-logo">
         <img src="/static/images/logo.png" height="100%" width="100%">
+
     </div>
     <!-- /.login-logo -->
     <div class="login-box-body">
+        <p><strong>Organisation:</strong> {{ org }}</p>
         <p class="login-box-msg">Sign in to start your session</p>
         {% if message %}
             <div class="alert alert-danger"><strong>{{ modifier }}</strong> {{ message }}</div>
@@ -97,9 +99,12 @@
             <div class="form-group has-feedback">
                 {{ form.password(class_="form-control") }}
                 <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                {% if session['activedirectopry'] %}
+                <span class="help-block pull-right">Click <a href="{{ url_for('admin.request_reset_password') }}">here</a> to reset your password</span>
+            {% endif %}
             </div>
             <div class="row">
-
+{#<div class="g-recaptcha" data-sitekey="6LdbkXsUAAAAAD0tspBrFRUctY_DfrQUZ6jht67S"></div>#}
                 <!-- /.col -->
                 <div class="col-xs-12">
                     <button type="submit" class="btn btn-warning btn-block btn-flat">Sign In</button>
@@ -111,9 +116,12 @@
 
     </div>
     <br>
-    <small class="pull-right">Need to register? email <a
-            href="mailto:matthewparker24+lzj6vkpuibpnivi6nsog@boards.trello.com?Subject=#CompetenceDB%20#registration%20New%20login"
-            target="_top">bioinformatics</a></small>
+
+    <center><img src="/static/images/brc_logo.png"></center>
+{#    <small class="pull-right">Need to register? email <a#}
+{#            href="mailto:matthewparker24+lzj6vkpuibpnivi6nsog@boards.trello.com?Subject=#CompetenceDB%20#registration%20New%20login"#}
+{#            target="_top">bioinformatics</a></small>#}
+
     <!-- /.login-box-body -->
 </div>
 <!-- /.login-box -->

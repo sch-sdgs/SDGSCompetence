@@ -93,3 +93,14 @@ class QPulseDetailsForm(Form):
     password = PasswordField("Q-Pulse Password")
     password_reenter = PasswordField("Re-Enter Q-Pulse Password")
     submit = SubmitField("Update Details")
+
+class ChangePassword(Form):
+    old_password = PasswordField("Old Password")
+    new_password = PasswordField("New Password")
+    new_password_check = PasswordField("Re-Enter New Password")
+    submit = SubmitField()
+class ReserPassword(Form):
+    email = TextField("Registered Email")
+    new_password = PasswordField("New Password")
+    new_password_check = PasswordField("Re-Enter New Password")
+    submit = SubmitField()

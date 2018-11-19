@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request,session
 import atexit
 from apscheduler.scheduler import Scheduler
 import logging
@@ -19,9 +19,9 @@ from jinja2 import Environment
 app = Flask(__name__)
 app.secret_key = 'development key'
 app.config.from_object(config)
-
 app.jinja_env.add_extension('jinja2.ext.do')
-
+# with app.app_context():
+#     session['activedirectory'] = config.ACTIVE_DIRECTORY
 from models import db,Users,Assessments,Evidence,CompetenceDetails,AssessmentStatusRef
 
 print app.config
@@ -56,13 +56,23 @@ def send_mail(user_id,subject,message):
         recipient_user_name = s.query(Users).filter(Users.id == int(user_id)).first().login
         print "SENDING EMAIL"
         print message
-        msg = Message('StarDB: '+subject, sender="SDGS-Bioinformatics@sch.nhs.uk", recipients=[recipient_user_name+"@sch.nhs.uk"])
+        msg = Message('CompetenceDB: '+subject, sender="SDGS-Bioinformatics@sch.nhs.uk", recipients=[recipient_user_name+"@sch.nhs.uk"])
         msg.body = 'text body'
-        msg.html = '<b>You have a notification on StarDB:</b><br><br>'+message+'<br><br>View all your notifications <a href="'+request.url_root+'notifications">here</a>'
+        msg.html = '<b>You have a notification on CompetenceDB:</b><br><br>'+message+'<br><br>View all your notifications <a href="'+request.url_root+'notifications">here</a>'
         thr = Thread(target=send_async_email, args=[msg])
         thr.start()
 
 
+def send_mail_unknown(email,subject,message):
+
+    if config.MAIL != False:
+        print "SENDING EMAIL"
+        print message
+        msg = Message('CompetenceDB: '+subject, sender="SDGS-Bioinformatics@sch.nhs.uk", recipients=[email])
+        msg.body = 'text body'
+        msg.html = message
+        thr = Thread(target=send_async_email, args=[msg])
+        thr.start()
 
 
 def message(f):
@@ -94,17 +104,14 @@ from mod_admin.views import admin
 from mod_training.views import training
 from mod_competence.views import competence,reporting
 from mod_document.views import document
-from models import MonthlyReportNumbers, Service
-from app.views import notifications
-import re
 
 app.register_blueprint(admin,url_prefix='/admin')
 app.register_blueprint(training,url_prefix='/training')
 app.register_blueprint(competence,url_prefix='/competence')
 app.register_blueprint(document, url_prefix='/document')
 
-
-
+import re
+from models import MonthlyReportNumbers, Service
 
 def check_notifications(user_id):
     expired = s.query(Assessments).filter(Assessments.user_id == user_id)

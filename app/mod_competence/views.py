@@ -12,7 +12,6 @@ from app import config
 from forms import *
 import json
 from app.qpulseweb import *
-from app.qpulse_details import QpulseDetails
 from collections import defaultdict
 from datetime import datetime as dt
 from dateutil.relativedelta import relativedelta
@@ -1087,7 +1086,7 @@ def assign_competence_to_user(user_id, competence_id, due_date):
         sub_list.append(sub_section.id)
 
     check = s.query(Assessments).join(AssessmentStatusRef).filter(Assessments.ss_id.in_(sub_list)).filter(Assessments.user_id==user_id).filter(
-        Assessments.version == current_version).filter(AssessmentStatusRef.status != "Obsolete").count()
+        Assessments.version == current_version).filter(or_(AssessmentStatusRef.status != "Obsolete",AssessmentStatusRef.status != "Abandoned")).count()
     print "HERE CHECK"
     print check
     assessment_ids = []

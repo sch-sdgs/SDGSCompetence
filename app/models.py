@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import backref
 from competence import app
 from passlib.hash import bcrypt
+from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy(app)
 
@@ -191,6 +192,23 @@ class CompetenceJobRelationship(db.Model):
     def __repr__(self):
         return '<CompetenceJobRelationship %r>' % self.id
 
+class Invites(db.Model):
+    id = db.Column(db.Integer,primary_key=True)
+    invite_id = db.Column(db.String(1000),unique=True,nullable=False)
+    first_name = db.Column(db.String(1000), unique=False, nullable=False)
+    last_name = db.Column(db.String(1000), unique=False, nullable=False)
+    email = db.Column(db.String(1000), unique=False, nullable=False)
+    userid = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=True)
+
+    user_rel = db.relationship("Users", lazy='joined', foreign_keys=[userid])
+
+    def __init__(self,invite_id,first_name,last_name,email,userid):
+        self.invite_id = invite_id
+        self.first_name = first_name
+        self.last_name = last_name
+        self.email = email
+        self.userid = userid
+
 
 class Users(db.Model):
     __searchable__ = ['first_name', 'last_name']
@@ -200,7 +218,8 @@ class Users(db.Model):
     first_name = db.Column(db.String(1000), unique=False, nullable=False)
     last_name = db.Column(db.String(1000), unique=False, nullable=False)
     email = db.Column(db.String(1000), unique=False, nullable=False)
-    staff_no = db.Column(db.String(1000), unique=False, nullable=False)
+    password = db.Column(db.String(1000), unique=False, nullable=True)
+    staff_no = db.Column(db.String(1000), unique=False, nullable=True)
     band = db.Column(db.String(3), unique=False, nullable=False)
     date_created = db.Column(db.DATE, unique=False, nullable=False)
     last_login = db.Column(db.DATE, unique=False, nullable=True)
@@ -212,7 +231,7 @@ class Users(db.Model):
 
     service_rel = db.relationship("Service", lazy='joined', foreign_keys=[serviceid])
 
-    def __init__(self, login, first_name, last_name, email, serviceid, active, line_managerid=None, staff_no=None):
+    def __init__(self, login, first_name, last_name, email, serviceid, active, password=None, line_managerid=None, staff_no=None):
         self.login = login
         self.first_name = first_name
         self.last_name = last_name
@@ -222,6 +241,10 @@ class Users(db.Model):
         self.line_managerid = line_managerid
         self.serviceid = serviceid
         self.date_created = str(datetime.datetime.now().strftime("%Y%m%d"))
+        if password != None:
+            self.password = generate_password_hash(password)
+        else:
+            self.password = None
 
     def __iter__(self):
         yield 'id', self.id
@@ -238,6 +261,14 @@ class Users(db.Model):
     def __repr__(self):
         return '<Users %r>' % self.login
 
+class PWReset(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+    reset_key = db.Column(db.String(128), unique=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    datetime = db.Column(db.DateTime(timezone=True), default=datetime.datetime.now)
+    user = db.relationship("Users", lazy='joined')
+    has_activated = db.Column(db.Boolean, default=False)
 
 class UserRoleRelationship(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -1,0 +1,207 @@
+{% extends "base2.html" %}
+{% block content %}
+
+
+
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                Invite Individual to Register
+                <small></small>
+            </h1>
+{#            <ol class="breadcrumb">#}
+{#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
+{#                <li class="active">Here</li>#}
+{#            </ol>#}
+            {% if message %}
+                <div class="alert alert-danger">
+                    <strong>Fail Whale!</strong> {{ message }}
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- Main content -->
+        <section class="content container-fluid">
+            <div class="box" id="training">
+
+                <div class="box-body">
+            <form action="{{ url_for('admin.send_invite') }}" method="POST" class="form-horizontal">
+                <fieldset>
+
+
+                    <div class="form-group">
+                        {{ form.firstname.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.firstname(class_="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.surname.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.surname(class_="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.email.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.email(class_="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-lg-10 col-lg-offset-2">
+                            {{ form.submit(class_="btn btn-primary") }}
+
+                        </div>
+                    </div>
+
+                </fieldset>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-2"></div>
+</div>
+
+
+<script>
+    //this function does autocomplete for line managers name
+    $(function () {
+        $.ajax({
+            url: '{{ url_for("autocomplete") }}'
+        }).done(function (data) {
+            $('#linemanager').autocomplete({
+                source: data.json_list,
+                minLength: 2
+
+            });
+            console.log(data.json_list)
+        });
+    });
+    //this function autofills the fist name, surname and email fileds based on the inputed usersname
+    $(function () {
+
+
+        $('#username').focus(function () {
+            $('.username').removeClass("has-error");
+            $('.username').removeClass("has-success");
+            $('#login').text('This is the users windows login name.')
+            $('#firstname').val(null)
+            $('#surname').val(null)
+            $('#email').val(null)
+        });
+
+        $('#username').focusout(function () {
+            console.log("hello");
+
+            $('#username').each(function (i, v) {
+                console.log(this.value);
+                if (this.value) {
+                    username = this.value;
+                }
+            });
+            $.ajax({
+                url: "{{ url_for('admin.get_user_details')}}" + '?username=' + username,
+                data: $('form').serialize(),
+                type: 'POST',
+                success: function (response) {
+                    if (response != "False") {
+                        data = (JSON.parse(response["response"]));
+                        $('.username').removeClass("has-error");
+                        $('.username').addClass("has-success");
+//                        $('#autofill_section').hide();
+                        $('#login').text('Username Found!');
+                        $('#firstname').val(data.Forename);
+                        $('#surname').val(data.Surname);
+                        $('#email').val(data.Email.toLowerCase());
+                    } else {
+                        $('.username').removeClass("has-success");
+                        $('.username').addClass("has-error");
+                        $('#firstname').val(null);
+                        $('#surname').val(null);
+                        $('#email').val(null);
+                        $('#login').text('Username not found!');
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+    });
+
+    $(function () {
+
+        $('#linemanager').focus(function () {
+            $('.linemanager').removeClass("has-error");
+            $('.linemanager').removeClass("has-success");
+            $('#linemanager_text').text('Start typing a line managers name and it will autocomplete..')
+            $('#linemanager').val('');
+        });
+        //this function checks the line managers name
+        $('#linemanager').focusout(function () {
+
+            $('#linemanager').each(function (i, v) {
+                console.log(this.value);
+                if (this.value) {
+                    linemanager = this.value;
+                }
+            });
+            $.ajax({
+                url: "{{ url_for('admin.check_line_manager')}}" + '?linemanager=' + linemanager,
+                data: $('form').serialize(),
+                type: 'POST',
+                success: function (response) {
+                    console.log(response)
+                    data = (JSON.parse(response["response"]));
+                    if (data == true) {
+                        $('.linemanager').removeClass("has-error");
+                        $('.linemanager').addClass("has-success");
+                        $('#linemanager_text').text('Line Manager Found!');
+                        linemanager = null;
+                    } else {
+                        $('.linemanager').removeClass("has-success");
+                        $('.linemanager').addClass("has-error");
+                        $('#linemanager_text').text('Line Manager not found, or user is not a line manager!');
+                        linemanager = null;
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+    });
+
+
+</script>
+
+<!--<div class="row">-->
+<!--<div class="col-md-3"></div>-->
+<!--<div class="col-md-6">-->
+<!--<div class="well bs-component">-->
+<!--<legend>Roles</legend>-->
+<!--<table class="table table-striped">-->
+<!--<thead>-->
+<!--<th>Role</th>-->
+<!--<th>Edit</th>-->
+<!--<th>Delete</th>-->
+<!--</thead>-->
+
+<!--{% for role_object in data %}-->
+<!--<tr>-->
+<!--<td>{{ role_object.role }}</td>-->
+<!--<td><a href="{{ url_for('admin.userroles_edit', id=role_object.id) }}"><span class="label label-primary"><span class="glyphicon glyphicon-pencil"></span></span></a></td>-->
+<!--<td><a href="{{ url_for('admin.deleterole', id=role_object.id) }}"><span class="label label-danger"><span class="glyphicon glyphicon-remove"></span></span></a></td>-->
+<!--</tr>-->
+<!--{% endfor %}-->
+
+<!--</table>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="col-md-3"></div>-->
+<!--</div>-->
+
+{% endblock %}

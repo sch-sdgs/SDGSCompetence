@@ -15,12 +15,14 @@ from trello import TrelloApi
 from app.competence import app, s, db
 from app.models import *
 from app.competence import config
+from werkzeug.security import generate_password_hash, check_password_hash
+import uuid
+
 import itertools
 
 import json
 login_manager = LoginManager()
 login_manager.init_app(app)
-
 login_manager.login_view = "login"
 
 principals = Principal(app)
@@ -37,6 +39,37 @@ privilege_perminssion = Permission(RoleNeed('PRIVILEGE'))
 def load_user(user_id):
     return User(user_id)
 
+from app.forms import RegistrationForm
+
+# ...
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = RegistrationForm()
+    if request.method == 'POST':
+        print form.username.data
+        user = Users(login=form.username.data, email=form.email.data, first_name=form.first_name.data, password=form.password.data, last_name=form.last_name.data , serviceid=form.service_id.data.id, active=True)
+        print user
+        s.add(user)
+
+        s.commit()
+        # flash('Congratulations, you are now a registered user!')
+        return redirect(url_for('login'))
+    if "invite_id" in request.args:
+        invite_id = request.args["invite_id"]
+        invite = s.query(Invites).filter(Invites.invite_id == invite_id).first()
+        if invite:
+            form.username.data = invite.email
+            form.first_name.data = invite.first_name
+            form.last_name.data = invite.last_name
+            form.email.data = invite.email
+            return render_template('register.html', title='Register', form=form)
+        else:
+            return "You do not have an invite"
+    else:
+        return "Forbidden"
 
 class User(UserMixin):
     def __init__(self, id, password=None):
@@ -88,6 +121,9 @@ class User(UserMixin):
         else:
             return False
 
+    def check_password(self, password):
+        return check_password_hash(password,self.password)
+
     def is_authenticated(self, id, password):
         """
         checks if user can authenticate with given user id and password. A user can authenticate if two conditions are met
@@ -102,8 +138,7 @@ class User(UserMixin):
         if len(list(user)) == 0:
             return False
         else:
-            # check_activdir = UserAuthentication().authenticate(id, password)
-            check_activdir = True
+            check_activdir = UserAuthentication().authenticate(id, password)
 
 
         self.roles = []
@@ -119,7 +154,10 @@ class User(UserMixin):
             return True
 
         else:
-            return False
+            if self.check_password(user[0].password):
+                return True
+            else:
+                return False
 
 
     def is_active(self):
@@ -502,7 +540,7 @@ def login():
     """
     form = Login(next=request.args.get('next'))
     if request.method == 'GET':
-        return render_template("login.html", form=form)
+        return render_template("login.html", org=config.ORGANISATION, form=form)
     elif request.method == 'POST':
         user = User(form.data["username"], password=form.data["password"])
         result = user.is_authenticated(id=form.data["username"], password=form.data["password"])
@@ -516,7 +554,9 @@ def login():
             else:
                 return redirect(url_for('index'))
         else:
-            return render_template("login.html", form=form, modifier="Oh Snap!", message="Wrong username or password")
+            print config
+            print "hello"
+            return render_template("login.html", org=config.ORGANISATION, form=form, modifier="Oh Snap!", message="Wrong username or password")
 
 
 @app.route('/login_as', methods=['GET', 'POST'])

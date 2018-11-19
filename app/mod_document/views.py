@@ -16,7 +16,6 @@ from app.views import admin_permission
 from app.models import *
 from app.competence import s
 from app.qpulseweb import QPulseWeb
-from app.qpulse_details import QpulseDetails
 from forms import *
 from sqlalchemy.orm import aliased
 import uuid
@@ -36,7 +35,7 @@ def get_doc_info(c_id):
     """
     print('query')
     competence_list = s.query(CompetenceDetails).\
-        filter(CompetenceDetails.id == c_id).first()
+        filter(CompetenceDetails.c_id == c_id).first()
     return competence_list
 
 def get_subsections(c_id):
@@ -217,15 +216,17 @@ def export_document(c_id):
     footer_body = footer_body.copy_with_children(footer_body.all_children())
 
     # Insert header and footer in main doc
-    for i, page in enumerate(main_doc.pages):
 
+    for page in main_doc.pages:
+        print "HEADER & FOOTER"
+        print page
         page_body = get_page_body(page._page_box.all_children())
         page_body.children += header_body.all_children()
         page_body.children += footer_body.all_children()
-
         if exists_links:
             page.links.extend(header_page.links)
             page.links.extend(footer_page.links)
+
 
     outfile = str(uuid.uuid4())
 
@@ -248,5 +249,5 @@ def export_document_view():
         print(c_id)
         outfile = export_document(c_id)
         uploads = app.config["UPLOAD_FOLDER"]
-        filename = s.query(CompetenceDetails).filter(CompetenceDetails.c_id==c_id).first().title
+        filename = s.query(CompetenceDetails).filter(CompetenceDetails.c_id==c_id).first().title + ".pdf"
         return send_from_directory(directory=uploads, filename=outfile, as_attachment=True, attachment_filename=filename)

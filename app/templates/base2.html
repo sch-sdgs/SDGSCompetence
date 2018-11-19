@@ -317,9 +317,13 @@ desired effect
                 <span class="sr-only">Toggle navigation</span>
             </a>
 
+
             <!-- Navbar Right Menu -->
             <div class="navbar-custom-menu">
                 <ul class="nav navbar-nav">
+                <li>
+                    <a href="#"><strong>Organisation:</strong> Sheffield Diagnostic Genetics Service</a>
+                </li>
                     <!-- Messages: style can be found in dropdown.less-->
                     {#                    <li class="dropdown messages-menu">#}
                     {#                        <!-- Menu toggle button -->#}
@@ -470,6 +474,7 @@ desired effect
                             {#                            <!-- Menu Footer-->#}
                             <li class="user-footer">
                                 <div class="pull-left">
+                                    <a href="{{ url_for('admin.change_password') }}" class="btn btn-default btn-flat">Change Password</a>
                                     {#                                    <a href="#" class="btn btn-default btn-flat">Profile</a>#}
                                 </div>
                                 <div class="pull-right">
@@ -539,6 +544,7 @@ desired effect
                         <li><a href="{{ url_for('competence.list_comptencies') }}"><i class="fa fa-circle-o"></i>List
                             Competenices</a>
                         <li><a href="{{ url_for('admin.users_view') }}"><i class="fa fa-circle-o"></i>View Users</a>
+
                         </li>
                     </ul>
                 </li>
@@ -630,9 +636,10 @@ desired effect
                                     </fieldset>
                                 </form>
                             </li>
-                            <li><a href="{{ url_for('admin.users_view') }}"><i class="fa fa-circle-o"></i>View Users</a>
-                            <li><a href="{{ url_for('admin.users_add') }}"><i class="fa fa-circle-o"></i>Add User</a>
-                            <li><a href="{{ url_for('admin.bulk_user_upload') }}"><i class="fa fa-circle-o"></i>Bulk User Upload</a>
+                            <li><a href="{{ url_for('admin.users_view') }}"><i class="fa fa-circle-o"></i>View Users</a></li>
+                            <li><a href="{{ url_for('admin.users_add') }}"><i class="fa fa-circle-o"></i>Add User</a></li>
+                            <li><a href="{{ url_for('admin.bulk_user_upload') }}"><i class="fa fa-circle-o"></i>Bulk User Upload</a></li>
+                            <li><a href="{{ url_for('admin.invites') }}"><i class="fa fa-circle-o"></i>User Invites</a></li>
                             </li>
                         </ul>
                     </li>
