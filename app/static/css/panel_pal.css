@@ -35,8 +35,11 @@ table.dataTable tbody tr.selected {
     }
 }
 
+
 .login-page {
-    background-color: #c6c6c6;
+    /*background-color: #c6c6c6;*/
+    background: url("../images/bg-pattern.png"), -webkit-gradient(linear, right top, left top, from(#bfbfbf), to(#dc9e25));
+    background: url("../images/bg-pattern.png"), linear-gradient(to left, #bfbfbf, #dc9e25);
 }
 
 .ui-autocomplete {

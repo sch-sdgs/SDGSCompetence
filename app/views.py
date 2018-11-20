@@ -53,12 +53,35 @@ def setup():
                 s.commit
 
             #create statuses
-            statuses = ["Abandoned","Active","Assigned","Complete","Failed","Four Year Due","Obelete","Sign-Off"]
+            statuses = ["Abandoned","Active","Assigned","Complete","Failed","Four Year Due","Obsolete","Sign-Off"]
             for status in statuses:
                 if s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == status).count() == 0:
                     st = AssessmentStatusRef(status=status)
                     s.add(st)
             s.commit()
+
+            months = [6,12,24,48]
+            for month in months:
+                if s.query(ValidityRef).filter(ValidityRef.months == month).count() == 0:
+                    vr = ValidityRef(months=month)
+                    s.add(vr)
+            s.commit()
+
+            categories = ["Software"]
+            for category in categories:
+                if s.query(CompetenceCategory).filter(CompetenceCategory.category == category).count() == 0:
+                    cc = CompetenceCategory(category=category)
+                    s.add(cc)
+            s.commit()
+
+            evidences = ["Case", "Completed competence panel", "Discussion", "Observation", "Upload"]
+            for evidence in evidences:
+                if s.query(EvidenceTypeRef).filter(EvidenceTypeRef.type == evidence).count() == 0:
+                    st = EvidenceTypeRef(type=evidence)
+                    s.add(st)
+            s.commit()
+
+            #create using competenceDB competence?
 
 
             return render_template("setup.html",form=form)

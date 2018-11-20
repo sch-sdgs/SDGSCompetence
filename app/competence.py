@@ -56,7 +56,7 @@ def send_mail(user_id,subject,message):
         recipient_user_name = s.query(Users).filter(Users.id == int(user_id)).first().login
         print "SENDING EMAIL"
         print message
-        msg = Message('CompetenceDB: '+subject, sender="SDGS-Bioinformatics@sch.nhs.uk", recipients=[recipient_user_name+"@sch.nhs.uk"])
+        msg = Message('CompetenceDB: '+subject, sender="notifications@competencedb.com", recipients=[recipient_user_name+"@sch.nhs.uk"])
         msg.body = 'text body'
         msg.html = '<b>You have a notification on CompetenceDB:</b><br><br>'+message+'<br><br>View all your notifications <a href="'+request.url_root+'notifications">here</a>'
         thr = Thread(target=send_async_email, args=[msg])
@@ -68,7 +68,7 @@ def send_mail_unknown(email,subject,message):
     if config.MAIL != False:
         print "SENDING EMAIL"
         print message
-        msg = Message('CompetenceDB: '+subject, sender="SDGS-Bioinformatics@sch.nhs.uk", recipients=[email])
+        msg = Message('CompetenceDB: '+subject, sender="notifications@competencedb.com", recipients=[email])
         msg.body = 'text body'
         msg.html = message
         thr = Thread(target=send_async_email, args=[msg])
