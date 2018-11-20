@@ -1,14 +1,14 @@
 from setuptools import setup
 
 setup(
-    name='StarDB',
-    version='0.0.0',
+    name='CompetenceDB',
+    version='0.1.5',
     packages=['app','app.mod_admin','app.mod_competence','app.mod_document','app.mod_training'],
     url='',
     license='',
     zip_safe=False,
-    author='mparker',
-    author_email='matthew.parker@sch.nhs.uk',
-    description='sdgs competence tool',
+    author='Matthew Parker',
+    author_email='matthew.parker@sheffield.ac.uk',
+    description='Competence Management Application',
     include_package_data=True
 )
