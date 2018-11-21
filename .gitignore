@@ -11,3 +11,4 @@ build
 dist
 stardb
 StarDB.egg-info
+app/config.py

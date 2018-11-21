@@ -627,7 +627,7 @@ def delete():
                 if len(files) > 0:
                     for file in files:
                         try:
-                            os.remove(config.UPLOADED_FILES_DEST+"/"+file.uuid)
+                            os.remove(config.get("UPLOADED_FILES_DEST")+"/"+file.uuid)
                             print "file removed"
                         except OSError:
                             print "couldn't remove file from filesystem"

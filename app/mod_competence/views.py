@@ -8,7 +8,7 @@ from flask.ext.login import login_required, current_user
 from app.views import get_competence_from_subsections, admin_permission
 from app.models import *
 from app.competence import s,send_mail
-from app import config
+from app.competence import config
 from forms import *
 import json
 from app.qpulseweb import *
@@ -222,7 +222,7 @@ def add_competence():
         s.commit()
         c_id = c.id
 
-        if config.QPULSE_MODULE != False:
+        if config.get("QPULSE_MODULE") != False:
             doclist = request.form['doc_list'].split(',')
             for doc in doclist:
                 add_doc = Documents(c_id=c_id, qpulse_no=doc)
@@ -245,11 +245,11 @@ def add_competence():
         # return render_template('competence_section.html', form=add_section_form, c_id=c_id, result=result)
         return render_template('competence_section.html', form=add_section_form, c_id=com.id, result=result)
 
-    if config.QPULSE_MODULE == False:
+    if config.get("QPULSE_MODULE") == False:
         form.documents.render_kw = {'disabled': 'disabled'}
         form.add_document.render_kw = {'disabled': 'disabled'}
 
-    return render_template('competence_add.html', form=form, qpulse_module=config.QPULSE_MODULE)
+    return render_template('competence_add.html', form=form, qpulse_module=config.get("QPULSE_MODULE"))
 
 
 @competence.route('/addsections', methods=['GET', 'POST'])

@@ -1,4 +1,4 @@
-from flask import Flask, request,session
+from flask import Flask, request,session, render_template
 import atexit
 from apscheduler.scheduler import Scheduler
 import logging
@@ -8,23 +8,19 @@ import itertools
 import time
 from functools import wraps
 from flask_login import current_user
-import app.config as config
 import datetime
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.sql.expression import and_
 from threading import Thread
-from jinja2 import Environment
-#define app and db session
 
 app = Flask(__name__)
 app.secret_key = 'development key'
-app.config.from_object(config)
-app.jinja_env.add_extension('jinja2.ext.do')
-# with app.app_context():
-#     session['activedirectory'] = config.ACTIVE_DIRECTORY
-from models import db,Users,Assessments,Evidence,CompetenceDetails,AssessmentStatusRef
 
-print app.config
+app.config.from_envvar('CONFIG',silent=False)
+config = app.config
+app.jinja_env.add_extension('jinja2.ext.do')
+
+from models import db,Users,Assessments,Evidence,CompetenceDetails,AssessmentStatusRef
 
 s = db.session
 
@@ -52,7 +48,7 @@ def send_async_email(msg):
 
 def send_mail(user_id,subject,message):
 
-    if config.MAIL != False:
+    if config.get("MAIL") != False:
         recipient_user_name = s.query(Users).filter(Users.id == int(user_id)).first().login
         print "SENDING EMAIL"
         print message
@@ -65,7 +61,7 @@ def send_mail(user_id,subject,message):
 
 def send_mail_unknown(email,subject,message):
 
-    if config.MAIL != False:
+    if config.get("MAIL") != False:
         print "SENDING EMAIL"
         print message
         msg = Message('CompetenceDB: '+subject, sender="notifications@competencedb.com", recipients=[email])

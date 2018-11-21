@@ -212,9 +212,7 @@ class User(UserMixin):
         if len(list(user)) == 0:
             return False
         #check if using active directory
-        print "HERE"
-        print config.ACTIVE_DIRECTORY
-        if config.ACTIVE_DIRECTORY:
+        if config.get("ACTIVE_DIRECTORY"):
             check = UserAuthentication().authenticate(id, password)
         else:
             check = self.check_password(user[0].password)
@@ -616,7 +614,7 @@ def login():
     """
     form = Login(next=request.args.get('next'))
     if request.method == 'GET':
-        return render_template("login.html", org=config.ORGANISATION, form=form)
+        return render_template("login.html", org=config.get("ORGANISATION"), form=form)
     elif request.method == 'POST':
         user = User(form.data["username"], password=form.data["password"])
         result = user.is_authenticated(id=form.data["username"], password=form.data["password"])
@@ -631,7 +629,7 @@ def login():
                 return redirect(url_for('index'))
         else:
             flash("Wrong username or password!","danger")
-            return render_template("login.html", org=config.ORGANISATION, form=form)
+            return render_template("login.html", org=config.get("ORGANISATION"), form=form)
 
 
 @app.route('/login_as', methods=['GET', 'POST'])
@@ -921,7 +919,7 @@ def notifications():
 @login_required
 def bug_reports():
 
-    trello = TrelloApi(config.TRELLO_APP_KEY,token='1c7e2c946ba584da3e125834ebc88f41f38a3f6286ee99e9a43682902ca82ccb')
+    trello = TrelloApi(config.get("TRELLO_APP_KEY"),token='1c7e2c946ba584da3e125834ebc88f41f38a3f6286ee99e9a43682902ca82ccb')
     token = trello.get_token_url('My App', expires='30days', write_access=True)
 
     for i in trello.boards.get_list('59de4d6e5c1d9536f21019d9'):
