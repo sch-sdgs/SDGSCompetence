@@ -7,369 +7,376 @@
 
 
 
-            {% if review %}
-                <h1><i class="fa fa-fw fa-file-text-o"></i> View Competency
-                    <small>Viewing the details of a single competency</small>
-                </h1>
-            {% else %}
-                <h1><i class="fa fa-fw fa-file-text-o"></i> View Completed Competency
-                    <small>Viewing the details of a single competency</small>
-                </h1>
-            {% endif %}
+    {% if review %}
+        <h1><i class="fa fa-fw fa-file-text-o"></i> View Competency
+            <small>Viewing the details of a single competency</small>
+        </h1>
+    {% else %}
+        <h1><i class="fa fa-fw fa-file-text-o"></i> View Completed Competency
+            <small>Viewing the details of a single competency</small>
+        </h1>
+    {% endif %}
 
-            </h1>
-            {#            <ol class="breadcrumb">#}
-            {#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
-            {#                <li class="active">Here</li>#}
-            {#            </ol>#}
-            {% if message %}
-                <div class="alert alert-danger">
-                    <strong>Fail Whale!</strong> {{ message }}
-                </div>
-            {% endif %}
+    </h1>
+    {#            <ol class="breadcrumb">#}
+    {#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
+    {#                <li class="active">Here</li>#}
+    {#            </ol>#}
+    {% if message %}
+        <div class="alert alert-danger">
+            <strong>Fail Whale!</strong> {{ message }}
+        </div>
+    {% endif %}
 
-            <h3>{{ title }}
-                <small class="label bg-gray">v{{ version }}</small>
-            </h3>
+    <h3>{{ title }}
+        <small class="label bg-gray">v{{ version }}</small>
+    </h3>
 
 
-        </section>
+    </section>
 
-        <!-- Main content -->
-        <section class="content container-fluid">
+    <!-- Main content -->
+    <section class="content container-fluid">
 
-            <div class="alert alert-success" role="alert" id="competence_activated" hidden>Success! You have
-                completed {{ title }}.
+        <div class="alert alert-success" role="alert" id="competence_activated" hidden>Success! You have
+            completed {{ title }}.
+        </div>
+        <div class="form-group">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-10">
+                <div id="selected_docs"></div>
             </div>
-            <div class="form-group">
-                <div class="col-lg-2"></div>
-                <div class="col-lg-10">
-                    <div id="selected_docs"></div>
-                </div>
-            </div>
+        </div>
 
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="box box-solid">
-                        <div class="box-body">
-                            <div class="btn-group pull-right">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-solid">
+                    <div class="box-body">
+                        <div class="btn-group pull-right">
 
-                                {% if approved == None %}
-                                    <button
-                                            class="btn btn-flat btn-warning approval" id="{{ id }}"><span
-                                            class="glyphicon glyphicon-thumbs-up"></span> Send
-                                        for Approval
-                                    </button>
-                                    <a
-                                            href="{{ url_for('competence.edit_competence') }}?ids={{ c_id }}&version={{ version }}"
-                                            class="btn btn-flat btn-primary"><i class="fa fa-pencil"></i> Edit</a>
-                                {% elif not approved %}
+                            {% if approved == None %}
+                                <button
+                                        class="btn btn-flat btn-warning approval" id="{{ id }}"><span
+                                        class="glyphicon glyphicon-thumbs-up"></span> Send
+                                    for Approval
+                                </button>
 
-                                    {% if approval_buttons == True %}
-                                        <a href="{{ url_for('competence.approve',id=c_id,version=intro,u_id=current_user.database_id) }}"
-                                           class="btn  btn-flat btn-success"><span
-                                                class="glyphicon glyphicon-thumbs-up"></span> </a>
-
-                                         <button
-                                                                class="btn btn-flat btn-danger reject_button"
-                                                                id="reject_button"><span
-                                                                class="glyphicon glyphicon-thumbs-down"></span></button>
-
-                                        <div class="modal modal-default reject_comment"
-                                                             id="reject_comment" style="display: none;">
-                                                            <div class="modal-dialog">
-
-                                                                <div class="modal-content">
-                                                                    <div class="modal-header">
-                                                                        <h4 class="modal-title"><i
-                                                                                class="fa fa-exclamation-triangle text-red"></i>Competence
-                                                                            Rejection</h4>
-                                                                    </div>
-                                                                    <div class="modal-body">
-                                                                        <form class="form-horizontal" id="feedback_form"
-                                                                              action="{{ url_for('competence.reject',id=c_id,version=intro,u_id=current_user.database_id) }}"
-                                                                              enctype="multipart/form-data"
-                                                                              method="POST">
-
-
-                                                                            <div class="form-group">
-                                                                                <label class="col-lg-3 control-label">Enter
-                                                                                    Feedback</label>
-                                                                                <div class="col-lg-9"><textarea
-                                                                                        name="feedback" id="feedback"
-                                                                                        class="form-control"></textarea>
-                                                                                </div>
-                                                                            </div>
-                                                                            <input type="submit"
-                                                                                   class="btn btn-flat btn-danger" value="Reject Competence">
-                                                                            </input>
-
-
-                                                                        </form>
-
-
-                                                                    </div>
-                                                                    <div class="modal-footer">
-
-                                                                        <button type="button"
-                                                                                class="btn btn-default btn-flat pull-right close_confirm">
-                                                                            Close
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                        </div>
-
-
-
-
-
+                                  {% if "ADMIN" in current_user.roles or creator_id == current_user.database_id %}
+                                <a
+                                        href="{{ url_for('competence.edit_competence') }}?ids={{ c_id }}&version={{ version }}"
+                                        class="btn btn-flat btn-primary"><i class="fa fa-pencil"></i> Edit</a>
                                     {% endif %}
+                            {% elif not approved %}
 
-                                    <button class="btn btn-flat btn-primary" disabled><i class="fa fa-pencil"></i> Edit
-                                    </button>
-                                {% elif approved %}
-                                    <a
-                                            href="{{ url_for('competence.edit_competence') }}?ids={{ c_id }}&version={{ version }}"
-                                            class="btn btn-flat btn-primary"><i class="fa fa-pencil"></i> Edit</a>
+                                {% if approval_buttons == True %}
+                                    <a href="{{ url_for('competence.approve',id=c_id,version=intro,u_id=current_user.database_id) }}"
+                                       class="btn  btn-flat btn-success"><span
+                                            class="glyphicon glyphicon-thumbs-up"></span> </a>
+
+                                    <button
+                                            class="btn btn-flat btn-danger reject_button"
+                                            id="reject_button"><span
+                                            class="glyphicon glyphicon-thumbs-down"></span></button>
+
+                                    <div class="modal modal-default reject_comment"
+                                         id="reject_comment" style="display: none;">
+                                        <div class="modal-dialog">
+
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h4 class="modal-title"><i
+                                                            class="fa fa-exclamation-triangle text-red"></i>Competence
+                                                        Rejection</h4>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form class="form-horizontal" id="feedback_form"
+                                                          action="{{ url_for('competence.reject',id=c_id,version=intro,u_id=current_user.database_id) }}"
+                                                          enctype="multipart/form-data"
+                                                          method="POST">
+
+
+                                                        <div class="form-group">
+                                                            <label class="col-lg-3 control-label">Enter
+                                                                Feedback</label>
+                                                            <div class="col-lg-9"><textarea
+                                                                    name="feedback" id="feedback"
+                                                                    class="form-control"></textarea>
+                                                            </div>
+                                                        </div>
+                                                        <input type="submit"
+                                                               class="btn btn-flat btn-danger"
+                                                               value="Reject Competence">
+                                                        </input>
+
+
+                                                    </form>
+
+
+                                                </div>
+                                                <div class="modal-footer">
+
+                                                    <button type="button"
+                                                            class="btn btn-default btn-flat pull-right close_confirm">
+                                                        Close
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+
+
                                 {% endif %}
 
+                                <button class="btn btn-flat btn-primary" disabled><i class="fa fa-pencil"></i> Edit
+                                </button>
+                            {% elif approved %}
+
+                                {% if "ADMIN" in current_user.roles or creator_id == current_user.database_id %}
+
                                 <a
-                                        href="{{ url_for('document.export_document_view') }}?c_id={{ c_id }}&version={{ version }}"
-                                        class="btn btn-flat btn-default"><i class="fa fa-download"></i> Download</a>
-                            </div>
+                                        href="{{ url_for('competence.edit_competence') }}?ids={{ c_id }}&version={{ version }}"
+                                        class="btn btn-flat btn-primary"><i class="fa fa-pencil"></i> Edit</a>
+                                    {% endif %}
+                            {% endif %}
+
+                            <a
+                                    href="{{ url_for('document.export_document_view') }}?c_id={{ c_id }}&version={{ version }}"
+                                    class="btn btn-flat btn-default"><i class="fa fa-download"></i> Download</a>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            {% if feedback|length > 0 %}
-                <div class="box box-danger" id="training">
-                    <div class="box-header with-border">
+        {% if feedback|length > 0 %}
+            <div class="box box-danger" id="training">
+                <div class="box-header with-border">
 
 
-                        <h3 class="box-title">Feedback</h3>
+                    <h3 class="box-title">Feedback</h3>
 
-                    </div>
-                    <div class="box-body">
-                        {% for feed in feedback %}
+                </div>
+                <div class="box-body">
+                    {% for feed in feedback %}
                         <blockquote><p>
-                        {{ feed.rejection_reason }}
+                            {{ feed.rejection_reason }}
                         </p>
                             <small>{{ feed.date.strftime('%d-%m-%Y') }}</small>
-                            </blockquote>
-                        {% endfor %}
-
-
-                    </div>
-                </div>
-            {% endif %}
-
-            <div class="box box-primary" id="training">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Summary</h3>
-
-                </div>
-                <div class="box-body">
-
-
-                    <div class="form-group">
-                        <td><p><strong>Scope</strong> : {{ scope }}</p></td>
-                    </div>
-
-
-                    <div class="form-group">
-                        <td><p><strong>Competence Type</strong> : {{ category }}</p></td>
-                    </div>
-
-
-                    <div class="form-group">
-                        <td><p><strong>Validity Period (months)</strong> : {{ val_period }}</p></td>
-                    </div>
-
-                    <div class="form-group">
-                        <td><p><strong>Approval Status</strong> : {{ get_approval_status(approved)|safe }}</p></td>
-                    </div>
-                </div>
-            </div>
-            {% if docs|length != 0 %}
-                <div class="box" id="training">
-
-
-                    <div class="box-header with-border">
-                        <h3 class="box-title">Associated Q-Pulse Documents</h3>
-
-                    </div>
-                    <div class="box-body">
-                        <div class="form-group">
-
-
-                            {% for doc in docs %}
-                                <tr>
-                                    <td><p><i class="fa fa-book"></i> <strong>{{ doc }}</strong> : {{ docs[doc] }}</p>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </div>
-
-
-                    </div>
-                </div>
-            {% endif %}
-
-
-            <div class="box" id="training">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Compulsory Sections</h3>
-
-                </div>
-                <div class="box-body">
-
-
-                    {% for constant_sec_name in constants %}
-
-
-                        <table class="table table-striped">
-                        <h4 class="text-blue"><i class="fa fa-fw fa-check-square-o"></i> {{ constant_sec_name }}</h4>
-
-                        <thead>
-                        <tr>
-                            <th class="col-md-7">Area of Competence</th>
-                            <th class="col-md-2">Evidence Type</th>
-                            <th class="col-md-3">Comments</th>
-                        </tr>
-                        </thead>
-                        {% for i in  constants[constant_sec_name] %}
-
-                            <tr>
-                                <td> {{ i[0] }}</td>
-                                <td>{{ i[2] }}</td>
-                                <td> {{ i[1] }}</td>
-
-                            </tr>
-
-                        {% endfor %}
-                    {% endfor %}
-
-                    </table>
-
-                </div>
-            </div>
-
-
-            <div class="box" id="training">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Competence Sections</h3>
-
-                </div>
-                <div class="box-body">
-
-
-                    {% for sec_name in subsections %}
-
-                        <table class="table table-striped">
-                        <h4 class="text-blue"><i class="fa fa-fw fa-check-square-o"></i> {{ sec_name }}</h4>
-                        <thead>
-                        <tr>
-                            <th class="col-md-7">Area of Competence</th>
-                            <th class="col-md-2">Evidence Type</th>
-                            <th class="col-md-3">Comments</th>
-                        </tr>
-                        </thead>
-                        {% for i in  subsections[sec_name] %}
-
-                            <tr>
-                                <td> {{ i[0] }}</td>
-                                <td>{{ i[2] }}</td>
-                                <td> {{ i[1] }}</td>
-                            </tr>
-
-                        {% endfor %}
+                        </blockquote>
                     {% endfor %}
 
 
-                    </table>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="box box-primary" id="training">
+            <div class="box-header with-border">
+                <h3 class="box-title">Summary</h3>
+
+            </div>
+            <div class="box-body">
+
+
+                <div class="form-group">
+                    <td><p><strong>Scope</strong> : {{ scope }}</p></td>
+                </div>
+
+
+                <div class="form-group">
+                    <td><p><strong>Competence Type</strong> : {{ category }}</p></td>
+                </div>
+
+
+                <div class="form-group">
+                    <td><p><strong>Validity Period (months)</strong> : {{ val_period }}</p></td>
+                </div>
+
+                <div class="form-group">
+                    <td><p><strong>Approval Status</strong> : {{ get_approval_status(approved)|safe }}</p></td>
+                </div>
+            </div>
+        </div>
+        {% if docs|length != 0 %}
+            <div class="box" id="training">
+
+
+                <div class="box-header with-border">
+                    <h3 class="box-title">Associated Q-Pulse Documents</h3>
+
+                </div>
+                <div class="box-body">
+                    <div class="form-group">
+
+
+                        {% for doc in docs %}
+                            <tr>
+                                <td><p><i class="fa fa-book"></i> <strong>{{ doc }}</strong> : {{ docs[doc] }}</p>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </div>
 
 
                 </div>
             </div>
-            {% if review %}
+        {% endif %}
 
-            {% else %}
-                <div class="box box-primay" id="training">
-                    <div class="box-header with-border">
-                        <h3 class="box-title">Actions</h3>
 
-                    </div>
-                    <div class="box-body">
+        <div class="box" id="training">
+            <div class="box-header with-border">
+                <h3 class="box-title">Compulsory Sections</h3>
 
-                        <a href="#" class="btn btn-warning btn-flat" type="button" id="activate_{{ c_id }}">Send for
-                            Approval</a>
-                        <a href="{{ url_for('competence.edit_competence') }}?ids={{ c_id }}"
-                           class="btn btn-info btn-flat" type="button">Edit</a>
+            </div>
+            <div class="box-body">
 
-                    </div>
+
+                {% for constant_sec_name in constants %}
+
+
+                    <table class="table table-striped">
+                    <h4 class="text-blue"><i class="fa fa-fw fa-check-square-o"></i> {{ constant_sec_name }}</h4>
+
+                    <thead>
+                    <tr>
+                        <th class="col-md-7">Area of Competence</th>
+                        <th class="col-md-2">Evidence Type</th>
+                        <th class="col-md-3">Comments</th>
+                    </tr>
+                    </thead>
+                    {% for i in  constants[constant_sec_name] %}
+
+                        <tr>
+                            <td> {{ i[0] }}</td>
+                            <td>{{ i[2] }}</td>
+                            <td> {{ i[1] }}</td>
+
+                        </tr>
+
+                    {% endfor %}
+                {% endfor %}
+
+                </table>
+
+            </div>
+        </div>
+
+
+        <div class="box" id="training">
+            <div class="box-header with-border">
+                <h3 class="box-title">Competence Sections</h3>
+
+            </div>
+            <div class="box-body">
+
+
+                {% for sec_name in subsections %}
+
+                    <table class="table table-striped">
+                    <h4 class="text-blue"><i class="fa fa-fw fa-check-square-o"></i> {{ sec_name }}</h4>
+                    <thead>
+                    <tr>
+                        <th class="col-md-7">Area of Competence</th>
+                        <th class="col-md-2">Evidence Type</th>
+                        <th class="col-md-3">Comments</th>
+                    </tr>
+                    </thead>
+                    {% for i in  subsections[sec_name] %}
+
+                        <tr>
+                            <td> {{ i[0] }}</td>
+                            <td>{{ i[2] }}</td>
+                            <td> {{ i[1] }}</td>
+                        </tr>
+
+                    {% endfor %}
+                {% endfor %}
+
+
+                </table>
+
+
+            </div>
+        </div>
+        {% if review %}
+
+        {% else %}
+            <div class="box box-primay" id="training">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Actions</h3>
+
                 </div>
+                <div class="box-body">
+
+                    <a href="#" class="btn btn-warning btn-flat" type="button" id="activate_{{ c_id }}">Send for
+                        Approval</a>
+                    <a href="{{ url_for('competence.edit_competence') }}?ids={{ c_id }}"
+                       class="btn btn-info btn-flat" type="button">Edit</a>
+
+                </div>
+            </div>
 
 
-                {#                <script>#}
-                {##}
-                {#                    $('#activate_{{ c_id }}').click(function () {#}
-                {#                        var c_id = {{ c_id }};#}
-                {#                        console.log(c_id);#}
-                {##}
-                {#                        var url = "{{ url_for('competence.activate_competency') }}";#}
-                {#                        var dict = {'c_id': c_id};#}
-                {#                        var data = JSON.stringify(dict);#}
-                {##}
-                {#                        $.ajax({#}
-                {#                            type: "POST",#}
-                {#                            url: url,#}
-                {#                            data: data,#}
-                {#                            dataType: "json",#}
-                {#                            contentType: "application/json",#}
-                {#                            success: function (response) {#}
-                {#                                console.log(response);#}
-                {##}
-                {#                                if (response.match(/Competence has been activated!/i)) {#}
-                {#                                    $('#competence_activated').show()#}
-                {##}
-                {##}
-                {#                                }#}
-                {#                            },#}
-                {#                            error: function (xhr, status, error) {#}
-                {#                                $('#trace').append("<p>" + error + "</p>");#}
-                {#                                $('#ajaxModal').modal('show');#}
-                {#                                return false;#}
-                {#                            }#}
-                {#                        });#}
-                {#                    });#}
-                {##}
-                {##}
-                {#                </script>#}
+            {#                <script>#}
+            {##}
+            {#                    $('#activate_{{ c_id }}').click(function () {#}
+            {#                        var c_id = {{ c_id }};#}
+            {#                        console.log(c_id);#}
+            {##}
+            {#                        var url = "{{ url_for('competence.activate_competency') }}";#}
+            {#                        var dict = {'c_id': c_id};#}
+            {#                        var data = JSON.stringify(dict);#}
+            {##}
+            {#                        $.ajax({#}
+            {#                            type: "POST",#}
+            {#                            url: url,#}
+            {#                            data: data,#}
+            {#                            dataType: "json",#}
+            {#                            contentType: "application/json",#}
+            {#                            success: function (response) {#}
+            {#                                console.log(response);#}
+            {##}
+            {#                                if (response.match(/Competence has been activated!/i)) {#}
+            {#                                    $('#competence_activated').show()#}
+            {##}
+            {##}
+            {#                                }#}
+            {#                            },#}
+            {#                            error: function (xhr, status, error) {#}
+            {#                                $('#trace').append("<p>" + error + "</p>");#}
+            {#                                $('#ajaxModal').modal('show');#}
+            {#                                return false;#}
+            {#                            }#}
+            {#                        });#}
+            {#                    });#}
+            {##}
+            {##}
+            {#                </script>#}
 
-            {% endif %}
-        </section>
+        {% endif %}
+    </section>
     </div>
 
     <script>
 
-            $('#reject_button').click(function () {
-                id = $(this).attr('id')
-                console.log(id)
-                console.log("hello")
-                $('#reject_comment').show();
+        $('#reject_button').click(function () {
+            id = $(this).attr('id')
+            console.log(id)
+            console.log("hello")
+            $('#reject_comment').show();
 
-            });
-
-
-
-            $('.close_confirm').click(function () {
+        });
 
 
-                $(this).parent().parent().parent().parent().hide();
+        $('.close_confirm').click(function () {
 
-            });
+
+            $(this).parent().parent().parent().parent().hide();
+
+        });
 
 
         $('.approval').click(function () {

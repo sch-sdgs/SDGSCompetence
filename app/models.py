@@ -318,7 +318,7 @@ class Subsection(db.Model):
     s_id = db.Column(db.Integer, db.ForeignKey("section.id"), unique=False, nullable=False)
     name = db.Column(db.String(1000), unique=False, nullable=False)
     evidence = db.Column(db.Integer, db.ForeignKey("evidence_type_ref.id"), unique=False, nullable=False)
-    comments = db.Column(db.String(1000), unique=False, nullable=False)
+    comments = db.Column(db.String(1000), unique=False, nullable=True)
     intro = db.Column(db.Integer, unique=False, nullable=False, default=1)
     last = db.Column(db.Integer, unique=False, nullable=True)
     sort_order = db.Column(db.Integer, unique=False, nullable=True)

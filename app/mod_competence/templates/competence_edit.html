@@ -135,7 +135,7 @@
                         </div>
                     </div>
 
-
+                    {% if config.QPULSE_MODULE == True %}
                     <div class="box box-primary" id="training">
                         <div class="box-header with-border">
                             <h3 class="box-title">Edit Associated Documents</h3>
@@ -172,6 +172,7 @@
                             <input type="text" id="doc_list" name="doc_list" hidden>
                         </div>
                     </div>
+                {% endif %}
 
                     <div class="box box-primary" id="training">
                         <div class="box-header with-border">

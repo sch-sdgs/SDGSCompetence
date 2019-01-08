@@ -344,10 +344,12 @@ def utility_processor():
         :param u_id: user id
         :return: percentage complete
         """
-        counts = s.query(Assessments).join(Subsection) \
+        counts = s.query(Assessments)\
+            .join(Subsection)\
+            .join(AssessmentStatusRef)\
             .filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id)) \
             .values((func.sum(
-            case([(or_(Assessments.status == 1, Assessments.status == 3, Assessments.status == 5), 1)],
+            case([(or_(AssessmentStatusRef.status.in_(["Active", "Complete","Failed"])), 1)],
                  else_=0)) / func.count(Assessments.id) * 100).label('percentage'))
         for c in counts:
             return c.percentage
@@ -707,32 +709,34 @@ def index(message=None):
         counts[i.id] = {}
         # TODO get competence because assessments is all subsections
 
+        #TODO using IDs instead of name here
+
         counts[i.id]["assigned"] = len(
             s.query(Assessments).filter(Assessments.user_id == i.id).filter(
-                Assessments.status == 2).all())
+                Assessments.status_rel.status == "Assigned").all())
         assigned_count += counts[i.id]["assigned"]
         counts[i.id]["active"] = len(
             s.query(Assessments).filter(Assessments.user_id == i.id).filter(
-                Assessments.status == 1).all())
+                Assessments.status_rel.status == "Active").all())
         active_count += counts[i.id]["active"]
         counts[i.id]["sign-off"] = len(
             s.query(Assessments).filter(Assessments.user_id == i.id).filter(
-                Assessments.status == 7).all())
+                Assessments.status_rel.status == "Sign-Off").all())
         signoff_count += counts[i.id]["sign-off"]
         counts[i.id]["complete"] = len(
             s.query(Assessments).filter(Assessments.user_id == i.id).filter(
-                Assessments.status == 3).all())
+                Assessments.status_rel.status == "Complete").all())
         complete_count += counts[i.id]["complete"]
         counts[i.id]["failed"] = len(
             s.query(Assessments).filter(Assessments.user_id == i.id).filter(
-                Assessments.status == 5).all())
+                Assessments.status_rel.status == "Failed").all())
         failed_count += counts[i.id]["failed"]
         counts[i.id]["obsolete"] = len(
             s.query(Assessments).filter(Assessments.user_id == i.id).filter(
-                Assessments.status == 6).all())
+                Assessments.status_rel.status == "Obsolete").all())
         counts[i.id]["abandoned"] = len(
             s.query(Assessments).filter(Assessments.user_id == i.id).filter(
-                Assessments.status == 4).all())
+                Assessments.status_rel.status == "Abandoned").all())
         abandoned_count += counts[i.id]["abandoned"]
 
     expired = s.query(Assessments).filter(Assessments.user_id == current_user.database_id)
@@ -780,9 +784,10 @@ def index(message=None):
         .join(Subsection)\
         .join(Competence)\
         .join(CompetenceDetails)\
+        .join(AssessmentStatusRef)\
         .filter(Assessments.user_id == current_user.database_id)\
         .group_by(Competence.id)\
-        .filter(or_(Assessments.status == 2, Assessments.status == 1, Assessments.status == 7))\
+        .filter(or_(AssessmentStatusRef.status == "Assigned", AssessmentStatusRef.status == "Active", AssessmentStatusRef.status == "Sign-Off"))\
         .all()
 
 
@@ -792,12 +797,15 @@ def index(message=None):
     for j in assigned:
         all_assigned.append(get_competence_summary_by_user(c_id=j.ss_id_rel.c_id,u_id=current_user.database_id,version=j.version))
 
-    active = s.query(Assessments).join(Subsection).join(Competence).join(CompetenceDetails).group_by(
-        CompetenceDetails.id).filter(Assessments.user_id == current_user.database_id).filter(CompetenceDetails.intro==Competence.current_version).filter(
-        Assessments.status == 1).all()
-
-    # complete = s.query(Competence).join(Subsection).join(Assessments).filter(Assessments.user_id == current_user.database_id).filter(
-    #             Assessments.status == 3).all()
+    active = s.query(Assessments)\
+        .join(Subsection)\
+        .join(Competence)\
+        .join(CompetenceDetails)\
+        .join(AssessmentStatusRef)\
+        .group_by(CompetenceDetails.id)\
+        .filter(Assessments.user_id == current_user.database_id)\
+        .filter(CompetenceDetails.intro==Competence.current_version)\
+        .filter(AssessmentStatusRef.status == "Active").all()
 
     complete = s.query(Assessments) \
         .join(Subsection)\

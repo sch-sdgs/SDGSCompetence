@@ -1,0 +1,64 @@
+{% extends "base2.html" %}
+{% block content %}
+
+
+    <h1>
+        Competence Matrix
+        <small></small>
+    </h1>
+
+    </section>
+
+    <!-- Main content -->
+    <section class="content container-fluid">
+
+                <table class="table table-condensed">
+                    <thead>
+                    <th>Competence</th>
+                    <th>SubSection</th>
+                    {% for user in users %}
+                        <th class="rotate">
+                            <div>{{ user.first_name }} {{ user.last_name }}</div>
+                        </th>
+                    {% endfor %}
+                    </thead>
+                    {% for competence in data %}
+
+                        <tr>
+                            <td rowspan="{{ data[competence]|length }}">{{ competence }}</td>
+
+                            {% for subsection in data[competence] %}
+                                {% if loop.index == 1 %}
+                                    <td>{{ subsection }}</td>
+                                    {% for users in  data[competence][subsection] %}
+                                        {% for user in users %}
+                                            {% if users[user]|length > 0 %}
+                                                <td>{{ users[user][0].status }}</td>
+                                            {% else %}
+                                                <td></td>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endfor %}
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td>{{ subsection }}</td>
+                                        {% for users in  data[competence][subsection] %}
+                                            {% for user in users %}
+                                                {% if users[user]|length > 0 %}
+                                                    <td>{{ users[user][0].status }}</td>
+                                                {% else %}
+                                                    <td></td>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+
+
+                    {% endfor %}
+                </table>
+
+    </section>
+{% endblock %}

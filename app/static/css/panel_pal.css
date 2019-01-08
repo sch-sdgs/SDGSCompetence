@@ -34,8 +34,40 @@ table.dataTable tbody tr.selected {
         opacity: 0.0;
     }
 }
+.skin-black .main-header>.logo{
+     color: white;
+}
 
+.login-logo, .register-logo {
+    font-size: 50px;
+    text-align: center;
+    margin-bottom: 25px;
+    font-weight: 300;
+    color: white;
+}
+.rotate {
+  text-align: left;
+  white-space: nowrap;
+  vertical-align: middle;
+  width: 1.5em;
+}
+.rotate div {
+     -moz-transform: rotate(-90.0deg);  /* FF3.5+ */
+       -o-transform: rotate(-90.0deg);  /* Opera 10.5 */
+  -webkit-transform: rotate(-90.0deg);  /* Saf3.1+, Chrome */
+             filter:  progid:DXImageTransform.Microsoft.BasicImage(rotation=0.083);  /* IE6,IE7 */
+         -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=0.083)"; /* IE8 */
+         margin-left: -10em;
+         margin-right: -10em;
+        margin-bottom: 10em;
 
+}
+.logo{
+    color: white;
+    /*background-color: #c6c6c6;*/
+    background: url("../images/bg-pattern.png"), -webkit-gradient(linear, right top, left top, from(#bfbfbf), to(#dc9e25));
+    background: url("../images/bg-pattern.png"), linear-gradient(to left, #bfbfbf, #dc9e25);
+}
 .login-page {
     /*background-color: #c6c6c6;*/
     background: url("../images/bg-pattern.png"), -webkit-gradient(linear, right top, left top, from(#bfbfbf), to(#dc9e25));

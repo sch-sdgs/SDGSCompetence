@@ -45,8 +45,8 @@
                         <td>{{ invite.email }}</td>
                         <td>{{ invite.user_rel.first_name }} {{ invite.user_rel.last_name }}</td>
                             <td>
-                                <a href="{{ url_for('admin.delete_invite') }}" class="btn btn-danger btn-sm btn-flat">Remove</a>
-                                <a href="{{ url_for('admin.resend_invite') }}" class="btn btn-primary btn-sm btn-flat">Resend</a>
+                                <a href="{{ url_for('admin.delete_invite',id=invite.id) }}" class="btn btn-danger btn-sm btn-flat">Remove</a>
+                                <a href="{{ url_for('admin.resend_invite',id=invite.id) }}" class="btn btn-primary btn-sm btn-flat">Resend</a>
                             </td>
                         </tr>
                             {% endif %}

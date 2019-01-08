@@ -21,11 +21,11 @@
 
 
     <!-- jQuery 3 -->
-<script src="/static/bower_components/jquery/dist/jquery.min.js"></script>
-<!-- Bootstrap 3.3.7 -->
-<script src="/static/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<!-- iCheck -->
-<script src="/static/plugins/iCheck/icheck.min.js"></script>
+    <script src="/static/bower_components/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap 3.3.7 -->
+    <script src="/static/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- iCheck -->
+    <script src="/static/plugins/iCheck/icheck.min.js"></script>
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -42,8 +42,20 @@
 <body class="hold-transition login-page">
 
 <div id="all_content">
+    <div class="login-box">
+        <div class="login-logo">
+            <b>Competence</b>DB
+            {#        <img src="/static/images/logo.png" height="100%" width="100%">#}
+            <h4>{{ config.ORGANISATION }}</h4>
+        </div>
         {% block content %}
         {% endblock %}
+        {% if config.ORGANISATION == "Sheffield Biomedical Research Centre" %}
+            <br><br><br>
+            <center><img src="/static/images/logo-monochrome.png"></center>
+            <center><img src="/static/images/brc_logo.png"></center>
+        {% endif %}
+    </div>
 </div>
 {#  <br><br><br>#}
 {##}

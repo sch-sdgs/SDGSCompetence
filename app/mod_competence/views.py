@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, flash
 from flask_table import Table, Col, ButtonCol
 from sqlalchemy import and_, or_, case, func, asc, desc
 from flask import render_template, request, url_for, redirect, Blueprint
@@ -72,6 +72,7 @@ def list_comptencies(message=None, modifier=None):
         Competence.current_version == CompetenceDetails.intro).all()
     in_progress = s.query(CompetenceDetails).join(Competence).filter(
         Competence.current_version + 1 == CompetenceDetails.intro).all()
+
     return render_template('competences_list.html', current_data=current_data, previous_data=previous_data,
                            in_progress=in_progress, message=message, modifier=modifier)
 
@@ -207,7 +208,8 @@ def add_competence():
 
         if s.query(CompetenceDetails).filter(CompetenceDetails.title == title).count() != 0:
             from app.views import index
-            return index(message="This competence already exists - please try editing the existing competence or deleting it!")
+            flash("This competence already exists - please try editing the existing competence or deleting it!","danger")
+            return index()
 
         c = CompetenceDetails(c_id=com.id,
                               title=title,
@@ -656,6 +658,9 @@ def view_competence():
     get_comp_title = s.query(CompetenceDetails.title).filter_by(c_id=c_id).filter(
         CompetenceDetails.intro == version).first()
 
+    creator_id = s.query(CompetenceDetails.creator_id).filter_by(c_id=c_id).filter(
+        CompetenceDetails.intro == version).first().creator_id
+
     intro = s.query(CompetenceDetails.intro).filter_by(c_id=c_id).filter(
         CompetenceDetails.intro == version).first().intro
 
@@ -693,19 +698,21 @@ def view_competence():
 
     ##Creates a dictionary of the docs associated with a created competence
     dict_docs = {}
-    docs = s.query(Documents.qpulse_no).join(CompetenceDetails).filter(CompetenceDetails.intro == version).filter_by(
-        c_id=c_id)
-    for doc in docs:
-        doc_id = ','.join(repr(x.encode('utf-8')) for x in doc).replace("'", "")
-        d = s.query(QPulseDetails).first()
-        username = d.username
-        password = d.password
-        q = QPulseWeb()
-        doc_name = q.get_doc_by_id(username=username, password=password, docNumber=doc)
-        print "hey there"
+    if config.get("QPULSE_MODULE"):
+        docs = s.query(Documents.qpulse_no).join(CompetenceDetails).filter(CompetenceDetails.intro == version).filter_by(
+            c_id=c_id)
+        for doc in docs:
+            doc_id = ','.join(repr(x.encode('utf-8')) for x in doc).replace("'", "")
+            d = s.query(QPulseDetails).first()
+            username = d.username
+            password = d.password
+            q = QPulseWeb()
+            doc_name = q.get_doc_by_id(username=username, password=password, docNumber=doc)
+            print "hey there"
 
-        if doc_id is not "":
-            dict_docs[doc_id] = doc_name
+            if doc_id is not "":
+                dict_docs[doc_id] = doc_name
+
 
     ##Get subsection details
     dict_subsecs = OrderedDict()
@@ -750,7 +757,7 @@ def view_competence():
 
 
 
-    return render_template('competence_view.html', intro=intro, c_id=c_id, title=comp_title, version=version, scope=comp_scope,
+    return render_template('competence_view.html', intro=intro, creator_id=creator_id, c_id=c_id, title=comp_title, version=version, scope=comp_scope,
                            category=comp_category, val_period=comp_val_period, docs=dict_docs, constants=dict_constants,
                            subsections=dict_subsecs, review="yes", approved=approved, id=id, approval_buttons=approval_buttons, feedback=feedback)
 
@@ -763,7 +770,7 @@ def send_for_approval():
     s.commit()
     competence = s.query(CompetenceDetails).filter(CompetenceDetails.id == id).first()
     send_mail(competence.approve_id, "Competence awaiting your approval","You have a competence written by <b>" + current_user.full_name + "</b> to approve.")
-
+    flash("Your competence has been sent for approval","success")
     return json.dumps({"success": True})
 
 @competence.route('/force_approve')
@@ -773,12 +780,44 @@ def force_authorise():
     check = s.query(CompetenceDetails).filter(CompetenceDetails.c_id == request.args["id"]).first()
     if check.approved != 1:
         approve(id=request.args["id"],version=request.args["version"],u_id=current_user.database_id)
-        return list_comptencies(message="<strong>Success!</strong> Competencies Force Authorised",modifier="success")
+        flash("Competencies Force Authorised","success")
+        return list_comptencies()
     else:
-        return list_comptencies(message="<strong>Warning!</strong> Competencies Already Authorised",modifier="warning")
+        flash("Competencies Already Authorised", "warning")
+        return list_comptencies()
 
 
+@competence.route('/matrix', methods=['GET'])
+@login_required
+def matrix():
+    data = s.query(Subsection) \
+        .join(Competence) \
+        .join(CompetenceDetails)\
+        .filter(CompetenceDetails.approved == 1).all()
 
+    assessments = s.query(Assessments)
+
+    users = s.query(Users).filter(Users.active==True).all()
+
+    result = {}
+    for i in data:
+        title = i.c_id_rel.competence_detail[0].title
+        if title not in result:
+            result[title]={}
+        if i.name not in result[title]:
+            result[title][i.name]=[]
+        for user in users:
+            print user
+            assessments = s.query(Assessments).filter(Assessments.ss_id==i.id).filter(Assessments.user_id==user.id).all()
+            details = {user:assessments}
+            result[title][i.name].append(details)
+
+
+    #contruct matrix here rather than in template
+    #columns should be user
+    #rows a subsection (grouped by competence?)
+    #{ competence { subsection [user { status: x },user { status: x }] }
+    return render_template("matrix.html", data=result,users=users)
 
 @competence.route('/approve/<id>/<version>/<u_id>', methods=['GET'])
 @login_required
@@ -871,6 +910,7 @@ def reject(id=None, version=None, u_id=None):
                   "Your competence \"" + competence.title + "\" has been rejected by <b>" + current_user.full_name)
 
         # return json.dumps({"success": True})
+        flash("Competence Rejected","danger")
         return redirect('/')
 
 
@@ -891,8 +931,8 @@ def assign_user_to_competence():
     ids = request.args["ids"].split(",")
     print ids
     if request.method == 'POST':
-        print "hello"
-        print request.form["name"]
+
+
         due_date = request.form["due_date"]
         category, competence = request.form["name"].split(": ")
         cat_id = s.query(CompetenceCategory).filter_by(category=category).first().id
@@ -900,9 +940,14 @@ def assign_user_to_competence():
             CompetenceDetails.category_id == cat_id).first()
         c_id = c_query.id
 
+        users = []
         for user_id in ids:
             assign_competence_to_user(int(user_id), int(c_id), due_date)
-        return "True"
+            user = s.query(Users).filter(Users.id==user_id).first()
+            users.append(user.first_name + " " + user.last_name)
+
+        flash("\"Competence "+ c_query.competence_detail[0].title +"\" assigned to "+",".join(users),"success")
+        return redirect(url_for('competence.list_comptencies'))
 
     else:
         form = AssignForm()
@@ -1115,82 +1160,91 @@ def assign_competence_to_user(user_id, competence_id, due_date):
 @competence.route('/edit', methods=['GET', 'POST'])
 @login_required
 def edit_competence():
+
+
     ids = request.args.get('ids').split(",")
     # todo: CHECK HERE IF COMPETENCE IS IN APPROVAL???
 
     c_id = ids[0]
     # test_id = '18'
 
-    form = EditCompetency()
-    subsection_form = AddSubsection()
-    section_form = AddSection()
-    # get basic details for competence
-    live = False
-    current_version = s.query(Competence).filter(Competence.id == c_id).first().current_version
-    if current_version:
-        live = True
+    if current_user.database_id == s.query(CompetenceDetails).filter(CompetenceDetails.c_id == c_id).first().creator_id or "ADMIN" in current_user.roles:
 
-    comp_category = s.query(CompetenceCategory).join(CompetenceDetails).filter_by(c_id=c_id).order_by(
-        CompetenceDetails.intro.desc()).first()
-    form.edit_competency_type.choices = s.query(CompetenceCategory).values(CompetenceCategory.id,
-                                                                           CompetenceCategory.category)
-    form.edit_competency_type.default = comp_category.id
+        form = EditCompetency()
+        subsection_form = AddSubsection()
+        section_form = AddSection()
+        # get basic details for competence
+        live = False
+        current_version = s.query(Competence).filter(Competence.id == c_id).first().current_version
+        if current_version:
+            live = True
 
-    comp_val_period = s.query(ValidityRef).join(CompetenceDetails).filter_by(c_id=c_id).order_by(
-        CompetenceDetails.intro.desc()).first()
+        comp_category = s.query(CompetenceCategory).join(CompetenceDetails).filter_by(c_id=c_id).order_by(
+            CompetenceDetails.intro.desc()).first()
+        form.edit_competency_type.choices = s.query(CompetenceCategory).values(CompetenceCategory.id,
+                                                                               CompetenceCategory.category)
+        form.edit_competency_type.default = comp_category.id
 
-    form.edit_validity_period.choices = s.query(ValidityRef).values(ValidityRef.id, ValidityRef.months)
-    form.edit_validity_period.default = comp_val_period.id
+        comp_val_period = s.query(ValidityRef).join(CompetenceDetails).filter_by(c_id=c_id).order_by(
+            CompetenceDetails.intro.desc()).first()
 
-    form.process()
+        form.edit_validity_period.choices = s.query(ValidityRef).values(ValidityRef.id, ValidityRef.months)
+        form.edit_validity_period.default = comp_val_period.id
 
-    comp = s.query(CompetenceDetails).filter_by(c_id=c_id).order_by(CompetenceDetails.intro.desc()).first()
-    # if comp.intro == current_version:
-    #     print comp.asdict()
-    form.edit_title.data = comp.title
-    form.edit_scope.data = comp.scope
+        form.process()
 
-    form.approval.data = comp.approve_rel.first_name + " " + comp.approve_rel.last_name
-    doc_query = s.query(Documents.qpulse_no).filter_by(c_id=comp.id).all()
-    documents = []
-    for i in doc_query:
-        name = get_doc_name(doc_id=i)
-        if name != False:
-            documents.append([i.qpulse_no, name])
-    # get subsections
-    sub_result = OrderedDict()
-    sub_result["constant"] = {}
-    sub_result["custom"] = OrderedDict()
+        comp = s.query(CompetenceDetails).filter_by(c_id=c_id).order_by(CompetenceDetails.intro.desc()).first()
+        # if comp.intro == current_version:
+        #     print comp.asdict()
+        form.edit_title.data = comp.title
+        form.edit_scope.data = comp.scope
 
-    for_order = s.query(SectionSortOrder).filter(SectionSortOrder.c_id == c_id).order_by(asc(SectionSortOrder.sort_order)).all()
-    for i in for_order:
-        if i.section_id_rel.constant == 1:
-            sub_result["constant"][(i.section_id_rel.name,i.section_id)]=[]
+        form.approval.data = comp.approve_rel.first_name + " " + comp.approve_rel.last_name
+        if config.get("QPULSE_MODULE"):
+            doc_query = s.query(Documents.qpulse_no).filter_by(c_id=comp.id).all()
+            documents = []
+            for i in doc_query:
+                name = get_doc_name(doc_id=i)
+                if name != False:
+                    documents.append([i.qpulse_no, name])
         else:
-            sub_result["custom"][(i.section_id_rel.name, i.section_id)] = []
+            documents = None
+        # get subsections
+        sub_result = OrderedDict()
+        sub_result["constant"] = {}
+        sub_result["custom"] = OrderedDict()
 
-    subsections = s.query(Subsection).filter(Subsection.c_id == c_id).filter(Subsection.last == None).order_by(asc(Subsection.c_id)).order_by(asc(Subsection.sort_order)).all()
-    for subsection in subsections:
-        if subsection.s_id_rel.constant == 1:
-            if "constant" not in sub_result:
-                sub_result["constant"] = {}
-            if (subsection.s_id_rel.name,subsection.s_id_rel.id) not in sub_result["constant"]:
-                sub_result["constant"][(subsection.s_id_rel.name,subsection.s_id_rel.id)] = []
-            sub_result["constant"][(subsection.s_id_rel.name,subsection.s_id_rel.id)].append(subsection)
-        else:
-            if "custom" not in sub_result:
-                sub_result["custom"] = {}
-            if (subsection.s_id_rel.name,subsection.s_id_rel.id) not in sub_result["custom"]:
-                sub_result["custom"][(subsection.s_id_rel.name,subsection.s_id_rel.id)] = []
-            sub_result["custom"][(subsection.s_id_rel.name,subsection.s_id_rel.id)].append(subsection)
+        for_order = s.query(SectionSortOrder).filter(SectionSortOrder.c_id == c_id).order_by(asc(SectionSortOrder.sort_order)).all()
+        for i in for_order:
+            if i.section_id_rel.constant == 1:
+                sub_result["constant"][(i.section_id_rel.name,i.section_id)]=[]
+            else:
+                sub_result["custom"][(i.section_id_rel.name, i.section_id)] = []
 
-    print sub_result
-    competence_copy = create_copy_of_competence(c_id, current_version, comp.title, comp.scope, comp_val_period.id,
-                                          comp.category_id, comp.approve_id)
+        subsections = s.query(Subsection).filter(Subsection.c_id == c_id).filter(Subsection.last == None).order_by(asc(Subsection.c_id)).order_by(asc(Subsection.sort_order)).all()
+        for subsection in subsections:
+            if subsection.s_id_rel.constant == 1:
+                if "constant" not in sub_result:
+                    sub_result["constant"] = {}
+                if (subsection.s_id_rel.name,subsection.s_id_rel.id) not in sub_result["constant"]:
+                    sub_result["constant"][(subsection.s_id_rel.name,subsection.s_id_rel.id)] = []
+                sub_result["constant"][(subsection.s_id_rel.name,subsection.s_id_rel.id)].append(subsection)
+            else:
+                if "custom" not in sub_result:
+                    sub_result["custom"] = {}
+                if (subsection.s_id_rel.name,subsection.s_id_rel.id) not in sub_result["custom"]:
+                    sub_result["custom"][(subsection.s_id_rel.name,subsection.s_id_rel.id)] = []
+                sub_result["custom"][(subsection.s_id_rel.name,subsection.s_id_rel.id)].append(subsection)
 
-    return render_template('competence_edit.html', c_id=c_id, form=form, live=live, detail_id=competence_copy[0],
-                           subsections=sub_result, version=competence_copy[1], docs=json.dumps(documents),subsection_form=subsection_form,section_form=section_form)
+        print sub_result
+        competence_copy = create_copy_of_competence(c_id, current_version, comp.title, comp.scope, comp_val_period.id,
+                                              comp.category_id, comp.approve_id)
 
+        return render_template('competence_edit.html', c_id=c_id, form=form, live=live, detail_id=competence_copy[0],
+                               subsections=sub_result, version=competence_copy[1], docs=json.dumps(documents),subsection_form=subsection_form,section_form=section_form)
+    else:
+        flash('You have to be an admin or the competence owner to edit the competence','danger')
+        return redirect(url_for('competence.list_comptencies'))
 
 def create_copy_of_competence(c_id, current_version, title, scope, valid, type, approve_id):
     print "hello"
@@ -1237,9 +1291,11 @@ def change_ownership():
 
         try:
             s.commit()
-            return list_comptencies(message="<b>Success!</b> Ownership change to " + name, modifier="success")
+            flash("Ownership changed to " + name,"success")
+            return list_comptencies()
         except:
-            return list_comptencies(message="<b>Failed!</b> Ownership change to " + name + "failed", modifier="danger")
+            flash("Something went wrong", "danger")
+            return list_comptencies()
 
     return render_template('competence_change_ownership.html', form=form, ids=ids)
 

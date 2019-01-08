@@ -21,6 +21,7 @@ from sqlalchemy.orm import aliased
 import uuid
 from app.mod_competence import views as competence_views
 from collections import OrderedDict
+from app.competence import config
 
 document = Blueprint('document', __name__, template_folder='templates')
 
@@ -136,16 +137,23 @@ def export_document(c_id):
     subsec = competence_views.get_subsections(c_id, v)
     print "competence get subsections returns: "
     print subsec
-    qpulse = get_qpulsenums(c_id)
+    if config.get("QPULSE_MODULE") == True:
+        qpulse = get_qpulsenums(c_id)
 
     # Competence details
     title = comp.title
-    docid = comp.qpulsenum
+    if config.get("QPULSE_MODULE") == True:
+        docid = comp.qpulsenum
+    else:
+        docid = None
     version_no = comp.competence.current_version
     author = comp.creator_rel.first_name + ' ' + comp.creator_rel.last_name
     authoriser = comp.approve_rel.first_name + ' ' + comp.approve_rel.last_name
     scope = comp.scope
-    date_of_issue = comp.date_of_approval.strftime("%d-%m-%Y")
+    if comp.date_of_approval is not None:
+        date_of_issue = comp.date_of_approval.strftime("%d-%m-%Y")
+    else:
+        date_of_issue = "Not Approved"
 
     # subsection details
     subsection = OrderedDict()
@@ -175,11 +183,12 @@ def export_document(c_id):
 
     #associated qpulse documents
     qpulse_list = {}
+    if config.get("QPULSE_MODULE") == True:
 
-    for qpulse_no in qpulse:
-        d = s.query(QPulseDetails).first()
-        qpulse_name = QPulseWeb().get_doc_by_id(d.username, d.password, qpulse_no)
-        qpulse_list[qpulse_no]=qpulse_name
+        for qpulse_no in qpulse:
+            d = s.query(QPulseDetails).first()
+            qpulse_name = QPulseWeb().get_doc_by_id(d.username, d.password, qpulse_no)
+            qpulse_list[qpulse_no]=qpulse_name
 
     # evidence - this will be for downloading completed competences
     evidence_list = {}

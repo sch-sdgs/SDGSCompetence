@@ -18,6 +18,7 @@
     <h2><strong> Trainee: </strong></h2>
 </div>
 <br/>
+{% if config.QPULSE_MODULE %}
 <div class="panel" style="border: none">
     <table>
         <tr>
@@ -39,6 +40,7 @@
     </table>
 </div>
 <br/>
+{% endif %}
 <h1>Compulsory Sections</h1>
 {% if constant %}
     {% for sec_type in constant %}

@@ -10,15 +10,7 @@
                 Add Competency
                 <small></small>
             </h1>
-{#            <ol class="breadcrumb">#}
-{#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
-{#                <li class="active">Here</li>#}
-{#            </ol>#}
-            {% if message %}
-                <div class="alert alert-danger">
-                    <strong>Fail Whale!</strong> {{ message }}
-                </div>
-            {% endif %}
+
         </section>
 
         <!-- Main content -->
@@ -123,7 +115,9 @@
 
         </section>
     </div>
-
+{% if "ADMIN" in current_user.roles %}
+    {% set admin=True%}
+    {% endif %}
 
     <script>
         $(function () {
@@ -172,9 +166,12 @@
                     if (result == true) {
 
                         if('{{ current_user.full_name }}' == data["name"]){
-                            $('#invalid_user').addClass('text-red');
-                            $('#invalid_user').text('You cannot authorise a competencey you have authored!');
-                            $('#approval').val('');
+                            var admin = "{{ admin }}";
+                            if (admin != "True"){
+                                $('#invalid_user').addClass('text-red');
+                                $('#invalid_user').text('You cannot authorise a competencey you have authored!');
+                                $('#approval').val('');
+                            }
                         }else {
                             $('#invalid_user').addClass('text-green');
                             $('#invalid_user').text('Valid User!');

@@ -1,15 +1,10 @@
 {% extends "login_base.html" %}
 
 {% block content %}
-<div class="login-box">
-    <div class="login-logo">
-        <b>Competence</b>DB
-{#        <img src="/static/images/logo.png" height="100%" width="100%">#}
 
-    </div>
     <!-- /.login-logo -->
     <div class="login-box-body">
-        <p><strong>Organisation:</strong> Sheffield Biomedical Research Centre</p>
+
 {#        <p class="login-box-msg">Sign in to start your session</p>#}
         {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
@@ -55,7 +50,7 @@
 {#            target="_top">bioinformatics</a></small>#}
 
     <!-- /.login-box-body -->
-</div>
+
 <!-- /.login-box -->
 
 <!-- jQuery 3 -->

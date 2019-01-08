@@ -143,8 +143,8 @@ def users_toggle_active(id=None):
         s.commit()
         competences = s.query(CompetenceDetails).filter(Competence.obsolete==False).filter(CompetenceDetails.creator_id==id).all()
         if len(competences) > 0:
-            print "YOYO"
-            return users_view(message="The user you made inactive owns the following competence (please change ownership!):<br>" + "<br>".join([c.title for c in competences]))
+            flash("The user you made inactive owns the following competence (please change ownership!):<br>" + "<br>".join([c.title for c in competences]),"warning")
+            return users_view()
         else:
             return redirect(url_for('admin.users_view'))
     elif user.active == False:
@@ -173,15 +173,32 @@ def send_invite():
     else:
         return render_template("user_invite.html", form=form)
 
-@admin.route('/users/resend_invite', methods=['GET', 'POST'])
+@admin.route('/users/resend_invite/<id>', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
-def resend_invite():
-    pass
+def resend_invite(id):
+    invite = s.query(Invites).filter(Invites.id==id).first()
 
-@admin.route('/users/delete_invite', methods=['GET', 'POST'])
+    send_mail_unknown(invite.email, "Register for CompetenceDB",
+                      'You are invited to register for CompetenceDB. <br><br> Go to this address: <a href="' + request.url_root + 'register?invite_id=' + invite.invite_id + '">' + request.url_root + 'register?invite_id=' + invite.invite_id + '</a>')
+
+    flash("Email sent to "+invite.first_name +" "+ invite.last_name + "("+invite.email+")","success")
+
+    return redirect(url_for('admin.invites'))
+
+
+@admin.route('/users/delete_invite/<id>', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
-def delete_invite():
-    pass
+def delete_invite(id):
+    invite = s.query(Invites).filter(Invites.id == id).first()
+    try:
+        s.query(Invites).filter(Invites.id==id).delete()
+        s.commit()
+        flash("Invite for "+invite.first_name +" "+ invite.last_name + " removed", "success")
+    except:
+        flash("Something went wrong", "danger")
+
+
+    return redirect(url_for('admin.invites'))
 
 @admin.route('/users/change_password', methods=['GET', 'POST'])
 def change_password():
@@ -196,13 +213,13 @@ def change_password():
                 s.commit()
                 send_mail_unknown(user.email,"CompetenceDB: Password Changed","You password on CompetenceDB has been changed successfully.")
                 flash("Password successfully changed!","success")
-                return render_template("change_password.html", form=form, level="success", message="Password Successfully Changed")
+                return render_template("change_password.html", form=form)
             else:
                 flash("Old Password Incorrect!", "warning")
-                return render_template("change_password.html", form=form, level="danger", message="Old Password Incorrect")
+                return render_template("change_password.html", form=form)
         else:
             flash("New Passwords Do Not Match!", "warning")
-            return render_template("change_password.html", form=form, level="danger", message="New Passwords Do Not Match")
+            return render_template("change_password.html", form=form)
     else:
         return render_template("change_password.html",form=form)
 
@@ -1122,7 +1139,6 @@ def transform_view():
 @admin_permission.require(http_exception=403)
 def qpulse_details():
     form = QPulseDetailsForm()
-    message=None
     if request.method == 'POST':
         if request.form["password"] == request.form["password_reenter"]:
             check = s.query(QPulseDetails).count()
@@ -1130,13 +1146,13 @@ def qpulse_details():
                 q = QPulseDetails(username=request.form["username"],password=request.form["password"])
                 s.add(q)
                 s.commit()
-                message = "Username and/or password added"
+                flash("Username and/or password added","success")
             else:
                 data = { "username": request.form["username"], "password": request.form["password"]}
                 s.query(QPulseDetails).filter(QPulseDetails.id==1).update(data)
                 s.commit()
-                message = "Username and/or password updated"
+                flash("Username and/or password updated","success")
         else:
-            message="Passwords don't match!"
+            flash("Passwords do not match", "danger")
 
-    return render_template("qpulse_details_admin.html", form=form, message=message)
+    return render_template("qpulse_details_admin.html", form=form)

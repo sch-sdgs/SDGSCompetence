@@ -14,7 +14,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- jQuery 3 -->
     <script src="/static/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="/static/bower_components/jquery/dist/jquery.js"></script>
-{##}
+    {##}
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <!-- Bootstrap 3.3.7 -->
     <script src="/static/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -64,12 +64,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 
   <![endif]-->
- <style>
-     #sortable { list-style-type: none; }
-  {##sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }#}
-  {##sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }#}
-  {##sortable li span { position: absolute; margin-left: -1.3em; }#}
-  </style>
+    <style>
+        #sortable {
+            list-style-type: none;
+        }
+
+        {##sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }#}
+        {##sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }#}
+        {##sortable li span { position: absolute; margin-left: -1.3em; }#}
+    </style>
     <!-- Google Font -->
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
@@ -186,7 +189,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 }
                 if (func == "competent_staff") {
                     console.log("competent_staff");
-                    window.location.assign("{{url_for('competence.competent_staff')}}?ids=" + ids.join(',')+"&version="+versions);
+                    window.location.assign("{{url_for('competence.competent_staff')}}?ids=" + ids.join(',') + "&version=" + versions);
                 }
                 if (func == "view_competence") {
                     console.log("view_competence");
@@ -214,7 +217,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 }
                 if (func == "force_authorise") {
                     console.log("force_authorise");
-                    window.location.assign("{{ url_for('competence.force_authorise') }}?id=" + ids.join(',') + "&version=" + versions) ;
+                    window.location.assign("{{ url_for('competence.force_authorise') }}?id=" + ids.join(',') + "&version=" + versions);
                 }
 
             })
@@ -304,11 +307,11 @@ desired effect
         <a href="{{ url_for('index') }}" class="logo">
             <b>Competence</b>DB
             <!-- mini logo for sidebar mini 50x50 pixels -->
-{#            <span class="logo-mini"><span class="glyphicon glyphicon-star"></span></span>#}
+            {#            <span class="logo-mini"><span class="glyphicon glyphicon-star"></span></span>#}
             <!-- logo for regular state and mobile devices -->
-{#            <span class="logo-lg"><span class="glyphicon glyphicon-star text-yellow"></span> Competence<b>DB</b> <span#}
-{#                    class="badge bg-grey">BETA</span></span>#}
-{#            <span class="logo-lg"><img width="100%" height="100%" src="/static/images/logo.png"></span>#}
+            {#            <span class="logo-lg"><span class="glyphicon glyphicon-star text-yellow"></span> Competence<b>DB</b> <span#}
+            {#                    class="badge bg-grey">BETA</span></span>#}
+            {#            <span class="logo-lg"><img width="100%" height="100%" src="/static/images/logo.png"></span>#}
         </a>
 
         <!-- Header Navbar -->
@@ -322,9 +325,9 @@ desired effect
             <!-- Navbar Right Menu -->
             <div class="navbar-custom-menu">
                 <ul class="nav navbar-nav">
-{#                <li>#}
-{#                    <a href="#"><strong>Organisation:</strong> Sheffield Diagnostic Genetics Service</a>#}
-{#                </li>#}
+                    {#                <li>#}
+                    {#                    <a href="#"><strong>Organisation:</strong> Sheffield Diagnostic Genetics Service</a>#}
+                    {#                </li>#}
                     <!-- Messages: style can be found in dropdown.less-->
                     {#                    <li class="dropdown messages-menu">#}
                     {#                        <!-- Menu toggle button -->#}
@@ -367,7 +370,7 @@ desired effect
                         <a href="#"><i class="fa fa-info-circle"></i></a>
                     </li>
                     <li>
-                        <a  href="javascript:void(0)" onclick="javascript:toggleFullScreen()" data-toggle="push-menu"><i
+                        <a href="javascript:void(0)" onclick="javascript:toggleFullScreen()" data-toggle="push-menu"><i
                                 class="fa fa-expand"></i></a>
                     </li>
                     {% set notes=notifications() %}
@@ -475,7 +478,8 @@ desired effect
                             {#                            <!-- Menu Footer-->#}
                             <li class="user-footer">
                                 <div class="pull-left">
-                                    <a href="{{ url_for('admin.change_password') }}" class="btn btn-default btn-flat">Change Password</a>
+                                    <a href="{{ url_for('admin.change_password') }}" class="btn btn-default btn-flat">Change
+                                        Password</a>
                                     {#                                    <a href="#" class="btn btn-default btn-flat">Profile</a>#}
                                 </div>
                                 <div class="pull-right">
@@ -511,15 +515,15 @@ desired effect
             {#      </div>#}
 
             <!-- search form (Optional) -->
-            <form action="#" method="get" class="sidebar-form">
-                <div class="input-group">
-                    <input type="text" name="q" class="form-control" placeholder="Search...">
-          <span class="input-group-btn">
-              <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
-              </button>
-            </span>
-                </div>
-            </form>
+{#            <form action="#" method="get" class="sidebar-form">#}
+{#                <div class="input-group">#}
+{#                    <input type="text" name="q" class="form-control" placeholder="Search...">#}
+{#                    <span class="input-group-btn">#}
+{#              <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>#}
+{#              </button>#}
+{#            </span>#}
+{#                </div>#}
+{#            </form>#}
             <!-- /.search form -->
 
             <!-- Sidebar Menu -->
@@ -529,11 +533,11 @@ desired effect
                 <!-- Optionally, you can add icons to the links -->
 
                 <li><a href="{{ url_for('index') }}"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
-
+                <li><a href="{{ url_for('competence.matrix') }}"><i class="fa fa-table"></i> <span>Competence Matrix</span></a></li>
                 <li class="treeview">
 
                     <a href="#"><i class="fa fa-fw fa-file-text-o"></i> <span>Competences</span>
-            <span class="pull-right-container">
+                        <span class="pull-right-container">
                 <i class="fa fa-angle-left pull-right"></i>
               </span>
                     </a>
@@ -553,7 +557,7 @@ desired effect
 
                 <li class="treeview">
                     <a href="#"><i class="fa fa-fw fa-paper-plane-o"></i> <span>Reports</span>
-            <span class="pull-right-container">
+                        <span class="pull-right-container">
                 <i class="fa fa-angle-left pull-right"></i>
               </span>
                     </a>
@@ -570,7 +574,7 @@ desired effect
 
                         </li>
 
-                         <li><a href="{{ url_for('competence.report_by_user') }}"><i class="fa fa-circle-o"></i>By
+                        <li><a href="{{ url_for('competence.report_by_user') }}"><i class="fa fa-circle-o"></i>By
                             User</a>
 
                         </li>
@@ -580,7 +584,7 @@ desired effect
 
                 <li class="treeview">
                     <a href="#"><i class="fa fa-fw fa-video-camera"></i> <span>Training Videos</span>
-            <span class="pull-right-container">
+                        <span class="pull-right-container">
                 <i class="fa fa-angle-left pull-right"></i>
               </span>
                     </a>
@@ -593,25 +597,25 @@ desired effect
                     </ul>
                 </li>
 
-             <li class="treeview">
-                        <a href="#"><i class="fa fa-bug"></i> <span>Bug Reports</span>
-            <span class="pull-right-container">
+                <li class="treeview">
+                    <a href="#"><i class="fa fa-bug"></i> <span>Bug Reports</span>
+                        <span class="pull-right-container">
                 <i class="fa fa-angle-left pull-right"></i>
               </span>
-                        </a>
-                        <ul class="treeview-menu">
+                    </a>
+                    <ul class="treeview-menu">
 
-                            <li><a href="{{ url_for('bug_reports') }}"><i class="fa fa-circle-o"></i>Submit Bug Report</a>
-                            </li>
+                        <li><a href="{{ url_for('bug_reports') }}"><i class="fa fa-circle-o"></i>Submit Bug Report</a>
+                        </li>
 
-                        </ul>
-                    </li>
+                    </ul>
+                </li>
 
                 {% if "ADMIN" in current_user.roles %}
                     <li class="header">Admin</li>
                     <li class="treeview">
                         <a href="#"><i class="fa fa-fw fa-users"></i> <span>Users</span>
-            <span class="pull-right-container">
+                            <span class="pull-right-container">
                 <i class="fa fa-angle-left pull-right"></i>
               </span>
                         </a>
@@ -629,7 +633,7 @@ desired effect
                                                    placeholder="Login As...">
                                             {#                    <input class="btn btn-primary" id="submit" name="submit" type="submit" value="Login">class="sidebar-form"#}
 
-   <span class="input-group-btn">
+                                            <span class="input-group-btn">
               <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-user"></i>
               </button>
             </span>
@@ -637,16 +641,20 @@ desired effect
                                     </fieldset>
                                 </form>
                             </li>
-                            <li><a href="{{ url_for('admin.users_view') }}"><i class="fa fa-circle-o"></i>View Users</a></li>
-                            <li><a href="{{ url_for('admin.users_add') }}"><i class="fa fa-circle-o"></i>Add User</a></li>
-                            <li><a href="{{ url_for('admin.bulk_user_upload') }}"><i class="fa fa-circle-o"></i>Bulk User Upload</a></li>
-                            <li><a href="{{ url_for('admin.invites') }}"><i class="fa fa-circle-o"></i>User Invites</a></li>
+                            <li><a href="{{ url_for('admin.users_view') }}"><i class="fa fa-circle-o"></i>View Users</a>
+                            </li>
+                            <li><a href="{{ url_for('admin.users_add') }}"><i class="fa fa-circle-o"></i>Add User</a>
+                            </li>
+                            <li><a href="{{ url_for('admin.bulk_user_upload') }}"><i class="fa fa-circle-o"></i>Bulk
+                                User Upload</a></li>
+                            <li><a href="{{ url_for('admin.invites') }}"><i class="fa fa-circle-o"></i>User Invites</a>
+                            </li>
                             </li>
                         </ul>
                     </li>
                     <li class="treeview">
                         <a href="#"><i class="fa fa-fw fa-table"></i> <span>Reference Tables</span>
-            <span class="pull-right-container">
+                            <span class="pull-right-container">
                 <i class="fa fa-angle-left pull-right"></i>
               </span>
                         </a>
@@ -660,7 +668,8 @@ desired effect
                                 Types</a></li>
                             <li><a href="{{ url_for('admin.sections') }}"><i class="fa fa-circle-o"></i>Sections</a>
                             </li>
-                            <li><a href="{{ url_for('admin.constant_subsections') }}"><i class="fa fa-circle-o"></i>Constant Subsections</a>
+                            <li><a href="{{ url_for('admin.constant_subsections') }}"><i class="fa fa-circle-o"></i>Constant
+                                Subsections</a>
                             </li>
                             <li><a href="{{ url_for('admin.validityperiods') }}"><i class="fa fa-circle-o"></i>Validity
                                 Periods</a></li>
@@ -679,7 +688,7 @@ desired effect
 
                     <li class="treeview">
                         <a href="#"><i class="fa fa-database"></i> <span>Database</span>
-            <span class="pull-right-container">
+                            <span class="pull-right-container">
                 <i class="fa fa-angle-left pull-right"></i>
               </span>
                         </a>
@@ -690,10 +699,11 @@ desired effect
 
                         </ul>
                     </li>
-
-                  <li>
-                        <a href="{{ url_for('admin.qpulse_details') }}"><i class="fa fa-book"></i> <span>Q-Pulse Details</span>
-                        </a></li>
+                    {% if config.QPULSE_MODULE == True %}
+                        <li>
+                            <a href="{{ url_for('admin.qpulse_details') }}"><i class="fa fa-book"></i> <span>Q-Pulse Details</span>
+                            </a></li>
+                    {% endif %}
 
                 {% endif %}
 
@@ -794,23 +804,23 @@ desired effect
 
     <div id="all_content">
         <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
-        <section class="content-header">
-         {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                    <div class="callout callout-{{ category }}">
+            <!-- Content Header (Page header) -->
+            <section class="content-header">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="callout callout-{{ category }}">
 
-                        <p>{{ message }}</p>
-                    </div>
-                    {% endfor %}
-                    </ul>
-                {% endif %}
-            {% endwith %}
-        {% block content %}
-        {% endblock %}
-        </section>
-    </div>
+                                <p>{{ message }}</p>
+                            </div>
+                        {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endwith %}
+                {% block content %}
+                {% endblock %}
+            </section>
+        </div>
     </div>
 
     <!-- Main Footer -->
@@ -851,7 +861,7 @@ desired effect
                                        placeholder="Username">
                                 {#                    <input class="btn btn-primary" id="submit" name="submit" type="submit" value="Login">class="sidebar-form"#}
 
-   <span class="input-group-btn">
+                                <span class="input-group-btn">
               <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-user"></i>
               </button>
             </span>
@@ -894,7 +904,7 @@ desired effect
                         <a href="javascript:;">
                             <h4 class="control-sidebar-subheading">
                                 Custom Template Design
-                <span class="pull-right-container">
+                                <span class="pull-right-container">
                     <span class="label label-danger pull-right">70%</span>
                   </span>
                             </h4>
@@ -946,12 +956,13 @@ desired effect
     function errorHandler() {
         alert('mozfullscreenerror');
     }
+
     document.documentElement.addEventListener('mozfullscreenerror', errorHandler, false);
 
     // toggle full screen
     function toggleFullScreen() {
         if (!document.fullscreenElement &&    // alternative standard method
-                !document.mozFullScreenElement && !document.webkitFullscreenElement) {  // current working methods
+            !document.mozFullScreenElement && !document.webkitFullscreenElement) {  // current working methods
             if (document.documentElement.requestFullscreen) {
                 document.documentElement.requestFullscreen();
             } else if (document.documentElement.mozRequestFullScreen) {
