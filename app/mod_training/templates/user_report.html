@@ -28,7 +28,11 @@
             <p class="text-red">Under Construction</p>
 
             <h2><strong>User:</strong> {{ user.first_name }} {{ user.last_name }}</h2> <button class="btn btn-default btn-flat pull-right"><i class="fa fa-download"></i> Download as PDF</button>
-            <small><strong>Last Login:</strong> {{ user.last_login.strftime('%d-%m-%Y') }}</small>
+            {% if user.last_login %}
+                <small><strong>Last Login:</strong> {{ user.last_login.strftime('%d-%m-%Y') }}</small>
+            {% else %}
+                <small><strong>Last Login:</strong> User has not logged in yet</small>
+            {% endif %}
             <h3><i class="fa fa-mortar-board"></i> Training Status</h3>
             <div class="box box-solid bg-green-gradient">
                 <div class="box-header">
