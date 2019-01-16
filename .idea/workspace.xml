@@ -5,26 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4783f288-aaa5-4ace-9f51-c82da759ae56" name="Default" comment="removing config file">
-      <change afterPath="$PROJECT_DIR$/app/mod_competence/templates/matrix.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/static/images/bg-pattern.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/static/images/logo-monochrome.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_admin/templates/request_reset_password.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/templates/request_reset_password.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_admin/templates/reset_password.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/templates/reset_password.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_admin/templates/user_invites.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/templates/user_invites.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_admin/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_admin/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_add.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_add.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_edit.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_edit.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_competence/templates/competence_view.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/templates/competence_view.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_competence/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/mod_document/templates/export_to_pdf.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_document/templates/export_to_pdf.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mod_document/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_document/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/static/css/panel_pal.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/static/css/panel_pal.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/templates/base2.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/base2.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/templates/login_base.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/login_base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/templates/register.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/register.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/static/css/simple_report.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/static/css/simple_report.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/views.py" afterDir="false" />
     </list>
     <ignored path="SDGSCompetence.iws" />
@@ -37,7 +20,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/SDGSCompetence$run.coverage" NAME="run Coverage Results" MODIFIED="1546940264442" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$run.coverage" NAME="run Coverage Results" MODIFIED="1547635575643" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
     <SUITE FILE_PATH="coverage/SDGSCompetence$views.coverage" NAME="views Coverage Results" MODIFIED="1519907271931" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/mod_competence" />
     <SUITE FILE_PATH="coverage/SDGSCompetence$competence.coverage" NAME="competence Coverage Results" MODIFIED="1507884822521" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
     <SUITE FILE_PATH="coverage/SDGSCompetence$views__1_.coverage" NAME="views (1) Coverage Results" MODIFIED="1508402811083" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
@@ -66,54 +49,54 @@
     <session id="-1500337593">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="12" />
+          <entry key="project.closed" value="13" />
           <entry key="project.open.time.10" value="1" />
           <entry key="project.open.time.12" value="1" />
           <entry key="project.open.time.14" value="1" />
           <entry key="project.open.time.19" value="1" />
           <entry key="project.open.time.26" value="1" />
           <entry key="project.open.time.46" value="1" />
-          <entry key="project.open.time.6" value="2" />
+          <entry key="project.open.time.6" value="3" />
           <entry key="project.open.time.7" value="4" />
           <entry key="project.open.time.8" value="4" />
           <entry key="project.open.time.9" value="1" />
-          <entry key="project.opened" value="17" />
+          <entry key="project.opened" value="18" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="conf" value="228" />
-          <entry key="css" value="156" />
+          <entry key="css" value="217" />
           <entry key="dockerfile" value="70" />
           <entry key="dummy" value="5" />
           <entry key="gitignore" value="34" />
-          <entry key="html" value="13019" />
-          <entry key="py" value="20796" />
+          <entry key="html" value="13186" />
+          <entry key="py" value="20808" />
           <entry key="sh" value="45" />
-          <entry key="txt" value="661" />
+          <entry key="txt" value="718" />
           <entry key="vmoptions" value="19" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="CSS" value="156" />
-          <entry key="HTML" value="13019" />
-          <entry key="PLAIN_TEXT" value="1062" />
-          <entry key="Python" value="20796" />
+          <entry key="CSS" value="217" />
+          <entry key="HTML" value="13186" />
+          <entry key="PLAIN_TEXT" value="1119" />
+          <entry key="Python" value="20808" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="conf" value="2" />
-          <entry key="css" value="13" />
+          <entry key="css" value="14" />
           <entry key="dockerfile" value="3" />
           <entry key="gitignore" value="1" />
-          <entry key="html" value="126" />
+          <entry key="html" value="128" />
           <entry key="ini" value="1" />
           <entry key="js" value="1" />
           <entry key="log" value="2" />
           <entry key="png" value="1" />
-          <entry key="py" value="112" />
+          <entry key="py" value="115" />
           <entry key="sh" value="1" />
           <entry key="txt" value="2" />
           <entry key="vmoptions" value="3" />
@@ -121,13 +104,13 @@
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="CSS" value="13" />
-          <entry key="HTML" value="126" />
+          <entry key="CSS" value="14" />
+          <entry key="HTML" value="128" />
           <entry key="Image" value="1" />
           <entry key="Ini" value="1" />
           <entry key="JavaScript" value="1" />
           <entry key="PLAIN_TEXT" value="14" />
-          <entry key="Python" value="112" />
+          <entry key="Python" value="115" />
         </counts>
       </usages-collector>
     </session>
@@ -138,52 +121,10 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/competencedb.conf">
+        <entry file="file://$PROJECT_DIR$/app/mod_admin/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-163">
-              <caret line="34" column="1" lean-forward="true" selection-start-line="34" selection-start-column="1" selection-end-line="34" selection-end-column="1" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/forms.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="279">
-              <caret line="34" column="63" selection-start-line="34" selection-start-column="63" selection-end-line="34" selection-end-column="63" />
-              <folding>
-                <element signature="e#1#27#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/main.py">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/competence.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="223">
-              <caret line="28" column="30" lean-forward="true" selection-start-line="28" selection-start-column="30" selection-end-line="28" selection-end-column="30" />
-              <folding>
-                <element signature="e#0#57#0" expanded="true" />
-                <marker date="1542793321913" expanded="true" signature="5660:5661" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/mod_document/views.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="130">
-              <caret line="195" column="26" selection-start-line="195" selection-start-column="26" selection-end-line="195" selection-end-column="26" />
-              <folding>
-                <element signature="e#0#18#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="221">
+              <caret line="13" column="9" lean-forward="true" selection-start-line="13" selection-start-column="9" selection-end-line="13" selection-end-column="9" />
             </state>
           </provider>
         </entry>
@@ -191,17 +132,41 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/static/css/simple_report.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="10" column="21" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="21" />
+            <state relative-caret-position="376">
+              <caret line="466" column="10" selection-start-line="466" selection-start-column="10" selection-end-line="466" selection-end-column="10" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/activedirectory.py">
+        <entry file="file://$PROJECT_DIR$/app/templates/base2.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="442">
-              <caret line="28" selection-start-line="28" selection-end-line="28" />
+            <state relative-caret-position="352">
+              <caret line="37" column="4" selection-start-line="37" selection-start-column="4" selection-end-line="37" selection-end-column="96" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/mod_document/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="41">
+              <caret line="172" selection-start-line="172" selection-end-line="172" />
+              <folding>
+                <element signature="e#0#18#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/mod_document/templates/export_to_pdf.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="386">
+              <caret line="92" column="29" selection-start-line="92" selection-start-column="29" selection-end-line="92" selection-end-column="29" />
+              <folding>
+                <element signature="n#style#0;n#tr#2;n#table#0;n#div#4;n#body#0;n#html#0;n#!!top" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -209,10 +174,28 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="12149">
-              <caret line="715" selection-start-line="715" selection-end-line="715" />
+            <state relative-caret-position="474">
+              <caret line="747" column="41" lean-forward="true" selection-start-line="747" selection-start-column="41" selection-end-line="747" selection-end-column="41" />
               <folding>
                 <element signature="e#0#105#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/static/css/status.css">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/models.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="227">
+              <caret line="399" column="53" selection-start-line="399" selection-start-column="34" selection-end-line="399" selection-end-column="53" />
+              <folding>
+                <element signature="e#0#15#0" expanded="true" />
+                <marker date="1542800055394" expanded="true" signature="419:765" ph="..." />
               </folding>
             </state>
           </provider>
@@ -225,7 +208,11 @@
       </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/run.py">
-          <provider selected="true" editor-type-id="text-editor" />
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="119">
+              <caret line="8" column="15" selection-start-line="8" selection-start-column="15" selection-end-line="8" selection-end-column="15" />
+            </state>
+          </provider>
         </entry>
       </file>
     </leaf>
@@ -240,8 +227,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>invite</find>
-      <find>documents</find>
       <find>subsection</find>
       <find>doc</find>
       <find>add_constant_si</find>
@@ -270,6 +255,8 @@
       <find>matri</find>
       <find>Download</find>
       <find>matrix</find>
+      <find>uploads</find>
+      <find>Area of</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -301,7 +288,6 @@
         <option value="$PROJECT_DIR$/app/mod_competence/templates/competence_video_add.html" />
         <option value="$PROJECT_DIR$/app/mod_training/templates/user_report.html" />
         <option value="$PROJECT_DIR$/app/run.py" />
-        <option value="$PROJECT_DIR$/app/static/css/simple_report.css" />
         <option value="$PROJECT_DIR$/app/mod_admin/templates/user_invite.html" />
         <option value="$PROJECT_DIR$/app/mod_admin/forms.py" />
         <option value="$PROJECT_DIR$/requirements.txt" />
@@ -326,7 +312,6 @@
         <option value="$PROJECT_DIR$/app/competence.py" />
         <option value="$PROJECT_DIR$/app/mod_admin/templates/user_invites.html" />
         <option value="$PROJECT_DIR$/app/mod_competence/templates/competence_edit.html" />
-        <option value="$PROJECT_DIR$/app/views.py" />
         <option value="$PROJECT_DIR$/app/mod_admin/views.py" />
         <option value="$PROJECT_DIR$/app/templates/register.html" />
         <option value="$PROJECT_DIR$/app/mod_admin/templates/request_reset_password.html" />
@@ -335,13 +320,15 @@
         <option value="$PROJECT_DIR$/app/templates/login_base.html" />
         <option value="$PROJECT_DIR$/app/mod_competence/templates/competence_view.html" />
         <option value="$PROJECT_DIR$/app/mod_document/views.py" />
-        <option value="$PROJECT_DIR$/app/mod_document/templates/export_to_pdf.html" />
         <option value="$PROJECT_DIR$/app/models.py" />
         <option value="$PROJECT_DIR$/app/templates/base2.html" />
         <option value="$PROJECT_DIR$/app/mod_competence/templates/competence_add.html" />
         <option value="$PROJECT_DIR$/app/static/css/panel_pal.css" />
         <option value="$PROJECT_DIR$/app/mod_competence/templates/matrix.html" />
         <option value="$PROJECT_DIR$/app/mod_competence/views.py" />
+        <option value="$PROJECT_DIR$/app/views.py" />
+        <option value="$PROJECT_DIR$/app/mod_document/templates/export_to_pdf.html" />
+        <option value="$PROJECT_DIR$/app/static/css/simple_report.css" />
       </list>
     </option>
   </component>
@@ -395,8 +382,8 @@
     </packageJsonPaths>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="123" />
-    <option name="y" value="23" />
+    <option name="x" value="1059" />
+    <option name="y" value="194" />
     <option name="width" value="1467" />
     <option name="height" value="984" />
   </component>
@@ -419,7 +406,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -442,6 +428,13 @@
               <item name="SDGSCompetence" type="b2602c69:ProjectViewProjectNode" />
               <item name="SDGSCompetence" type="462c0819:PsiDirectoryNode" />
               <item name="app" type="462c0819:PsiDirectoryNode" />
+              <item name="mod_document" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="SDGSCompetence" type="b2602c69:ProjectViewProjectNode" />
+              <item name="SDGSCompetence" type="462c0819:PsiDirectoryNode" />
+              <item name="app" type="462c0819:PsiDirectoryNode" />
               <item name="static" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -451,10 +444,17 @@
               <item name="static" type="462c0819:PsiDirectoryNode" />
               <item name="css" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="SDGSCompetence" type="b2602c69:ProjectViewProjectNode" />
+              <item name="SDGSCompetence" type="462c0819:PsiDirectoryNode" />
+              <item name="app" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -705,20 +705,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1507807214790</updated>
-    </task>
-    <task id="LOCAL-00023" summary="Merge branch 'develop_Natalie' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml&#10;#&#9;app/mod_competence/views.py&#10;#&#9;app/run.py&#10;">
-      <created>1508412999387</created>
-      <option name="number" value="00023" />
-      <option name="presentableId" value="LOCAL-00023" />
-      <option name="project" value="LOCAL" />
-      <updated>1508412999387</updated>
-    </task>
-    <task id="LOCAL-00024" summary="Merge branch 'develop_Natalie' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;app/models.py&#10;">
-      <created>1508415412923</created>
-      <option name="number" value="00024" />
-      <option name="presentableId" value="LOCAL-00024" />
-      <option name="project" value="LOCAL" />
-      <updated>1508415412923</updated>
     </task>
     <task id="LOCAL-00025" summary="Merge branch 'develop_Natalie' of https://github.com/sch-sdgs/SDGSCompetence&#10;&#10;# Conflicts:&#10;#&#9;app/models.py&#10;">
       <created>1508416295952</created>
@@ -1049,7 +1035,21 @@
       <option name="project" value="LOCAL" />
       <updated>1542793351588</updated>
     </task>
-    <option name="localTasksCounter" value="72" />
+    <task id="LOCAL-00072" summary="Some changes - xmas break mean I forgot what :(">
+      <created>1546944313043</created>
+      <option name="number" value="00072" />
+      <option name="presentableId" value="LOCAL-00072" />
+      <option name="project" value="LOCAL" />
+      <updated>1546944313044</updated>
+    </task>
+    <task id="LOCAL-00073" summary="removing config file">
+      <created>1546944523080</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1546944523080</updated>
+    </task>
+    <option name="localTasksCounter" value="74" />
     <servers />
   </component>
   <component name="TodoView">
@@ -1062,23 +1062,24 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="123" y="23" width="1467" height="984" extended-state="0" />
+    <frame x="1059" y="194" width="1467" height="984" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.6439024" visible="true" weight="0.3277193" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.6439024" visible="true" weight="0.27087718" />
       <window_info id="Structure" order="1" sideWeight="0.35609755" side_tool="true" weight="0.20028612" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" sideWeight="0.4946192" weight="0.40643862" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.85052633" weight="0.30493274" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.85052633" visible="true" weight="0.30493274" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.39910313" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="Messages" order="6" />
       <window_info anchor="bottom" id="File Transfer" order="7" sideWeight="0.49053627" weight="0.025075225" />
-      <window_info anchor="bottom" id="Version Control" order="8" sideWeight="0.49964914" visible="true" weight="0.17713004" />
+      <window_info anchor="bottom" id="Version Control" order="8" sideWeight="0.49894738" weight="0.52690583" />
       <window_info anchor="bottom" id="TODO" order="9" sideWeight="0.49892008" weight="0.32996634" />
       <window_info anchor="bottom" id="Terminal" order="10" />
-      <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.5003509" side_tool="true" visible="true" weight="0.17713004" />
+      <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.5010526" side_tool="true" weight="0.52690583" />
       <window_info anchor="bottom" id="Docker" order="12" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="13" show_stripe_button="false" />
       <window_info anchor="bottom" id="Python Console" order="14" sideWeight="0.49971014" weight="0.3297769" />
@@ -1128,7 +1129,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="jsonify issues fixed, added versions to all requirements" />
     <MESSAGE value="changing Offenders to Expiring/Expired" />
     <MESSAGE value="bug with evidence type" />
     <MESSAGE value="fixed documents, subsections etc" />
@@ -1152,6 +1152,7 @@
     <MESSAGE value="- Document title fixed in pdf download" />
     <MESSAGE value="- adding authentication outside of active directory&#10;- fix to pdf header&#10;- fix to competences that are abandoned" />
     <MESSAGE value="- adding nginx.conf so that I can specify certs" />
+    <MESSAGE value="Some changes - xmas break mean I forgot what :(" />
     <MESSAGE value="removing config file" />
     <option name="LAST_COMMIT_MESSAGE" value="removing config file" />
   </component>
@@ -1228,13 +1229,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/change_password.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="9" column="48" lean-forward="true" selection-start-line="9" selection-start-column="48" selection-end-line="9" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/mod_admin/templates/admin.html">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -1370,16 +1364,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/mod_admin/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="280">
-          <caret line="241" column="45" lean-forward="true" selection-start-line="241" selection-start-column="45" selection-end-line="241" selection-end-column="45" />
-          <folding>
-            <element signature="e#0#35#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/templates/register.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="224">
@@ -1415,35 +1399,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-8598">
-          <caret line="119" column="21" selection-start-line="119" selection-start-column="4" selection-end-line="119" selection-end-column="21" />
-          <folding>
-            <element signature="e#0#15#0" expanded="true" />
-            <marker date="1542800055394" expanded="true" signature="419:765" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/static/css/panel_pal.css">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="748">
           <caret line="44" column="21" selection-start-line="44" selection-start-column="21" selection-end-line="44" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/templates/base2.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9027">
-          <caret line="531" selection-start-line="531" selection-end-line="531" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/mod_document/templates/export_to_pdf.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="714">
-          <caret line="42" column="8" selection-start-line="42" selection-start-column="8" selection-end-line="42" selection-end-column="8" />
         </state>
       </provider>
     </entry>
@@ -1483,13 +1442,19 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/competence.py">
+    <entry file="file://$PROJECT_DIR$/app/competencedb.conf">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="223">
-          <caret line="28" column="30" lean-forward="true" selection-start-line="28" selection-start-column="30" selection-end-line="28" selection-end-column="30" />
+        <state relative-caret-position="578">
+          <caret line="34" column="1" selection-start-line="34" selection-start-column="1" selection-end-line="34" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="493">
+          <caret line="34" column="63" selection-start-line="34" selection-start-column="63" selection-end-line="34" selection-end-column="63" />
           <folding>
-            <element signature="e#0#57#0" expanded="true" />
-            <marker date="1542793321913" expanded="true" signature="5660:5661" ph="..." />
+            <element signature="e#1#27#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1501,35 +1466,41 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/run.py">
+    <entry file="file://$PROJECT_DIR$/app/main.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/competencedb.conf">
+    <entry file="file://$PROJECT_DIR$/app/competence.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-163">
-          <caret line="34" column="1" lean-forward="true" selection-start-line="34" selection-start-column="1" selection-end-line="34" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/forms.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="279">
-          <caret line="34" column="63" selection-start-line="34" selection-start-column="63" selection-end-line="34" selection-end-column="63" />
+        <state relative-caret-position="158">
+          <caret line="36" column="12" lean-forward="true" selection-start-line="36" selection-start-column="12" selection-end-line="36" selection-end-column="12" />
           <folding>
-            <element signature="e#1#27#0" expanded="true" />
+            <element signature="e#0#57#0" expanded="true" />
+            <marker date="1542793321913" expanded="true" signature="5660:5661" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/main.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/views.py">
+    <entry file="file://$PROJECT_DIR$/app/mod_admin/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="12149">
-          <caret line="715" selection-start-line="715" selection-end-line="715" />
+        <state relative-caret-position="221">
+          <caret line="13" column="9" lean-forward="true" selection-start-line="13" selection-start-column="9" selection-end-line="13" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/run.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="8" column="15" selection-start-line="8" selection-start-column="15" selection-end-line="8" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="227">
+          <caret line="399" column="53" selection-start-line="399" selection-start-column="34" selection-end-line="399" selection-end-column="53" />
           <folding>
-            <element signature="e#0#105#0" expanded="true" />
+            <element signature="e#0#15#0" expanded="true" />
+            <marker date="1542800055394" expanded="true" signature="419:765" ph="..." />
           </folding>
         </state>
       </provider>
@@ -1537,20 +1508,50 @@
     <entry file="file://$PROJECT_DIR$/deploy.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/static/css/status.css">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="474">
+          <caret line="747" column="41" lean-forward="true" selection-start-line="747" selection-start-column="41" selection-end-line="747" selection-end-column="41" />
+          <folding>
+            <element signature="e#0#105#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/base2.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="352">
+          <caret line="37" column="4" selection-start-line="37" selection-start-column="4" selection-end-line="37" selection-end-column="96" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/mod_document/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="130">
-          <caret line="195" column="26" selection-start-line="195" selection-start-column="26" selection-end-line="195" selection-end-column="26" />
+        <state relative-caret-position="41">
+          <caret line="172" selection-start-line="172" selection-end-line="172" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/mod_document/templates/export_to_pdf.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="386">
+          <caret line="92" column="29" selection-start-line="92" selection-start-column="29" selection-end-line="92" selection-end-column="29" />
+          <folding>
+            <element signature="n#style#0;n#tr#2;n#table#0;n#div#4;n#body#0;n#html#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/static/css/simple_report.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" column="21" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="21" />
+        <state relative-caret-position="376">
+          <caret line="466" column="10" selection-start-line="466" selection-start-column="10" selection-end-line="466" selection-end-column="10" />
         </state>
       </provider>
     </entry>

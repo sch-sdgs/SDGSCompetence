@@ -45,21 +45,20 @@
 {% if constant %}
     {% for sec_type in constant %}
         <div class="panel">
-            <table>
-                <tr>
-                    <tr>
-                <h2><strong>{{ sec_type }}</strong></h2>
-                    </tr>
+        <h2><strong>{{ sec_type }}</strong></h2>
+            <table class="table table-bordered">
                 <tr style="background-color: #e7e7e7">
-                    <td><strong>Area of Competence</strong></td>
-                    <td><strong>Comments</strong></td>
-                    <td><strong>Date discussed</strong></td>
-                    <td><strong>Trainer Initials</strong></td>
+                    <td class="row-1 row-area"><strong>Area of Competence</strong></td>
+                    <td class="row-2 row-comments"><strong>Comments</strong></td>
+                    <td class="row-3 row-discussion"><strong>Evidence Type</strong></td>
+                    <td class="row-4 row-initials"><strong>Trainer Initials</strong></td>
+                    <td class="row-5 row-date"><strong>Date</strong></td>
                 </tr>
             {% for i in constant[sec_type] %}
                 <tr>
                     <td>{{ i[0] }}</td>
                     <td>{{ i[1] }}</td>
+                    <td></td>
                     <td></td>
                     <td></td>
                 </tr>
@@ -76,23 +75,22 @@
     {% for subsection_name in subsection %}
 
         <div class="panel" >
-            <table>
-                <tr>
-                <tr>
-                    <h2><strong>{{ subsection_name }} </strong></h2>
-                </tr>
+        <h2><strong>{{ subsection_name }} </strong></h2>
+            <table class="table table-bordered">
                 <tr style="background-color: #e7e7e7">
-                    <td><p><strong>Area of Competence</strong></p></td>
-                    <td><p><strong>Comments</strong></p></td>
-                    <td><p><strong>Date discussed</strong></p></td>
-                    <td><p><strong>Trainer Initials</strong></p></td>
+                   <td class="row-1 row-area"><strong>Area of Competence</strong></td>
+                    <td class="row-2 row-comments"><strong>Comments</strong></td>
+                    <td class="row-3 row-discussion"><strong>Evidence Type</strong></td>
+                    <td class="row-4 row-initials"><strong>Trainer Initials</strong></td>
+                    <td class="row-5 row-date"><strong>Date</strong></td>
                 </tr>
                 {% for i in subsection[subsection_name] %}
                     <tr>
                         <td>{{ i[0] }}</td>
-                        <td>{{ i[1] }}</td>
-                        <td>{{ i[2] }}</td>
-                        <td></td>
+                    <td>{{ i[1] }}</td>
+                    <td>{{ i[2] }}</td>
+                    <td></td>
+                    <td></td>
                     </tr>
                 {% endfor %}
             </table>

@@ -712,31 +712,31 @@ def index(message=None):
         #TODO using IDs instead of name here
 
         counts[i.id]["assigned"] = len(
-            s.query(Assessments).filter(Assessments.user_id == i.id).filter(
-                Assessments.status_rel.status == "Assigned").all())
+            s.query(Assessments).join(AssessmentStatusRef).filter(Assessments.user_id == i.id).filter(
+                AssessmentStatusRef.status == "Assigned").all())
         assigned_count += counts[i.id]["assigned"]
         counts[i.id]["active"] = len(
-            s.query(Assessments).filter(Assessments.user_id == i.id).filter(
-                Assessments.status_rel.status == "Active").all())
+            s.query(Assessments).join(AssessmentStatusRef).filter(Assessments.user_id == i.id).filter(
+                AssessmentStatusRef.status == "Active").all())
         active_count += counts[i.id]["active"]
         counts[i.id]["sign-off"] = len(
-            s.query(Assessments).filter(Assessments.user_id == i.id).filter(
-                Assessments.status_rel.status == "Sign-Off").all())
+            s.query(Assessments).join(AssessmentStatusRef).filter(Assessments.user_id == i.id).filter(
+                AssessmentStatusRef.status == "Sign-Off").all())
         signoff_count += counts[i.id]["sign-off"]
         counts[i.id]["complete"] = len(
-            s.query(Assessments).filter(Assessments.user_id == i.id).filter(
-                Assessments.status_rel.status == "Complete").all())
+            s.query(Assessments).join(AssessmentStatusRef).filter(Assessments.user_id == i.id).filter(
+                AssessmentStatusRef.status == "Complete").all())
         complete_count += counts[i.id]["complete"]
         counts[i.id]["failed"] = len(
-            s.query(Assessments).filter(Assessments.user_id == i.id).filter(
-                Assessments.status_rel.status == "Failed").all())
+            s.query(Assessments).join(AssessmentStatusRef).filter(Assessments.user_id == i.id).filter(
+                AssessmentStatusRef.status == "Failed").all())
         failed_count += counts[i.id]["failed"]
         counts[i.id]["obsolete"] = len(
-            s.query(Assessments).filter(Assessments.user_id == i.id).filter(
-                Assessments.status_rel.status == "Obsolete").all())
+            s.query(Assessments).join(AssessmentStatusRef).filter(Assessments.user_id == i.id).filter(
+                AssessmentStatusRef.status == "Obsolete").all())
         counts[i.id]["abandoned"] = len(
-            s.query(Assessments).filter(Assessments.user_id == i.id).filter(
-                Assessments.status_rel.status == "Abandoned").all())
+            s.query(Assessments).join(AssessmentStatusRef).filter(Assessments.user_id == i.id).filter(
+                AssessmentStatusRef.status == "Abandoned").all())
         abandoned_count += counts[i.id]["abandoned"]
 
     expired = s.query(Assessments).filter(Assessments.user_id == current_user.database_id)
