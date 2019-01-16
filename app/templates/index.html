@@ -42,7 +42,7 @@
                                         <th class="col-md-6">Competence/Sub Section(s) Covered</th>
                                         <th class="col-md-2">Trainee</th>
                                         <th class="col-md-2">Date Trained</th>
-                                        <th lass="col-md-2">Actions</th>
+                                        <th class="col-md-2">Actions</th>
                                         </thead>
 
                                         {% for evidence in signoff %}
@@ -1080,7 +1080,7 @@
                         "searchable": false
                     }],
                 select: false
-            })
+            });
             var incomplete = $('#my_competencies_incomplete').DataTable({
                 "pageLength": 10,
                 "columnDefs": [
@@ -1147,7 +1147,7 @@
                 //Boolean - whether to make the chart responsive
                 responsive: true,
                 maintainAspectRatio: true
-            }
+            };
 
             barChartOptions.datasetFill = false
             barChart.Bar(barChartData, barChartOptions)

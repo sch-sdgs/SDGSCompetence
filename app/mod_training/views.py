@@ -1046,11 +1046,65 @@ def test():
 
     s.commit()
 
-
-
 @training.route('/user_report/<id>', methods=['GET'])
 def user_report(id=None):
     user = s.query(Users).filter(Users.id==id).first()
-    assessments = s.query(Assessments).filter(Assessments.user_id==id).all
-    return render_template("user_report.html",assessments=assessments,user=user)
+
+    ###get ongoing competencies and split into overdue and in-date
+
+    assigned = s.query(Assessments)\
+        .join(Subsection)\
+        .join(Competence)\
+        .join(CompetenceDetails)\
+        .join(AssessmentStatusRef)\
+        .filter(Assessments.user_id == id)\
+        .group_by(Competence.id)\
+        .filter(or_(AssessmentStatusRef.status == "Assigned", AssessmentStatusRef.status == "Active", AssessmentStatusRef.status == "Sign-Off"))\
+        .all()
+
+    completed=[]
+    ongoing=[]
+    overdue=[]
+    expired=[]
+    expiring_within_month=[]
+    today = datetime.date.today()
+
+    print "ONGOING ASSESSMENTS:"
+
+    for j in assigned:
+        ongoing_assessment_summary = get_competence_summary_by_user(c_id=j.ss_id_rel.c_id,u_id=id,version=j.version)
+        if ongoing_assessment_summary.due_date <= today:
+            overdue.append(ongoing_assessment_summary)
+        else:
+            ongoing.append(ongoing_assessment_summary)
+
+    ### get complete competencies and split into expiring, expired, and in-date
+    complete = s.query(Assessments) \
+        .join(Subsection)\
+        .join(Competence)\
+        .join(CompetenceDetails)\
+        .join(AssessmentStatusRef)\
+        .filter(Assessments.user_id == id) \
+        .group_by(Assessments.version) \
+        .filter(AssessmentStatusRef.status.in_(["Complete","Four Year Due"])) \
+        .all()
+
+    print "COMPLETE ASSESSMENTS:"
+
+    for i in complete:
+        complete_assessment_summary = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=id, version=i.version)
+        if complete_assessment_summary.completed != None:
+            if complete_assessment_summary.expiry <= today:
+                expired.append(complete_assessment_summary)
+            elif abs((complete_assessment_summary.expiry - today).days) <= 30:
+                expiring_within_month.append(complete_assessment_summary)
+            else:
+                completed.append(complete_assessment_summary)
+
+    # completed_table = UserReporttable(completed, table_id="completed_table", classes=['table', 'table-striped'])
+
+    # table = CFTable(sorted_result, table_id="cf_table",
+    #                 classes=['table', 'table-striped'], html_attrs={'style': "width:900px"})
+
+    return render_template("user_report.html",user=user, overdue=overdue, ongoing=ongoing, completed=completed, expired=expired, expiring=expiring_within_month)
 
