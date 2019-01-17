@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, request, url_for, session, current_app, Blueprint, \
-    send_from_directory, jsonify
+    send_from_directory, jsonify, Markup
 from flask_login import login_required, login_user, logout_user, LoginManager, UserMixin, \
     current_user
 from app.competence import s,send_mail
@@ -14,6 +14,9 @@ import uuid
 import json
 from collections import OrderedDict
 from app.competence import config
+import pandas as pd
+from plotly.offline import plot
+import plotly.graph_objs as go
 
 
 
@@ -1046,6 +1049,19 @@ def test():
 
     s.commit()
 
+def fill_time_series(dictionary):
+    ##fils times series dictionary with zeroes on days that nothing is done
+    earlier_date=sorted(dictionary)[0]
+    today = datetime.date.today()
+    date = earlier_date
+    while date != today:
+        date+=datetime.timedelta(days=1)
+        if date not in dictionary:
+            dictionary[date] = 0
+
+    return dictionary
+
+
 @training.route('/user_report/<id>', methods=['GET'])
 def user_report(id=None):
     user = s.query(Users).filter(Users.id==id).first()
@@ -1101,10 +1117,119 @@ def user_report(id=None):
             else:
                 completed.append(complete_assessment_summary)
 
-    # completed_table = UserReporttable(completed, table_id="completed_table", classes=['table', 'table-striped'])
+    ########################
+    ###   Contribution   ###
+    ########################
 
-    # table = CFTable(sorted_result, table_id="cf_table",
-    #                 classes=['table', 'table-striped'], html_attrs={'style': "width:900px"})
+    # get assessments signed off  and trained by user and date of sign-off
 
-    return render_template("user_report.html",user=user, overdue=overdue, ongoing=ongoing, completed=completed, expired=expired, expiring=expiring_within_month)
+    signed_off_query = s.query(Assessments).filter(Assessments.signoff_id == id).values(Assessments.date_completed)
+    signed_off_dates_dict={}
+    trained_dates_dict={}
+    signed_off_dates=[]
+    trained_dates=[]
+    signed_off_counts=[]
+    trained_counts=[]
+    for i in signed_off_query:
+        if i.date_completed is not None:
+            if i.date_completed not in signed_off_dates_dict:
+                signed_off_dates_dict[i.date_completed] = 1
+            else:
+                signed_off_dates_dict[i.date_completed] +=1
+
+    if len(signed_off_dates_dict.keys()) > 0:
+        signed_off_dates_dict_filled = fill_time_series(signed_off_dates_dict)
+
+        for date in sorted(signed_off_dates_dict_filled):
+            signed_off_dates.append(date)
+            signed_off_counts.append(signed_off_dates_dict_filled[date])
+
+
+    trained_query = s.query(Assessments).filter(Assessments.trainer_id == id).values(Assessments.date_of_training)
+    for i in trained_query:
+        if i.date_of_training is not None:
+            if i.date_of_training not in trained_dates_dict:
+                trained_dates_dict[i.date_of_training] = 1
+            else:
+                trained_dates_dict[i.date_of_training] +=1
+
+    if len(trained_dates_dict.keys()) > 0:
+        trained_dates_dict_filled = fill_time_series(trained_dates_dict)
+
+        for date in sorted(trained_dates_dict_filled):
+            trained_dates.append(date)
+            trained_counts.append(trained_dates_dict_filled[date])
+
+    if len(signed_off_dates) > 0 and len(trained_dates) == 0:
+        trained_dates = signed_off_dates
+        trained_counts = [0]* len(signed_off_dates)
+    elif len(trained_dates) > 0 and len(signed_off_dates) == 0:
+        signed_off_dates = trained_dates
+        signed_off_counts = [0]* len(trained_dates)
+
+    signed_off_df = {'Date': signed_off_dates, 'count': signed_off_counts}
+    trained_df = {'Date': trained_dates, 'count': trained_counts}
+
+    data = [go.Scatter(x=signed_off_df['Date'], y=signed_off_df['count'], name='Signed off'),
+                     go.Scatter(x=trained_df['Date'], y=trained_df['count'], name='Trained')]
+    layout = go.Layout(margin=go.layout.Margin(t=50, b=50), title='Training',height=300)
+    fig = go.Figure(data=data,layout=layout)
+    training_plot = plot(fig, output_type="div")
+
+    #get documents written and authorised by user
+    creater_dates_dict={}
+    approver_dates_dict={}
+    creater_dates = []
+    creater_counts=[]
+    approver_dates=[]
+    approver_counts=[]
+
+    creater_query = s.query(CompetenceDetails).filter(CompetenceDetails.creator_id == id).values(CompetenceDetails.date_created)
+    approver_query = s.query(CompetenceDetails).filter(CompetenceDetails.approve_id == id).values(CompetenceDetails.date_of_approval)
+
+
+    for i in creater_query:
+        if i.date_created is not None:
+            if i.date_created not in creater_dates_dict:
+                creater_dates_dict[i.date_created] = 1
+            else:
+                creater_dates_dict[i.date_created] +=1
+
+    for i in approver_query:
+        if i.date_of_approval is not None:
+            if i.date_of_approval not in approver_dates_dict:
+                approver_dates_dict[i.date_of_approval] = 1
+            else:
+                approver_dates_dict[i.date_of_approval] += 1
+
+    if len(approver_dates_dict.keys()) > 0:
+        approver_dates_dict_filled = fill_time_series(approver_dates_dict)
+        for date in sorted(approver_dates_dict_filled):
+            approver_dates.append(date)
+            approver_counts.append(approver_dates_dict_filled[date])
+
+    if len(creater_dates_dict.keys()) > 0:
+        creater_dates_dict_filled = fill_time_series(creater_dates_dict)
+        for date in sorted(creater_dates_dict_filled):
+            creater_dates.append(date)
+            creater_counts.append(creater_dates_dict_filled[date])
+
+    if len(approver_dates) > 0 and len(creater_dates) == 0:
+        creater_dates = approver_dates
+        creater_counts = [0]* len(approver_dates)
+    elif len(creater_dates) > 0 and len(approver_dates) == 0:
+        approver_dates = creater_dates
+        approver_counts = [0]* len(creater_dates)
+
+    approver_df = {'Date': approver_dates, 'count': approver_counts}
+    creater_df = {'Date': creater_dates, 'count': creater_counts}
+
+    doc_data = [go.Scatter(x=creater_df['Date'], y=creater_df['count'], name='Created'),
+                     go.Scatter(x=approver_df['Date'], y=approver_df['count'], name='Approved')]
+    doc_layout = go.Layout(margin=go.layout.Margin(t=50), title='Documents',height=300)
+    doc_fig = go.Figure(data=doc_data,layout=doc_layout)
+    document_plot = plot(doc_fig, output_type="div")
+
+    return render_template("user_report.html",user=user, overdue=overdue, ongoing=ongoing, completed=completed, expired=expired,
+                           expiring=expiring_within_month, signed_off_plot=Markup(training_plot), document_plot=Markup(document_plot))
 
