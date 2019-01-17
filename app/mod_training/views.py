@@ -1253,7 +1253,7 @@ def user_report(id=None):
     correct_data = go.Bar(x=[correct_percent],y=['Evidence '], orientation='h', name="% Approved",width=[0.4])
     incorrect_data = go.Bar(x=[incorrect_percent], y=['Evidence '], orientation='h', name="% Rejected", width=[0.4])
     data=[correct_data, incorrect_data]
-    layout=go.Layout(margin=go.layout.Margin(t=50),barmode='stack', height=250)
+    layout=go.Layout(margin=go.layout.Margin(t=50),barmode='stack', height=250, xaxis=dict(title='Percentage'))
     accuracy_fig=go.Figure(data=data, layout=layout)
     accuracy_plot=plot(accuracy_fig, output_type="div")
 
