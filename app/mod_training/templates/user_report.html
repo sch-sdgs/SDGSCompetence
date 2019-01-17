@@ -387,7 +387,8 @@
                     <div class="box box-solid bg-gray-light">
                         <div class="box-header text-black">
                             <h3 class="box-title">Accuracy</h3>
-                            <small class="text-gray">Is evidence usually signed-off 1st time?</small>
+                            <small class="text-gray">How much of the user's competency evidence is approved or rejected?</small>
+                            {{ accuracy_plot }}
                         </div>
                         <div class="box-body">
 
@@ -398,8 +399,7 @@
                     <div class="box box-solid bg-gray-light">
                         <div class="box-header text-black">
                             <h3 class="box-title">Contribution</h3>
-                            <small class="text-gray">How many competencies did the user make, edit? How many did they
-                                sign-off? Did they sign-off evidence?
+                            <small class="text-gray">How many competencies did the user make, approve, sign-off, or provide training for?
                             </small>
                             {{ signed_off_plot }}
                             {{ document_plot }}

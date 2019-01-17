@@ -1230,6 +1230,34 @@ def user_report(id=None):
     doc_fig = go.Figure(data=doc_data,layout=doc_layout)
     document_plot = plot(doc_fig, output_type="div")
 
+    ################
+    ### Accuracy ###
+    ################
+    correct=0
+    incorrect=0
+    accuracy_query = s.query(Evidence) \
+        .join(AssessmentEvidenceRelationship) \
+        .join(Assessments) \
+        .filter(Assessments.user_id == id) \
+        .all()
+
+    for i in accuracy_query:
+        if i.is_correct is True:
+            correct+=1
+        else:
+            incorrect+=1
+
+    correct_percent = float(correct)*100 / float(correct+incorrect)
+    incorrect_percent = float(incorrect) * 100 / float(correct + incorrect)
+
+    correct_data = go.Bar(x=[correct_percent],y=['Evidence '], orientation='h', name="% Approved",width=[0.4])
+    incorrect_data = go.Bar(x=[incorrect_percent], y=['Evidence '], orientation='h', name="% Rejected", width=[0.4])
+    data=[correct_data, incorrect_data]
+    layout=go.Layout(margin=go.layout.Margin(t=50),barmode='stack', height=250)
+    accuracy_fig=go.Figure(data=data, layout=layout)
+    accuracy_plot=plot(accuracy_fig, output_type="div")
+
     return render_template("user_report.html",user=user, overdue=overdue, ongoing=ongoing, completed=completed, expired=expired,
-                           expiring=expiring_within_month, signed_off_plot=Markup(training_plot), document_plot=Markup(document_plot))
+                           expiring=expiring_within_month, signed_off_plot=Markup(training_plot), document_plot=Markup(document_plot),
+                           accuracy_plot=Markup(accuracy_plot))
 
