@@ -1074,7 +1074,8 @@ def user_report(id=None):
         .join(CompetenceDetails)\
         .join(AssessmentStatusRef)\
         .filter(Assessments.user_id == id)\
-        .group_by(Competence.id)\
+        .group_by(Competence.id) \
+        .filter(CompetenceDetails.intro == Competence.current_version) \
         .filter(or_(AssessmentStatusRef.status == "Assigned", AssessmentStatusRef.status == "Active", AssessmentStatusRef.status == "Sign-Off"))\
         .all()
 
@@ -1101,7 +1102,8 @@ def user_report(id=None):
         .join(CompetenceDetails)\
         .join(AssessmentStatusRef)\
         .filter(Assessments.user_id == id) \
-        .group_by(Assessments.version) \
+        .group_by(Competence.id) \
+        .filter(CompetenceDetails.intro == Competence.current_version) \
         .filter(AssessmentStatusRef.status.in_(["Complete","Four Year Due"])) \
         .all()
 
@@ -1123,7 +1125,7 @@ def user_report(id=None):
 
     # get assessments signed off  and trained by user and date of sign-off
 
-    signed_off_query = s.query(Assessments).filter(Assessments.signoff_id == id).values(Assessments.date_completed)
+    signed_off_query = s.query(Assessments).filter(Assessments.signoff_id == id).filter(Assessments.user_id != id).values(Assessments.date_completed)
     signed_off_dates_dict={}
     trained_dates_dict={}
     signed_off_dates=[]
@@ -1145,7 +1147,7 @@ def user_report(id=None):
             signed_off_counts.append(signed_off_dates_dict_filled[date])
 
 
-    trained_query = s.query(Assessments).filter(Assessments.trainer_id == id).values(Assessments.date_of_training)
+    trained_query = s.query(Assessments).filter(Assessments.trainer_id == id).filter(Assessments.user_id != id).values(Assessments.date_of_training)
     for i in trained_query:
         if i.date_of_training is not None:
             if i.date_of_training not in trained_dates_dict:
@@ -1247,8 +1249,12 @@ def user_report(id=None):
         else:
             incorrect+=1
 
-    correct_percent = float(correct)*100 / float(correct+incorrect)
-    incorrect_percent = float(incorrect) * 100 / float(correct + incorrect)
+    if correct== 0 and incorrect==0:
+        correct_percent=0
+        incorrect_percent=0
+    else:
+        correct_percent = float(correct)*100 / float(correct+incorrect)
+        incorrect_percent = float(incorrect) * 100 / float(correct + incorrect)
 
     correct_data = go.Bar(x=[correct_percent],y=['Evidence '], orientation='h', name="% Approved",width=[0.4])
     incorrect_data = go.Bar(x=[incorrect_percent], y=['Evidence '], orientation='h', name="% Rejected", width=[0.4])
@@ -1257,7 +1263,120 @@ def user_report(id=None):
     accuracy_fig=go.Figure(data=data, layout=layout)
     accuracy_plot=plot(accuracy_fig, output_type="div")
 
+    ##########################
+    ### Time to Completion ###
+    ##########################
+
+    assigned_to_activation_list = []
+    activated_to_completion_list = []
+    assigned_to_completion_list = []
+    days_over_target_list = []
+    overdue_assessments = 0
+    indate_assessments = 0
+
+    all_assessments = s.query(Assessments) \
+        .join(Subsection) \
+        .join(Competence) \
+        .join(CompetenceDetails) \
+        .join(AssessmentStatusRef) \
+        .filter(Assessments.user_id == id) \
+        .all()
+
+    for i in all_assessments:
+        if i.date_activated is not None and i.date_assigned is not None:
+            days_assigned_to_activation = abs((i.date_activated - i.date_assigned).days)
+            assigned_to_activation_list.append(days_assigned_to_activation)
+        if i.date_activated is not None and i.date_completed is not None and float(i.signoff_id) != float(id):
+            days_activated_to_completion = abs((i.date_completed - i.date_activated).days)
+            activated_to_completion_list.append(days_activated_to_completion)
+        if i.date_assigned is not None and i.date_completed is not None and float(i.signoff_id) != float(id):
+            days_assigned_to_completion = abs((i.date_completed - i.date_assigned).days)
+            assigned_to_completion_list.append(days_assigned_to_completion)
+
+        ### do stuff for due dates section here, rather than looping again later on
+        if i.date_completed is not None:
+            if i.date_completed > i.due_date:
+                overdue_assessments+=1
+            else:
+                indate_assessments+=1
+
+            days_over_target = int((i.date_completed - i.due_date).days)
+            days_over_target_list.append(days_over_target)
+
+    assigned_to_activation_list = [5,6,2,34,6,7,3,3,6,10,15]
+    activated_to_completion_list = [2,5,8,23,5,1,2,2,2,2,4,7,8]
+    assigned_to_completion_list = [5,2,4,2,2,2,0,0,0,23,10,12,3]
+    print assigned_to_activation_list
+    print activated_to_completion_list
+    print assigned_to_completion_list
+
+
+
+    violin_data = [
+        {
+            "type": 'violin',
+            "y": assigned_to_activation_list,
+            "name": "Assigned to Activated",
+            "jitter":0.3,
+            "points": "all",
+            "pointpos":0
+
+        },
+        {
+            "type": 'violin',
+            "y": activated_to_completion_list,
+            "name": "Activated to Completed",
+            "jitter":0.3,
+            "points": "all",
+            "pointpos": 0
+        },
+        {
+            "type": 'violin',
+            "y": assigned_to_completion_list,
+            "name": "Assigned to Completed",
+            "jitter":0.3,
+            "points": "all",
+            "pointpos": 0
+        }
+    ]
+    layout = go.Layout(margin=go.layout.Margin(t=50), height=500, yaxis=dict(title='Days'))
+    violin_fig = go.Figure(data=violin_data, layout=layout)
+    violin_plot = plot(violin_fig, output_type="div")
+
+    #################
+    ### Due Dates ###
+    #################
+
+    if overdue_assessments == 0 and indate_assessments == 0:
+        overdue_percentage = 0
+        indate_percentage = 0
+    else:
+        overdue_percentage = float(overdue_assessments)*100 / float(overdue_assessments + indate_assessments)
+        indate_percentage = float(indate_assessments)*100 / float(overdue_assessments + indate_assessments)
+
+    overdue_data = go.Bar(x=[overdue_percentage], y=['Completed Assessments '], orientation='h', name="% Overdue", width=[0.4])
+    indate_data = go.Bar(x=[indate_percentage], y=['Completed Assessments '], orientation='h', name="% Indate", width=[0.4])
+    data = [overdue_data,indate_data]
+    layout = go.Layout(margin=go.layout.Margin(t=50,l=160), barmode='stack', height=250,xaxis=dict(title='Percentage'))
+    target_fig = go.Figure(data=data, layout=layout)
+    target_plot = plot(target_fig, output_type="div")
+
+    target_violin_data = [
+        {
+            "type": 'violin',
+            "x": days_over_target_list,
+            "name": "Complete Assessments",
+            "jitter": 0.5,
+            "points": "all",
+            "pointpos": 0
+        }
+    ]
+    layout = go.Layout(margin=go.layout.Margin(t=10,l=150,r=120), height=250, xaxis=dict(title='Days over / under target due date'))
+    target_violin_fig = go.Figure(data=target_violin_data, layout=layout)
+    target_violin_plot = plot(target_violin_fig, output_type="div")
+
     return render_template("user_report.html",user=user, overdue=overdue, ongoing=ongoing, completed=completed, expired=expired,
                            expiring=expiring_within_month, signed_off_plot=Markup(training_plot), document_plot=Markup(document_plot),
-                           accuracy_plot=Markup(accuracy_plot))
+                           accuracy_plot=Markup(accuracy_plot), violin_plot=Markup(violin_plot), target_plot=Markup(target_plot),
+                           target_violin_plot=Markup(target_violin_plot))
 
