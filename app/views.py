@@ -789,8 +789,8 @@ def index(message=None):
         .group_by(Competence.id)\
         .filter(or_(AssessmentStatusRef.status == "Assigned", AssessmentStatusRef.status == "Active", AssessmentStatusRef.status == "Sign-Off"))\
         .all()
-
-
+    print "ME"
+    print assigned
     # assigned = s.query(Assessments).join(Subsection).join()
 
     all_assigned=[]
