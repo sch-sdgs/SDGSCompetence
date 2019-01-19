@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, request, url_for, session, current_app, Blueprint, \
-    send_from_directory, jsonify
+    send_from_directory, jsonify, Markup
 from flask_login import login_required, login_user, logout_user, LoginManager, UserMixin, \
     current_user
 from app.competence import s,send_mail
@@ -14,6 +14,9 @@ import uuid
 import json
 from collections import OrderedDict
 from app.competence import config
+import pandas as pd
+from plotly.offline import plot
+import plotly.graph_objs as go
 
 
 
@@ -1046,11 +1049,334 @@ def test():
 
     s.commit()
 
+def fill_time_series(dictionary):
+    ##fils times series dictionary with zeroes on days that nothing is done
+    earlier_date=sorted(dictionary)[0]
+    today = datetime.date.today()
+    date = earlier_date
+    while date != today:
+        date+=datetime.timedelta(days=1)
+        if date not in dictionary:
+            dictionary[date] = 0
+
+    return dictionary
 
 
 @training.route('/user_report/<id>', methods=['GET'])
 def user_report(id=None):
     user = s.query(Users).filter(Users.id==id).first()
-    assessments = s.query(Assessments).filter(Assessments.user_id==id).all
-    return render_template("user_report.html",assessments=assessments,user=user)
+
+    ###get ongoing competencies and split into overdue and in-date
+
+    assigned = s.query(Assessments)\
+        .join(Subsection)\
+        .join(Competence)\
+        .join(CompetenceDetails)\
+        .join(AssessmentStatusRef)\
+        .filter(Assessments.user_id == id)\
+        .group_by(Competence.id) \
+        .filter(CompetenceDetails.intro == Competence.current_version) \
+        .filter(or_(AssessmentStatusRef.status == "Assigned", AssessmentStatusRef.status == "Active", AssessmentStatusRef.status == "Sign-Off"))\
+        .all()
+
+    completed=[]
+    ongoing=[]
+    overdue=[]
+    expired=[]
+    expiring_within_month=[]
+    today = datetime.date.today()
+
+    print "ONGOING ASSESSMENTS:"
+
+    for j in assigned:
+        ongoing_assessment_summary = get_competence_summary_by_user(c_id=j.ss_id_rel.c_id,u_id=id,version=j.version)
+        if ongoing_assessment_summary.due_date <= today:
+            overdue.append(ongoing_assessment_summary)
+        else:
+            ongoing.append(ongoing_assessment_summary)
+
+    ### get complete competencies and split into expiring, expired, and in-date
+    complete = s.query(Assessments) \
+        .join(Subsection)\
+        .join(Competence)\
+        .join(CompetenceDetails)\
+        .join(AssessmentStatusRef)\
+        .filter(Assessments.user_id == id) \
+        .group_by(Competence.id) \
+        .filter(CompetenceDetails.intro == Competence.current_version) \
+        .filter(AssessmentStatusRef.status.in_(["Complete","Four Year Due"])) \
+        .all()
+
+    print "COMPLETE ASSESSMENTS:"
+
+    for i in complete:
+        complete_assessment_summary = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=id, version=i.version)
+        if complete_assessment_summary.completed != None:
+            if complete_assessment_summary.expiry <= today:
+                expired.append(complete_assessment_summary)
+            elif abs((complete_assessment_summary.expiry - today).days) <= 30:
+                expiring_within_month.append(complete_assessment_summary)
+            else:
+                completed.append(complete_assessment_summary)
+
+    ########################
+    ###   Contribution   ###
+    ########################
+
+    # get assessments signed off  and trained by user and date of sign-off
+
+    signed_off_query = s.query(Assessments).filter(Assessments.signoff_id == id).filter(Assessments.user_id != id).values(Assessments.date_completed)
+    signed_off_dates_dict={}
+    trained_dates_dict={}
+    signed_off_dates=[]
+    trained_dates=[]
+    signed_off_counts=[]
+    trained_counts=[]
+    for i in signed_off_query:
+        if i.date_completed is not None:
+            if i.date_completed not in signed_off_dates_dict:
+                signed_off_dates_dict[i.date_completed] = 1
+            else:
+                signed_off_dates_dict[i.date_completed] +=1
+
+    if len(signed_off_dates_dict.keys()) > 0:
+        signed_off_dates_dict_filled = fill_time_series(signed_off_dates_dict)
+
+        for date in sorted(signed_off_dates_dict_filled):
+            signed_off_dates.append(date)
+            signed_off_counts.append(signed_off_dates_dict_filled[date])
+
+
+    trained_query = s.query(Assessments).filter(Assessments.trainer_id == id).filter(Assessments.user_id != id).values(Assessments.date_of_training)
+    for i in trained_query:
+        if i.date_of_training is not None:
+            if i.date_of_training not in trained_dates_dict:
+                trained_dates_dict[i.date_of_training] = 1
+            else:
+                trained_dates_dict[i.date_of_training] +=1
+
+    if len(trained_dates_dict.keys()) > 0:
+        trained_dates_dict_filled = fill_time_series(trained_dates_dict)
+
+        for date in sorted(trained_dates_dict_filled):
+            trained_dates.append(date)
+            trained_counts.append(trained_dates_dict_filled[date])
+
+    if len(signed_off_dates) > 0 and len(trained_dates) == 0:
+        trained_dates = signed_off_dates
+        trained_counts = [0]* len(signed_off_dates)
+    elif len(trained_dates) > 0 and len(signed_off_dates) == 0:
+        signed_off_dates = trained_dates
+        signed_off_counts = [0]* len(trained_dates)
+
+    signed_off_df = {'Date': signed_off_dates, 'count': signed_off_counts}
+    trained_df = {'Date': trained_dates, 'count': trained_counts}
+
+    data = [go.Scatter(x=signed_off_df['Date'], y=signed_off_df['count'], name='Signed off'),
+                     go.Scatter(x=trained_df['Date'], y=trained_df['count'], name='Trained')]
+    layout = go.Layout(margin=go.layout.Margin(t=50, b=50), title='Training',height=300)
+    fig = go.Figure(data=data,layout=layout)
+    training_plot = plot(fig, output_type="div")
+
+    #get documents written and authorised by user
+    creater_dates_dict={}
+    approver_dates_dict={}
+    creater_dates = []
+    creater_counts=[]
+    approver_dates=[]
+    approver_counts=[]
+
+    creater_query = s.query(CompetenceDetails).filter(CompetenceDetails.creator_id == id).values(CompetenceDetails.date_created)
+    approver_query = s.query(CompetenceDetails).filter(CompetenceDetails.approve_id == id).values(CompetenceDetails.date_of_approval)
+
+
+    for i in creater_query:
+        if i.date_created is not None:
+            if i.date_created not in creater_dates_dict:
+                creater_dates_dict[i.date_created] = 1
+            else:
+                creater_dates_dict[i.date_created] +=1
+
+    for i in approver_query:
+        if i.date_of_approval is not None:
+            if i.date_of_approval not in approver_dates_dict:
+                approver_dates_dict[i.date_of_approval] = 1
+            else:
+                approver_dates_dict[i.date_of_approval] += 1
+
+    if len(approver_dates_dict.keys()) > 0:
+        approver_dates_dict_filled = fill_time_series(approver_dates_dict)
+        for date in sorted(approver_dates_dict_filled):
+            approver_dates.append(date)
+            approver_counts.append(approver_dates_dict_filled[date])
+
+    if len(creater_dates_dict.keys()) > 0:
+        creater_dates_dict_filled = fill_time_series(creater_dates_dict)
+        for date in sorted(creater_dates_dict_filled):
+            creater_dates.append(date)
+            creater_counts.append(creater_dates_dict_filled[date])
+
+    if len(approver_dates) > 0 and len(creater_dates) == 0:
+        creater_dates = approver_dates
+        creater_counts = [0]* len(approver_dates)
+    elif len(creater_dates) > 0 and len(approver_dates) == 0:
+        approver_dates = creater_dates
+        approver_counts = [0]* len(creater_dates)
+
+    approver_df = {'Date': approver_dates, 'count': approver_counts}
+    creater_df = {'Date': creater_dates, 'count': creater_counts}
+
+    doc_data = [go.Scatter(x=creater_df['Date'], y=creater_df['count'], name='Created'),
+                     go.Scatter(x=approver_df['Date'], y=approver_df['count'], name='Approved')]
+    doc_layout = go.Layout(margin=go.layout.Margin(t=50), title='Documents',height=300)
+    doc_fig = go.Figure(data=doc_data,layout=doc_layout)
+    document_plot = plot(doc_fig, output_type="div")
+
+    ################
+    ### Accuracy ###
+    ################
+    correct=0
+    incorrect=0
+    accuracy_query = s.query(Evidence) \
+        .join(AssessmentEvidenceRelationship) \
+        .join(Assessments) \
+        .filter(Assessments.user_id == id) \
+        .all()
+
+    for i in accuracy_query:
+        if i.is_correct is True:
+            correct+=1
+        else:
+            incorrect+=1
+
+    if correct== 0 and incorrect==0:
+        correct_percent=0
+        incorrect_percent=0
+    else:
+        correct_percent = float(correct)*100 / float(correct+incorrect)
+        incorrect_percent = float(incorrect) * 100 / float(correct + incorrect)
+
+    correct_data = go.Bar(x=[correct_percent],y=['Evidence '], orientation='h', name="% Approved",width=[0.4])
+    incorrect_data = go.Bar(x=[incorrect_percent], y=['Evidence '], orientation='h', name="% Rejected", width=[0.4])
+    data=[correct_data, incorrect_data]
+    layout=go.Layout(margin=go.layout.Margin(t=50),barmode='stack', height=250, xaxis=dict(title='Percentage'))
+    accuracy_fig=go.Figure(data=data, layout=layout)
+    accuracy_plot=plot(accuracy_fig, output_type="div")
+
+    ##########################
+    ### Time to Completion ###
+    ##########################
+
+    assigned_to_activation_list = []
+    activated_to_completion_list = []
+    assigned_to_completion_list = []
+    days_over_target_list = []
+    overdue_assessments = 0
+    indate_assessments = 0
+
+    all_assessments = s.query(Assessments) \
+        .join(Subsection) \
+        .join(Competence) \
+        .join(CompetenceDetails) \
+        .join(AssessmentStatusRef) \
+        .filter(Assessments.user_id == id) \
+        .all()
+
+    for i in all_assessments:
+        if i.date_activated is not None and i.date_assigned is not None:
+            days_assigned_to_activation = abs((i.date_activated - i.date_assigned).days)
+            assigned_to_activation_list.append(days_assigned_to_activation)
+        if i.date_activated is not None and i.date_completed is not None and float(i.signoff_id) != float(id):
+            days_activated_to_completion = abs((i.date_completed - i.date_activated).days)
+            activated_to_completion_list.append(days_activated_to_completion)
+        if i.date_assigned is not None and i.date_completed is not None and float(i.signoff_id) != float(id):
+            days_assigned_to_completion = abs((i.date_completed - i.date_assigned).days)
+            assigned_to_completion_list.append(days_assigned_to_completion)
+
+        ### do stuff for due dates section here, rather than looping again later on
+        if i.date_completed is not None:
+            if i.date_completed > i.due_date:
+                overdue_assessments+=1
+            else:
+                indate_assessments+=1
+
+            days_over_target = int((i.date_completed - i.due_date).days)
+            days_over_target_list.append(days_over_target)
+
+    assigned_to_activation_list = [5,6,2,34,6,7,3,3,6,10,15]
+    activated_to_completion_list = [2,5,8,23,5,1,2,2,2,2,4,7,8]
+    assigned_to_completion_list = [5,2,4,2,2,2,0,0,0,23,10,12,3]
+    print assigned_to_activation_list
+    print activated_to_completion_list
+    print assigned_to_completion_list
+
+
+
+    violin_data = [
+        {
+            "type": 'violin',
+            "y": assigned_to_activation_list,
+            "name": "Assigned to Activated",
+            "jitter":0.3,
+            "points": "all",
+            "pointpos":0
+
+        },
+        {
+            "type": 'violin',
+            "y": activated_to_completion_list,
+            "name": "Activated to Completed",
+            "jitter":0.3,
+            "points": "all",
+            "pointpos": 0
+        },
+        {
+            "type": 'violin',
+            "y": assigned_to_completion_list,
+            "name": "Assigned to Completed",
+            "jitter":0.3,
+            "points": "all",
+            "pointpos": 0
+        }
+    ]
+    layout = go.Layout(margin=go.layout.Margin(t=50), height=500, yaxis=dict(title='Days'))
+    violin_fig = go.Figure(data=violin_data, layout=layout)
+    violin_plot = plot(violin_fig, output_type="div")
+
+    #################
+    ### Due Dates ###
+    #################
+
+    if overdue_assessments == 0 and indate_assessments == 0:
+        overdue_percentage = 0
+        indate_percentage = 0
+    else:
+        overdue_percentage = float(overdue_assessments)*100 / float(overdue_assessments + indate_assessments)
+        indate_percentage = float(indate_assessments)*100 / float(overdue_assessments + indate_assessments)
+
+    overdue_data = go.Bar(x=[overdue_percentage], y=['Completed Assessments '], orientation='h', name="% Overdue", width=[0.4])
+    indate_data = go.Bar(x=[indate_percentage], y=['Completed Assessments '], orientation='h', name="% Indate", width=[0.4])
+    data = [overdue_data,indate_data]
+    layout = go.Layout(margin=go.layout.Margin(t=50,l=160), barmode='stack', height=250,xaxis=dict(title='Percentage'))
+    target_fig = go.Figure(data=data, layout=layout)
+    target_plot = plot(target_fig, output_type="div")
+
+    target_violin_data = [
+        {
+            "type": 'violin',
+            "x": days_over_target_list,
+            "name": "Complete Assessments",
+            "jitter": 0.5,
+            "points": "all",
+            "pointpos": 0
+        }
+    ]
+    layout = go.Layout(margin=go.layout.Margin(t=10,l=150,r=120), height=250, xaxis=dict(title='Days over / under target due date'))
+    target_violin_fig = go.Figure(data=target_violin_data, layout=layout)
+    target_violin_plot = plot(target_violin_fig, output_type="div")
+
+    return render_template("user_report.html",user=user, overdue=overdue, ongoing=ongoing, completed=completed, expired=expired,
+                           expiring=expiring_within_month, signed_off_plot=Markup(training_plot), document_plot=Markup(document_plot),
+                           accuracy_plot=Markup(accuracy_plot), violin_plot=Markup(violin_plot), target_plot=Markup(target_plot),
+                           target_violin_plot=Markup(target_violin_plot))
 
