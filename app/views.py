@@ -541,6 +541,26 @@ def utility_processor():
 #########
 # views #
 #########
+
+@app.route('/autocomplete_linemanager', methods=['GET'])
+def autocomplete_linemanager():
+    """
+    autocompletes a user once their name is being types
+    :return: jsonified list of users for ajax to use
+    """
+    search = request.args.get('linemanager')
+
+    linemanagers = s.query(Users).join(UserRoleRelationship).filter(Users.active==1).filter(UserRoleRelationship.userrole_id==2).all()
+    # users = s.query(Users.first_name, Users.last_name).filter(Users.active==1).filter()all()
+    manager_list = []
+    for i in linemanagers:
+        name = i.first_name + " " + i.last_name
+        manager_list.append(name)
+
+    print manager_list
+
+    return jsonify(json_list=manager_list)
+
 @app.route('/autocomplete_user', methods=['GET'])
 def autocomplete():
     """

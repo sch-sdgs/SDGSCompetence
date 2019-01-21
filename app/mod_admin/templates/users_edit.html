@@ -115,7 +115,7 @@
     <script>
         $(function () {
             $.ajax({
-                url: '{{ url_for("autocomplete") }}'
+                url: '{{ url_for("autocomplete_linemanager") }}'
             }).done(function (data) {
                 $('#linemanager').autocomplete({
                     source: data.json_list,
