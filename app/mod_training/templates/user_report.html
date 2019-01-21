@@ -429,7 +429,7 @@
             var data = {
                 labels: ['Complete', 'Expiring', 'Expired', 'Ongoing', 'Overdue'],
                 datasets: [{
-                    data: [{{ completed|length }}, {{ expiring|length }}, {{ expired|length }}, {{ ongoing|length }}, {{ overdue_length }}],
+                    data: [{{ completed|length }}, {{ expiring|length }}, {{ expired|length }}, {{ ongoing|length }}, {{ overdue|length }}],
                     label: 'Digital Goods',
                     fillColor: 'rgba(60,141,188,0.9)',
                     strokeColor: 'rgba(60,141,188,0.8)',
