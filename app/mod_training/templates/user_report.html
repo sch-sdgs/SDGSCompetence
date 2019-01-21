@@ -228,6 +228,8 @@
                                 <li class=""><a href="#tab_2_overdue" data-toggle="tab" aria-expanded="false">Overdue
                                     <span class="badge bg-gray">{{ overdue|length }}</span></a></li>
                             {% endif %}
+                            <li class=""><a href="#tab_3_abandoned" data-toggle="tab" aria-expanded="false">Abandoned
+                                    <span class="badge bg-gray">{{ abandoned|length }}</span></a></li>
 
 
 
@@ -342,6 +344,61 @@
                                     </table>
                                 {% else %}
                                     {{ user.first_name }} has no overdue training.
+                                {% endif %}
+
+                            </div>
+                        <div class="tab-pane" id="tab_3_abandoned">
+
+                                {% if abandoned|length > 0 %}
+                                    <table class="table table-striped">
+                                        <thead>
+                                        <th class="col-md-1">Category</th>
+                                        <th class="col-md-3">Competence</th>
+                                        <th class="col-md-1">Version</th>
+                                        <th class="col-md-2">Date Assigned</th>
+                                        <th class="col-md-2">Latest date of activation</th>
+                                        <th class="col-md-2">Date Due</th>
+                                        <th class="col-md-1">Progress</th>
+                                        </thead>
+                                        {% for i in abandoned %}
+                                            <tr>
+                                                <td>{{ i.category }}</td>
+                                                <td>{{ i.title }}</td>
+                                                <td>
+                                                    <small class="label bg-gray">v{{ i.version }}</small>
+                                                </td>
+
+                                                <td>
+                                                    {% if i.assigned != None %}
+                                                        {{ i.assigned.strftime('%d-%m-%Y') }}
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if i.activated != None %}
+                                                        {{ i.activated.strftime('%d-%m-%Y') }}
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                {% if i.due_date != None %}
+                                                    {{ i.due_date.strftime('%d-%m-%Y') }}
+                                                {% endif %}
+                                                </td>
+                                            <td>
+                                                <div class="progress progress-sm">
+                                                        <div class="progress-bar progress-sm progress-bar-danger progress-bar-striped"
+                                                             role="progressbar" aria-valuenow="60"
+                                                             aria-valuemin="0"
+                                                             aria-valuemax="100"
+                                                             style="width: {{ get_percent(i.c_id,user.id,i.version) }}%;">
+                                                            <span class="sr-only">60% Complete</span>
+                                                        </div>
+                                                    </div>
+                                            </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </table>
+                                {% else %}
+                                    {{ user.first_name }} has no abandoned training.
                                 {% endif %}
 
                             </div>

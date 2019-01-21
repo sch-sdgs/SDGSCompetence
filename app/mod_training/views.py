@@ -1079,10 +1079,22 @@ def user_report(id=None):
         .filter(or_(AssessmentStatusRef.status == "Assigned", AssessmentStatusRef.status == "Active", AssessmentStatusRef.status == "Sign-Off"))\
         .all()
 
+    abandoned_query = s.query(Assessments)\
+        .join(Subsection)\
+        .join(Competence)\
+        .join(CompetenceDetails)\
+        .join(AssessmentStatusRef)\
+        .filter(Assessments.user_id == id)\
+        .group_by(Competence.id) \
+        .filter(CompetenceDetails.intro == Competence.current_version) \
+        .filter(AssessmentStatusRef.status == "Abandoned")\
+        .all()
+
     completed=[]
     ongoing=[]
     overdue=[]
     expired=[]
+    abandoned=[]
     expiring_within_month=[]
     today = datetime.date.today()
 
@@ -1094,6 +1106,14 @@ def user_report(id=None):
             overdue.append(ongoing_assessment_summary)
         else:
             ongoing.append(ongoing_assessment_summary)
+
+    for i in abandoned_query:
+        print i.ss_id
+        abandoned_assessment_summary = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id,u_id=id,version=i.version)
+        abandoned.append(abandoned_assessment_summary)
+
+    print "ABANDONED:"
+    print abandoned
 
     ### get complete competencies and split into expiring, expired, and in-date
     complete = s.query(Assessments) \
@@ -1375,7 +1395,7 @@ def user_report(id=None):
     target_violin_fig = go.Figure(data=target_violin_data, layout=layout)
     target_violin_plot = plot(target_violin_fig, output_type="div")
 
-    return render_template("user_report.html",user=user, overdue=overdue, ongoing=ongoing, completed=completed, expired=expired,
+    return render_template("user_report.html",user=user, overdue=overdue, ongoing=ongoing, abandoned=abandoned, completed=completed, expired=expired,
                            expiring=expiring_within_month, signed_off_plot=Markup(training_plot), document_plot=Markup(document_plot),
                            accuracy_plot=Markup(accuracy_plot), violin_plot=Markup(violin_plot), target_plot=Markup(target_plot),
                            target_violin_plot=Markup(target_violin_plot))
