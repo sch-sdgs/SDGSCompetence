@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<lang="en">
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="/static/css/simple_report.css">
+    <title>Export competence</title>
+</head>
+<body>
+<br>
+<br>
+<div style="background-color: #e7e7e7; border:solid black 1px; padding: 5px;margin-bottom: 10px">
+    <h1><strong>{{ title }}</strong></h1>
+    <p>{{ scope }}</p>
+</div>
+
+<div class="panel" style="border: solid black 1px; padding: 5px">
+    <h2><strong> Trainee: </strong></h2>
+</div>
+<br/>
+{% if config.QPULSE_MODULE %}
+<div class="panel" style="border: none">
+    <table>
+        <tr>
+            <td><h2><strong>SOPs and documents used within this Competency Training:</strong></h2></td>
+            <td><h2><strong>QPulse no:</strong></h2></td>
+        </tr>
+        {% if qpulse_list %}
+            {% for qpulse_no in qpulse_list %}
+
+                <tr>
+                    <td><p>{{ qpulse_list[qpulse_no] }}</p></td>
+                    <td><p>{{ qpulse_no[0] }}</p></td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <td><p>N/A</p></td>
+            <td><p>N/A</p></td>
+        {% endif %}
+    </table>
+</div>
+<br/>
+{% endif %}
+<h1>Compulsory Sections</h1>
+{% if constant %}
+    {% for sec_type in constant %}
+        <div class="panel">
+        <h2><strong>{{ sec_type }}</strong></h2>
+            <table class="table table-bordered">
+                <tr style="background-color: #e7e7e7">
+                    <td class="row-1 row-area"><strong>Area of Competence</strong></td>
+                    <td class="row-2 row-comments"><strong>Comments</strong></td>
+                    <td class="row-3 row-discussion"><strong>Evidence Type</strong></td>
+                    <td class="row-4 row-initials"><strong>Trainer Initials</strong></td>
+                    <td class="row-5 row-date"><strong>Date</strong></td>
+                </tr>
+            {% for i in constant[sec_type] %}
+                <tr>
+                    <td>{{ i[0] }}</td>
+                    <td>{{ i[1] }}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            {% endfor %}
+            </table>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>There are no compulsory sections associated with this competence</p>
+{% endif %}
+
+<h1>Competence Sections</h1>
+{% if subsection %}
+    {% for subsection_name in subsection %}
+
+        <div class="panel" >
+        <h2><strong>{{ subsection_name }} </strong></h2>
+            <table class="table table-bordered">
+                <tr style="background-color: #e7e7e7">
+                   <td class="row-1 row-area"><strong>Area of Competence</strong></td>
+                    <td class="row-2 row-comments"><strong>Comments</strong></td>
+                    <td class="row-3 row-discussion"><strong>Evidence Type</strong></td>
+                    <td class="row-4 row-initials"><strong>Trainer Initials</strong></td>
+                    <td class="row-5 row-date"><strong>Date</strong></td>
+                </tr>
+                {% for i in subsection[subsection_name] %}
+                    <tr>
+                        <td>{{ i[0] }}</td>
+                    <td>{{ i[1] }}</td>
+                    <td>{{ i[2] }}</td>
+                    <td></td>
+                    <td></td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>There are no competence sections associated with this competence</p>
+{% endif %}
+<h1>Reassessment of competence</h1>
+<p><strong> If you have not carried out this task for a period of greater than 12 months you are no
+    longer deemed competent and need to be reassessed. This is assuming NO major changes have been made to the
+    procedure. </strong></p>
+<table>
+    <tr style="background-color: #e7e7e7" height="100">
+        <td><strong>Date of reassessment</strong></td>
+        <td><strong>Trainer</strong></td>
+        <td><strong>Notes/Major changes Implemented (Y/N)</strong></td>
+    </tr>
+    <tr class="blank_row">
+        <td> </td>
+        <td> </td>
+        <td> </td>
+    </tr>
+
+</table>
+
+<h1>About the Competence</h1>
+<ul>
+<li>Were all aspects conducted according to documented procedures? Y/N </li>
+
+<li>Are SOP's readily available, up to date, formatted in accordance with 999-0092h Content of Examination Procedures and
+    detailed enough to allow a consistency of application? Y/N </li>
+
+    <li>If “NO” – have change requests (C/R) been raised? Y/N</li>
+</ul>
+
+<h1>Sign-Off</h1>
+<table>
+    <tr>
+        <td>Signed: Trainee</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Signed: Assessor</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Designation:</td>
+        <td>{{ service }}</td>
+    </tr>
+    <tr>
+        <td>Date:</td>
+        <td> {{ current_date }}</td>
+    </tr>
+</table>
+<br/>
+
+</body>
+</html>

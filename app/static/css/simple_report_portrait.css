@@ -1,0 +1,486 @@
+/* --------------------------------------------------------------
+
+   typography.css
+   * Sets up some sensible default typography.
+
+-------------------------------------------------------------- */
+
+/* Default font settings.
+   The font-size percentage is of 16px. (0.75 * 16px = 12px) */
+@page {
+    size: A4 landscape;
+    margin: 2cm;
+
+}
+
+html {
+    font-size: 100.01%;
+
+}
+.blank_row {
+  line-height: 20px;
+}
+
+body {
+    font-size: 75%;
+    color: #222;
+    background: #fff;
+    font-family: Arial;
+    margin-top: -50px;
+    margin-bottom: 0px;
+    margin-right: 0px;
+    margin-left: 0px;
+    position: relative;
+}
+/* Header/footer */
+
+@page {
+	size: A4 landscape; /* can use also 'landscape' for orientation */
+    margin-top: 4cm;
+	margin-bottom: 3cm;
+    counter-increment: page;
+
+
+    @bottom-right {
+        content: "Page " counter(page) " of " counter(pages);
+        font-size: 65%;
+        color: #222;
+        font-family: Arial;
+        z-index: 1;
+        margin-right: 20px;
+        margin-top: 23px;
+    }
+
+    @bottom-left {
+        content: element(footer);
+        font-size: 75%;
+        color: #222;
+        background: #fff;
+        font-family: Arial;
+        text-align: left;
+    }
+	@top-center {
+        content: element(header);
+        max-height:2cm;
+		}
+}
+
+@media print {
+    header{
+        position: fixed;
+        top: 0;
+        left: 1cm;
+        right: 2cm;
+        font-size: 100%;
+        color: #222;
+        background: #fff;
+
+    }
+    footer{
+        position: fixed;
+        bottom: 0;
+        font-size: 100%;
+        color: #222;
+        background: #fff;
+        left: 1cm;
+        right: 2cm;
+    }
+}
+
+footer.page-number:before {
+	content: counter(page);
+}
+
+footer.page-count:before {
+	content: counter(pages);
+}
+
+/* Divs */
+
+.jumbotron {
+    background-color: #27b7cc;
+    border-radius: 5px 5px 5px 5px;
+    padding: 15px;
+    height: 90px;
+    position: relative;
+}
+
+.warning {
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    height: 100%;
+    margin: 10px;
+    border-radius: 5px 5px 5px 5px;
+    background-color: #d3922d;
+}
+
+.parent {
+    position: relative;
+    width: 100%
+}
+
+.container {
+    background-color: #F4F4F4;
+    border-radius: 5px 5px 5px 5px;
+    margin: 10px;
+    padding: 7px;
+    position: relative;
+    width: 27cm;
+}
+
+.emphasis{
+    background-color: #F4F4F4;
+}
+
+.nextto {
+    display: inline-block;
+    width: 12.75cm
+}
+
+.heading {
+    width: 80%;
+    height: 100%;
+    padding: 15px;
+    position: absolute;
+    left: 0%;
+    top: 0%;
+}
+
+.logo {
+    width: 20%;
+    height: 100%;
+    padding: 10px;
+    position: absolute;
+    right: 0%;
+    top: 0%;
+}
+
+/* Images */
+
+img.resize {
+    max-width: 90%;
+    max-height: 90%;
+}
+
+/* Headings
+-------------------------------------------------------------- */
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: normal;
+    color: #111;
+}
+
+h1 {
+    font-size: 1.5em;
+    align-content: center;
+    /*line-height: 0.5;*/
+    margin-top: 0.5em;
+    margin-bottom: 1em;
+    font-weight: bold;
+    color: #000000;
+}
+
+h2 {
+    font-size: 1.3em;
+    line-height: 0.5;
+    margin-bottom: 0.75em;
+    font-weight: normal;
+    color: #000000;
+}
+
+h3 {
+    font-size: 1.5em;
+    line-height: 1;
+    padding: 0px;
+    margin-bottom: 1em;
+    margin-top: 0.5em;
+    border-bottom: 2px solid #27b7cc;
+}
+
+h4 {
+    font-size: 1.2em;
+    line-height: 1.25;
+    margin-bottom: 1.25em;
+}
+
+h5 {
+    font-size: 1em;
+    line-height: 0.5;
+    font-weight: bold;
+    margin-bottom: 1.5em;
+}
+
+h6 {
+    font-size: 1em;
+    font-weight: normal;
+    line-height: 1;
+    padding: 0px;
+    margin: 0px;
+    color: #FFFFFF;
+}
+
+h1 img, h2 img, h3 img,
+h4 img, h5 img, h6 img {
+    margin: 0;
+}
+
+/* Text elements
+-------------------------------------------------------------- */
+
+p {
+    margin: 0 0 1.5em;
+    padding: 0px;
+}
+
+/*
+	These can be used to pull an image at the start of a paragraph, so
+	that the text flows around it (usage: <p><img class="left">Text</p>)
+ */
+.left {
+    float: left !important;
+}
+
+p .left {
+    margin: 1.5em 1.5em 1.5em 0;
+    padding: 0;
+}
+
+.right {
+    float: right !important;
+}
+
+p .right {
+    margin: 1.5em 0 1.5em 1.5em;
+    padding: 0;
+}
+
+a:focus,
+a:hover {
+    color: #09f;
+}
+
+a {
+    color: #06c;
+    text-decoration: underline;
+}
+
+blockquote {
+    margin: 1.5em;
+    color: #666;
+    font-style: italic;
+}
+
+strong, dfn {
+    font-weight: bold;
+}
+
+em, dfn {
+    font-style: italic;
+}
+
+sup, sub {
+    line-height: 0;
+}
+
+abbr,
+acronym {
+    border-bottom: 1px dotted #666;
+}
+
+address {
+    margin: 0 0 1.5em;
+    font-style: italic;
+}
+
+del {
+    color: #666;
+}
+
+pre {
+    margin: 1.5em 0;
+    white-space: pre;
+}
+
+pre, code, tt {
+    font: 1em 'andale mono', 'lucida console', monospace;
+    line-height: 1.5;
+}
+
+/* Lists
+-------------------------------------------------------------- */
+
+li ul,
+li ol {
+    margin: 0;
+}
+
+ul, ol {
+    margin: 0 1.5em 1.5em 0;
+    padding-left: 1.5em;
+}
+
+ul {
+    list-style-type: disc;
+}
+
+ol {
+    list-style-type: decimal;
+}
+
+dl {
+    margin: 0 0 1.5em 0;
+}
+
+dl dt {
+    font-weight: bold;
+}
+
+dd {
+    margin-left: 1.5em;
+}
+
+/* Tables
+-------------------------------------------------------------- */
+
+/*
+	Because of the need for padding on TH and TD, the vertical rhythm
+	on table cells has to be 27px, instead of the standard 18px or 36px
+	of other elements.
+ */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 80%;
+    table-layout: fixed;
+}
+
+.table-larger {
+    font-size: 110%
+}
+
+th {
+    font-weight: bold;
+}
+
+thead th {
+    background: #F4F4F4;
+    color: #000000;
+}
+
+th, td, caption {
+    padding: 4px 10px 4px 5px;
+    border: 1px solid black;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/*
+	You can zebra-stripe your tables in outdated browsers by adding
+	the class "even" to every other table row.
+ */
+/*tbody tr:nth-child(even) td,*/
+/*tbody tr.even td {*/
+    /*background: #FFFFFF;*/
+/*}*/
+
+tfoot {
+    font-style: italic;
+}
+
+caption {
+    background: #eee;
+}
+
+/* Misc classes
+-------------------------------------------------------------- */
+
+.small {
+    font-size: .8em;
+    margin-bottom: 1.875em;
+    line-height: 1.875em;
+}
+
+.large {
+    font-size: 1.2em;
+    line-height: 2.5em;
+    margin-bottom: 1.25em;
+}
+
+.hide {
+    display: none;
+}
+
+.quiet {
+    color: #666;
+}
+
+.loud {
+    color: #000;
+}
+
+.highlight {
+    background: #ff0;
+}
+
+.added {
+    background: #060;
+    color: #fff;
+}
+
+.removed {
+    background: #900;
+    color: #fff;
+}
+
+.first {
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.last {
+    margin-right: 0;
+    padding-right: 0;
+}
+
+.top {
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.bottom {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.row-area {
+  width: 40%;
+}
+.row-comments {
+  width: 30%;
+}
+.row-discussed {
+  width: 20%;
+}
+.row-initials {
+  width: 5%;
+}
+.row-date {
+  width: 5%;
+}
+.pull-right{
+    padding-right: 15px;
+    padding-left: 0;
+    border-right: 5px solid #ecf0f1;
+    border-left: 0;
+    text-align: right;
+}
+
+.pull-left{
+    padding-left: 15px;
+    padding-right: 0;
+    border-left: 5px solid #ecf0f1;
+    border-right: 0;
+    text-align: left;
+}

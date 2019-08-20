@@ -257,7 +257,7 @@ def add_competence():
 @competence.route('/addsections', methods=['GET', 'POST'])
 @login_required
 def add_sections():
-    print "hello"
+    print "hello in add_sections"
 
     f = request.form
     c_id = request.args.get('c_id')
@@ -494,8 +494,20 @@ def add_sections_to_db():
         version = request.json['version']
     else:
         version = 1
+    ### get max sort order
+    ### increase sort order by 1
+    print "comp_id"
+    print c_id
+    current_subsections = s.query(Subsection).filter(Subsection.c_id == c_id).all()
 
-    sub = Subsection(name=name, evidence=int(evidence_id), comments=comments, c_id=c_id, s_id=s_id,intro=version)
+    max=0
+    for i in current_subsections:
+        if i.sort_order is not None:
+            if i.sort_order > max:
+                max = i.sort_order
+    new_sort_order = max+1
+
+    sub = Subsection(name=name, evidence=int(evidence_id), comments=comments, c_id=c_id, s_id=s_id,intro=version, sort_order=new_sort_order)
     s.add(sub)
     s.commit()
 
@@ -614,8 +626,6 @@ def get_doc_name(doc_id=None):
 def remove_doc():
     c_id = request.args["c_id"]
     doc_number = request.args["doc_number"]
-    print c_id
-    print doc_number
     s.query(Documents).filter(and_(Documents.c_id == c_id, Documents.qpulse_no == doc_number)).delete()
     s.commit()
     return jsonify({"success": True})
@@ -642,8 +652,6 @@ def add_doc():
 def add_constant_subsection():
     s_id = request.json['s_id']
     item = request.json['item']
-    print "HELLO HERE"
-    print item
     add_constant = ConstantSubsections(s_id=s_id, item=item)
     s.add(add_constant)
     s.commit()
@@ -708,7 +716,6 @@ def view_competence():
             password = d.password
             q = QPulseWeb()
             doc_name = q.get_doc_by_id(username=username, password=password, docNumber=doc)
-            print "hey there"
 
             if doc_id is not "":
                 dict_docs[doc_id] = doc_name
@@ -718,16 +725,13 @@ def view_competence():
     dict_subsecs = OrderedDict()
 
     subsections = get_subsections(c_id, version)
-    print "WHAT"
-    print subsections
+
     for item in subsections:
         sec_name = item.sec_name
         subsection_name = item.subsec_name
         comment = item.comments
         evidence_type = item.type
         subsection_data = [subsection_name, comment, evidence_type]
-        print "WTF???"
-        print subsection_data
         dict_subsecs.setdefault(sec_name, []).append(subsection_data)
     print dict_subsecs
 
@@ -740,10 +744,8 @@ def view_competence():
         constant_comment = item.comments
         constant_evidence_type = item.type
         constant_subsection_data = [constant_subsection_name, constant_comment, constant_evidence_type]
-        print constant_subsection_data
         dict_constants.setdefault(constant_sec_name, []).append(constant_subsection_data)
-    print "###CONSTANTS###"
-    print dict_constants
+
 
 
     if approved == None:
@@ -754,7 +756,7 @@ def view_competence():
     else:
         feedback = []
 
-
+    print dict_subsecs
 
 
     return render_template('competence_view.html', intro=intro, creator_id=creator_id, c_id=c_id, title=comp_title, version=version, scope=comp_scope,

@@ -1,0 +1,62 @@
+{% extends "base2.html" %}
+{% block content %}
+
+
+
+
+
+
+
+
+            <h1>Reports By User</h1>
+            <small></small>
+            {#            <ol class="breadcrumb">#}
+            {#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
+            {#                <li class="active">Here</li>#}
+            {#            </ol>#}
+            {% if message %}
+                <div class="alert alert-danger">
+                    <strong>Fail Whale!</strong> {{ message }}
+                </div>
+            {% endif %}
+
+        </section>
+
+        <!-- Main content -->
+        <section class="content container-fluid">
+            <form id="quick_competence" class="form-inline">
+
+                <div class="input-group col-xs-12">
+                    <input type="text" name="full_name" id="full_name" class="form-control"
+                           placeholder="View reports on a specific user..  Just start typing the name of a user.">
+                </div>
+                <input type="submit" class="btn btn-primary btn-flat"
+                       id="go"
+                       type="button" value="Get Report">
+            </form>
+        </section>
+    </div>
+
+
+
+
+    <script src="/static/bower_components/chart.js/Chart.js"></script>
+
+
+    <script>
+
+        $(function () {
+            $.ajax({
+                url: '{{ url_for("autocomplete") }}'
+            }).done(function (data) {
+                $('#full_name').autocomplete({
+                    source: data.json_list,
+                    minLength: 2
+
+                });
+            });
+        });
+
+    </script>
+
+{% endblock %}

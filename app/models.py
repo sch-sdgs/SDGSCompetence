@@ -327,13 +327,14 @@ class Subsection(db.Model):
     s_id_rel = db.relationship("Section", lazy='joined', foreign_keys=[s_id])
     evidence_rel = db.relationship("EvidenceTypeRef", lazy='joined', foreign_keys=[evidence])
 
-    def __init__(self, c_id, s_id, name, evidence, comments,intro=1):
+    def __init__(self, c_id, s_id, name, evidence, comments, sort_order, intro=1):
         self.name = name
         self.c_id = c_id
         self.s_id = s_id
         self.evidence = evidence
         self.comments = comments
-        self.intro=intro
+        self.intro = intro
+        self.sort_order = sort_order
 
     def __repr__(self):
         return '<Subsection %r>' % self.c_id
