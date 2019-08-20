@@ -8,7 +8,7 @@
 /* Default font settings.
    The font-size percentage is of 16px. (0.75 * 16px = 12px) */
 @page {
-    size: A4 landscape;
+    size: A4 portrait;
     margin: 2cm;
 
 }
@@ -35,7 +35,7 @@ body {
 /* Header/footer */
 
 @page {
-	size: A4 landscape; /* can use also 'landscape' for orientation */
+	size: A4 portrait; /* can use also 'landscape' for orientation */
     margin-top: 4cm;
 	margin-bottom: 3cm;
     counter-increment: page;
@@ -179,7 +179,7 @@ h1 {
     margin-top: 0.5em;
     margin-bottom: 1em;
     font-weight: bold;
-    color: #000000;
+    color: #193E72;
 }
 
 h2 {
@@ -196,7 +196,7 @@ h3 {
     padding: 0px;
     margin-bottom: 1em;
     margin-top: 0.5em;
-    border-bottom: 2px solid #27b7cc;
+    border-bottom: 1px solid #F29330;
 }
 
 h4 {
@@ -351,9 +351,9 @@ dd {
  */
 table {
     border-collapse: collapse;
-    width: 100%;
-    font-size: 80%;
-    table-layout: fixed;
+
+    font-size: 100%;
+
 }
 
 .table-larger {
@@ -371,7 +371,8 @@ thead th {
 
 th, td, caption {
     padding: 4px 10px 4px 5px;
-    border: 1px solid black;
+    /*border: 1px solid black;*/
+    border: none;
     overflow: hidden;
     text-overflow: ellipsis;
 }

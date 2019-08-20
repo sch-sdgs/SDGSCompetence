@@ -61,6 +61,7 @@
                                     for Approval
                                 </button>
 
+
                                   {% if "ADMIN" in current_user.roles or creator_id == current_user.database_id %}
                                 <a
                                         href="{{ url_for('competence.edit_competence') }}?ids={{ c_id }}&version={{ version }}"

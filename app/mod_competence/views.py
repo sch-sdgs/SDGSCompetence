@@ -16,6 +16,7 @@ from collections import defaultdict
 from datetime import datetime as dt
 from dateutil.relativedelta import relativedelta
 from app.views import index
+from collections import Counter
 
 competence = Blueprint('competence', __name__, template_folder='templates')
 
@@ -1464,6 +1465,57 @@ def report_by_user():
 
 
     return render_template('competence_report_by_user.html')
+
+
+@competence.route('/trial_viewer', methods=['GET', 'POST'])
+@login_required
+def trial_viewer():
+    current_data = s.query(CompetenceDetails).join(Competence).filter(
+        Competence.current_version == CompetenceDetails.intro).all()
+    result={}
+    for i in current_data:
+        #find out how many are trained and partially and in training
+        print i.title
+        print i.c_id
+        #count how many subsections are in the competence
+        number_of_subsections = s.query(Subsection).join(Competence).filter(and_(Subsection.intro <= Competence.current_version,or_(Subsection.last >= Competence.current_version,Subsection.last == None))).filter(Subsection.c_id == i.c_id).count()
+        print number_of_subsections
+        #get all assessments by user?
+        counts = s.query(func.count(Assessments.id).label("count"),Assessments.user_id.label("user_id"),Assessments.status.label("status_id"),AssessmentStatusRef.status.label("status")).join(AssessmentStatusRef).join(Subsection).join(Competence).join(CompetenceDetails).filter(and_(CompetenceDetails.intro <= Competence.current_version,or_(CompetenceDetails.last >= Competence.current_version,CompetenceDetails.last == None))).filter(Subsection.c_id == i.c_id).filter(Assessments.ss_id == Subsection.id).group_by(Assessments.user_id,Assessments.status).all()
+        print counts
+        trained=0
+        partial=0
+        in_training=0
+        for j in counts:
+            print j
+            users_done = []
+            if j.status == "Complete":
+                if j.count == number_of_subsections:
+                    #user is fully trained - now check for expiry
+
+                    trained+=1
+                    users_done.append(j.user_id)
+                elif j.count < number_of_subsections:
+                    #user is partially trained
+                    partial+=1
+                    users_done.append(j.user_id)
+            if j.status == "Active":
+                if j.user_id not in users_done:
+                    in_training+=1
+                    users_done.append(j.user_id)
+
+        #NEED TO TAKE INTO ACCOUNT EXPIRY
+        #Counter(z)
+
+        result[i.c_id]={"title":i.title,
+                        "trained":trained,
+                        "expired":0,
+                        "partial":partial,
+                        "training":in_training,
+                        "category":i.category_rel.category}
+
+
+    return render_template('trial_viewer.html', current_data=current_data,result=result)
 
 @competence.route('/history', methods=['GET', 'POST'])
 @login_required

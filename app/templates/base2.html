@@ -158,7 +158,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 }
 
             })
-
+            $("#download_trial").click(function() {
+                var data = competencies.rows({selected: true}).data()
+                console.log(data)
+            });
             $(".actionc").click(function () {
                 console.log("hello")
                 var func = $(this).attr("name")
@@ -178,6 +181,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 if (func == "assign_competences_to_user") {
                     console.log("assign_competences_to_user");
                     window.location.assign("{{url_for('competence.assign_competences_to_user')}}?ids=" + ids.join(','));
+                }
+                if (func == "download_trial") {
+                    console.log("download_trial");
+                    console.log("{{url_for('document.export_trial_report')}}?ids=" + ids.join(','))
+                    window.location.assign("{{url_for('document.export_trial_report')}}?ids=" + ids.join(','));
                 }
                 if (func == "activate") {
                     console.log("activate");
@@ -568,15 +576,17 @@ desired effect
                             Section</a>
 
                         </li>
-
-                        <li><a href="{{ url_for('competence.report_by_competence') }}"><i class="fa fa-circle-o"></i>By
-                            Competence</a>
-
-                        </li>
-
-                        <li><a href="{{ url_for('competence.report_by_user') }}"><i class="fa fa-circle-o"></i>By
-                            User</a>
-
+{##}
+{#                        <li><a href="{{ url_for('competence.report_by_competence') }}"><i class="fa fa-circle-o"></i>By#}
+{#                            Competence</a>#}
+{##}
+{#                        </li>#}
+{##}
+{#                        <li><a href="{{ url_for('competence.report_by_user') }}"><i class="fa fa-circle-o"></i>By#}
+{#                            User</a>#}
+{##}
+{#                        </li>#}
+                         <li><a href="{{ url_for('competence.trial_viewer') }}"><i class="fa fa-circle-o"></i>Trial Viewer</a>
                         </li>
 
                     </ul>

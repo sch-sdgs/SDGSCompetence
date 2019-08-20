@@ -8,8 +8,9 @@
 
 
 
-            <h1>Reports By User</h1>
-            <small></small>
+            <h1><i class="fa fa-stethoscope"></i>
+                Trial Viewer <small>Quickly View Competencies and Number of Individuals Trained</small></h1>
+
             {#            <ol class="breadcrumb">#}
             {#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
             {#                <li class="active">Here</li>#}
@@ -24,22 +25,99 @@
 
         <!-- Main content -->
         <section class="content container-fluid">
-            <form id="quick_competence" class="form-inline">
 
-                <div class="input-group col-xs-12">
-                    <input type="text" name="full_name" id="full_name" class="form-control"
-                           placeholder="View reports on a specific user..  Just start typing the name of a user.">
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-solid">
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-lg-10">
+                                 To create a report that you can send onto third parties to show the current level of training in the BRC/CRF simply select the competencies you wish to report on below and click "Download". To select multiple hold down ctrl or shift while clicking.
+
+                            </div>
+                        <div class="col-lg-2">
+                       <div class="btn-group pull-right">
+                            <a href="#"
+                                    class="actionc btn btn-flat btn-default" id="download_trial" name="download_trial" ><i class="fa fa-mouse-pointer"></i> Select Competencies!</a>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
                 </div>
-                <input type="submit" class="btn btn-primary btn-flat"
-                       id="go"
-                       type="button" value="Get Report">
-            </form>
+            </div>
+        </div>
+<div class="box box-solid">
+                    <div class="box-body">
+        <table class="table table-striped table-condensed competencies dataTable dt-responsive"
+                               width="100%"
+                               id="competencies">
+
+
+                            <thead>
+                            <th>id</th>
+                            <th>version</th>
+                            <th>Category</th>
+                            <th>Title</th>
+                            <th>Fully Trained (Expired)</th>
+                            <th>Partially Trained</th>
+                            <th>In Training</th>
+                            </thead>
+                            {% for c_id in result %}
+                                <tr>
+                                    <td>{{ c_id }}</td>
+                                    <td>version</td>
+{#                                    <td>{{ competence.intro }}</td>#}
+                                    <td>{{ result[c_id]["category"] }}</td>
+                                    <td>{{ result[c_id]["title"] }}</td>
+                                    <td>{{ result[c_id]["trained"] }} ({{ result[c_id]["expired"] }})</td>
+                                    <td>{{ result[c_id]["partial"] }}</td>
+                                    <td>{{ result[c_id]["training"] }}</td>
+                                </tr>
+                            {% endfor %}
+
+
+                        </table>
+                    </div>
+
         </section>
     </div>
 
 
 
+    <script>
+        $('#with').text("With 0 Selected....");
+        $('#download_trial').attr('disabled', 'disabled');
+        $('#actions').attr('data-toggle', '');
 
+        var competencies = $('.competencies').DataTable({
+            "pageLength": 25,
+            "columnDefs": [
+                {
+                    "targets": [0, 1],
+                    "visible": false,
+                    "searchable": false
+                }],
+            select: true
+        })
+
+
+
+        $("tr").click(function () {
+            setTimeout(function () {
+                var count_new = competencies.rows({selected: true}).count();
+                $('#download_trial').html("<i class='fa fa-download'></i> Report on " + count_new + " Competencies")
+                if (count_new == 0) {
+                    $('#download_trial').attr('disabled', 'disabled');
+                    $('#actions').attr('data-toggle', '');
+                } else {
+                    $('#download_trial').removeAttr('disabled');
+                    $('#actions').attr('data-toggle', 'dropdown');
+                }
+            }, 1)
+
+        });
+    </script>
     <script src="/static/bower_components/chart.js/Chart.js"></script>
 
 

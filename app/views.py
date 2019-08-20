@@ -711,7 +711,7 @@ def index(message=None):
     displays the users dashboard
     :return: template index.html
     """
-
+    print current_user.database_id
     linereports = s.query(Users).filter_by(line_managerid=int(current_user.database_id)).filter_by(active=True).all()
     linereports_inactive = s.query(Users).filter_by(line_managerid=int(current_user.database_id)).filter_by(
         active=False).count()

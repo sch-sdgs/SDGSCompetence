@@ -112,7 +112,7 @@ def get_competence_by_user(c_id, u_id,version):
         join(AssessmentStatusRef). \
         join(EvidenceTypeRef). \
         filter(AssessmentStatusRef.status != "Obsolete" ). \
-        filter(and_(Assessments.user_id == u_id, Competence.id == c_id, Assessments.version==version)). \
+        filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id, Competence.id == c_id, Assessments.version==version)). \
         order_by(asc(Section.name)).order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).\
         values(Assessments.id.label('ass_id'), Section.name, Section.constant, Subsection.id, Assessments.trainer_id, Assessments.signoff_id,
                Subsection.name.label('area_of_competence'), Subsection.comments.label('notes'), EvidenceTypeRef.type,
@@ -679,7 +679,7 @@ def abandon():
     version = request.args["version"]
     abandon_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status=="Abandoned").first().id
     data = {'status':abandon_id}
-    assessments = s.query(Assessments).join(Subsection).filter(and_(Subsection.c_id == c_id, Assessments.version == version)).all()
+    assessments = s.query(Assessments).join(Subsection).filter(and_(Subsection.c_id == c_id, Assessments.version == version, Assessments.user_id == current_user.database_id)).all()
     for assessment in assessments:
         s.query(Assessments).filter_by(id=assessment.id).update(data)
     try:
@@ -905,7 +905,8 @@ def select_subsections():
         elif forward_action == "reassess":
             heading = heading.format("Reassess")
             required_status = ["Complete"]
-
+        print "HERE HERE"
+        print u_id
         return render_template('select_subsections.html', competence=c_id, user={'name': competence_summary.user,
                                                                                  'id': u_id},
                                title=competence_summary.title, validity=competence_summary.months, heading=heading,

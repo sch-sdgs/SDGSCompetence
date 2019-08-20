@@ -1,18 +1,21 @@
 <footer>
 <div id="page-footer" style="width: 100%; margin: 0 auto;">
-    <table id="footer" style="word-wrap:break-word;border:solid black 1px;background-color: #f4f4f4">
-        <tr s>
-             <td><strong>Date of Issue:</strong> {{ date_of_issue }}</td>
-            <td><strong>Version number:</strong> {{ version_no }}</td>
-        </tr>
+
+    <table id="footer" style="width:100%;word-wrap:break-word;border:solid black 1px;background-color: #f4f4f4">
         <tr>
-            <td ><strong>Author:</strong> {{ author }}</td>
-            <td ><strong>Authoriser:</strong> {{ authoriser }}</td>
+             <td><strong>Date Created:</strong> {{ date }}</td>
+            <td><strong>Created By:</strong> {{ user }}</td>
         </tr>
-        <tr>
-            <td ><strong>Printed By:</strong> {{ full_name }}</td>
-        </tr>
+{#        <tr>#}
+{#            <td ><strong>Author:</strong> {{ author }}</td>#}
+{#            <td ><strong>Authoriser:</strong> {{ authoriser }}</td>#}
+{#        </tr>#}
+{#        <tr>#}
+{#            <td ><strong>Printed By:</strong> {{ full_name }}</td>#}
+{#        </tr>#}
 
     </table>
+    <br>
+    <p>This report is produced by CompetenceDB, a tailor made training management solution for healthcare.</p>
 </div>
 </footer>
