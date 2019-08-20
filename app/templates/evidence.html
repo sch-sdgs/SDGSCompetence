@@ -5,9 +5,23 @@
                 <button type="button" class="close" data-dismiss="modal"><span
                         aria-hidden="true">&times;</span><span class="sr-only">Close</span>
                 </button>
-                <h4 class="modal-title"><strong>Evidence Summary: </strong></h4>
+                <h3 class="modal-title"><strong>Evidence Summary</strong></h3>
             </div>
             <div class="modal-body">
+{#                <h4>Training Details</h4>#}
+{#                <table class="table table-striped">#}
+{#                    <tr>#}
+{##}
+{#                    <td><strong>Trainer</strong></td>#}
+{#                    <td>{{ evidence.assessments[0].assess_id_rel.trainer_id_rel.first_name }} {{ evidence.assessments[0].assess_id_rel.trainer_id_rel.last_name }}</td>#}
+{#                </tr>#}
+{#                    <tr>#}
+{##}
+{#                    <td><strong>Date Trained</strong></td>#}
+{#                    <td>{{ evidence.assessments[0].assess_id_rel.date_of_training }}</td>#}
+{#                </tr>#}
+{#                </table>#}
+
 
                 {% for i in signoff %}
                     {% if i.evidence_type_rel.type == "Upload" %}

@@ -833,7 +833,7 @@ def index(message=None):
         .join(CompetenceDetails)\
         .join(AssessmentStatusRef)\
         .filter(Assessments.user_id == current_user.database_id) \
-        .group_by(Assessments.version) \
+        .group_by(Subsection.c_id,Assessments.version) \
         .filter(AssessmentStatusRef.status.in_(["Complete","Four Year Due"])) \
         .all()
 

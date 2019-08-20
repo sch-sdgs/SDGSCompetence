@@ -1138,24 +1138,34 @@ def assign_competence_to_user(user_id, competence_id, due_date):
     print "HERE CHECK"
     print check
     assessment_ids = []
-    if check == 0:
-        for sub_section in sub_sections:
-            print "MEMEMEMEME"
-            print sub_section.name
-            a = Assessments(status=status_id, ss_id=sub_section.id, user_id=int(user_id),
-                            assign_id=current_user.database_id, version=current_version, due_date=datetime.datetime.strptime(due_date, '%d/%m/%Y'))
-            print a
-            s.add(a)
-            s.commit()
-            assessment_ids.append(a.id)
+    if check != 0:
 
-        assigner = s.query(Users).filter(Users.id == current_user.database_id).first()
-        try:
-            send_mail(user_id,"Competence has been assigned to you","You have been assigned a competence by <b>"+assigner.first_name + " " + assigner.last_name +"</b>")
-        except:
-            s.rollback()
-    else:
-        assessment_ids = None
+        abandoned = s.query(Assessments).join(AssessmentStatusRef).filter(Assessments.ss_id.in_(sub_list)).filter(
+            Assessments.user_id == user_id).filter(
+            Assessments.version == current_version).filter(AssessmentStatusRef.status == "Abandoned").all()
+        for assessment in abandoned:
+            s.query(AssessmentEvidenceRelationship).filter_by(assessment_id=assessment.id).delete()
+            s.query(Assessments).filter_by(id=assessment.id).delete()
+            assessment_ids = None
+
+    for sub_section in sub_sections:
+        print "MEMEMEMEME"
+        print sub_section.name
+        a = Assessments(status=status_id, ss_id=sub_section.id, user_id=int(user_id),
+                        assign_id=current_user.database_id, version=current_version,
+                        due_date=datetime.datetime.strptime(due_date, '%d/%m/%Y'))
+        print a
+        s.add(a)
+        s.commit()
+        assessment_ids.append(a.id)
+
+    assigner = s.query(Users).filter(Users.id == current_user.database_id).first()
+    try:
+        send_mail(user_id, "Competence has been assigned to you",
+                  "You have been assigned a competence by <b>" + assigner.first_name + " " + assigner.last_name + "</b>")
+    except:
+        s.rollback()
+
     print "i did this"
     return assessment_ids
 

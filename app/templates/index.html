@@ -39,8 +39,9 @@
                                     {{ evidence }}
                                     <table class="table table-striped">
                                         <thead>
-                                        <th class="col-md-6">Competence/Sub Section(s) Covered</th>
+                                        <th class="col-md-5">Competence/Sub Section(s) Covered</th>
                                         <th class="col-md-2">Trainee</th>
+                                        <th class="col-md-2">Trainer</th>
                                         <th class="col-md-2">Date Trained</th>
                                         <th class="col-md-2">Actions</th>
                                         </thead>
@@ -58,6 +59,9 @@
                                                 </td>
                                                 <td>
                                                     {{ evidence.assessments[0].assess_id_rel.user_id_rel.first_name }} {{ evidence.assessments[0].assess_id_rel.user_id_rel.last_name }}
+                                                </td>
+                                            <td>
+                                                    {{ evidence.assessments[0].assess_id_rel.trainer_id_rel.first_name }} {{ evidence.assessments[0].assess_id_rel.trainer_id_rel.last_name }}
                                                 </td>
                                                 <td>
                                                     {{ evidence.assessments[0].assess_id_rel.date_of_training.strftime('%d-%m-%Y') }}

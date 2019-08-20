@@ -85,7 +85,7 @@ def get_competent_users(ss_id_list):
                Assessments.ss_id.in_(ss_id_list)). \
         group_by(Users.id).having(func.count(Assessments.ss_id.in_(ss_id_list)) == len(ss_id_list)). \
         values(Users.id, (Users.first_name + ' ' + Users.last_name).label('name'))
-
+    print users
     return users
 
 
@@ -442,21 +442,65 @@ def upload_evidence(c_id=None, s_ids=None,version=None):
     form = UploadEvidence()
 
     ss_id_list = get_ss_id_from_assessment(ass_ids)
-
     competent_users = get_competent_users(ss_id_list)
+
+    # deal with trainers
+    trainer_config = config["TRAINER"].split(",")
+    trainer_choices = []
+    if "COMPETENT_STAFF" in trainer_config:
+        for user in competent_users:
+            trainer_choices.append((user.id, user.name))
+    if "TRAINER" in trainer_config:
+        trainers = s.query(UserRoleRelationship).join(UserRolesRef).join(Users).filter(
+            UserRolesRef.role == "TRAINER").all()
+        for i in trainers:
+            id = i.user_id_rel.id
+            name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name + " (TRAINER)"
+            trainer_choices.append((id, name))
+    if "ADMIN" in trainer_config:
+        admin_users = s.query(UserRoleRelationship).join(UserRolesRef).join(Users).filter(
+            UserRolesRef.role == "ADMIN").all()
+        for i in admin_users:
+            id = i.user_id_rel.id
+            name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name + " (ADMIN)"
+            trainer_choices.append((id, name))
+
+    #deal with authorisers
+    authoriser_config = config["AUTHORISER"].split(",")
+    authoriser_choices = []
+    if "COMPETENT_STAFF" in authoriser_config:
+        for user in competent_users:
+            authoriser_choices.append((user.id, user.name))
+    if "TRAINER" in authoriser_config:
+        trainers = s.query(UserRoleRelationship).join(UserRolesRef).join(Users).filter(
+            UserRolesRef.role == "TRAINER").all()
+        for i in trainers:
+            id = i.user_id_rel.id
+            name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name + " (TRAINER)"
+            authoriser_choices.append((id, name))
+    if "ADMIN" in authoriser_config:
+        admin_users = s.query(UserRoleRelationship).join(UserRolesRef).join(Users).filter(
+            UserRolesRef.role == "ADMIN").all()
+        for i in admin_users:
+            id = i.user_id_rel.id
+            name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name + " (ADMIN)"
+            authoriser_choices.append((id, name))
+    if "COMPETENCY_AUTHORISER" in authoriser_config:
+        trainers = s.query(UserRoleRelationship).join(UserRolesRef).join(Users).filter(
+            UserRolesRef.role == "COMPETENCY_AUTHORISER").all()
+        for i in trainers:
+            id = i.user_id_rel.id
+            name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name + " (COMPETENCY_AUTHORISER)"
+            authoriser_choices.append((id, name))
+
 
     #sub_section_name = ass.ss_id_rel.name
 
-    choices = []
-    for user in competent_users:
-        choices.append((user.id, user.name))
+    form.assessor.choices = authoriser_choices
 
-    # append competence author
-    # author = s.query(Users).filter(Users.id == ass.ss_id_rel.c_id_rel.competence_detail[0].creator_id).first()
-    # choices.append((author.id, author.first_name + " " + author.last_name))
+    form.trainer.choices = trainer_choices
 
-    form.trainer.choices = choices
-    form.assessor.choices = choices
+
     u_id = current_user.database_id
 
     competence_summary = get_competence_summary_by_user(c_id, u_id,version)
