@@ -1,6 +1,6 @@
 
 from flask_wtf import Form
-from wtforms.fields import TextField, SubmitField, HiddenField, PasswordField, RadioField, BooleanField, SelectField, TextAreaField
+from wtforms.fields import TextField, SubmitField, HiddenField, PasswordField, RadioField, BooleanField, SelectField, TextAreaField, DateField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
 from wtforms.validators import Required
 from app.competence import s
@@ -17,6 +17,7 @@ class RateEvidence(Form):
     comments = TextAreaField("Comments")
     assid = HiddenField("id")
     submit = SubmitField("Submit")
+    expiry_date = DateField('Override Automated Expiry Date? (optional)', format='%Y-%m-%d')
 
 
 from flask_wtf import FlaskForm

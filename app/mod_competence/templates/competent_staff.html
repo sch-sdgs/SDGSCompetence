@@ -29,15 +29,15 @@
                     <div class="col-lg-12">
                         <div class="box" id="training">
                             <div class="box-header with-border">
-                                <h3 class="no-padding no-margin no-pad-top"><i class="fa fa-fw fa-file-text-o"></i> Competence: <strong>{{ competence_name }}</strong></h3>
+                                <h3 class="no-padding no-margin no-pad-top"><i class="fa fa-fw fa-file-text-o"></i><strong>{{ competence_name }}</strong></h3>
 
                             </div>
                             <div class="box-body table-responsive">
 
                                 {%  for type in ["constant","custom"] %}
-
+{% if result[competence_name][type]|length >= 1 %}
                                     <h3>{{ type|title }} Sections</h3>
-
+{% endif %}
                                 {% for s in result[competence_name][type] %}
 
 

@@ -769,7 +769,6 @@ def signoff_evidence(evidence_id,action):
         print status
         print assessment.assessment_id
 
-
         query = s.query(Assessments).filter(Assessments.id == assessment.assessment_id).first()
 
         for detail in query.ss_id_rel.c_id_rel.competence_detail:
@@ -778,10 +777,16 @@ def signoff_evidence(evidence_id,action):
                 print detail
                 months_valid = detail.validity_rel.months
 
+
+        if request.form["expiry_date"]:
+            date_expiry = datetime.datetime.strptime(request.form["expiry_date"], '%d/%m/%Y')
+        else:
+            date_expiry = datetime.datetime.now() + relativedelta(months=months_valid)
+
         data = {
             'date_completed': date,
             'status': status,
-            'date_expiry': datetime.datetime.now() + relativedelta(months=months_valid)
+            'date_expiry': date_expiry
         }
 
         s.query(Assessments).filter(Assessments.id ==assessment.assessment_id).update(data)

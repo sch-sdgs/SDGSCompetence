@@ -84,13 +84,11 @@ def competent_staff():
     ids = request.args["ids"].split(",")
     version = request.args["version"]
 
-
-    competent_staff = s.query(Assessments).join(AssessmentStatusRef).join(Subsection).join(Competence).join(CompetenceDetails).filter(
-        Competence.id.in_(ids)).filter(Assessments.version == version).filter(Users.active == True).filter(
+    print ids
+    competent_staff = s.query(Assessments).join(Users, Users.id==Assessments.user_id).join(AssessmentStatusRef).join(Subsection).join(Competence).join(CompetenceDetails).filter(
+        Subsection.c_id.in_(ids)).filter(Assessments.version == version).filter(Users.active == True).filter(
         or_(AssessmentStatusRef.status == "Complete",AssessmentStatusRef.status == "Assigned",AssessmentStatusRef.status == "Active",AssessmentStatusRef.status=="Four Year Due")).all()
-
-
-
+    print competent_staff
     result = OrderedDict()
 
 
@@ -100,6 +98,7 @@ def competent_staff():
             Competence.current_version == version).group_by(
             CompetenceDetails.id).all()
     for k in competence:
+        print "in competentence loop"
         print k.competence_detail[0].title
         result[k.competence_detail[0].title]= OrderedDict()
         result[k.competence_detail[0].title]["constant"] = OrderedDict()
@@ -140,7 +139,7 @@ def competent_staff():
     print competent_staff
     print json.dumps(result,indent=4)
     for i in competent_staff:
-
+        print "in competent staff loop"
         if i.user_id_rel.active:
             c_name = i.ss_id_rel.c_id_rel.competence_detail[0].title
             print c_name
@@ -554,7 +553,7 @@ def add_constant_sections_to_db():
 
     print name
     print "DEBUG"
-    sub = Subsection(name=name, c_id=c_id, s_id=s_id, evidence=4, comments=None, intro=version)
+    sub = Subsection(name=name, c_id=c_id, s_id=s_id, evidence=4, sort_order=None, comments=None, intro=version)
     s.add(sub)
     s.commit()
 
@@ -789,6 +788,11 @@ def force_authorise():
         flash("Competencies Already Authorised", "warning")
         return list_comptencies()
 
+@competence.route('/expiry_dates')
+@login_required
+def expiry_dates():
+    form = ExpiryForm()
+    return render_template("competence_expiry.html",form=form)
 
 @competence.route('/matrix', methods=['GET'])
 @login_required
@@ -1404,6 +1408,7 @@ def reporting():
         counts[service]["Complete"] = 0
         counts[service]["Sign-Off"] = 0
         counts[service]["Active"] = 0
+        counts[service]["Failed"] = 0
         counts[service]["Assigned"] = 0
         counts[service]["Expiring"] = 0
         counts[service]["Expired"] = 0
@@ -1476,6 +1481,11 @@ def report_by_user():
 
     return render_template('competence_report_by_user.html')
 
+
+@competence.route('/collections', methods=['GET', 'POST'])
+@login_required
+def collections():
+    return render_template('collections.html')
 
 @competence.route('/trial_viewer', methods=['GET', 'POST'])
 @login_required

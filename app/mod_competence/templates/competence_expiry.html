@@ -1,0 +1,124 @@
+{% extends "base2.html" %}
+{% block content %}
+
+    <h1>
+        <i class="fa fa-fw fa-file-text-o"></i> Edit Expiry Dates
+        <small>Type in a user, press "Go" and you will get a list of all their assessments, you can select multiple, then
+            click change expiry.
+        </small>
+    </h1>
+    {#            <ol class="breadcrumb">#}
+    {#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
+    {#                <li class="active">Here</li>#}
+    {#            </ol>#}
+
+
+    <!-- Main content -->
+    <section class="content container-fluid">
+        {% if message %}
+            <div class="alert alert-{{ modifier }}">
+                {{ message|safe }}
+            </div>
+        {% endif %}
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="box-solid bg-gray-light" id="training">
+
+                    <div class="box-body table-responsive">
+
+
+                        <div class="form-group">
+                            {{ form.full_name.label(class_="col-lg-2 control-label") }}
+
+                            <div class="col-lg-10">
+                                <div class="input-group">
+                                    {{ form.full_name(class_="form-control") }}
+
+                                    <span class="input-group-btn"><button class="btn btn-primary btn-flat"
+                                                                          id="select_user"
+                                                                          type="button">Go</button></span>
+                                </div>
+                                <span class="help-block"><strong>Start typing and users will appear.</strong></span>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+<div class="box" id="training">
+                        <div class="box-header with-border">
+                            Assessments For Selected User
+                            <div class="box-tools pull-right">
+                                <a href="#" class="btn btn-sm btn-warning">Update Expiry Date(s)</a>
+                            </div>
+                        </div>
+                        <div class="box-body table-responsive">
+
+
+                            {% if assigned|length == 0 %}
+                                You have no assigned or active training.
+                            {% else %}
+                                <table class="table table-striped" id="assessments">
+                                    <thead>
+
+                                    <th class="col-md-1">Assessment</th>
+                                    <th class="col-md-3">Expiry Date</th>
+                                    </thead>
+                                    {% for assessment in assessments %}
+                                        <tr>
+                                        <td></td>
+                                        <td></td>
+                                        </tr>
+                                    {% endfor %}
+
+                                </table>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            </div>
+        </div>
+
+    </section>
+    </div>
+
+    <script>
+
+
+        var assessments = $('.assessments').DataTable({
+            "pageLength": 25,
+            "columnDefs": [
+                {
+                    "targets": [0, 1],
+                    "visible": false,
+                    "searchable": false
+                }],
+            select: true
+        })
+
+
+
+
+
+        $(function () {
+            $.ajax({
+                url: '{{ url_for("autocomplete") }}'
+            }).done(function (data) {
+                $('#full_name').autocomplete({
+                    source: data.json_list,
+                    minLength: 2
+
+                });
+            });
+        });
+
+    </script>
+
+{% endblock %}}

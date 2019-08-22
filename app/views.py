@@ -156,6 +156,7 @@ class User(UserMixin):
         self.database_id = self.get_database_id()
         self.password = password
         self.roles = self.get_user_roles()
+        self.job_roles = self.get_job_roles()
         self.full_name = self.get_full_name()
 
     def get_database_id(self):
@@ -179,6 +180,17 @@ class User(UserMixin):
         roles = s.query(UserRolesRef).join(UserRoleRelationship).join(Users).filter(Users.login == self.id).all()
         for role in roles:
             result.append(role.role)
+        return result
+
+    def get_job_roles(self):
+        """
+        gets the roles assigned to this user from the database i.e ADMIN, USER etc
+        :return: list of user roles
+        """
+        result = []
+        roles = s.query(JobRoles).join(UserJobRelationship).join(Users).filter(Users.login == self.id).all()
+        for role in roles:
+            result.append(role.job)
         return result
 
     def get_full_name(self):

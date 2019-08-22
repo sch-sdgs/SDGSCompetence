@@ -11,6 +11,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="shortcut icon" href="/static/images/favicon.ico">
+<link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
     <!-- jQuery 3 -->
     <script src="/static/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="/static/bower_components/jquery/dist/jquery.js"></script>
@@ -461,12 +462,21 @@ desired effect
                         <ul class="dropdown-menu">
                             <!-- The user image in the menu -->
                             <li class="user-header">
-                                {#                                <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">#}
-
-                                <p>
+                            <h4>
                                     {{ current_user.full_name }}
+                                </h4>
+                             <img src="/static/images/Corporate_Motifs_Cell_RGB.jpg"  alt="User Image"><br>
+
+
+                            {% for job in current_user.job_roles %}
+                                        <span class="label label-default">{{ job }}</span>
+                                    {% endfor %}
+                                <h6>Competence DB Roles:</h6>
+                                    {% for role in current_user.roles %}
+                                        <span class="label label-default">{{ role }}</span>
+                                    {% endfor %}
                                     {#                                    <small>Member since Nov. 2012</small>#}
-                                </p>
+
                             </li>
                             {#                            <!-- Menu Body -->#}
                             {#                                                        <li class="user-body">#}
@@ -557,6 +567,9 @@ desired effect
                         <li><a href="{{ url_for('competence.list_comptencies') }}"><i class="fa fa-circle-o"></i>List
                             Competencies</a>
                         <li><a href="{{ url_for('admin.users_view') }}"><i class="fa fa-circle-o"></i>View Users</a>
+
+
+                        <li><a href="{{ url_for('competence.collections') }}"><i class="fa fa-circle-o"></i>Collections</a>
 
                         </li>
                     </ul>
@@ -695,6 +708,20 @@ desired effect
                             </li>
                         </ul>
                     </li>
+{##}
+{#                     <li class="treeview">#}
+{#                        <a href="#"><i class="fa fa-clone"></i> <span>Competencies Admin</span>#}
+{#                            <span class="pull-right-container">#}
+{#                <i class="fa fa-angle-left pull-right"></i>#}
+{#              </span>#}
+{#                        </a>#}
+{#                        <ul class="treeview-menu">#}
+{##}
+{#                            <li><a href="{{ url_for('competence.expiry_dates') }}"><i class="fa fa-circle-o"></i>Edit Expiry Dates</a>#}
+{#                            </li>#}
+{##}
+{#                        </ul>#}
+{#                    </li>#}
 
                     <li class="treeview">
                         <a href="#"><i class="fa fa-database"></i> <span>Database</span>
@@ -837,10 +864,10 @@ desired effect
     <footer class="main-footer">
         <!-- To the right -->
         <div class="pull-right hidden-xs">
-            v0.1.6b
+            v0.1.7
         </div>
         <!-- Default to the left -->
-        <strong>Copyright &copy; 2018 <a href="#">Sheffield Diagnostic Genetics Service</a>.</strong> All rights
+        <strong>Copyright &copy; 2019 Sheffield Diagnostic Genetics Service & Sheffield Bioinformatics Core.</strong> All rights
         reserved.
     </footer>
 
