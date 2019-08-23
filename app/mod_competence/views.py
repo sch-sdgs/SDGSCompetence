@@ -84,11 +84,11 @@ def competent_staff():
     ids = request.args["ids"].split(",")
     version = request.args["version"]
 
-    print ids
+
     competent_staff = s.query(Assessments).join(Users, Users.id==Assessments.user_id).join(AssessmentStatusRef).join(Subsection).join(Competence).join(CompetenceDetails).filter(
         Subsection.c_id.in_(ids)).filter(Assessments.version == version).filter(Users.active == True).filter(
         or_(AssessmentStatusRef.status == "Complete",AssessmentStatusRef.status == "Assigned",AssessmentStatusRef.status == "Active",AssessmentStatusRef.status=="Four Year Due")).all()
-    print competent_staff
+
     result = OrderedDict()
 
 
@@ -98,7 +98,6 @@ def competent_staff():
             Competence.current_version == version).group_by(
             CompetenceDetails.id).all()
     for k in competence:
-        print "in competentence loop"
         print k.competence_detail[0].title
         result[k.competence_detail[0].title]= OrderedDict()
         result[k.competence_detail[0].title]["constant"] = OrderedDict()
@@ -139,7 +138,7 @@ def competent_staff():
     print competent_staff
     print json.dumps(result,indent=4)
     for i in competent_staff:
-        print "in competent staff loop"
+
         if i.user_id_rel.active:
             c_name = i.ss_id_rel.c_id_rel.competence_detail[0].title
             print c_name
@@ -359,7 +358,6 @@ def get_subsections(c_id, version):
     print type(version)
     print type(c_id)
     subsec_list = []
-    print "ITS HERE"
 
 
     subsecs = s.query(Subsection).join(Section).join(SectionSortOrder).join(Competence).join(EvidenceTypeRef).filter(
@@ -375,11 +373,8 @@ def get_subsections(c_id, version):
                               reverse=False)
 
     for sub in sorted_result:
-        print sub.sec_name
-        print sub.sort_order
         subsec_list.append(sub)
 
-    print subsec_list
 
     return subsec_list
 
@@ -724,6 +719,7 @@ def view_competence():
     ##Get subsection details
     dict_subsecs = OrderedDict()
 
+    print "GETTING SUBSECTIONS!!!"
     subsections = get_subsections(c_id, version)
 
     for item in subsections:
@@ -733,7 +729,7 @@ def view_competence():
         evidence_type = item.type
         subsection_data = [subsection_name, comment, evidence_type]
         dict_subsecs.setdefault(sec_name, []).append(subsection_data)
-    print dict_subsecs
+
 
     dict_constants = OrderedDict()
     constants = get_constant_subsections(c_id, version)
@@ -756,7 +752,6 @@ def view_competence():
     else:
         feedback = []
 
-    print dict_subsecs
 
 
     return render_template('competence_view.html', intro=intro, creator_id=creator_id, c_id=c_id, title=comp_title, version=version, scope=comp_scope,
@@ -1126,11 +1121,10 @@ def assign_competence_to_user(user_id, competence_id, due_date):
     sub_sections = s.query(Subsection).filter(Subsection.c_id == competence_id).filter(
         or_(Subsection.last == None, Subsection.last == current_version)).filter(
         Subsection.intro <= current_version).all()
-    print "YOYOYO"
-    print sub_sections
+
     sub_list = []
 
-    print sub_sections
+
     # TODO Check if competence is already assigned, if it is skip user and display warning
     # TODO Need to add competence constant subsections
 
@@ -1139,8 +1133,7 @@ def assign_competence_to_user(user_id, competence_id, due_date):
 
     check = s.query(Assessments).join(AssessmentStatusRef).filter(Assessments.ss_id.in_(sub_list)).filter(Assessments.user_id==user_id).filter(
         Assessments.version == current_version).filter(or_(AssessmentStatusRef.status != "Obsolete",AssessmentStatusRef.status != "Abandoned")).count()
-    print "HERE CHECK"
-    print check
+
     assessment_ids = []
     if check != 0:
 
