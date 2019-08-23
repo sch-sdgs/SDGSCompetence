@@ -158,6 +158,14 @@ class User(UserMixin):
         self.roles = self.get_user_roles()
         self.job_roles = self.get_job_roles()
         self.full_name = self.get_full_name()
+        self.version = self.get_version()
+
+    def get_version(self):
+        if "live" in config["SQLALCHEMY_DATABASE_URI"]:
+            version = "Live"
+        elif "dev" in config["SQLALCHEMY_DATABASE_URI"]:
+            version = "Development"
+        return version
 
     def get_database_id(self):
         """

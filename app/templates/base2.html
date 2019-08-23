@@ -619,20 +619,20 @@ desired effect
                         </li>
                     </ul>
                 </li>
-
-                <li class="treeview">
-                    <a href="#"><i class="fa fa-bug"></i> <span>Bug Reports</span>
-                        <span class="pull-right-container">
-                <i class="fa fa-angle-left pull-right"></i>
-              </span>
-                    </a>
-                    <ul class="treeview-menu">
-
-                        <li><a href="{{ url_for('bug_reports') }}"><i class="fa fa-circle-o"></i>Submit Bug Report</a>
-                        </li>
-
-                    </ul>
-                </li>
+{##}
+{#                <li class="treeview">#}
+{#                    <a href="#"><i class="fa fa-bug"></i> <span>Bug Reports</span>#}
+{#                        <span class="pull-right-container">#}
+{#                <i class="fa fa-angle-left pull-right"></i>#}
+{#              </span>#}
+{#                    </a>#}
+{#                    <ul class="treeview-menu">#}
+{##}
+{#                        <li><a href="{{ url_for('bug_reports') }}"><i class="fa fa-circle-o"></i>Submit Bug Report</a>#}
+{#                        </li>#}
+{##}
+{#                    </ul>#}
+{#                </li>#}
 
                 {% if "ADMIN" in current_user.roles %}
                     <li class="header">Admin</li>
@@ -725,6 +725,13 @@ desired effect
 
                     <li class="treeview">
                         <a href="#"><i class="fa fa-database"></i> <span>Database</span>
+                            {%  if current_user.version == "Live"  %}
+                            <span class="label label-warning">{{ current_user.version }}</span>
+                            {% elif current_user.version == "Development" %}
+                                <span class="label label-info">{{ current_user.version }}</span>
+                            {% endif %}
+
+
                             <span class="pull-right-container">
                 <i class="fa fa-angle-left pull-right"></i>
               </span>
@@ -742,7 +749,12 @@ desired effect
                             </a></li>
                     {% endif %}
 
+
+
                 {% endif %}
+
+
+
 
                 <!-- Optionally, you can add icons to the links -->
 
