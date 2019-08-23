@@ -359,7 +359,6 @@ def get_subsections(c_id, version):
     print type(version)
     print type(c_id)
     subsec_list = []
-    print "ITS HERE"
 
 
     subsecs = s.query(Subsection).join(Section).join(SectionSortOrder).join(Competence).join(EvidenceTypeRef).filter(
@@ -367,19 +366,17 @@ def get_subsections(c_id, version):
         and_(Subsection.intro <= version, or_(Subsection.last == None, Subsection.last == version))).order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).values(
         Section.name.label('sec_name'), Subsection.name.label('subsec_name'),
         Subsection.comments, EvidenceTypeRef.type,SectionSortOrder.sort_order)
-
-
+    print "SUBSECTIONS"
+    for i in subsecs:
+        print i.subsec_name
 
     sorted_result = sorted(list(subsecs),
                               key=lambda a: a.sort_order,
                               reverse=False)
 
     for sub in sorted_result:
-        print sub.sec_name
-        print sub.sort_order
         subsec_list.append(sub)
 
-    print subsec_list
 
     return subsec_list
 
@@ -724,6 +721,7 @@ def view_competence():
     ##Get subsection details
     dict_subsecs = OrderedDict()
 
+    print "GETTING SUBSECTIONS!!!"
     subsections = get_subsections(c_id, version)
 
     for item in subsections:
@@ -733,7 +731,7 @@ def view_competence():
         evidence_type = item.type
         subsection_data = [subsection_name, comment, evidence_type]
         dict_subsecs.setdefault(sec_name, []).append(subsection_data)
-    print dict_subsecs
+
 
     dict_constants = OrderedDict()
     constants = get_constant_subsections(c_id, version)
@@ -756,7 +754,6 @@ def view_competence():
     else:
         feedback = []
 
-    print dict_subsecs
 
 
     return render_template('competence_view.html', intro=intro, creator_id=creator_id, c_id=c_id, title=comp_title, version=version, scope=comp_scope,
@@ -1121,11 +1118,10 @@ def assign_competence_to_user(user_id, competence_id, due_date):
     sub_sections = s.query(Subsection).filter(Subsection.c_id == competence_id).filter(
         or_(Subsection.last == None, Subsection.last == current_version)).filter(
         Subsection.intro <= current_version).all()
-    print "YOYOYO"
-    print sub_sections
+
     sub_list = []
 
-    print sub_sections
+
     # TODO Check if competence is already assigned, if it is skip user and display warning
     # TODO Need to add competence constant subsections
 
@@ -1134,12 +1130,10 @@ def assign_competence_to_user(user_id, competence_id, due_date):
 
     check = s.query(Assessments).join(AssessmentStatusRef).filter(Assessments.ss_id.in_(sub_list)).filter(Assessments.user_id==user_id).filter(
         Assessments.version == current_version).filter(or_(AssessmentStatusRef.status != "Obsolete",AssessmentStatusRef.status != "Abandoned")).count()
-    print "HERE CHECK"
-    print check
+
     assessment_ids = []
     if check == 0:
         for sub_section in sub_sections:
-            print "MEMEMEMEME"
             print sub_section.name
             a = Assessments(status=status_id, ss_id=sub_section.id, user_id=int(user_id),
                             assign_id=current_user.database_id, version=current_version, due_date=datetime.datetime.strptime(due_date, '%d/%m/%Y'))
@@ -1155,7 +1149,6 @@ def assign_competence_to_user(user_id, competence_id, due_date):
             s.rollback()
     else:
         assessment_ids = None
-    print "i did this"
     return assessment_ids
 
 
