@@ -11,6 +11,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="shortcut icon" href="/static/images/favicon.ico">
+<link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
     <!-- jQuery 3 -->
     <script src="/static/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="/static/bower_components/jquery/dist/jquery.js"></script>
@@ -158,7 +159,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 }
 
             })
-
+            $("#download_trial").click(function() {
+                var data = competencies.rows({selected: true}).data()
+                console.log(data)
+            });
             $(".actionc").click(function () {
                 console.log("hello")
                 var func = $(this).attr("name")
@@ -178,6 +182,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 if (func == "assign_competences_to_user") {
                     console.log("assign_competences_to_user");
                     window.location.assign("{{url_for('competence.assign_competences_to_user')}}?ids=" + ids.join(','));
+                }
+                if (func == "download_trial") {
+                    console.log("download_trial");
+                    console.log("{{url_for('document.export_trial_report')}}?ids=" + ids.join(','))
+                    window.location.assign("{{url_for('document.export_trial_report')}}?ids=" + ids.join(','));
                 }
                 if (func == "activate") {
                     console.log("activate");
@@ -453,12 +462,21 @@ desired effect
                         <ul class="dropdown-menu">
                             <!-- The user image in the menu -->
                             <li class="user-header">
-                                {#                                <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">#}
-
-                                <p>
+                            <h4>
                                     {{ current_user.full_name }}
+                                </h4>
+                             <img src="/static/images/Corporate_Motifs_Cell_RGB.jpg"  alt="User Image"><br>
+
+
+                            {% for job in current_user.job_roles %}
+                                        <span class="label label-default">{{ job }}</span>
+                                    {% endfor %}
+                                <h6>Competence DB Roles:</h6>
+                                    {% for role in current_user.roles %}
+                                        <span class="label label-default">{{ role }}</span>
+                                    {% endfor %}
                                     {#                                    <small>Member since Nov. 2012</small>#}
-                                </p>
+
                             </li>
                             {#                            <!-- Menu Body -->#}
                             {#                                                        <li class="user-body">#}
@@ -533,7 +551,7 @@ desired effect
                 <!-- Optionally, you can add icons to the links -->
 
                 <li><a href="{{ url_for('index') }}"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
-                <li><a href="{{ url_for('competence.matrix') }}"><i class="fa fa-table"></i> <span>Competence Matrix</span></a></li>
+{#                <li><a href="{{ url_for('competence.matrix') }}"><i class="fa fa-table"></i> <span>Competence Matrix</span></a></li>#}
                 <li class="treeview">
 
                     <a href="#"><i class="fa fa-fw fa-file-text-o"></i> <span>Competencies</span>
@@ -549,6 +567,9 @@ desired effect
                         <li><a href="{{ url_for('competence.list_comptencies') }}"><i class="fa fa-circle-o"></i>List
                             Competencies</a>
                         <li><a href="{{ url_for('admin.users_view') }}"><i class="fa fa-circle-o"></i>View Users</a>
+
+
+                        <li><a href="{{ url_for('competence.collections') }}"><i class="fa fa-circle-o"></i>Collections</a>
 
                         </li>
                     </ul>
@@ -568,15 +589,17 @@ desired effect
                             Section</a>
 
                         </li>
-
-                        <li><a href="{{ url_for('competence.report_by_competence') }}"><i class="fa fa-circle-o"></i>By
-                            Competence</a>
-
-                        </li>
-
-                        <li><a href="{{ url_for('competence.report_by_user') }}"><i class="fa fa-circle-o"></i>By
-                            User</a>
-
+{##}
+{#                        <li><a href="{{ url_for('competence.report_by_competence') }}"><i class="fa fa-circle-o"></i>By#}
+{#                            Competence</a>#}
+{##}
+{#                        </li>#}
+{##}
+{#                        <li><a href="{{ url_for('competence.report_by_user') }}"><i class="fa fa-circle-o"></i>By#}
+{#                            User</a>#}
+{##}
+{#                        </li>#}
+                         <li><a href="{{ url_for('competence.trial_viewer') }}"><i class="fa fa-circle-o"></i>Trial Viewer</a>
                         </li>
 
                     </ul>
@@ -596,20 +619,20 @@ desired effect
                         </li>
                     </ul>
                 </li>
-
-                <li class="treeview">
-                    <a href="#"><i class="fa fa-bug"></i> <span>Bug Reports</span>
-                        <span class="pull-right-container">
-                <i class="fa fa-angle-left pull-right"></i>
-              </span>
-                    </a>
-                    <ul class="treeview-menu">
-
-                        <li><a href="{{ url_for('bug_reports') }}"><i class="fa fa-circle-o"></i>Submit Bug Report</a>
-                        </li>
-
-                    </ul>
-                </li>
+{##}
+{#                <li class="treeview">#}
+{#                    <a href="#"><i class="fa fa-bug"></i> <span>Bug Reports</span>#}
+{#                        <span class="pull-right-container">#}
+{#                <i class="fa fa-angle-left pull-right"></i>#}
+{#              </span>#}
+{#                    </a>#}
+{#                    <ul class="treeview-menu">#}
+{##}
+{#                        <li><a href="{{ url_for('bug_reports') }}"><i class="fa fa-circle-o"></i>Submit Bug Report</a>#}
+{#                        </li>#}
+{##}
+{#                    </ul>#}
+{#                </li>#}
 
                 {% if "ADMIN" in current_user.roles %}
                     <li class="header">Admin</li>
@@ -685,9 +708,30 @@ desired effect
                             </li>
                         </ul>
                     </li>
+{##}
+{#                     <li class="treeview">#}
+{#                        <a href="#"><i class="fa fa-clone"></i> <span>Competencies Admin</span>#}
+{#                            <span class="pull-right-container">#}
+{#                <i class="fa fa-angle-left pull-right"></i>#}
+{#              </span>#}
+{#                        </a>#}
+{#                        <ul class="treeview-menu">#}
+{##}
+{#                            <li><a href="{{ url_for('competence.expiry_dates') }}"><i class="fa fa-circle-o"></i>Edit Expiry Dates</a>#}
+{#                            </li>#}
+{##}
+{#                        </ul>#}
+{#                    </li>#}
 
                     <li class="treeview">
                         <a href="#"><i class="fa fa-database"></i> <span>Database</span>
+                            {%  if current_user.version == "Live"  %}
+                            <span class="label label-warning">{{ current_user.version }}</span>
+                            {% elif current_user.version == "Development" %}
+                                <span class="label label-info">{{ current_user.version }}</span>
+                            {% endif %}
+
+
                             <span class="pull-right-container">
                 <i class="fa fa-angle-left pull-right"></i>
               </span>
@@ -705,7 +749,12 @@ desired effect
                             </a></li>
                     {% endif %}
 
+
+
                 {% endif %}
+
+
+
 
                 <!-- Optionally, you can add icons to the links -->
 
@@ -827,10 +876,10 @@ desired effect
     <footer class="main-footer">
         <!-- To the right -->
         <div class="pull-right hidden-xs">
-            v0.1.5
+            v0.1.7
         </div>
         <!-- Default to the left -->
-        <strong>Copyright &copy; 2018 <a href="#">Sheffield Diagnostic Genetics Service</a>.</strong> All rights
+        <strong>Copyright &copy; 2019 Sheffield Diagnostic Genetics Service & Sheffield Bioinformatics Core.</strong> All rights
         reserved.
     </footer>
 

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<lang="en">
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="/static/css/simple_report_portrait.css">
+    <title>Trial View</title>
+
+
+
+</head>
+<body>
+<br>
+<br>
+<br>
+<h3>Introduction</h3>
+<p>This report is a count of the number of staff trained, partially trained or in training for each of the listed competencies.</p>
+<ul>
+    <li><strong>Trained</strong> <br> The staff member is fully trained in all aspects of the competence and has been signed-off.</li>
+    <li><strong>Partial</strong> <br> The staff member is trained and signed-off for some aspects of the competence.</li>
+    <li><strong>Training</strong> <br> The staff member has had this competence assigned and has activtated training but has not yet completed any aspects.</li>
+</ul>
+<br>
+
+<h3>Competencies</h3>
+     <table id="competencies">
+                            <thead>
+                            <th>Category</th>
+                            <th>Title</th>
+                            <th>Trained (Expired)</th>
+                            <th>Partial</th>
+                            <th>Iraining</th>
+                            </thead>
+                            {% for c_id in result %}
+                                <tr>
+                                    <td style="width:10%">{{ result[c_id]["category"] }}</td>
+                                    <td style="width:50%">{{ result[c_id]["title"] }}</td>
+                                    <td style="width:12%">{{ result[c_id]["trained"] }} ({{ result[c_id]["expired"] }})</td>
+                                    <td style="width:12%">{{ result[c_id]["partial"] }}</td>
+                                    <td style="width:12%">{{ result[c_id]["training"] }}</td>
+                                </tr>
+                            {% endfor %}
+
+
+                        </table>
+
+
+</body>
+</html>

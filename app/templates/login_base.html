@@ -40,23 +40,22 @@
 
 </head>
 <body class="hold-transition login-page">
-
+<br>
+<br>
 <div id="all_content">
-    <div class="login-box">
-        <div class="login-logo">
-            <b>Competence</b>DB
-            {#        <img src="/static/images/logo.png" height="100%" width="100%">#}
-            <h4>{{ config.ORGANISATION }}</h4>
-        </div>
+
+
         {% block content %}
         {% endblock %}
-        {% if config.ORGANISATION == "Sheffield Biomedical Research Centre" %}
-            <br><br><br>
-            <center><img src="/static/images/logo-monochrome.png"></center>
-            <center><img src="/static/images/brc_logo.png"></center>
-        {% endif %}
+
     </div>
-</div>
+<br>
+<br>
+<br><br><br><br><br>
+
+<center><span class="label label-default">v0.1.7</span> </center>
+
+
 {#  <br><br><br>#}
 {##}
 {#    <center><img src="/static/images/logo-monochrome.png">  <img src="/static/images/brc_logo.png"></center>#}

@@ -16,6 +16,7 @@ from collections import defaultdict
 from datetime import datetime as dt
 from dateutil.relativedelta import relativedelta
 from app.views import index
+from collections import Counter
 
 competence = Blueprint('competence', __name__, template_folder='templates')
 
@@ -84,11 +85,9 @@ def competent_staff():
     version = request.args["version"]
 
 
-    competent_staff = s.query(Assessments).join(AssessmentStatusRef).join(Subsection).join(Competence).join(CompetenceDetails).filter(
-        Competence.id.in_(ids)).filter(Assessments.version == version).filter(Users.active == True).filter(
+    competent_staff = s.query(Assessments).join(Users, Users.id==Assessments.user_id).join(AssessmentStatusRef).join(Subsection).join(Competence).join(CompetenceDetails).filter(
+        Subsection.c_id.in_(ids)).filter(Assessments.version == version).filter(Users.active == True).filter(
         or_(AssessmentStatusRef.status == "Complete",AssessmentStatusRef.status == "Assigned",AssessmentStatusRef.status == "Active",AssessmentStatusRef.status=="Four Year Due")).all()
-
-
 
     result = OrderedDict()
 
@@ -366,9 +365,8 @@ def get_subsections(c_id, version):
         and_(Subsection.intro <= version, or_(Subsection.last == None, Subsection.last == version))).order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).values(
         Section.name.label('sec_name'), Subsection.name.label('subsec_name'),
         Subsection.comments, EvidenceTypeRef.type,SectionSortOrder.sort_order)
-    print "SUBSECTIONS"
-    for i in subsecs:
-        print i.subsec_name
+
+
 
     sorted_result = sorted(list(subsecs),
                               key=lambda a: a.sort_order,
@@ -550,7 +548,7 @@ def add_constant_sections_to_db():
 
     print name
     print "DEBUG"
-    sub = Subsection(name=name, c_id=c_id, s_id=s_id, evidence=4, comments=None, intro=version)
+    sub = Subsection(name=name, c_id=c_id, s_id=s_id, evidence=4, sort_order=None, comments=None, intro=version)
     s.add(sub)
     s.commit()
 
@@ -785,6 +783,11 @@ def force_authorise():
         flash("Competencies Already Authorised", "warning")
         return list_comptencies()
 
+@competence.route('/expiry_dates')
+@login_required
+def expiry_dates():
+    form = ExpiryForm()
+    return render_template("competence_expiry.html",form=form)
 
 @competence.route('/matrix', methods=['GET'])
 @login_required
@@ -1132,23 +1135,35 @@ def assign_competence_to_user(user_id, competence_id, due_date):
         Assessments.version == current_version).filter(or_(AssessmentStatusRef.status != "Obsolete",AssessmentStatusRef.status != "Abandoned")).count()
 
     assessment_ids = []
-    if check == 0:
-        for sub_section in sub_sections:
-            print sub_section.name
-            a = Assessments(status=status_id, ss_id=sub_section.id, user_id=int(user_id),
-                            assign_id=current_user.database_id, version=current_version, due_date=datetime.datetime.strptime(due_date, '%d/%m/%Y'))
-            print a
-            s.add(a)
-            s.commit()
-            assessment_ids.append(a.id)
+    if check != 0:
 
-        assigner = s.query(Users).filter(Users.id == current_user.database_id).first()
-        try:
-            send_mail(user_id,"Competence has been assigned to you","You have been assigned a competence by <b>"+assigner.first_name + " " + assigner.last_name +"</b>")
-        except:
-            s.rollback()
-    else:
-        assessment_ids = None
+        abandoned = s.query(Assessments).join(AssessmentStatusRef).filter(Assessments.ss_id.in_(sub_list)).filter(
+            Assessments.user_id == user_id).filter(
+            Assessments.version == current_version).filter(AssessmentStatusRef.status == "Abandoned").all()
+        for assessment in abandoned:
+            s.query(AssessmentEvidenceRelationship).filter_by(assessment_id=assessment.id).delete()
+            s.query(Assessments).filter_by(id=assessment.id).delete()
+            assessment_ids = None
+
+    for sub_section in sub_sections:
+        print "MEMEMEMEME"
+        print sub_section.name
+        a = Assessments(status=status_id, ss_id=sub_section.id, user_id=int(user_id),
+                        assign_id=current_user.database_id, version=current_version,
+                        due_date=datetime.datetime.strptime(due_date, '%d/%m/%Y'))
+        print a
+        s.add(a)
+        s.commit()
+        assessment_ids.append(a.id)
+
+    assigner = s.query(Users).filter(Users.id == current_user.database_id).first()
+    try:
+        send_mail(user_id, "Competence has been assigned to you",
+                  "You have been assigned a competence by <b>" + assigner.first_name + " " + assigner.last_name + "</b>")
+    except:
+        s.rollback()
+
+    print "i did this"
     return assessment_ids
 
 
@@ -1386,6 +1401,7 @@ def reporting():
         counts[service]["Complete"] = 0
         counts[service]["Sign-Off"] = 0
         counts[service]["Active"] = 0
+        counts[service]["Failed"] = 0
         counts[service]["Assigned"] = 0
         counts[service]["Expiring"] = 0
         counts[service]["Expired"] = 0
@@ -1457,6 +1473,62 @@ def report_by_user():
 
 
     return render_template('competence_report_by_user.html')
+
+
+@competence.route('/collections', methods=['GET', 'POST'])
+@login_required
+def collections():
+    return render_template('collections.html')
+
+@competence.route('/trial_viewer', methods=['GET', 'POST'])
+@login_required
+def trial_viewer():
+    current_data = s.query(CompetenceDetails).join(Competence).filter(
+        Competence.current_version == CompetenceDetails.intro).all()
+    result={}
+    for i in current_data:
+        #find out how many are trained and partially and in training
+        print i.title
+        print i.c_id
+        #count how many subsections are in the competence
+        number_of_subsections = s.query(Subsection).join(Competence).filter(and_(Subsection.intro <= Competence.current_version,or_(Subsection.last >= Competence.current_version,Subsection.last == None))).filter(Subsection.c_id == i.c_id).count()
+        print number_of_subsections
+        #get all assessments by user?
+        counts = s.query(func.count(Assessments.id).label("count"),Assessments.user_id.label("user_id"),Assessments.status.label("status_id"),AssessmentStatusRef.status.label("status")).join(AssessmentStatusRef).join(Subsection).join(Competence).join(CompetenceDetails).filter(and_(CompetenceDetails.intro <= Competence.current_version,or_(CompetenceDetails.last >= Competence.current_version,CompetenceDetails.last == None))).filter(Subsection.c_id == i.c_id).filter(Assessments.ss_id == Subsection.id).group_by(Assessments.user_id,Assessments.status).all()
+        print counts
+        trained=0
+        partial=0
+        in_training=0
+        for j in counts:
+            print j
+            users_done = []
+            if j.status == "Complete":
+                if j.count == number_of_subsections:
+                    #user is fully trained - now check for expiry
+
+                    trained+=1
+                    users_done.append(j.user_id)
+                elif j.count < number_of_subsections:
+                    #user is partially trained
+                    partial+=1
+                    users_done.append(j.user_id)
+            if j.status == "Active":
+                if j.user_id not in users_done:
+                    in_training+=1
+                    users_done.append(j.user_id)
+
+        #NEED TO TAKE INTO ACCOUNT EXPIRY
+        #Counter(z)
+
+        result[i.c_id]={"title":i.title,
+                        "trained":trained,
+                        "expired":0,
+                        "partial":partial,
+                        "training":in_training,
+                        "category":i.category_rel.category}
+
+
+    return render_template('trial_viewer.html', current_data=current_data,result=result)
 
 @competence.route('/history', methods=['GET', 'POST'])
 @login_required

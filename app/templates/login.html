@@ -2,70 +2,118 @@
 
 {% block content %}
 
-    <!-- /.login-logo -->
-    <div class="login-box-body">
+    <div class="row rowspecial">
 
-{#        <p class="login-box-msg">Sign in to start your session</p>#}
-        {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                    <div class="callout callout-{{ category }}">
+        <div class="col-md-2"></div>
 
-                        <p>{{ message }}</p>
+        <div class="col-md-4 login-box-new">
+            <div class="row rowspecial">
+
+                <div class="col-md-10 center-middle">
+
+{#                  {% if config.ORGANISATION == "Sheffield Biomedical Research Centre" %}#}
+
+                        <img src="/static/images/Sheffield Biomedical Research Centre_logo_outlined_RGB_COL.png">
+{#                        <img src="/static/images/logo-monochrome.png">#}
+{#                    {% endif %}#}
+
+                    <div class="login-logo">
+                    <h1><strong>Competence</strong>DB</h1>
+                        {#        <img src="/static/images/logo.png" height="100%" width="100%">#}
+                        <h4>{{ config.ORGANISATION }}</h4>
                     </div>
-                    {% endfor %}
-                    </ul>
-                {% endif %}
-            {% endwith %}
-        {% if message %}
-            <div class="alert alert-danger"><strong>{{ modifier }}</strong> {{ message }}</div>
-        {% endif %}
-        <form action="{{ url_for('login') }}" method="post">
-            <div class="form-group has-feedback">
-                {{ form.username(class_="form-control") }}
-                <span class="glyphicon glyphicon-user form-control-feedback"></span>
+
+                    {#        <p class="login-box-msg">Sign in to start your session</p>#}
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                {% if category == "message" %}
+                                    <div class="callout callout-warning">
+                                {% else %}
+                                <div class="callout callout-{{ category }}">
+                                {% endif %}
+                                    <p>{{ message }}</p>
+                                </div>
+                            {% endfor %}
+                            </ul>
+                        {% endif %}
+                    {% endwith %}
+                    {% if message %}
+                        <div class="alert alert-danger"><strong>{{ modifier }}</strong> {{ message }}</div>
+                    {% endif %}
+                    <form action="{{ url_for('login') }}" class="form-horizontal" method="post">
+                        <div class="form-group has-feedback">
+                            {{ form.username.label }}
+                            {{ form.username(class_="form-control") }}
+                            <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                        </div>
+                        <div class="form-group has-feedback">
+                            {{ form.password.label }}
+                            {{ form.password(class_="form-control") }}
+                            <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                            {#                {% if session['activedirectory'] %}#}
+                            <span class="help-block pull-right">Click <a
+                                    href="{{ url_for('admin.request_reset_password') }}">here</a> to reset your password</span>
+                            {#            {% endif %}#}
+                        </div>
+                        <div class="row">
+                            {#<div class="g-recaptcha" data-sitekey="6LdbkXsUAAAAAD0tspBrFRUctY_DfrQUZ6jht67S"></div>#}
+                            <!-- /.col -->
+                            <div class="col-xs-12">
+                                <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
+                            </div>
+                            <!-- /.col -->
+                        </div>
+                    </form>
+
+
+
+
+
+                </div>
             </div>
-            <div class="form-group has-feedback">
-                {{ form.password(class_="form-control") }}
-                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-{#                {% if session['activedirectory'] %}#}
-                <span class="help-block pull-right">Click <a href="{{ url_for('admin.request_reset_password') }}">here</a> to reset your password</span>
-{#            {% endif %}#}
+
+        </div>
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-12 no-padding">
+                    <img src="static/images/Community_Motifs_Binary code_digital_RGB.jpg">
+                </div>
             </div>
             <div class="row">
-{#<div class="g-recaptcha" data-sitekey="6LdbkXsUAAAAAD0tspBrFRUctY_DfrQUZ6jht67S"></div>#}
-                <!-- /.col -->
-                <div class="col-xs-12">
-                    <button type="submit" class="btn btn-warning btn-block btn-flat">Sign In</button>
+                <div class="col-md-12 no-padding">
+                    <img src="static/images/140810-OSX77N-223-cropped.jpeg">
                 </div>
-                <!-- /.col -->
             </div>
-        </form>
-
-
+        </div>
+        <div class="col-md-3"></div>
+        </div>
     </div>
 
-{#    <small class="pull-right">Need to register? email <a#}
-{#            href="mailto:matthewparker24+lzj6vkpuibpnivi6nsog@boards.trello.com?Subject=#CompetenceDB%20#registration%20New%20login"#}
-{#            target="_top">bioinformatics</a></small>#}
+    <!-- /.login-logo -->
+
+
+    {#    <small class="pull-right">Need to register? email <a#}
+    {#            href="mailto:matthewparker24+lzj6vkpuibpnivi6nsog@boards.trello.com?Subject=#CompetenceDB%20#registration%20New%20login"#}
+    {#            target="_top">bioinformatics</a></small>#}
 
     <!-- /.login-box-body -->
 
-<!-- /.login-box -->
+    <!-- /.login-box -->
 
-<!-- jQuery 3 -->
-<script src="../../bower_components/jquery/dist/jquery.min.js"></script>
-<!-- Bootstrap 3.3.7 -->
-<script src="../../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<!-- iCheck -->
-<script src="../../plugins/iCheck/icheck.min.js"></script>
-<script>
-    $(function () {
-        $('input').iCheck({
-            checkboxClass: 'icheckbox_square-blue',
-            radioClass: 'iradio_square-blue',
-            increaseArea: '20%' // optional
+    <!-- jQuery 3 -->
+    <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap 3.3.7 -->
+    <script src="../../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- iCheck -->
+    <script src="../../plugins/iCheck/icheck.min.js"></script>
+    <script>
+        $(function () {
+            $('input').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
         });
-    });
-</script>
+    </script>
 {% endblock %}

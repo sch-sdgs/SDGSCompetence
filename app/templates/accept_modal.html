@@ -18,6 +18,20 @@
                             {{ accept_form.comments.label(class_="col-lg-3 control-label") }}
                             <div class="col-lg-9">{{ accept_form.comments(class_="form-control ") }}</div>
                         </div>
+
+                <div class="form-group">
+                                    {{ accept_form.expiry_date.label(class_="col-lg-2 control-label") }}
+                                    <div class="col-lg-10">
+                                        <div class="input-group date">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-calendar"></i>
+                                            </div>
+                                            {{ accept_form.expiry_date(class_="form-control pull-right",id="datepicker") }}
+                                        </div>
+                                    </div>
+                                    <!-- /.input group -->
+                                </div>
+
                  <div class="form-group">
                             <div class="col-lg-9">{{ accept_form.assid(class_="form-control ",value=evidence.id) }}</div>
                         </div>
@@ -45,3 +59,17 @@
             </fieldset>
         </form>
 </div>
+
+<script>
+    $(function () {
+
+            //Date picker
+            $('#datepicker').datepicker({
+                autoclose: true,
+                format: 'dd/mm/yyyy',
+                startDate: '+1d'
+            })
+
+
+        })
+</script>

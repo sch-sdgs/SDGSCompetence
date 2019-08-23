@@ -2,132 +2,204 @@
 
 {% block content %}
 
+    <div class="row rowspecial">
 
-        <!-- /.login-logo -->
-        <div class="login-box-body">
-            <h2>Register</h2>
-            <small>Most Information is pre-filled. <strong>Just select your job roles, your department and enter your password</strong> and agree to the privacy statement and press "Register"</small><br><br>
-            <form action="{{ url_for('register') }}" method="post">
-                {{ form.hidden_tag() }}
-                <p>
-                    {{ form.username.label }}<br>
-                    {{ form.username(size=50) }}<br>
-                    {% for error in form.username.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ form.first_name.label }}<br>
-                    {{ form.first_name(size=50) }}<br>
-                    {% for error in form.first_name.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ form.last_name.label }}<br>
-                    {{ form.last_name(size=50) }}<br>
-                    {% for error in form.last_name.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ form.jobrole.label }}
-                    {{ form.jobrole(class_="form-control") }}
-                    <span class="help-block">This is your role within the department. <strong>You can select multiple - ctrl + click.</strong></span>
-                </p>
-                <p>
-                    {{ form.service_id.label }}
-                    {{ form.service_id(class_="form-control") }}
-                </p>
-                <p>
-                    {{ form.email.label }}<br>
-                    {{ form.email(size=50) }}<br>
-                    {% for error in form.email.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ form.password.label }}<br>
-                    {{ form.password(size=50) }}<br>
-                    {% for error in form.password.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ form.password2.label }}<br>
-                    {{ form.password2(size=50) }}<br>
-                    <span class="help-block"><div id="divCheckPasswordMatch"></div></span>
-                    {% for error in form.password2.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                    {% endfor %}
-                </p>
+        <div class="col-md-2"></div>
+
+        <div class="col-md-5 login-box-new">
+            <div class="row rowspecial">
+
+                <div class="col-md-10 center-middle">
+
+                    {#                  {% if config.ORGANISATION == "Sheffield Biomedical Research Centre" %}#}
+                    {##}
+                    {#                        <img src="/static/images/Sheffield Biomedical Research Centre_logo_outlined_RGB_COL.png">#}
+                    {#                        <img src="/static/images/logo-monochrome.png">#}
+                    {#                    {% endif %}#}
+
+                    <h2><strong>Competence</strong>DB: Register</h2>
+                    {#            <small>Most Information is pre-filled. <strong>Just select your job roles, your department and enter your password</strong> and agree to the privacy statement and press "Register"</small><br><br>#}
+                    <form action="{{ url_for('register') }}" method="post">
+                        {{ form.hidden_tag() }}
+                        <div class="form-group">
+
+                                {{ form.username.label }}
+
+                            {{ form.username(size=50, class_="form-control") }}
+                            {% for error in form.username.errors %}
+                                <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.first_name.label }}
+                            {{ form.first_name(size=50, class_="form-control") }}
+                            {% for error in form.first_name.errors %}
+                                <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.last_name.label }}
+                            {{ form.last_name(size=50, class_="form-control") }}
+                            {% for error in form.last_name.errors %}
+                                <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </div>
+
+                            {{ form.jobrole.label }}
+                            {{ form.jobrole(class_="form-control") }}
+                            <span class="help-block">This is your role within the department. <strong>You can select multiple - ctrl + click.</strong></span>
+
+                         <div class="form-group">
+                            {{ form.service_id.label }}
+                            {{ form.service_id(class_="form-control") }}
+                         </div>
+
+                        <div class="form-group">
+                            {{ form.email.label }}
+                            {{ form.email(size=50, class_="form-control") }}
+                            {% for error in form.email.errors %}
+                                <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.password.label }}
+                            {{ form.password(size=50, class_="form-control") }}
+                            {% for error in form.password.errors %}
+                                <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </div>
+                        <div class="form-group">
+                            {{ form.password2.label }}<br>
+                            {{ form.password2(size=50, class_="form-control") }}<br>
+                            <span class="help-block"><div id="divCheckPasswordMatch"></div></span>
+                            {% for error in form.password2.errors %}
+                                <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </div>
+
+    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                {#                    {{ form.agree.label }}<br>#}
+                                {{ form.agree(class_="checkbox") }} I have read and understood the GDPR/Privacy
+                                statement <a data-toggle="modal" data-target="#modal-default">
+                                here</a></label>
+                        </div>
+    </div>
+                        {#                    {% for error in form.password2.errors %}#}
+                        {#                        <span style="color: red;">[{{ error }}]</span>#}
+                        {#                    {% endfor %}#}
+
+                        {{ form.submit(class="btn btn-primary btn-block btn-flat",disabled="disabled") }}
+                    </form>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modal-default" style="display: none;">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span></button>
+                            <h4 class="modal-title">GDPR/Privacy Statement</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>GDPR Statement Coming Soon....</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
 
 
+            </div>
 
-            <p>
-{#                    {{ form.agree.label }}<br>#}
-                    {{ form.agree() }} I have read and understood the GDPR/Privacy statement <a data-toggle="modal" data-target="#modal-default">
-                here
-              </a><br>
-{#                    {% for error in form.password2.errors %}#}
-{#                        <span style="color: red;">[{{ error }}]</span>#}
-{#                    {% endfor %}#}
-                </p>
-                <p>{{ form.submit(class="btn btn-warning btn-block btn-flat",disabled="disabled") }}</p>
-            </form>
         </div>
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-12 no-padding">
+                    <img src="static/images/Community_Motifs_Binary code_digital_RGB.jpg">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 no-padding">
+                    <img src="static/images/140810-OSX77N-223-cropped.jpeg">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 no-padding">
+                    <img src="static/images/Corporate_Motifs_Centrifuge_medical technology_RGB.jpg">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3"></div>
+
     </div>
 
-    <div class="modal fade" id="modal-default" style="display: none;">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">×</span></button>
-                <h4 class="modal-title">GDPR/Privacy Statement</h4>
-              </div>
-              <div class="modal-body">
-                <p>One fine body…</p>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
-              </div>
-            </div>
-            <!-- /.modal-content -->
-          </div>
-          <!-- /.modal-dialog -->
+
+    <!-- /.login-logo -->
 
 
+    {#    <small class="pull-right">Need to register? email <a#}
+    {#            href="mailto:matthewparker24+lzj6vkpuibpnivi6nsog@boards.trello.com?Subject=#CompetenceDB%20#registration%20New%20login"#}
+    {#            target="_top">bioinformatics</a></small>#}
+
+    <!-- /.login-box-body -->
+
+    <!-- /.login-box -->
+
+    <!-- jQuery 3 -->
+    <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap 3.3.7 -->
+    <script src="../../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- iCheck -->
+    <script src="../../plugins/iCheck/icheck.min.js"></script>
+    <script>
+        {#$(function () {#}
+        {#    $('input').iCheck({#}
+        {#        checkboxClass: 'icheckbox_square-blue',#}
+        {#        radioClass: 'iradio_square-blue',#}
+        {#        increaseArea: '30%' // optional#}
+        {#    });#}
+        {#})
+        ;
+        #}
 
 
-<script>
-$(document).ready(function () {
-  $('#agree').click(function () {
-      console.log("hello")
-    $('#submit').prop("disabled", !$("#agree").prop("checked"));
-  })
-});
+        $(document).ready(function () {
+            $('#agree').click(function () {
+                console.log("hello")
+                $('#submit').prop("disabled", !$("#agree").prop("checked"));
+            })
+        });
 
-function checkPasswordMatch() {
-    var password = $("#password").val();
-    var confirmPassword = $("#password2").val();
+        function checkPasswordMatch() {
+            var password = $("#password").val();
+            var confirmPassword = $("#password2").val();
 
-    if (password != confirmPassword) {
-        $("#divCheckPasswordMatch").html("Passwords do not match!");
-        $("#divCheckPasswordMatch").removeClass("text-green").addClass("text-red");
-    }
-    else {
-        $("#divCheckPasswordMatch").html("Passwords match.");
-        $("#divCheckPasswordMatch").removeClass("text-red").addClass("text-green");
-    }
+            if (password != confirmPassword) {
+                $("#divCheckPasswordMatch").html("Passwords do not match!");
+                $("#divCheckPasswordMatch").removeClass("text-green").addClass("text-red");
+            }
+            else {
+                $("#divCheckPasswordMatch").html("Passwords match.");
+                $("#divCheckPasswordMatch").removeClass("text-red").addClass("text-green");
+            }
 
-}
+        }
 
-$(document).ready(function () {
-   $("#password, #password2").keyup(checkPasswordMatch);
-});
+        $(document).ready(function () {
+            $("#password, #password2").keyup(checkPasswordMatch);
+        });
 
 
-</script>
+    </script>
 
+    </script>
 {% endblock %}

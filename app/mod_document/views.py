@@ -9,7 +9,7 @@ import time
 from docx import Document
 from flask import Blueprint, jsonify
 from flask_table import Table, Col
-from sqlalchemy import and_, or_, case
+from sqlalchemy import and_, or_, case, func
 from flask import render_template, request, url_for, redirect, Blueprint, send_from_directory
 from flask.ext.login import login_required, current_user
 from app.views import admin_permission
@@ -260,3 +260,110 @@ def export_document_view():
         uploads = app.config["UPLOAD_FOLDER"]
         filename = s.query(CompetenceDetails).filter(CompetenceDetails.c_id==c_id).first().title + ".pdf"
         return send_from_directory(directory=uploads, filename=outfile, as_attachment=True, attachment_filename=filename)
+
+
+@document.route('/export_trial', methods=['GET', 'POST'])
+def export_trial_report():
+    print "HELLO"
+    ids = [int(i) for i in request.args.get('ids').split(",")]
+    print ids
+    uploads = app.config["UPLOAD_FOLDER"]
+    print uploads
+
+
+    current_data = s.query(CompetenceDetails).join(Competence).filter(CompetenceDetails.c_id.in_(ids)).filter(
+        Competence.current_version == CompetenceDetails.intro).all()
+    print current_data
+
+    result = {}
+    for i in current_data:
+        #find out how many are trained and partially and in training
+        print i.title
+        print i.c_id
+        #count how many subsections are in the competence
+        number_of_subsections = s.query(Subsection).join(Competence).filter(and_(Subsection.intro <= Competence.current_version,or_(Subsection.last >= Competence.current_version,Subsection.last == None))).filter(Subsection.c_id == i.c_id).count()
+        print number_of_subsections
+        #get all assessments by user?
+        counts = s.query(func.count(Assessments.id).label("count"),Assessments.user_id.label("user_id"),Assessments.status.label("status_id"),AssessmentStatusRef.status.label("status")).join(AssessmentStatusRef).join(Subsection).join(Competence).join(CompetenceDetails).filter(and_(CompetenceDetails.intro <= Competence.current_version,or_(CompetenceDetails.last >= Competence.current_version,CompetenceDetails.last == None))).filter(Subsection.c_id == i.c_id).filter(Assessments.ss_id == Subsection.id).group_by(Assessments.user_id,Assessments.status).all()
+        print counts
+        trained=0
+        partial=0
+        in_training=0
+        for j in counts:
+            print j
+            users_done = []
+            if j.status == "Complete":
+                if j.count == number_of_subsections:
+                    #user is fully trained - now check for expiry
+
+                    trained+=1
+                    users_done.append(j.user_id)
+                elif j.count < number_of_subsections:
+                    #user is partially trained
+                    partial+=1
+                    users_done.append(j.user_id)
+            if j.status == "Active":
+                if j.user_id not in users_done:
+                    in_training+=1
+                    users_done.append(j.user_id)
+
+        #NEED TO TAKE INTO ACCOUNT EXPIRY
+        #Counter(z)
+
+        result[i.c_id]={"title":i.title,
+                        "trained":trained,
+                        "expired":0,
+                        "partial":partial,
+                        "training":in_training,
+                        "category":i.category_rel.category}
+
+
+    html_out = render_template('trial_view.html',result=result)
+    html = HTML(string=html_out)
+
+    main_doc = html.render(stylesheets=[CSS('static/css/simple_report_portrait.css')])
+
+    exists_links = False
+
+    # Add headers and footers
+    # header = html.render(stylesheets=[CSS(string='div {position: fixed; top: 1cm; left: 1cm;}')])
+    header_out = render_template('trial_view_header.html')
+    header_html = HTML(string=header_out,base_url=request.url)
+    header = header_html.render(
+        stylesheets=[CSS('static/css/simple_report_portrait.css'), CSS(string='div {position: fixed; top: -2.7cm; left: 0cm;}')])
+
+    header_page = header.pages[0]
+    exists_links = exists_links or header_page.links
+    header_body = get_page_body(header_page._page_box.all_children())
+    header_body = header_body.copy_with_children(header_body.all_children())
+
+    # Template of footer
+    footer_out = render_template('trial_view_footer.html',user=current_user.full_name,date=str(datetime.datetime.now()))
+    footer_html = HTML(string=footer_out)
+    footer = footer_html.render(stylesheets=[CSS('static/css/simple_report_portrait.css'),
+                                             CSS(string='div {position: fixed; bottom: -2.1cm; left: 0cm;}')])
+
+    footer_page = footer.pages[0]
+    exists_links = exists_links or footer_page.links
+    footer_body = get_page_body(footer_page._page_box.all_children())
+    footer_body = footer_body.copy_with_children(footer_body.all_children())
+
+    # Insert header and footer in main doc
+
+    for page in main_doc.pages:
+        print "HEADER & FOOTER"
+        print page
+        page_body = get_page_body(page._page_box.all_children())
+        page_body.children += header_body.all_children()
+        page_body.children += footer_body.all_children()
+        if exists_links:
+            page.links.extend(header_page.links)
+            page.links.extend(footer_page.links)
+
+    outfile = str(uuid.uuid4())
+
+    out_name = main_doc.write_pdf(target=app.config["UPLOAD_FOLDER"] + "/" + outfile)
+    print outfile
+    print out_name
+
+    return send_from_directory(directory=uploads, filename=outfile, as_attachment=True, attachment_filename="trial_report.pdf")

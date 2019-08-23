@@ -39,8 +39,9 @@
                                     {{ evidence }}
                                     <table class="table table-striped">
                                         <thead>
-                                        <th class="col-md-6">Competence/Sub Section(s) Covered</th>
+                                        <th class="col-md-5">Competence/Sub Section(s) Covered</th>
                                         <th class="col-md-2">Trainee</th>
+                                        <th class="col-md-2">Trainer</th>
                                         <th class="col-md-2">Date Trained</th>
                                         <th class="col-md-2">Actions</th>
                                         </thead>
@@ -58,6 +59,9 @@
                                                 </td>
                                                 <td>
                                                     {{ evidence.assessments[0].assess_id_rel.user_id_rel.first_name }} {{ evidence.assessments[0].assess_id_rel.user_id_rel.last_name }}
+                                                </td>
+                                            <td>
+                                                    {{ evidence.assessments[0].assess_id_rel.trainer_id_rel.first_name }} {{ evidence.assessments[0].assess_id_rel.trainer_id_rel.last_name }}
                                                 </td>
                                                 <td>
                                                     {{ evidence.assessments[0].assess_id_rel.date_of_training.strftime('%d-%m-%Y') }}
@@ -253,20 +257,21 @@
 
 
 
-            <h2 class="page-header"><i class="fa fa-graduation-cap"></i>Ongoing Training</h2>
+
 
             <div class="row">
-                <div class="col-lg-12">
+                <div class="col-md-12">
                     <div class="small-box box-solid bg-gray" id="training">
                         <div class="box-body text-center">
+
                             <form id="quick_competence" class="form-inline">
 
-                                <div class="input-group col-xs-8">
+                                <div class="input-group col-md-7">
                                     <input type="text" name="name" id="name" class="form-control"
                                            placeholder="Quickly assign yourself some training here...  Just start typing the name of a competence.">
                                 </div>
 
-                                <div class="input-group date col-xs-2">
+                                <div class="input-group date col-md-2">
                                     <div class="input-group-addon">
                                         <i class="fa fa-calendar"></i>
                                     </div>
@@ -277,7 +282,7 @@
                                            placeholder="Due Date">
 
                                 </div>
-                                <div class="input-group col-xs-1">
+                                <div class="input-group col-md-1">
 
                                     <input type="submit" class="btn btn-primary btn-flat"
                                            id="go"
@@ -286,22 +291,25 @@
                                 </div>
                             </form>
                             <span class="text-red" id="name_text"></span>
-                        </div>
+                            </div>
+
 
                     </div>
                 </div>
             </div>
 
+        <h2 class="page-header"><i class="fa fa-graduation-cap"></i> Assigned & In Progress Training</h2>
+
             <div class="row">
                 <div class="col-lg-12">
 
                     <div class="box" id="training">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">Assigned & In Progress Training</h3>
-                            <div class="box-tools pull-right">
-                                <span class="badge bg-gray">{{ assigned|length }}</span>
-                            </div>
-                        </div>
+{#                        <div class="box-header with-border">#}
+{##}
+{#                            <div class="box-tools pull-right">#}
+{#                                <span class="badge bg-gray">{{ assigned|length }}</span>#}
+{#                            </div>#}
+{#                        </div>#}
                         <div class="box-body table-responsive">
 
 
@@ -718,8 +726,8 @@
                     </div>
 
                 </div>
-                <div class="col-md-6">
-                    <div class="box box-solid bg-red-gradient" id="training">
+                <div class="col-md-6 fill">
+                    <div class="box box-danger" id="training">
                         <div class="box-header">
                             <h3 class="box-title"><i class="fa fa-calendar-times-o"></i> Expiring/Expired
                                 Competencies</h3>
@@ -1104,7 +1112,7 @@
                 datasets: [{
                     data: [{{ assigned_count }}, {{ active_count }}, {{ signoff_count }}, {{ complete_count }}, {{ failed_count }}, {{ abandoned_count }}, 0, {{ expiring_count }}, {{ expired_count }}],
                     label: 'Digital Goods',
-                    fillColor: 'rgba(60,141,188,0.9)',
+                    fillColor: '#EA5D4E',
                     strokeColor: 'rgba(60,141,188,0.8)',
                     pointColor: '#3b8bba',
                     pointStrokeColor: 'rgba(60,141,188,1)',
@@ -1118,7 +1126,7 @@
             var barChartCanvas = $('#barChart').get(0).getContext('2d')
             var barChart = new Chart(barChartCanvas)
             var barChartData = data
-            barChartData.datasets[0].fillColor = '#ffcc00'
+            barChartData.datasets[0].fillColor = '#EA5D4E'
             barChartData.datasets[0].strokeColor = '#8c8c8c'
             barChartData.datasets[0].pointColor = '#ffcc00'
             var barChartOptions = {
