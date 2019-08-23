@@ -119,8 +119,6 @@ def get_competence_by_user(c_id, u_id,version):
                AssessmentStatusRef.status, Assessments.date_of_training,
                Assessments.date_completed, Assessments.date_expiry, Assessments.comments.label('training_comments'),Assessments.version,SectionSortOrder.sort_order)
 
-    print "COUNT"
-    print competence_result
 
     result = {'constant': OrderedDict(), 'custom': OrderedDict()}
 
@@ -141,12 +139,9 @@ def get_competence_by_user(c_id, u_id,version):
     print json.dumps(result, indent=4)
 
     for c in competence_result:
-        print "hello MEMEMME"
-        print c.name
-        print c.ass_id
         evidence = s.query(AssessmentEvidenceRelationship).filter(
             AssessmentEvidenceRelationship.assessment_id == c.ass_id).all()
-        print evidence
+
         if c.constant:
             d = 'constant'
         else:
@@ -404,10 +399,10 @@ def view_current_competence():
         u_id = current_user.database_id
         competence_summary = get_competence_summary_by_user(c_id, u_id,version)
         section_list = get_competence_by_user(c_id, u_id,version)
-        print "HERE"
-        print competence_summary.activated
+
+
         reassessments = s.query(Reassessments).join(AssessReassessRel).join(Assessments).join(AssessmentStatusRef).join(Subsection).join(Competence).filter(AssessmentStatusRef.status != "Obsolete").filter(Assessments.user_id==u_id).filter(Competence.id==c_id).filter(Assessments.version==version).all()
-        print "DETAILLLS"
+
         detail_id = s.query(CompetenceDetails).join(Competence).filter(CompetenceDetails.c_id == c_id).filter(and_(CompetenceDetails.intro <= version,
                                                                  or_(
                                                                      CompetenceDetails.last >= version,
