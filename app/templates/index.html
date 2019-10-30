@@ -42,7 +42,7 @@
                                         <th class="col-md-5">Competence/Sub Section(s) Covered</th>
                                         <th class="col-md-2">Trainee</th>
                                         <th class="col-md-2">Trainer</th>
-                                        <th class="col-md-2">Date Trained</th>
+                                        <th class="col-md-1">Date Trained</th>
                                         <th class="col-md-2">Actions</th>
                                         </thead>
 
@@ -51,9 +51,13 @@
                                                 <td>
                                                     <strong>{{ evidence.assessments[0].assess_id_rel.ss_id_rel.c_id_rel.competence_detail[0].title }}:</strong>
                                                     <ul>
-                                                        {% for i in evidence.assessments %}
-                                                            <li>{{ i.assess_id_rel.ss_id_rel.name }}</li>
-                                                        {% endfor %}
+                                                        {% if evidence.assessments|length < 4  %}
+                                                            {% for i in evidence.assessments %}
+                                                                <li>{{ i.assess_id_rel.ss_id_rel.name }}</li>
+                                                            {% endfor %}
+                                                        {% else %}
+                                                            <li>This evidence covers {{ evidence.assessments|length }} subsections</li>
+                                                        {% endif %}
                                                     </ul>
 
                                                 </td>
@@ -64,7 +68,11 @@
                                                     {{ evidence.assessments[0].assess_id_rel.trainer_id_rel.first_name }} {{ evidence.assessments[0].assess_id_rel.trainer_id_rel.last_name }}
                                                 </td>
                                                 <td>
+                                                    {% if evidence.assessments[0].assess_id_rel.date_of_training  %}
                                                     {{ evidence.assessments[0].assess_id_rel.date_of_training.strftime('%d-%m-%Y') }}
+                                                    {% else %}
+                                                        Missing
+                                                    {% endif %}
                                                 </td>
                                                 <td>
                                                     {% include "evidence.html" %}
