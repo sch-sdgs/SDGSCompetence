@@ -740,9 +740,6 @@ def abandon():
 @login_required
 def signoff_evidence(evidence_id,action):
 
-
-
-
     if action == "accept":
         data = {
             'is_correct': 1,
@@ -765,22 +762,16 @@ def signoff_evidence(evidence_id,action):
 
 
     for assessment in assessments_to_update:
-        print "HERE"
-        print status
-        print assessment.assessment_id
 
         query = s.query(Assessments).filter(Assessments.id == assessment.assessment_id).first()
 
         for detail in query.ss_id_rel.c_id_rel.competence_detail:
             if detail.intro <= query.version:
-                print "YOY"
-                print detail
                 months_valid = detail.validity_rel.months
 
-
-        if request.form["expiry_date"]:
+        try:
             date_expiry = datetime.datetime.strptime(request.form["expiry_date"], '%d/%m/%Y')
-        else:
+        except:
             date_expiry = datetime.datetime.now() + relativedelta(months=months_valid)
 
         data = {
