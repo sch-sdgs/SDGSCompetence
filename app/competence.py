@@ -43,20 +43,26 @@ mail.init_app(app)
 
 
 def send_async_email(msg):
+    print "in async mail!"
     with app.test_request_context():
+        print "inside app thing!"
         mail.send(msg)
 
 def send_mail(user_id,subject,message):
 
     if config.get("MAIL") != False:
-        recipient_user_name = s.query(Users).filter(Users.id == int(user_id)).first().login
+        #recipient_user_name = s.query(Users).filter(Users.id == int(user_id)).first().login
+        recipient_email = s.query(Users).filter(Users.id == int(user_id)).first().email
+        print recipient_email
         print "SENDING EMAIL"
         print message
-        msg = Message('CompetenceDB: '+subject, sender="notifications@competencedb.com", recipients=[recipient_user_name+"@sch.nhs.uk"])
+        msg = Message('CompetenceDB: '+subject, sender="notifications@competencedb.com", recipients=[recipient_email])
         msg.body = 'text body'
         msg.html = '<b>You have a notification on CompetenceDB:</b><br><br>'+message+'<br><br>View all your notifications <a href="'+request.url_root+'notifications">here</a>'
         thr = Thread(target=send_async_email, args=[msg])
+        print thr
         thr.start()
+
 
 
 def send_mail_unknown(email,subject,message):
