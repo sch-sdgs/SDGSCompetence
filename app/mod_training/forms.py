@@ -11,7 +11,7 @@ class UploadEvidence(Form):
     For to submit evidence for a competence
     """
     file = FileField('Upload Evidence')
-    evidence_type = QuerySelectField("What type of evidence do you want to upload?",allow_blank=True, blank_text=u'-- please choose --',
+    evidence_type = QuerySelectField("What type of evidence do you want to send?",allow_blank=True, blank_text=u'-- please choose --',
                                       query_factory=lambda: s.query(EvidenceTypeRef).all(),
                                       get_label="type")  # All sections in database
     trainer = SelectField(label="Who was your trainer?")
