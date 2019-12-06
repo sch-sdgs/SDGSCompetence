@@ -880,7 +880,7 @@ def process_evidence():
         s.commit()
 
 
-    send_mail(request.form['trainer'], "Evidence awaiting your review",
+    send_mail(request.form['assessor'], "Evidence awaiting your review",
               "You have evidence uploaded by <b>" + current_user.full_name + "</b> awaiting your review.")
 
     return redirect(url_for('training.view_current_competence')+"?version="+str(version)+"&c_id="+str(c_id))

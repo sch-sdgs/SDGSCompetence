@@ -893,6 +893,8 @@ def index(message=None):
     signoff_competence = s.query(CompetenceDetails).filter(and_(CompetenceDetails.approve_id == current_user.database_id,CompetenceDetails.approved != None,CompetenceDetails.approved != 1)).all()
     print "SIGN_OFF"
     print signoff_competence
+    for i in signoff:
+        print i
     signoff_reassessment = s.query(Reassessments).join(AssessReassessRel).join(Assessments).filter(Reassessments.signoff_id==current_user.database_id).filter(Reassessments.is_correct == None).all()
 
     # signoff_reassessments = {key: [i for i in value] for key, value in
