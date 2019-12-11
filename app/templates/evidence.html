@@ -41,6 +41,28 @@
                         </tr>
                     {% endfor %}
                 </table>
+
+                {% elif evidence.evidence_type_id == 5 %}
+                <h4>Completed Competence Panel</h4>
+                <p>Files will either open in your browser or be downloaded</p>
+                <table class="table table-striped">
+                    <thead>
+                    <th>Filename</th>
+                    <th>Date Uploaded</th>
+                    </thead>
+
+
+                    {% for u in get_uploads(evidence.id) %}
+                        <tr>
+                            <td>
+                                <a href="{{ url_for('training.download',filename=u.uuid,alias=u.filename) }}">{{ u.filename }}</a>
+                            </td>
+                            <td>{{ u.date_uploaded }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+
+
                 {% elif evidence.evidence_type_id == 3 %}
                             <h4>Case Based Evidence</h4>
                             <table class="table table-striped">
