@@ -838,6 +838,10 @@ def process_evidence():
             evidence = request.form['evidence_observation']
             result = None
 
+        if evidence_type == "Completed competence panel":
+            evidence = "Upload"
+            result = None
+
         e = Evidence(is_correct=None, signoff_id=request.form['assessor'], date=datetime.date.today(),
                      evidence=evidence, result=result,
                      comments=None, evidence_type_id=request.form["evidence_type"])
