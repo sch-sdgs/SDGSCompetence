@@ -889,12 +889,17 @@ def index(message=None):
     #         all_obsolete.append(result)
 
 
-    signoff = s.query(Evidence).filter(Evidence.signoff_id == current_user.database_id).filter(Evidence.is_correct == None).all()
+    signoff = s.query(Evidence).join(EvidenceTypeRef).filter(Evidence.signoff_id == current_user.database_id).filter(Evidence.is_correct == None).all()
     signoff_competence = s.query(CompetenceDetails).filter(and_(CompetenceDetails.approve_id == current_user.database_id,CompetenceDetails.approved != None,CompetenceDetails.approved != 1)).all()
     print "SIGN_OFF"
-    print signoff_competence
-    for i in signoff:
-        print i
+
+    # for i in signoff:
+    #     print i
+    #     print i.evidence_type_rel.type
+        # print i.evidence
+        # print i.id
+        # print i.evidence_type_id
+        # print i.type
     signoff_reassessment = s.query(Reassessments).join(AssessReassessRel).join(Assessments).filter(Reassessments.signoff_id==current_user.database_id).filter(Reassessments.is_correct == None).all()
 
     # signoff_reassessments = {key: [i for i in value] for key, value in

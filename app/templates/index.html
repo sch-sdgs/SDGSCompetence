@@ -36,12 +36,13 @@
 
 
                                     This section provides a list of evidence that you need to sign-off.
-                                    {{ evidence }}
+
                                     <table class="table table-striped">
                                         <thead>
                                         <th class="col-md-5">Competence/Sub Section(s) Covered</th>
-                                        <th class="col-md-2">Trainee</th>
-                                        <th class="col-md-2">Trainer</th>
+                                        <th class="col-md-2">Evidence Type</th>
+                                        <th class="col-md-1">Trainee</th>
+                                        <th class="col-md-1">Trainer</th>
                                         <th class="col-md-1">Date Trained</th>
                                         <th class="col-md-2">Actions</th>
                                         </thead>
@@ -60,6 +61,9 @@
                                                         {% endif %}
                                                     </ul>
 
+                                                </td>
+                                                <td>
+                                                    {{ evidence.evidence_type_rel.type}}
                                                 </td>
                                                 <td>
                                                     {{ evidence.assessments[0].assess_id_rel.user_id_rel.first_name }} {{ evidence.assessments[0].assess_id_rel.user_id_rel.last_name }}
