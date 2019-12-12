@@ -355,18 +355,14 @@ def add_sections():
 #edit the competence - everything gets copied and is at v2 - if you then delete last is v2 - but this is an issue.
 
 def get_subsections(c_id, version):
-    print type(version)
-    print type(c_id)
-    subsec_list = []
 
+    subsec_list = []
 
     subsecs = s.query(Subsection).join(Section).join(SectionSortOrder).join(Competence).join(EvidenceTypeRef).filter(
         Subsection.c_id == c_id).filter(SectionSortOrder.c_id == c_id).filter(Section.constant == 0).filter(
-        and_(Subsection.intro <= version, or_(Subsection.last == None, Subsection.last == version))).order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).values(
+        and_(Subsection.intro <= version, or_(Subsection.last == None, Subsection.last == version))).order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).distinct().values(
         Section.name.label('sec_name'), Subsection.name.label('subsec_name'),
         Subsection.comments, EvidenceTypeRef.type,SectionSortOrder.sort_order)
-
-
 
     sorted_result = sorted(list(subsecs),
                               key=lambda a: a.sort_order,
@@ -375,7 +371,6 @@ def get_subsections(c_id, version):
     for sub in sorted_result:
         subsec_list.append(sub)
 
-
     return subsec_list
 
 
@@ -383,15 +378,18 @@ def get_constant_subsections(c_id, version):
     constant_subsec_list = []
     constant_subsecs = s.query(Subsection).join(Section).join(SectionSortOrder).join(Competence).join(EvidenceTypeRef).filter(
         Subsection.c_id == c_id).filter(Section.constant == 1).filter(SectionSortOrder.c_id == c_id).filter(
-        and_(Subsection.intro <= version, or_(Subsection.last == None, Subsection.last == version))).order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).values(
+        and_(Subsection.intro <= version, or_(Subsection.last == None, Subsection.last == version))).order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).distinct().values(
         Section.name.label('sec_name'), Subsection.name.label('subsec_name'),
-        Subsection.comments, EvidenceTypeRef.type,SectionSortOrder.sort_order)
+        Subsection.comments, EvidenceTypeRef.type,SectionSortOrder.sort_order, Subsection.c_id)
+
 
     sorted_result = sorted(list(constant_subsecs),
                            key=lambda a: a.sort_order,
                            reverse=False)
 
+
     for constant_sub in sorted_result:
+        # print (constant_sub)
         constant_subsec_list.append(constant_sub)
     return constant_subsec_list
 
@@ -733,8 +731,9 @@ def view_competence():
 
     dict_constants = OrderedDict()
     constants = get_constant_subsections(c_id, version)
+    print "CONSTANT SECTIONS:"
     for item in constants:
-
+        # print item
         constant_sec_name = item.sec_name
         constant_subsection_name = item.subsec_name
         constant_comment = item.comments
