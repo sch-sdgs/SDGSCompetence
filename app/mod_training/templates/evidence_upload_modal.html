@@ -10,7 +10,7 @@
             <div class="modal-body">
 
                 {% for i in sub['evidence'] %}
-                    {% if i.evidence_id_rel.evidence_type_rel.type == "Upload" %}
+                    {% if i.evidence_id_rel.evidence_type_rel.type == "Upload" or i.evidence_id_rel.evidence_type_rel.type == "Completed competence panel" %}
                         <div class="box">
                             <div class="box-header with-border">
                                 <h3 class="box-title">
@@ -26,7 +26,7 @@
                                     class="h3 box-title pull-right">{{ i.evidence_id_rel.date_completed.strftime('%d-%m-%Y') }}</span>
                             </div>
                             <div class="box-body">
-                                <p>Files that can open in your browser will (i.e. images)...</p>
+                                <p>Files will either open in your browser or be downloaded </p>
                                 <table class="table table-striped">
                                     <thead>
                                     <th>Filename</th>
