@@ -238,9 +238,13 @@
                             </div>
                             <div class="col-md-2">
                                 <div class="pull-right">
-                                    {% set percent = (section_list['constant'][section]['complete'] / section_list['constant'][section]['total']) *100 %}
-                                    {{ section_list['constant'][section]['complete'] }} out
-                                    of {{ section_list['constant'][section]['total'] }}
+                                    {% if section_list['constant'][section]['total'] == 0 %}
+                                        {{ section_list['constant'][section]['complete'] }} out of 0
+                                    {% else %}
+                                        {% set percent = (section_list['constant'][section]['complete'] / section_list['constant'][section]['total']) *100 %}
+                                        {{ section_list['constant'][section]['complete'] }} out
+                                        of {{ section_list['constant'][section]['total'] }}
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="col-md-2" style="height: 20px;">
@@ -307,9 +311,14 @@
                             </div>
                             <div class="col-md-2">
                                 <div class="pull-right">
-                                    {% set percent = (section_list['custom'][section]['complete'] / section_list['custom'][section]['total']) *100 %}
-                                    {{ section_list['custom'][section]['complete'] }} out
-                                    of {{ section_list['custom'][section]['total'] }}
+                                    {% if section_list['custom'][section]['total'] == 0 %}
+                                        {{ section_list['custom'][section]['complete'] }} out of 0
+
+                                    {% else %}
+                                        {% set percent = (section_list['custom'][section]['complete'] / section_list['custom'][section]['total']) *100 %}
+                                        {{ section_list['custom'][section]['complete'] }} out
+                                        of {{ section_list['custom'][section]['total'] }}
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="col-md-2" style="height: 20px;">
