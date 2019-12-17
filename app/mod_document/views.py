@@ -66,12 +66,18 @@ def get_subsections(c_id):
     print subsection_list
     return subsection_list
 
-def get_qpulsenums(c_id):
-    qpulse_no_list = s.query(Documents).\
-        filter(Documents.c_id == c_id).\
-        values(Documents.qpulse_no)
+def get_qpulsenums(c_id, version):
+    # qpulse_no_list = s.query(Documents).\
+    #     filter(Documents.c_id == c_id).\
+    #     values(Documents.qpulse_no)
+
+    qpulse_no_list = s.query(Documents.qpulse_no).join(CompetenceDetails).filter(CompetenceDetails.intro == version).filter(
+        CompetenceDetails.c_id == c_id)
+
     doc_list = []
     for i in qpulse_no_list:
+        print "IN QPULSE LIST:"
+        print i
         doc_list.append(i)
     return doc_list
 
@@ -138,7 +144,7 @@ def export_document(c_id):
     print "competence get subsections returns: "
     print subsec
     if config.get("QPULSE_MODULE") == True:
-        qpulse = get_qpulsenums(c_id)
+        qpulse = get_qpulsenums(c_id, v)
 
     # Competence details
     title = comp.title
@@ -184,11 +190,15 @@ def export_document(c_id):
     #associated qpulse documents
     qpulse_list = {}
     if config.get("QPULSE_MODULE") == True:
-
+        print qpulse
         for qpulse_no in qpulse:
             d = s.query(QPulseDetails).first()
+            print d
             qpulse_name = QPulseWeb().get_doc_by_id(d.username, d.password, qpulse_no)
             qpulse_list[qpulse_no]=qpulse_name
+
+    for i in qpulse_list:
+        print i
 
     # evidence - this will be for downloading completed competences
     evidence_list = {}
