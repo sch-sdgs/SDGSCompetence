@@ -260,6 +260,7 @@ def add_sections():
 
     f = request.form
     c_id = request.args.get('c_id')
+    ss_sort_order=0
     for key in f.keys():
         if "subsections" in key:
             print(key)
@@ -271,7 +272,8 @@ def add_sections():
                 evidence = s.query(EvidenceTypeRef.id).filter_by(type='Discussion').first().id
                 print "ITS HERE"
                 print item_add
-                add_constant = Subsection(c_id=c_id, s_id=s_id, name=item_add, evidence=evidence, comments=None)
+                ss_sort_order+=1
+                add_constant = Subsection(c_id=c_id, s_id=s_id, name=item_add, evidence=evidence, comments=None, sort_order=ss_sort_order)
                 s.add(add_constant)
                 s.commit()
 
@@ -360,7 +362,7 @@ def get_subsections(c_id, version):
 
     subsecs = s.query(Subsection).join(Section).join(SectionSortOrder).join(Competence).join(EvidenceTypeRef).filter(
         Subsection.c_id == c_id).filter(SectionSortOrder.c_id == c_id).filter(Section.constant == 0).filter(
-        and_(Subsection.intro <= version, or_(Subsection.last == None, Subsection.last == version))).order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).distinct().values(
+        and_(Subsection.intro <= version, or_(Subsection.last == None, Subsection.last == version))).order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).values(
         Section.name.label('sec_name'), Subsection.name.label('subsec_name'),
         Subsection.comments, EvidenceTypeRef.type,SectionSortOrder.sort_order)
 
@@ -378,7 +380,7 @@ def get_constant_subsections(c_id, version):
     constant_subsec_list = []
     constant_subsecs = s.query(Subsection).join(Section).join(SectionSortOrder).join(Competence).join(EvidenceTypeRef).filter(
         Subsection.c_id == c_id).filter(Section.constant == 1).filter(SectionSortOrder.c_id == c_id).filter(
-        and_(Subsection.intro <= version, or_(Subsection.last == None, Subsection.last == version))).order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).distinct().values(
+        and_(Subsection.intro <= version, or_(Subsection.last == None, Subsection.last == version))).order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).values(
         Section.name.label('sec_name'), Subsection.name.label('subsec_name'),
         Subsection.comments, EvidenceTypeRef.type,SectionSortOrder.sort_order, Subsection.c_id)
 
