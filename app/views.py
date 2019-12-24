@@ -32,7 +32,7 @@ principals = Principal(app)
 user_permission = Permission(RoleNeed('USER'))
 linemanager_permission = Permission(RoleNeed('LINEMANAGER'))
 admin_permission = Permission(RoleNeed('ADMIN'))
-privilege_perminssion = Permission(RoleNeed('PRIVILEGE'))
+privilege_permission = Permission(RoleNeed('PRIVILEGE'))
 
 
 @app.route('/setup', methods=['GET', 'POST'])
@@ -45,7 +45,7 @@ def setup():
         if s.query(Users).count()==0:
 
             #create required roles
-            roles = ["USER","LINEMANAGER","ADMIN","PRIVILEDGE"]
+            roles = ["USER","LINEMANAGER","ADMIN","PRIVILEGE"]
             for role in roles:
                 if s.query(UserRolesRef).filter(UserRolesRef.role==role).count() == 0:
                     r = UserRolesRef(role=role)
