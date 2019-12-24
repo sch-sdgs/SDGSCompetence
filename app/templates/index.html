@@ -57,7 +57,18 @@
                                                                 <li>{{ i.assess_id_rel.ss_id_rel.name }}</li>
                                                             {% endfor %}
                                                         {% else %}
-                                                            <li>This evidence covers {{ evidence.assessments|length }} subsections</li>
+                                                        <div id="header{{ evidence.id }}">
+                                                            <li>This evidence covers {{ evidence.assessments|length }} subsections
+                                                                <a href="javascript:void(0)" onclick="showSubsections('{{ evidence.id }}')"> [Show]</a>
+                                                            </li>
+
+                                                        </div>
+                                                        <div id="subsections{{ evidence.id }}" hidden="hidden">
+                                                            <a href="javascript:void(0)" onclick="hideSubsections('{{ evidence.id }}')"> [Hide]</a>
+                                                            {% for i in evidence.assessments %}
+                                                                <li style="font-size:12px">{{ i.assess_id_rel.ss_id_rel.name }}</li>
+                                                            {% endfor %}
+                                                        </div>
                                                         {% endif %}
                                                     </ul>
 
@@ -923,7 +934,41 @@
     <script src="/static/bower_components/chart.js/Chart.js"></script>
 
     <script>
+        function showSubsections(id){
+            console.log("showing subsections");
+            console.log(id);
+            var subsections = document.getElementById('subsections'+id);
+            var header = document.getElementById('header'+id);
+            subsections.removeAttribute('hidden');
+            header.setAttribute('hidden', 'hidden');
+        }
 
+        function hideSubsections(id){
+            console.log("hiding subsections");
+            console.log(id);
+            var subsections = document.getElementById('subsections'+id);
+            var header = document.getElementById('header'+id);
+            header.removeAttribute('hidden');
+            subsections.setAttribute('hidden', 'hidden');
+        }
+
+        // $('#showbutton').click(function () {
+        //     console.log("showing subsections");
+        //     var subsections = document.getElementById('showsubsections');
+        //     var header = document.getElementById('hidesubsections');
+        //     subsections.removeAttribute('hidden');
+        //     header.setAttribute('hidden', 'hidden');
+        //
+        // });
+        //
+        // $('#hidebutton').click(function () {
+        //     console.log("hiding subsections");
+        //     var subsections = document.getElementById('showsubsections');
+        //     var header = document.getElementById('hidesubsections');
+        //     header.removeAttribute('hidden');
+        //     subsections.setAttribute('hidden', 'hidden');
+        //
+        // });
 
         $(document).ready(function () {
 
@@ -936,7 +981,7 @@
             })
 
 
-        })
+        });
 
         $(document).ready(function () {
 
