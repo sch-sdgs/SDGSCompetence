@@ -379,6 +379,14 @@
                                             <a data-toggle="modal" data="" href="#{{ sub['id'] }}"
                                                class="btn btn-sm btn-flat btn-success"><span
                                                     class="glyphicon glyphicon-eye-open"></span></a>
+                                            {% if sub['status'] == "Sign-Off" %}
+                                                {% include "retract_evidence_modal.html" %}
+                                                <a data-toggle="modal" data="" href="#retract{{ sub['id'] }}" title="Retract Evidence"
+                                                   class="btn btn-sm btn-flat btn-danger "
+                                                   id="retract_evidence"><i
+                                                        class="fa fa-remove"></i>
+                                                </a>
+                                            {% endif %}
                                         {% endif %}
 
 
@@ -387,8 +395,10 @@
 
                                 </tr>
                             {% endfor %}
+
                             </tfoot>
                         </table>
+
                     </div>
                 </div>
 
@@ -397,8 +407,11 @@
             {% endfor %}
 
         </section>
+    <div>
 
+</div>
     </div>
+
 
     <script>
 
