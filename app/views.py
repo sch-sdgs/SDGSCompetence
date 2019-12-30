@@ -893,12 +893,12 @@ def index(message=None):
     signoff_competence = s.query(CompetenceDetails).filter(and_(CompetenceDetails.approve_id == current_user.database_id,CompetenceDetails.approved != None,CompetenceDetails.approved != 1)).all()
     print "SIGN_OFF"
 
-    # for i in signoff:
-    #     print i
-    #     print i.evidence_type_rel.type
-        # print i.evidence
-        # print i.id
-        # print i.evidence_type_id
+    for i in signoff:
+        print i
+        print i.evidence_type_rel.type
+        print i.evidence
+        print i.id
+        print i.evidence_type_id
         # print i.type
     signoff_reassessment = s.query(Reassessments).join(AssessReassessRel).join(Assessments).filter(Reassessments.signoff_id==current_user.database_id).filter(Reassessments.is_correct == None).all()
 
@@ -932,7 +932,7 @@ def notifications():
                 else:
                     alerts["Assessments"]["Assessments Expired"].append(i)
                     count += 1
-            elif datetime.date.today() + relativedelta(months=+6) > i.date_expiry:
+            elif datetime.date.today() + relativedelta(months=+1) > i.date_expiry:
                 if "Assessments Expiring" not in alerts["Assessments"]:
                     alerts["Assessments"]["Assessments Expiring"] = []
                     alerts["Assessments"]["Assessments Expiring"].append(i)
