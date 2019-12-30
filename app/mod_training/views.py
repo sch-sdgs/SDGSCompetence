@@ -17,6 +17,7 @@ from app.competence import config
 import pandas as pd
 from plotly.offline import plot
 import plotly.graph_objs as go
+import datetime
 
 
 
@@ -974,6 +975,91 @@ def select_subsections():
         return redirect(url_for('training.view_current_competence', c_id=c_id, user=u_id,version=version))
 
 
+@training.route('/retract_evidence', methods=['GET', 'POST'])
+@login_required
+def retract_evidence():
+    """
+    Method to retract evidence once sent to authoriser
+    Assessment gets changed back to Active (status 1)
+    Assessment evidence rel gets deleted.
+    Evidence remains
+    Uploads (if applicable) also remain
+    :return:
+    """
+    print "HELLO RETRACTING"
+
+    user_id = current_user.database_id
+    version = request.args.get('version')
+    c_id = request.args.get('c_id')
+
+    evidence_id = request.args.get('evidence_id')
+    print "EVIDENCE ID: "+ str(evidence_id)
+
+    assessment_id = request.args.get('assessment_id')
+    print "ASSESSMENT ID:" +str(assessment_id)
+    assessment = s.query(Assessments).filter(Assessments.id==assessment_id).all()
+    if len(assessment) == 1 and int(assessment[0].user_id) == int(user_id) and int(assessment[0].status) == 7:
+        print "IN IF"
+        evidence = s.query(AssessmentEvidenceRelationship).filter(AssessmentEvidenceRelationship.assessment_id==int(assessment_id)).all()
+        if len(evidence)==1:
+            print "setting assessment status to 1 (active), remove trainer and signoff information"
+            assessment[0].status = 1
+            assessment[0].date_of_training = None
+            assessment[0].trainer_id = None
+            assessment[0].signoff_id = None
+            s.commit()
+        elif len(evidence)>1:
+            ### assessment goes back to most recent evidence status
+            print "more evidence - deciding status"
+            dates={}
+            for i in evidence:
+                if int(i.evidence_id) != int(evidence_id):
+                    evidence_record = s.query(Evidence).filter(Evidence.id == i.evidence_id).first()
+                    if evidence_record.is_correct == 1:
+                        dates[evidence_record.date_completed] = "correct"
+                    elif evidence_record.is_correct == 0:
+                        dates[evidence_record.date_completed] = "incorrect"
+                    elif evidence_record.is_correct is None:
+                        dates[evidence_record.date_completed] = "signoff"
+
+            ### get most recent date - this determines the status of the assessment
+            most_recent = max(dates.keys())
+            print most_recent
+
+            if dates[most_recent] == "correct":
+                assessment[0].status = 3
+                assessment[0].date_of_training = most_recent.strftime("%Y-%m-%d")
+            elif dates[most_recent] == "incorrect":
+                assessment[0].status = 5
+                assessment[0].date_of_training = most_recent.strftime("%Y-%m-%d")
+            elif dates[most_recent] == "signoff":
+                assessment[0].status = 7
+                assessment[0].date_of_training = most_recent.strftime("%Y-%m-%d")
+
+            print assessment[0].status
+            s.commit()
+
+    evidence_assess_rel = s.query(AssessmentEvidenceRelationship).filter(AssessmentEvidenceRelationship.evidence_id==int(evidence_id)).filter(AssessmentEvidenceRelationship.assessment_id==int(assessment_id)).all()
+    if len(evidence_assess_rel) == 1:
+        print "deleting"
+        s.delete(evidence_assess_rel[0])
+        s.commit()
+
+    ###check if evidence is linked to other assessments, if not, delete evidence and any associated uploads
+    evidence_assess_rel_other = s.query(AssessmentEvidenceRelationship).filter(AssessmentEvidenceRelationship.evidence_id==int(evidence_id)).all()
+    if len(evidence_assess_rel_other) == 0:
+        uploads = s.query(Uploads).filter(Uploads.evidence_id == int(evidence_id)).all()
+        for i in uploads:
+            s.delete(i)
+            s.commit()
+        evidence_record = s.query(Evidence).filter(Evidence.id == int(evidence_id)).first()
+        s.delete(evidence_record)
+        s.commit()
+
+    return redirect(url_for('training.view_current_competence', version=version, c_id=c_id))
+
+
+
 @training.route('/activate', methods=['GET', 'POST'])
 @login_required
 def activate_competence():
@@ -1364,12 +1450,12 @@ def user_report(id=None):
             days_over_target = int((i.date_completed - i.due_date).days)
             days_over_target_list.append(days_over_target)
 
-    assigned_to_activation_list = [5,6,2,34,6,7,3,3,6,10,15]
-    activated_to_completion_list = [2,5,8,23,5,1,2,2,2,2,4,7,8]
-    assigned_to_completion_list = [5,2,4,2,2,2,0,0,0,23,10,12,3]
-    print assigned_to_activation_list
-    print activated_to_completion_list
-    print assigned_to_completion_list
+    # assigned_to_activation_list = [5,6,2,34,6,7,3,3,6,10,15]
+    # activated_to_completion_list = [2,5,8,23,5,1,2,2,2,2,4,7,8]
+    # assigned_to_completion_list = [5,2,4,2,2,2,0,0,0,23,10,12,3]
+    # print assigned_to_activation_list
+    # print activated_to_completion_list
+    # print assigned_to_completion_list
 
 
 

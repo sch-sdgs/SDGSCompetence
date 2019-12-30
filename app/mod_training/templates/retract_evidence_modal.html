@@ -1,0 +1,47 @@
+<div class="modal" id="retract{{ sub['id'] }}">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span
+                        aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title"><strong>Retract Evidence: </strong>{{ sub['name'] }}</h4>
+                <h5>The following evidence is can be retracted for this subsection. Retraction will set the subsection back to "Active" unless other evidence has already been signed off. </h5>
+            </div>
+            <div class="modal-body">
+                {% for i in sub['evidence'] %}
+                    {% if i.evidence.is_correct != 1 and i.evidence.is_correct != 2 %}
+                        <div class="box">
+
+                            <div class="box-header with-border">
+                                <h4>
+                                    <div class="col-md-6">
+                                    <i class="fa fa-check-square-o text-gray"></i> {{ i.evidence.evidence_type_rel.type }} Evidence</div>
+                                    <div class="col-md-5">
+                                    {{ i.evidence_id_rel.date_completed.strftime('%d-%m-%Y') }}</div>
+                                    <div class="col-md-1">
+                                    <a role="button" href="{{ url_for('training.retract_evidence') }}?evidence_id={{ i.evidence.id }}&assessment_id={{ sub.id }}&version={{ version }}&c_id={{ competence }}" class="btn btn-sm btn-flat btn-danger pull-right"
+                                            id="retract_evidence">Retract</a></div></h4>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+<!--            <div class="modal-body">-->
+<!--            {% for sub in section_list['custom'][section]['subsections'] %}-->
+<!--                {% if sub['status'] == "Sign-Off" %}-->
+<!--                {{ sub['name'] }}-->
+<!--                    {% for i in sub['evidence'] %}-->
+<!--                        {{ i.evidence_id_rel.evidence_type_rel.type }}-->
+<!--                    {% endfor %}-->
+<!--                {% endif %}-->
+<!--            {% endfor %}-->
+<!--            </div>-->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
