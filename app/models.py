@@ -668,6 +668,53 @@ class QPulseDetails(db.Model):
     username = db.Column(db.String(20), unique=False, nullable=False)
     password = db.Column(db.String(100), unique=False, nullable=False)
 
+class EventTypeRef(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.String(50), nullable=False, unique=True)
+
+    def __init__(self, type):
+        self.type = type
+
+    def __repr__(self):
+        return '<EventTypeRef %r>' % self.type
+
+class EventRoleRef(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    role = db.Column(db.String(50), nullable=False, unique=True)
+
+    def __init__(self, role):
+        self.role = role
+
+    def __repr__(self):
+        return '<EventRoleRef %r>' % self.role
+
+class CPDEvents(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=False)
+    event_type = db.Column(db.Integer, db.ForeignKey("event_type_ref.id"), unique=False, nullable=False)
+    date = db.Column(db.DATE, unique=False, nullable=False)
+    event_role = db.Column(db.Integer, db.ForeignKey("event_role_ref.id"),unique=False, nullable=False)
+    comments = db.Column(db.String(200), nullable=True, unique=False)
+    location = db.Column(db.String(50), nullable=False, unique=False)
+    event_name = db.Column(db.String(50), nullable=False, unique=False)
+
+    user_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[user_id])
+    event_type_rel = db.relationship("EventTypeRef", lazy='joined', foreign_keys=[event_type])
+    event_role_rel = db.relationship("EventRoleRef", lazy='joined', foreign_keys=[event_role])
+
+    def __init__(self, user_id, event_type, date, event_role, location, event_name, comments=None):
+        self.user_id = user_id
+        self.event_type = event_type
+        self.date = date
+        self.event_role = event_role
+        self.comments = comments
+        self.location = location
+        self.event_name = event_name
+
+    def __repr__(self):
+        return '<CPDEvents %r>' % self.event_name
+
+
 
 def __init__(self, username, password):
     self.username = username
