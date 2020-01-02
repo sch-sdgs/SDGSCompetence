@@ -51,6 +51,8 @@ def add_cpd():
     This module adds CPD events
     :return:
     """
+    if request.method == 'GET':
+        print "Adding CPD event"
+        form = AddEvent()
 
-    print "Adding CPD event"
-    form = AddEvent()
+        return render_template('cpd_add.html', form=form)
