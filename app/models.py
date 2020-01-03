@@ -697,7 +697,7 @@ class CPDEvents(db.Model):
     comments = db.Column(db.String(200), nullable=True, unique=False)
     location = db.Column(db.String(50), nullable=False, unique=False)
     event_name = db.Column(db.String(50), nullable=False, unique=False)
-    cpd_points = db.Column(db.Integer, unique=False, nullable=True)
+    cpd_points = db.Column(db.String(20), unique=False, nullable=True)
 
     user_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[user_id])
     event_type_rel = db.relationship("EventTypeRef", lazy='joined', foreign_keys=[event_type])
