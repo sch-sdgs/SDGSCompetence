@@ -697,12 +697,13 @@ class CPDEvents(db.Model):
     comments = db.Column(db.String(200), nullable=True, unique=False)
     location = db.Column(db.String(50), nullable=False, unique=False)
     event_name = db.Column(db.String(50), nullable=False, unique=False)
+    cpd_points = db.Column(db.Integer, unique=False, nullable=True)
 
     user_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[user_id])
     event_type_rel = db.relationship("EventTypeRef", lazy='joined', foreign_keys=[event_type])
     event_role_rel = db.relationship("EventRoleRef", lazy='joined', foreign_keys=[event_role])
 
-    def __init__(self, user_id, event_type, date, event_role, location, event_name, comments=None):
+    def __init__(self, user_id, event_type, date, event_role, location, event_name, comments=None, cpd_points=None):
         self.user_id = user_id
         self.event_type = event_type
         self.date = date
@@ -710,6 +711,7 @@ class CPDEvents(db.Model):
         self.comments = comments
         self.location = location
         self.event_name = event_name
+        self.cpd_points = cpd_points
 
     def __repr__(self):
         return '<CPDEvents %r>' % self.event_name
