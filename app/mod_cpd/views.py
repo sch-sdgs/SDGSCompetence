@@ -22,7 +22,7 @@ import datetime
 cpd = Blueprint('cpd', __name__, template_folder='templates')
 
 def get_cpd_by_user(user_id):
-    events = s.query(CPDEvents).join(EventRoleRef).join(EventTypeRef).filter(CPDEvents.user_id == user_id).all()
+    events = s.query(CPDEvents).join(EventRoleRef).join(EventTypeRef).filter(CPDEvents.user_id == user_id).order_by(CPDEvents.date.desc()).all()
     return events
 
 
@@ -83,3 +83,23 @@ def add_cpd():
         s.commit()
 
         return redirect(url_for('cpd.view_cpd'))
+
+@cpd.route('/delete_cpd', methods=['GET', 'POST'])
+def delete_cpd():
+    """
+    This module delete a specific CPD event
+    :return:
+    """
+
+    print "deleting CPD"
+    id = request.args.get('id')
+    print id
+
+    user_id = current_user.database_id
+
+    event = s.query(CPDEvents).filter(CPDEvents.id == id).first()
+    if event.user_id == user_id:
+        s.delete(event)
+        s.commit()
+
+    return redirect(url_for('cpd.view_cpd'))
