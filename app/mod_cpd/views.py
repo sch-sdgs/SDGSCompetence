@@ -45,7 +45,7 @@ def view_cpd():
 
     return render_template('cpd_view.html', cpd=cpd_events, user=username)
 
-@cpd.route('/add_cpd', methods=['GET'])
+@cpd.route('/add_cpd', methods=['GET', 'POST'])
 def add_cpd():
     """
     This module adds CPD events
@@ -56,3 +56,27 @@ def add_cpd():
         form = AddEvent()
 
         return render_template('cpd_add.html', form=form)
+
+    elif request.method == 'POST':
+        print "adding to DB"
+        event_name = request.form['event_name']
+        event_type = request.form["event_type"]
+        date = request.form['date']
+        role = request.form['role']
+        location = request.form['location']
+        comments = request.form['comments']
+
+        print ' '.join([event_name, event_type, date, role, location, comments])
+
+        c = CPDEvents(user_id=current_user.database_id,
+                      event_type=event_type,
+                      date=date,
+                      event_role=role,
+                      comments=comments,
+                      location=location,
+                      event_name=event_name)
+
+        s.add(c)
+        s.commit()
+
+        return view_cpd()
