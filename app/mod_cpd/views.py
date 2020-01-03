@@ -64,9 +64,11 @@ def add_cpd():
         date = request.form['date']
         role = request.form['role']
         location = request.form['location']
+        cpd_points = request.form['cpd_points']
         comments = request.form['comments']
 
-        print ' '.join([event_name, event_type, date, role, location, comments])
+
+        print ' '.join([event_name, event_type, date, role, location, comments, cpd_points])
 
         c = CPDEvents(user_id=current_user.database_id,
                       event_type=event_type,
@@ -74,9 +76,10 @@ def add_cpd():
                       event_role=role,
                       comments=comments,
                       location=location,
-                      event_name=event_name)
+                      event_name=event_name,
+                      cpd_points=cpd_points)
 
         s.add(c)
         s.commit()
 
-        return view_cpd()
+        return redirect(url_for('cpd.view_cpd'))

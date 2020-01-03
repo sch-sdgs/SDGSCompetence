@@ -10,7 +10,7 @@
         </div>
     <div class="col-md-4">
         <a class="btn btn-success btn-flat pull-right pull-down" role="button"
-                                   href=""><span
+                                   href="{{ url_for('cpd.add_cpd') }}"><span
                                         class="fa fa-calendar-plus-o"></span> Add Event</a>
     </div>
     </div>
@@ -26,6 +26,7 @@
                             <th>Date</th>
                             <th>Role</th>
                             <th>Location</th>
+                            <th>CPD points</th>
                             <th>Comments</th>
                         </tr>
                         </thead>
@@ -37,6 +38,7 @@
                                 <td>{{ i.date }}</td>
                                 <td>{{ i.event_role_rel.role }}</td>
                                 <td>{{ i.location }}</td>
+                                <td>{{ i.cpd_points }}</td>
                                 <td>{{ i.comments }}</td>
                             </tr>
                         {% endfor %}

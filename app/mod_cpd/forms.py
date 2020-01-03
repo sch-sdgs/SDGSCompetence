@@ -18,5 +18,6 @@ class AddEvent(Form):
     role = QuerySelectField("Participation", query_factory=lambda: s.query(EventRoleRef).all(), get_label="role", allow_blank=True, blank_text="---Please Choose---")
     #role = QuerySelectField("Validity Period", query_factory=lambda:s.query(ValidityRef).all(), get_label="months")
     location = TextField("Location")
+    cpd_points = TextField("CPD points (if known)")
     comments = TextAreaField("Comments")
     submit = SubmitField()
