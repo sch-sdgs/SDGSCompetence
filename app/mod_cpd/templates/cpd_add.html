@@ -54,7 +54,7 @@
                     <div class="form-group">
                         {{ form.comments.label(class_="col-lg-2 control-label") }}
                         <div class="col-lg-4">
-                            {{ form.comments(class_="form-control") }}
+                            {{ form.comments(class_="form-control", onInput="TextCounter(this,1000)") }}<span id="text" style="color: grey">0 / 1000</span>
                         </div>
                     </div>
                     <div class="form-group">
@@ -79,7 +79,16 @@
                 format: 'yyyy-mm-dd',
                 startDate: '2000-01-01'
             })
-        })
+        });
+
+    function TextCounter(field, limit) {
+        console.log("in textcounter function");
+        var typedChars = $(field).val().length;
+        console.log(typedChars);
+        var text = document.getElementById('text');
+        $(text).text(typedChars=0?'0 / '+limit:typedChars+' / '+limit);
+    }
+
 </script>
 
 {% endblock %}

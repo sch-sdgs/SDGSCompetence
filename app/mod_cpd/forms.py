@@ -19,5 +19,5 @@ class AddEvent(Form):
     #role = QuerySelectField("Validity Period", query_factory=lambda:s.query(ValidityRef).all(), get_label="months")
     location = TextField("Location")
     cpd_points = TextField("CPD points (if known)")
-    comments = TextAreaField("Comments")
+    comments = TextAreaField("Description/Comments")
     submit = SubmitField()
