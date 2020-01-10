@@ -22,11 +22,21 @@ import datetime
 cpd = Blueprint('cpd', __name__, template_folder='templates')
 
 def get_cpd_by_user(user_id):
+    """
+    Query to get CPD events for user
+    :param user_id: ID of user in DB
+    :return: event query
+    """
     events = s.query(CPDEvents).join(EventRoleRef).join(EventTypeRef).filter(CPDEvents.user_id == user_id).order_by(CPDEvents.date.desc()).all()
     return events
 
 
 def get_name_by_user_id(user_id):
+    """
+    Query to get user name by user ID
+    :param user_id: ID of user in DB
+    :return: String of first name + last name
+    """
     user = s.query(Users).filter(Users.id == user_id).first()
     return user.first_name+' '+user.last_name
 
@@ -34,7 +44,7 @@ def get_name_by_user_id(user_id):
 @cpd.route('/view_cpd', methods=['GET'])
 def view_cpd():
     """
-    This module lists CPD events and details for the user
+    This methods finds CPD events and details for the user, and renders the HTML, showing a table of CPD events.
     """
 
     print "Welcome to the CPD module"
@@ -48,7 +58,7 @@ def view_cpd():
 @cpd.route('/add_cpd', methods=['GET', 'POST'])
 def add_cpd():
     """
-    This module adds CPD events
+    This method adds CPD events. Once a CPD event is added, it returns to the view page.
     :return:
     """
     if request.method == 'GET':
@@ -87,7 +97,7 @@ def add_cpd():
 @cpd.route('/delete_cpd', methods=['GET', 'POST'])
 def delete_cpd():
     """
-    This module delete a specific CPD event
+    This module delete a specific CPD event, using the ID of the event. Then returns to the view page.
     :return:
     """
 
