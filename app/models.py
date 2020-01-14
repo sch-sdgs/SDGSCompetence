@@ -694,7 +694,7 @@ class CPDEvents(db.Model):
     event_type = db.Column(db.Integer, db.ForeignKey("event_type_ref.id"), unique=False, nullable=False)
     date = db.Column(db.DATE, unique=False, nullable=False)
     event_role = db.Column(db.Integer, db.ForeignKey("event_role_ref.id"),unique=False, nullable=False)
-    comments = db.Column(db.String(200), nullable=True, unique=False)
+    comments = db.Column(db.String(1000), nullable=True, unique=False)
     location = db.Column(db.String(50), nullable=False, unique=False)
     event_name = db.Column(db.String(50), nullable=False, unique=False)
     cpd_points = db.Column(db.String(20), unique=False, nullable=True)
