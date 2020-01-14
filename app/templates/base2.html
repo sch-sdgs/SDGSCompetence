@@ -575,6 +575,20 @@ desired effect
                     </ul>
                 </li>
 
+                <li class="treeview">
+                    <a href="#"><i class="fa fa-fw fa-calendar"></i> <span>CPD Events</span>
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="{{ url_for('cpd.view_cpd') }}"><i class="fa fa-circle-o"></i>View CPD Events</a>
+                        </li>
+                        <li><a href="{{ url_for('cpd.add_cpd') }}"><i class="fa fa-circle-o"></i>Add CPD Events</a>
+                        </li>
+                    </ul>
+                </li>
+
 
                 <li class="treeview">
                     <a href="#"><i class="fa fa-fw fa-paper-plane-o"></i> <span>Reports</span>
