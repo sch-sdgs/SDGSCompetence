@@ -2,22 +2,7 @@ from flask import Flask, render_template, redirect, request, url_for, session, c
     send_from_directory, jsonify, Markup
 from flask_login import login_required, login_user, logout_user, LoginManager, UserMixin, \
     current_user
-from app.competence import s,send_mail
-from app.models import *
-from sqlalchemy.sql.expression import func, and_, or_, case, exists, update, asc
-from sqlalchemy.orm import aliased
-import datetime
-from dateutil.relativedelta import relativedelta
-import os
 from forms import *
-import uuid
-import json
-from collections import OrderedDict
-from app.competence import config
-import pandas as pd
-from plotly.offline import plot
-import plotly.graph_objs as go
-import datetime
 
 cpd = Blueprint('cpd', __name__, template_folder='templates')
 
