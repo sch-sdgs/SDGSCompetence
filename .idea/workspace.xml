@@ -3,139 +3,13 @@
   <component name="ChangeListManager">
     <list default="true" id="4783f288-aaa5-4ace-9f51-c82da759ae56" name="Default" comment="- ready for release v0.1.6- ready for release v0.1.6">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/competence.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/competence.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/.idea/deployment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/.idea/deployment.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SDGSNextGenWeb/app/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSNextGenWeb/app/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SDGSNextGenWeb/app/mod_bedfilebuilder/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSNextGenWeb/app/mod_bedfilebuilder/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SDGSNextGenWeb/app/mod_cnv/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSNextGenWeb/app/mod_cnv/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SDGSNextGenWeb/app/templates/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSNextGenWeb/app/templates/home.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SDGSNextGenWeb/app/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSNextGenWeb/app/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../SDGSPipeline/.idea/hiseq_pipeline.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/.idea/hiseq_pipeline.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/deploy.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/deploy.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/exome_pipeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/exome_pipeline.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/iontorrent_pipeline.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/iontorrent_pipeline.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/iontorrent_runner.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/iontorrent_runner.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/pre-commit.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/pre-commit.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/CFTR_params.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/CFTR_params.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/CFTR_scoring.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/CFTR_scoring.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/Haems_mini_params.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/Haems_mini_params.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/IEM_mini_params.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/IEM_mini_params.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/NBS1_params.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/NBS1_params.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/NBS2_params.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/NBS2_params.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/PKD_params.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/PKD_params.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/Pharma_params.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/Pharma_params.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/control_allele_frequencies.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/control_allele_frequencies.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/iontorrent_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/iontorrent_config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/motifset.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/motifset.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/NaN_median_insert.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/NaN_median_insert.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/bed_test.3_fields.bed" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/bed_test.3_fields.bed" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/bed_test.5_fields.bed" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/bed_test.5_fields.bed" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/bed_test.NAN.bed" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/bed_test.NAN.bed" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/bed_test.bed" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/bed_test.bed" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/bed_test.chr.bed" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/bed_test.chr.bed" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/bed_test.end_start.bed" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/bed_test.end_start.bed" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/bed_test.merge.bed" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/bed_test.merge.bed" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/bed_test.no_header.bed" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/bed_test.no_header.bed" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/bed_test.start_equals_end.bed" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/bed_test.start_equals_end.bed" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/bed_test_notes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/bed_test_notes.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/exac_annotated_vcf.vcf" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/exac_annotated_vcf.vcf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/failing_30x_coverage_summary.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/failing_30x_coverage_summary.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/failing_contamination.selfSM" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/failing_contamination.selfSM" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/failing_gaps_in_sequencing.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/failing_gaps_in_sequencing.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/failing_max_coverage_summary.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/failing_max_coverage_summary.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/failing_median_insert.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/failing_median_insert.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/failing_samtools_stats.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/failing_samtools_stats.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/failing_variants.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/failing_variants.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/failing_vcf.vcf" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/failing_vcf.vcf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/fake_error_polylist.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/fake_error_polylist.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/fake_error_polylist_notes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/fake_error_polylist_notes.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/listofbams" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/listofbams" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/listofvcfs" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/listofvcfs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/master_transcript_test.DOS.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/master_transcript_test.DOS.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/master_transcript_test.checked.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/master_transcript_test.checked.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/master_transcript_test.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/master_transcript_test.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/master_transcript_test_notes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/master_transcript_test_notes.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/mater_transcript_test.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/mater_transcript_test.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/passing_contamination.selfSM" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/passing_contamination.selfSM" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/passing_coverage_summary.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/passing_coverage_summary.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/passing_gaps_in_sequencing.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/passing_gaps_in_sequencing.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/passing_median_insert.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/passing_median_insert.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/passing_reads_off_target.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/passing_reads_off_target.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/passing_samtools_stats.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/passing_samtools_stats.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/passing_variants.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/passing_variants.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/passing_vcf.vcf" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/passing_vcf.vcf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/pkd_contam.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/pkd_contam.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/pkd_contam_pass.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/pkd_contam_pass.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/polylist_non_match.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/polylist_non_match.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/test_somatic.vcf" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/test_somatic.vcf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/warning_1stcheck_coverage_summary.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/warning_1stcheck_coverage_summary.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/warning_checkgaps_coverage_summary.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/warning_checkgaps_coverage_summary.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/warning_contamination.selfSM" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/warning_contamination.selfSM" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/warning_min_max_coverage_summary.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/warning_min_max_coverage_summary.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/warning_variants.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/testing/warning_variants.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/vcfanno_conf.toml" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/vcfanno_conf.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/resources/vcfanno_conf_pinky.toml" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/resources/vcfanno_conf_pinky.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/run_tests.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/run_tests.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/CFTR_scoring.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/CFTR_scoring.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/PKD_extracting_regions_with_below_minimum_depth.pl" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/PKD_extracting_regions_with_below_minimum_depth.pl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/PKD_pseudogene_contamination.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/PKD_pseudogene_contamination.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/adding_annovar_output_to_vcf.pl" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/adding_annovar_output_to_vcf.pl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/adding_annovar_output_to_vcf_v2.pl" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/adding_annovar_output_to_vcf_v2.pl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/annotating_variants_with_annovar.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/annotating_variants_with_annovar.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/automated_qc.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/automated_qc.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/backup.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/backup.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/bcl2fastq.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/bcl2fastq.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/check_bed_broad_small.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/check_bed_broad_small.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/check_corss_contamination.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/check_corss_contamination.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/check_sex_run.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/check_sex_run.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/check_status.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/check_status.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/checking_polylists.pl" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/checking_polylists.pl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/checking_preferred_transcripts.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/checking_preferred_transcripts.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/combine_VCFs.pl" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/combine_VCFs.pl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/combining_sample_reports.pl" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/combining_sample_reports.pl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/compare_run_times.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/compare_run_times.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/concat_ACADM.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/concat_ACADM.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/contamination_report_for_run.Rmd" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/contamination_report_for_run.Rmd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/coverage_rerun.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/coverage_rerun.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/determining_read_and_insert_size.pl" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/determining_read_and_insert_size.pl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/downsample_fastq_file.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/downsample_fastq_file.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/extracting_regions_with_below_minimum_depth.pl" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/extracting_regions_with_below_minimum_depth.pl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/fill_bed.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/fill_bed.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/format_cadd_revel_scores.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/format_cadd_revel_scores.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/format_vcf_polylist.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/format_vcf_polylist.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/generate_polylist.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/generate_polylist.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/generating_run_report.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/generating_run_report.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/get_af.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/get_af.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/hiseq_helper.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/hiseq_helper.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/low_qual_and_polylist_filtering.pl" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/low_qual_and_polylist_filtering.pl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/meta-predictor_annotation.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/meta-predictor_annotation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/off_target_reads.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/off_target_reads.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/ordering_annovar_output.pl" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/ordering_annovar_output.pl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/plot_contamination.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/plot_contamination.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/quality_plots.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/quality_plots.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/query_gnomad.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/query_gnomad.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/reanalysis_helper.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/reanalysis_helper.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/run_IEM_analysis.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/run_IEM_analysis.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/sample_allele_frequency_plot.R" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/sample_allele_frequency_plot.R" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/sex_check.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/sex_check.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/sex_check_pinky.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/sex_check_pinky.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/simplifying_vcf_for_annovar.pl" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/simplifying_vcf_for_annovar.pl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/somatic_contamination.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/somatic_contamination.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/sorting_bed_file_and_combining_overlapping_regions.pl" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/sorting_bed_file_and_combining_overlapping_regions.pl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/starlims.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/starlims.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/starlims_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/starlims_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/with_additional_mutation_flags_extracting_bed_file_regions_from_dbsnp_accounting_for_multiple_rs_numbers.pl" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/with_additional_mutation_flags_extracting_bed_file_regions_from_dbsnp_accounting_for_multiple_rs_numbers.pl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/write_excel_results.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/write_excel_results.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/scripts/write_patient_model_json.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/scripts/write_patient_model_json.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/sdgs_ngs_gene_panel_analysis.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/sdgs_ngs_gene_panel_analysis.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/unittests/test_PKD_pseudogene_contamination.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/unittests/test_PKD_pseudogene_contamination.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/unittests/test_automated_qc.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/unittests/test_automated_qc.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/unittests/test_format_vcf_polylist.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/unittests/test_format_vcf_polylist.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/unittests/test_somatic_contamination.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/unittests/test_somatic_contamination.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SDGSPipeline/unittests/test_write_to_excel_results.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSPipeline/unittests/test_write_to_excel_results.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SDGSTrends/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../SDGSTrends/README.md" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -193,7 +67,7 @@
         <entry key="$PROJECT_DIR$/../SDGSPipeline" value="master" />
       </map>
     </option>
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../SDGSPipeline" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../SDGSNextGenWeb" />
     <option name="ROOT_SYNC" value="DONT_SYNC" />
     <option name="UPDATE_TYPE" value="MERGE" />
   </component>
@@ -222,10 +96,10 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../SDGSPipeline" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../SDGSGelTools" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -255,7 +129,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.compare_chrY">
+  <component name="RunManager" selected="Python.run (1)">
     <configuration default="true" type="tests" factoryName="Attests">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -342,6 +216,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="run (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="SDGSNextGenWeb" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../SDGSNextGenWeb/app" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../SDGSNextGenWeb/app/run.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="run" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="SDGSCompetence" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -357,28 +253,6 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/app/run.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="views (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="SDGSCompetence" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/app" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/app/views.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -436,19 +310,19 @@
     <list>
       <item itemvalue="Flask server.SDGSCompetence" />
       <item itemvalue="Python.SDGSCompetence" />
-      <item itemvalue="Python.views (1)" />
       <item itemvalue="Python.run" />
       <item itemvalue="Python.build" />
       <item itemvalue="Python.views" />
       <item itemvalue="Python.compare_chrY" />
+      <item itemvalue="Python.run (1)" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.run (1)" />
         <item itemvalue="Python.compare_chrY" />
         <item itemvalue="Python.run" />
         <item itemvalue="Python.views" />
         <item itemvalue="Python.build" />
-        <item itemvalue="Python.views (1)" />
       </list>
     </recent_temporary>
   </component>
@@ -470,34 +344,9 @@
       <workItem from="1573646143051" duration="18000" />
       <workItem from="1574155401260" duration="2165000" />
       <workItem from="1574241049996" duration="5662000" />
-    </task>
-    <task id="LOCAL-00037" summary="weird bug in getting qpulse doc name - for some reason jsonify had stopped working on the string? so now chnaged to dict">
-      <created>1522949832983</created>
-      <option name="number" value="00037" />
-      <option name="presentableId" value="LOCAL-00037" />
-      <option name="project" value="LOCAL" />
-      <updated>1522949832983</updated>
-    </task>
-    <task id="LOCAL-00038" summary="jsonify issues fixed, added versions to all requirements">
-      <created>1523002752218</created>
-      <option name="number" value="00038" />
-      <option name="presentableId" value="LOCAL-00038" />
-      <option name="project" value="LOCAL" />
-      <updated>1523002752218</updated>
-    </task>
-    <task id="LOCAL-00039" summary="changing Offenders to Expiring/Expired">
-      <created>1523003635370</created>
-      <option name="number" value="00039" />
-      <option name="presentableId" value="LOCAL-00039" />
-      <option name="project" value="LOCAL" />
-      <updated>1523003635370</updated>
-    </task>
-    <task id="LOCAL-00040" summary="bug with evidence type">
-      <created>1523008041278</created>
-      <option name="number" value="00040" />
-      <option name="presentableId" value="LOCAL-00040" />
-      <option name="project" value="LOCAL" />
-      <updated>1523008041278</updated>
+      <workItem from="1579175553543" duration="996000" />
+      <workItem from="1579253013680" duration="1896000" />
+      <workItem from="1579520740076" duration="2332000" />
     </task>
     <task id="LOCAL-00041" summary="fixed documents, subsections etc">
       <created>1523010844473</created>
@@ -814,7 +663,35 @@
       <option name="project" value="LOCAL" />
       <updated>1573561424422</updated>
     </task>
-    <option name="localTasksCounter" value="86" />
+    <task id="LOCAL-00086" summary="changing run.py back">
+      <created>1579022218670</created>
+      <option name="number" value="00086" />
+      <option name="presentableId" value="LOCAL-00086" />
+      <option name="project" value="LOCAL" />
+      <updated>1579022218670</updated>
+    </task>
+    <task id="LOCAL-00087" summary="changed version numbers to be v0.1.9">
+      <created>1579022731906</created>
+      <option name="number" value="00087" />
+      <option name="presentableId" value="LOCAL-00087" />
+      <option name="project" value="LOCAL" />
+      <updated>1579022731906</updated>
+    </task>
+    <task id="LOCAL-00088" summary="increased memory for iontorrent pipeline jobs, now at 20G. solves issue #27.">
+      <created>1579253087303</created>
+      <option name="number" value="00088" />
+      <option name="presentableId" value="LOCAL-00088" />
+      <option name="project" value="LOCAL" />
+      <updated>1579253087304</updated>
+    </task>
+    <task id="LOCAL-00089" summary="changed bed_actual to exonic_bed_actual">
+      <created>1579253216739</created>
+      <option name="number" value="00089" />
+      <option name="presentableId" value="LOCAL-00089" />
+      <option name="project" value="LOCAL" />
+      <updated>1579253216739</updated>
+    </task>
+    <option name="localTasksCounter" value="90" />
     <servers />
   </component>
   <component name="TodoView">
@@ -861,10 +738,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="preparing for server release&#10;&#10;- fixing bugs&#10;- can't enter blank subsections&#10;- self sign-off for competence is now not allowed&#10;- Notifications link fixed&#10;- Due date tool tip on dashboard&#10;- sorting of sections and subsections - implementing on all screens&#10;- releasing new version for testing" />
-    <MESSAGE value="- fixing issue with competence listings" />
-    <MESSAGE value="lots of work on reassessments and 4yr reassessments" />
-    <MESSAGE value="version 0.1" />
     <MESSAGE value="missing jinja extension &quot;do&quot;" />
     <MESSAGE value="v0.1.1" />
     <MESSAGE value="- added q-pulse password editing facility&#10;- fixing bugs in sort order that caused competencies to be displayed multiple time." />
@@ -886,7 +759,11 @@
     <MESSAGE value="fixed bug where &quot;with selected&quot; doesn't work on page 2, 3 etc. of list. Fix requires all competencies be loaded on first page, which is annoying, but they don't get loaded into &quot;competencies&quot; var otherwise. Users will usually search for page anyway. Also sorted on Category column, and changed colour of &quot;with selected&quot; button when something is selected." />
     <MESSAGE value="updated haems mini bed to v2 in iontorrent config" />
     <MESSAGE value="changed to v2 haems mini broad bed" />
-    <option name="LAST_COMMIT_MESSAGE" value="changed to v2 haems mini broad bed" />
+    <MESSAGE value="changing run.py back" />
+    <MESSAGE value="changed version numbers to be v0.1.9" />
+    <MESSAGE value="increased memory for iontorrent pipeline jobs, now at 20G. solves issue #27." />
+    <MESSAGE value="changed bed_actual to exonic_bed_actual" />
+    <option name="LAST_COMMIT_MESSAGE" value="changed bed_actual to exonic_bed_actual" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -965,7 +842,9 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/SDGSCompetence$run__1_.coverage" NAME="run (1) Coverage Results" MODIFIED="1579531833975" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../SDGSNextGenWeb/app" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$count_PKD_variants.coverage" NAME="count_PKD_variants Coverage Results" MODIFIED="1575477296921" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
     <SUITE FILE_PATH="coverage/SDGSCompetence$compare_chrY.coverage" NAME="compare_chrY Coverage Results" MODIFIED="1573576294521" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
-    <SUITE FILE_PATH="coverage/SDGSCompetence$run.coverage" NAME="run Coverage Results" MODIFIED="1573482662709" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$run.coverage" NAME="run Coverage Results" MODIFIED="1579015370691" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
   </component>
 </project>
