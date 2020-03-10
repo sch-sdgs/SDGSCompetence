@@ -1,6 +1,6 @@
 from flask import Flask, request,session, render_template
 import atexit
-from apscheduler.scheduler import Scheduler
+from apscheduler.schedulers.background import BackgroundScheduler
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import inspect
@@ -20,9 +20,9 @@ app.config.from_envvar('CONFIG',silent=False)
 config = app.config
 app.jinja_env.add_extension('jinja2.ext.do')
 
-from models import db,Users,Assessments,Evidence,CompetenceDetails,AssessmentStatusRef
-
-s = db.session
+# from models import db,Users,Assessments,Evidence,CompetenceDetails,AssessmentStatusRef
+#
+# s = db.session
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -33,7 +33,7 @@ handler = TimedRotatingFileHandler('PerformanceSummary.log', when="d", interval=
 handler.setLevel(logging.INFO)
 
 #set up cron to allow jobs for monthly reports and backups
-cron = Scheduler(daemon=True)
+cron = BackgroundScheduler(daemon=True)
 cron.start()
 
 from flask_mail import Mail,Message
@@ -43,27 +43,18 @@ mail.init_app(app)
 
 
 def send_async_email(msg):
-    print "in async mail!"
     with app.test_request_context():
-        print "inside app thing!"
-        print msg
         mail.send(msg)
 
 def send_mail(user_id,subject,message):
 
     if config.get("MAIL") != False:
-        print "USER:"
-        print user_id
         #recipient_user_name = s.query(Users).filter(Users.id == int(user_id)).first().login
         recipient_email = s.query(Users).filter(Users.id == int(user_id)).first().email
-        print recipient_email
-        print "SENDING EMAIL"
-        print message
         msg = Message('CompetenceDB: '+subject, sender="notifications@competencedb.com", recipients=[recipient_email])
         msg.body = 'text body'
         msg.html = '<b>You have a notification on CompetenceDB</b><br><br>'+message+'<br><br>View all your notifications <a href="'+request.url_root+'notifications">here</a>'
         thr = Thread(target=send_async_email, args=[msg])
-        print thr
         thr.start()
 
 
@@ -71,8 +62,6 @@ def send_mail(user_id,subject,message):
 def send_mail_unknown(email,subject,message):
 
     if config.get("MAIL") != False:
-        print "SENDING EMAIL"
-        print message
         msg = Message('CompetenceDB: '+subject, sender="notifications@competencedb.com", recipients=[email])
         msg.body = 'text body'
         msg.html = message
@@ -104,6 +93,9 @@ def message(f):
     return decorated_function
 
 #import modules and and register blueprints
+from models import db,Users,Assessments,Evidence,CompetenceDetails,AssessmentStatusRef
+
+s = db.session
 
 from mod_admin.views import admin
 from mod_training.views import training
@@ -116,6 +108,7 @@ app.register_blueprint(training,url_prefix='/training')
 app.register_blueprint(competence,url_prefix='/competence')
 app.register_blueprint(document, url_prefix='/document')
 app.register_blueprint(cpd, url_prefix='/cpd')
+
 
 import re
 from models import MonthlyReportNumbers, Service
@@ -174,7 +167,7 @@ def report_scheduler():
     try:
         s.commit()
     except:
-        print "error"
+        print ("error")
 
 @cron.interval_schedule(days=7)
 def expiry_emailer():

@@ -75,9 +75,6 @@ def get_ss_id_from_assessment(assess_id_list):
 def get_competent_users(ss_id_list):
     # todo: add competence author to this list
 
-    print "HELLO THERE"
-    print ss_id_list
-
     users = s.query(Users). \
         join(Assessments, Assessments.user_id == Users.id). \
         join(AssessmentStatusRef). \
@@ -86,7 +83,6 @@ def get_competent_users(ss_id_list):
                Assessments.ss_id.in_(ss_id_list)). \
         group_by(Users.id).having(func.count(Assessments.ss_id.in_(ss_id_list)) == len(ss_id_list)). \
         values(Users.id, (Users.first_name + ' ' + Users.last_name).label('name'))
-    print users
     return users
 
 
@@ -120,8 +116,6 @@ def get_competence_by_user(c_id, u_id,version):
                AssessmentStatusRef.status, Assessments.date_of_training,
                Assessments.date_completed, Assessments.date_expiry, Assessments.comments.label('training_comments'),Assessments.version,SectionSortOrder.sort_order)
 
-    print "COUNT"
-    print competence_result
 
     result = {'constant': OrderedDict(), 'custom': OrderedDict()}
 
@@ -138,8 +132,6 @@ def get_competence_by_user(c_id, u_id,version):
             else:
                 result["custom"][x.section_id_rel.name] = OrderedDict()
                 result["custom"][x.section_id_rel.name] = {'complete': 0, 'total': 0, 'subsections': []}
-
-    print json.dumps(result, indent=4)
 
     for c in competence_result:
         evidence = s.query(AssessmentEvidenceRelationship).filter(
@@ -243,7 +235,6 @@ def activate_assessments(ids, u_id,version):
 
     :return:
     """
-    print "here"
     if ids[0] != "":
         ids = [int(x) for x in ids]
     else:
@@ -253,13 +244,13 @@ def activate_assessments(ids, u_id,version):
     activated = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Active").first().id
     assigned = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Assigned").first().id
 
-    print('activated = ' + str(activated))
-    print('assigned = ' + str(assigned))
-    print('query')
-    print(s.query(Assessments).filter(
-        and_(Assessments.user_id == u_id, Assessments.status == assigned, Assessments.id.in_(ids))))
-    print(s.query(Assessments).filter(
-        and_(Assessments.user_id == u_id, Assessments.status == assigned, Assessments.id.in_(ids))))
+    # print('activated = ' + str(activated))
+    # print('assigned = ' + str(assigned))
+    # print('query')
+    # print(s.query(Assessments).filter(
+    #     and_(Assessments.user_id == u_id, Assessments.status == assigned, Assessments.id.in_(ids))))
+    # print(s.query(Assessments).filter(
+    #     and_(Assessments.user_id == u_id, Assessments.status == assigned, Assessments.id.in_(ids))))
     statement = s.query(Assessments). \
         filter(and_(Assessments.version==version,Assessments.user_id == u_id, Assessments.status == assigned, Assessments.id.in_(ids))). \
         update({Assessments.status: activated, Assessments.date_activated: datetime.date.today()},
@@ -297,15 +288,9 @@ def reassessment():
         version = request.args.get('version')
 
         current_version = s.query(Competence).filter(Competence.id == c_id).first().current_version
-        print "YEAH"
-        print version
-        print current_version
-        print "----"
         if int(version) < int(current_version):
             from app.views import index
             return index(message="There is a new version of this competence so it cannot be re-assessed!")
-
-        print c_id
 
         assess_id_list = request.args.get('assess_id_list').split(',')
 
@@ -347,7 +332,7 @@ def reassessment():
                                assess_id_list=','.join(assess_id_list),version=version)
 
     elif request.method == 'POST':
-        print "now posting"
+        print ("now posting")
         questions = s.query(QuestionsRef).filter(QuestionsRef.active == True).all()
 
         signoff_id = request.form["signoff_id"]
@@ -534,21 +519,12 @@ def accept_reassessment(id=None):
 
 
         for i in s.query(Reassessments).join(AssessReassessRel).join(Assessments).filter(Reassessments.id == id).all():
-            print "HERE"
             for j in i.assessments_rel:
                 current_version = j.assess_rel.ss_id_rel.c_id_rel.current_version
-                print "CURRENT"
-                print current_version
                 for detail in j.assess_rel.ss_id_rel.c_id_rel.competence_detail:
                     if detail.intro <= current_version:
-                        print "CURRENT EXPIRY"
-                        print i.date_completed
                         new_expiry = i.date_completed + relativedelta(months=detail.validity_rel.months)
-                        print "NEW_EXPIRY"
-                        print new_expiry
 
-
-                print j.assess_id
 
                 data = {
                     'date_expiry':new_expiry
@@ -567,7 +543,6 @@ def accept_reassessment(id=None):
 def download(filename, alias):
     #    uploads = os.path.join(current_app.root_path, app.config['UPLOAD_FOLDER'])
     uploads = app.config["UPLOAD_FOLDER"]
-    print uploads
     return send_from_directory(directory=uploads, filename=filename, as_attachment=True, attachment_filename=alias)
 
 @training.route('/signoff/<int:assess_id>', methods=['GET', 'POST'])
@@ -584,9 +559,7 @@ def signoff(assess_id):
 
         if count != 0:
             form = SignOffForm()
-            print assess_id
             ss_id_list = get_ss_id_from_assessment([assess_id])
-            print ss_id_list
             competent_users = get_competent_users(ss_id_list)
 
             sub_section_name = ass.ss_id_rel.name
@@ -616,14 +589,12 @@ def signoff(assess_id):
                 'signoff_id': request.form['assessor'],
                 'status': status_id,
                 }
-        print data
         s.query(Assessments).filter(Assessments.id==assess_id).update(data)
         s.commit()
 
 @training.route('/self_complete/<int:assess_id>', methods=['GET', 'POST'])
 @login_required
 def self_complete(assess_id):
-    print assess_id
     c_id = request.args.get('c_id')
     version = request.args.get('version')
     status_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Complete").first().id
@@ -632,8 +603,6 @@ def self_complete(assess_id):
 
     for detail in query.ss_id_rel.c_id_rel.competence_detail:
         if detail.intro <= query.version:
-            print "YOY"
-            print detail
             months_valid = detail.validity_rel.months
 
     data = {'trainer_id': current_user.database_id,
@@ -643,8 +612,6 @@ def self_complete(assess_id):
             'signoff_id': current_user.database_id,
             'status': status_id,
             }
-    print "hello"
-    print data
     s.query(Assessments).filter(Assessments.id == assess_id).update(data)
     s.commit()
     return redirect(url_for('training.view_current_competence')+"?c_id="+str(c_id)+"&version="+str(version))
@@ -659,49 +626,42 @@ def delete():
 
     for assessment in assessments:
         evidence_rels = s.query(AssessmentEvidenceRelationship).filter(AssessmentEvidenceRelationship.assessment_id == assessment.id).all()
-        print evidence_rels
         if len(evidence_rels) > 0:
             for evidence_rel in evidence_rels:
-                print evidence_rel.evidence_id
                 #remove upload
-                print "removing upload"
                 files = s.query(Uploads).filter_by(evidence_id = evidence_rel.evidence_id).all()
                 if len(files) > 0:
                     for file in files:
                         try:
                             os.remove(config.get("UPLOADED_FILES_DEST")+"/"+file.uuid)
-                            print "file removed"
                         except OSError:
-                            print "couldn't remove file from filesystem"
-                print "deleting upload from db"
+                            print ("couldn't remove file from filesystem")
                 s.query(Uploads).filter_by(evidence_id = evidence_rel.evidence_id).delete()
                 s.commit()
 
                 #remove_evidence_rel
-                print "removing evidence rel"
 
                 s.query(AssessmentEvidenceRelationship).filter_by(id=evidence_rel.id).delete()
                 s.commit()
 
-                print s.query(AssessmentEvidenceRelationship).filter_by(id=evidence_rel.id).all()
 
                 # remove evidence
-                print "removing evidence record in db"
+                print ("removing evidence record in db")
                 s.query(Evidence).filter_by(id=evidence_rel.evidence_id).delete()
                 s.commit()
 
         reassessments = s.query(AssessReassessRel).filter_by(assess_id=assessment.id).all()
         if len(reassessments) > 0:
             for reassessment in reassessments:
-                print "removing reassessments"
+                print ("removing reassessments")
                 s.query(Reassessments).filter_by(id=reassessment.reassess_id).delete()
                 s.commit()
 
-        print "removing reassess rel"
+        print ("removing reassess rel")
         s.query(AssessReassessRel).filter_by(assess_id=assessment.id).delete()
         s.commit()
 
-        print "removing reassessment"
+        print ("removing reassessment")
         s.query(Assessments).filter_by(id=assessment.id).delete()
         s.commit()
 
@@ -713,8 +673,6 @@ def delete():
 @login_required
 def abandon():
     c_id = request.args["c_id"]
-    print "hello"
-    print c_id
     version = request.args["version"]
     abandon_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status=="Abandoned").first().id
     data = {'status':abandon_id}
@@ -796,19 +754,14 @@ def process_evidence():
     version = request.args.get('version')
     status_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Sign-Off").first().id
     for i in request.form:
-        print i
+        print (i)
 
     evidence_type = s.query(EvidenceTypeRef).filter(EvidenceTypeRef.id == int(request.form['evidence_type'])).first().type
-
-    print evidence_type
-
-
 
     if evidence_type == "Case":
         evidence = request.form.getlist('case')
         result = request.form.getlist('result')
         for i in zip(evidence,result):
-            print i
             e = Evidence(is_correct=None, signoff_id=request.form['assessor'], date=datetime.date.today(),
                          evidence=i[0], result=i[1],
                          comments=None, evidence_type_id=request.form["evidence_type"])
@@ -827,9 +780,6 @@ def process_evidence():
             result = None
 
         if evidence_type == "Observation":
-            print "Observation"
-            print "HERE ME"
-            print request.form['evidence_observation']
             evidence = request.form['evidence_observation']
             result = None
 
@@ -878,7 +828,7 @@ def process_evidence():
             s.add(u)
         s.commit()
 
-    print request.form['assessor']
+    print (request.form['assessor'])
     # send_mail(request.form['assessor'], "Evidence awaiting your review",
     #           "You have evidence from <b>" + current_user.full_name + "</b> awaiting your review")
     send_mail(request.form['assessor'], "Evidence awaiting your review", "")
@@ -946,28 +896,22 @@ def select_subsections():
         elif forward_action == "reassess":
             heading = heading.format("Reassess")
             required_status = ["Complete"]
-        print "HERE HERE"
-        print u_id
+
         return render_template('select_subsections.html', competence=c_id, user={'name': competence_summary.user,
                                                                                  'id': u_id},
                                title=competence_summary.title, validity=competence_summary.months, heading=heading,
                                section_list=section_list, required_status=required_status, action=forward_action,
                                form=form,version=version)
     else:
-        print request.form["ids"]
         ids = form.ids.data.replace('"', '').replace('[', '').replace(']', '').split(',')
         if forward_action == "assign":
             pass
         elif forward_action == "activate":
-            print "THIS IS ME"
-            print ids
             result = activate_assessments(ids, u_id,version)
             if result == False:
                 return redirect(url_for('training.view_current_competence', c_id=c_id, user=u_id, version=version))
 
         elif forward_action == "evidence":
-            print "HELLO"
-            print ids
             return upload_evidence(c_id, ids,version)
         elif forward_action == "reassess":
             return redirect(url_for('training.reassessment')+"?c_id="+str(c_id)+"&version="+str(version)+"&assess_id_list="+",".join(ids))
@@ -986,23 +930,23 @@ def retract_evidence():
     Uploads (if applicable) also remain
     :return:
     """
-    print "HELLO RETRACTING"
+    print ("HELLO RETRACTING")
 
     user_id = current_user.database_id
     version = request.args.get('version')
     c_id = request.args.get('c_id')
 
     evidence_id = request.args.get('evidence_id')
-    print "EVIDENCE ID: "+ str(evidence_id)
+    print ("EVIDENCE ID: "+ str(evidence_id))
 
     assessment_id = request.args.get('assessment_id')
-    print "ASSESSMENT ID:" +str(assessment_id)
+    print ("ASSESSMENT ID:" +str(assessment_id))
     assessment = s.query(Assessments).filter(Assessments.id==assessment_id).all()
     if len(assessment) == 1 and int(assessment[0].user_id) == int(user_id) and int(assessment[0].status) == 7:
-        print "IN IF"
+        print ("IN IF")
         evidence = s.query(AssessmentEvidenceRelationship).filter(AssessmentEvidenceRelationship.assessment_id==int(assessment_id)).all()
         if len(evidence)==1:
-            print "setting assessment status to 1 (active), remove trainer and signoff information"
+            print ("setting assessment status to 1 (active), remove trainer and signoff information")
             assessment[0].status = 1
             assessment[0].date_of_training = None
             assessment[0].trainer_id = None
@@ -1010,7 +954,7 @@ def retract_evidence():
             s.commit()
         elif len(evidence)>1:
             ### assessment goes back to most recent evidence status
-            print "more evidence - deciding status"
+            print ("more evidence - deciding status")
             dates={}
             for i in evidence:
                 if int(i.evidence_id) != int(evidence_id):
@@ -1024,7 +968,7 @@ def retract_evidence():
 
             ### get most recent date - this determines the status of the assessment
             most_recent = max(dates.keys())
-            print most_recent
+            print (most_recent)
 
             if dates[most_recent] == "correct":
                 assessment[0].status = 3
@@ -1036,12 +980,12 @@ def retract_evidence():
                 assessment[0].status = 7
                 assessment[0].date_of_training = most_recent.strftime("%Y-%m-%d")
 
-            print assessment[0].status
+            print (assessment[0].status)
             s.commit()
 
     evidence_assess_rel = s.query(AssessmentEvidenceRelationship).filter(AssessmentEvidenceRelationship.evidence_id==int(evidence_id)).filter(AssessmentEvidenceRelationship.assessment_id==int(assessment_id)).all()
     if len(evidence_assess_rel) == 1:
-        print "deleting"
+        print ("deleting")
         s.delete(evidence_assess_rel[0])
         s.commit()
 
@@ -1070,7 +1014,6 @@ def activate_competence():
     """
     u_id = request.args.get('u_id')
     c_id = request.args.get('c_id')
-    print "LOOK AT ME"
     activate_assessments(c_id, u_id)
     return redirect(url_for('training.view_current_competence', c_id=c_id, user=u_id))
 
@@ -1105,7 +1048,7 @@ def bulk_distribute():
 
     elif request.method == "POST":
         for i in zip(request.form.getlist('assid'), request.form.getlist('trainer'), request.form.getlist('assessor')):
-            print i
+            print (i)
 
 @training.route('/four_year_activate/<c_id>', methods=['GET', 'POST'])
 @login_required
@@ -1129,7 +1072,7 @@ def four_year_activate(c_id = None):
     status_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Obsolete").first().id
     data = { 'status': status_id }
     for assessment in assessments:
-        print "setting " + assessment.ss_id_rel.name + " to obsolete"
+        print ("setting " + assessment.ss_id_rel.name + " to obsolete")
         s.query(Assessments).filter(Assessments.id == assessment.id).update(data)
     s.commit()
 
@@ -1148,8 +1091,6 @@ def four_year_activate(c_id = None):
 @training.route('/test', methods=['GET', 'POST'])
 def test():
     four_years_ago = datetime.date.today() - relativedelta(months=48)
-
-    print four_years_ago
 
     assessments = s.query(Assessments).join(AssessmentStatusRef).filter(
         AssessmentStatusRef.status == "Complete").filter(Assessments.date_completed <= four_years_ago)
@@ -1170,7 +1111,7 @@ def test():
             lines.append("You originally completed this competency on "+str(assessment.date_completed))
             lines.append("Please arrange a suitable time with your trainer to reassess you competence fully.")
 
-            print send_mail(assessment.user_id ,"Four Year Competency Reassessment Required: "+ assessment.ss_id_rel.c_id_rel.competence_detail[0].title,"<br><br>".join(lines))
+            print (send_mail(assessment.user_id ,"Four Year Competency Reassessment Required: "+ assessment.ss_id_rel.c_id_rel.competence_detail[0].title,"<br><br>".join(lines)))
 
         done.append(str(assessment.user_id) + ":" + str(assessment.ss_id_rel.c_id))
 
@@ -1225,8 +1166,6 @@ def user_report(id=None):
     expiring_within_month=[]
     today = datetime.date.today()
 
-    print "ONGOING ASSESSMENTS:"
-
     for j in assigned:
         ongoing_assessment_summary = get_competence_summary_by_user(c_id=j.ss_id_rel.c_id,u_id=id,version=j.version)
         if ongoing_assessment_summary.due_date <= today:
@@ -1235,12 +1174,9 @@ def user_report(id=None):
             ongoing.append(ongoing_assessment_summary)
 
     for i in abandoned_query:
-        print i.ss_id
         abandoned_assessment_summary = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id,u_id=id,version=i.version)
         abandoned.append(abandoned_assessment_summary)
 
-    print "ABANDONED:"
-    print abandoned
 
     ### get complete competencies and split into expiring, expired, and in-date
     complete = s.query(Assessments) \
@@ -1253,8 +1189,6 @@ def user_report(id=None):
         .filter(CompetenceDetails.intro == Competence.current_version) \
         .filter(AssessmentStatusRef.status.in_(["Complete","Four Year Due"])) \
         .all()
-
-    print "COMPLETE ASSESSMENTS:"
 
     for i in complete:
         complete_assessment_summary = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=id, version=i.version)

@@ -62,8 +62,7 @@ def get_subsections(c_id):
     subsection_list = []
     for i in subsections:
         subsection_list.append(i)
-    print "here"
-    print subsection_list
+
     return subsection_list
 
 def get_qpulsenums(c_id, version):
@@ -76,8 +75,6 @@ def get_qpulsenums(c_id, version):
 
     doc_list = []
     for i in qpulse_no_list:
-        print "IN QPULSE LIST:"
-        print i
         doc_list.append(i)
     return doc_list
 
@@ -131,28 +128,27 @@ def export_document(c_id):
 
     ## Get variables using competence_view query from mod_competence views
     v = get_latest_version(c_id)[0]
-    print ":::::::::::"
 
     comp = get_doc_info(c_id)
-    print comp
-    print "get doc info returns: "
-    print comp
+
     const = competence_views.get_constant_subsections(c_id, v)
-    print "get constant subsection returns: "
-    print const
+
     subsec = competence_views.get_subsections(c_id, v)
-    print "competence get subsections returns: "
-    print subsec
+
     if config.get("QPULSE_MODULE") == True:
         qpulse = get_qpulsenums(c_id, v)
 
     # Competence details
     title = comp.title
-    if config.get("QPULSE_MODULE") == True:
-        docid = comp.qpulsenum
-    else:
-        docid = None
+    # print "Qpulse number:"
+    # print comp.qpulsenum
+    # if config.get("QPULSE_MODULE") == True:
+    #     docid = comp.qpulsenum
+    # else:
+    #     docid = None
+
     version_no = comp.competence.current_version
+
     author = comp.creator_rel.first_name + ' ' + comp.creator_rel.last_name
     authoriser = comp.approve_rel.first_name + ' ' + comp.approve_rel.last_name
     scope = comp.scope
@@ -171,8 +167,8 @@ def export_document(c_id):
         evidence_type = sub.type
         value_list = [subsection_name, comments, evidence_type]#, sub_version,constant, sub_id]
         subsection.setdefault(sec_name,[]).append(value_list)
-    print "**************** This is everything in sub: "
-    print subsection
+    print ("**************** This is everything in sub: ")
+    print (subsection)
 
     #constant section details
     constant = OrderedDict()
@@ -184,28 +180,25 @@ def export_document(c_id):
         evidence = c[3]
         value_list = [sec_name, sec_comments, evidence]
         constant.setdefault(sec_type,[]).append(value_list)
-    print "**************** This is everything in const: "
-    print constant
+    print ("**************** This is everything in const: ")
+    print (constant)
 
     #associated qpulse documents
     qpulse_list = {}
     if config.get("QPULSE_MODULE") == True:
-        print qpulse
+
         for qpulse_no in qpulse:
             d = s.query(QPulseDetails).first()
-            print d
             qpulse_name = QPulseWeb().get_doc_by_id(d.username, d.password, qpulse_no)
             qpulse_list[qpulse_no]=qpulse_name
 
-    for i in qpulse_list:
-        print i
 
     # evidence - this will be for downloading completed competences
     evidence_list = {}
 
     print('***Rendering main document***')
     # Make main document
-    html_out = render_template('export_to_pdf.html', title=title, validity_period=comp.validity_rel.months, scope=scope, docid=docid ,version_no=version_no, author=author, full_name=current_user.full_name, subsection=subsection, constant=constant, qpulse_list=qpulse_list)
+    html_out = render_template('export_to_pdf.html', title=title, validity_period=comp.validity_rel.months, scope=scope, docid=c_id ,version_no=version_no, author=author, full_name=current_user.full_name, subsection=subsection, constant=constant, qpulse_list=qpulse_list)
     html = HTML(string=html_out)
 
     main_doc = html.render(stylesheets=[CSS('static/css/simple_report.css')])
@@ -214,7 +207,7 @@ def export_document(c_id):
 
     # Add headers and footers
     # header = html.render(stylesheets=[CSS(string='div {position: fixed; top: 1cm; left: 1cm;}')])
-    header_out = render_template('header.html', title=title, docid=docid)
+    header_out = render_template('header.html', title=title, docid=c_id)
     header_html = HTML(string=header_out)
     header = header_html.render(stylesheets=[CSS('static/css/simple_report.css'), CSS(string='div {position: fixed; top: -2.7cm; left: 0cm;}')])
 
@@ -224,7 +217,6 @@ def export_document(c_id):
     header_body = header_body.copy_with_children(header_body.all_children())
 
     # Template of footer
-    print comp.approve_rel
     footer_out = render_template('footer.html', version_no=version_no, author=author, full_name=current_user.full_name, authoriser=comp.approve_rel.first_name + " " + comp.approve_rel.last_name, date_of_issue=date_of_issue)
     footer_html = HTML(string=footer_out)
     footer = footer_html.render(stylesheets=[CSS('static/css/simple_report.css'), CSS(string='div {position: fixed; bottom: -2.1cm; left: 0cm;}')])
@@ -237,14 +229,14 @@ def export_document(c_id):
     # Insert header and footer in main doc
 
     for page in main_doc.pages:
-        print "HEADER & FOOTER"
-        print page
+        print ("HEADER & FOOTER")
+        print (page)
         page_body = get_page_body(page._page_box.all_children())
         page_body.children += header_body.all_children()
         page_body.children += footer_body.all_children()
-        if exists_links:
-            page.links.extend(header_page.links)
-            page.links.extend(footer_page.links)
+        # if exists_links:
+        #     page.links.extend(header_page.links)
+        #     page.links.extend(footer_page.links)
 
 
     outfile = str(uuid.uuid4())
@@ -274,33 +266,23 @@ def export_document_view():
 
 @document.route('/export_trial', methods=['GET', 'POST'])
 def export_trial_report():
-    print "HELLO"
     ids = [int(i) for i in request.args.get('ids').split(",")]
-    print ids
     uploads = app.config["UPLOAD_FOLDER"]
-    print uploads
-
 
     current_data = s.query(CompetenceDetails).join(Competence).filter(CompetenceDetails.c_id.in_(ids)).filter(
         Competence.current_version == CompetenceDetails.intro).all()
-    print current_data
 
     result = {}
     for i in current_data:
         #find out how many are trained and partially and in training
-        print i.title
-        print i.c_id
         #count how many subsections are in the competence
         number_of_subsections = s.query(Subsection).join(Competence).filter(and_(Subsection.intro <= Competence.current_version,or_(Subsection.last >= Competence.current_version,Subsection.last == None))).filter(Subsection.c_id == i.c_id).count()
-        print number_of_subsections
         #get all assessments by user?
         counts = s.query(func.count(Assessments.id).label("count"),Assessments.user_id.label("user_id"),Assessments.status.label("status_id"),AssessmentStatusRef.status.label("status")).join(AssessmentStatusRef).join(Subsection).join(Competence).join(CompetenceDetails).filter(and_(CompetenceDetails.intro <= Competence.current_version,or_(CompetenceDetails.last >= Competence.current_version,CompetenceDetails.last == None))).filter(Subsection.c_id == i.c_id).filter(Assessments.ss_id == Subsection.id).group_by(Assessments.user_id,Assessments.status).all()
-        print counts
         trained=0
         partial=0
         in_training=0
         for j in counts:
-            print j
             users_done = []
             if j.status == "Complete":
                 if j.count == number_of_subsections:
@@ -361,8 +343,8 @@ def export_trial_report():
     # Insert header and footer in main doc
 
     for page in main_doc.pages:
-        print "HEADER & FOOTER"
-        print page
+        print ("HEADER & FOOTER")
+        print (page)
         page_body = get_page_body(page._page_box.all_children())
         page_body.children += header_body.all_children()
         page_body.children += footer_body.all_children()
@@ -373,7 +355,7 @@ def export_trial_report():
     outfile = str(uuid.uuid4())
 
     out_name = main_doc.write_pdf(target=app.config["UPLOAD_FOLDER"] + "/" + outfile)
-    print outfile
-    print out_name
+    print (outfile)
+    print (out_name)
 
     return send_from_directory(directory=uploads, filename=outfile, as_attachment=True, attachment_filename="trial_report.pdf")

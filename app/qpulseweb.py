@@ -12,9 +12,9 @@ class QPulseWeb:
 
         :return: client object
         """
-        url = 'http://10.182.155.37/QPulseWeb.asmx?WSDL'
+        url = 'https://bioinfoweb.sch.nhs.uk/QPulseWeb.asmx?WSDL'
         client = Client(url, cache=NoCache())
-        print client
+        print (client)
         return client
 
 
