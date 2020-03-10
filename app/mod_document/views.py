@@ -218,37 +218,69 @@ def export_document(c_id):
 
     # Add headers and footers
     # header = html.render(stylesheets=[CSS(string='div {position: fixed; top: 1cm; left: 1cm;}')])
-    header_out = render_template('header.html', title=title, docid=c_id)
-    header_html = HTML(string=header_out)
-    header = header_html.render(stylesheets=[CSS('static/css/simple_report.css'), CSS(string='div {position: fixed; top: -2.7cm; left: 0cm;}')])
-
-    header_page = header.pages[0]
-    exists_links = exists_links or header_page.links
-    header_body = get_page_body(header_page._page_box.all_children())
-    header_body = header_body.copy_with_children(header_body.all_children())
-
-    # Template of footer
-    print comp.approve_rel
-    footer_out = render_template('footer.html', version_no=version_no, author=author, full_name=current_user.full_name, authoriser=comp.approve_rel.first_name + " " + comp.approve_rel.last_name, date_of_issue=date_of_issue)
-    footer_html = HTML(string=footer_out)
-    footer = footer_html.render(stylesheets=[CSS('static/css/simple_report.css'), CSS(string='div {position: fixed; bottom: -2.1cm; left: 0cm;}')])
-
-    footer_page = footer.pages[0]
-    exists_links = exists_links or footer_page.links
-    footer_body = get_page_body(footer_page._page_box.all_children())
-    footer_body = footer_body.copy_with_children(footer_body.all_children())
+    # header_out = render_template('header.html', title=title, docid=c_id)
+    # header_html = HTML(string=header_out)
+    # header = header_html.render(stylesheets=[CSS('static/css/simple_report.css'), CSS(string='div {position: fixed; top: -2.7cm; left: 0cm;}')])
+    #
+    # header_page = header.pages[0]
+    # # exists_links = exists_links or header_page.links
+    # exists_header_links = header_page.links
+    # header_body = get_page_body(header_page._page_box.all_children())
+    # header_body = header_body.copy_with_children(header_body.all_children())
+    #
+    # # Template of footer
+    # print comp.approve_rel
+    # footer_out = render_template('footer.html', version_no=version_no, author=author, full_name=current_user.full_name, authoriser=comp.approve_rel.first_name + " " + comp.approve_rel.last_name, date_of_issue=date_of_issue)
+    # footer_html = HTML(string=footer_out)
+    # footer = footer_html.render(stylesheets=[CSS('static/css/simple_report.css'), CSS(string='div {position: fixed; bottom: -2.1cm; left: 0cm;}')])
+    #
+    # footer_page = footer.pages[0]
+    # exists_footer_links = footer_page.links
+    # footer_body = get_page_body(footer_page._page_box.all_children())
+    # footer_body = footer_body.copy_with_children(footer_body.all_children())
 
     # Insert header and footer in main doc
 
     for page in main_doc.pages:
         print "HEADER & FOOTER"
         print page
+        header_out = render_template('header.html', title=title, docid=c_id)
+        header_html = HTML(string=header_out)
+        header = header_html.render(stylesheets=[CSS('static/css/simple_report.css'),
+                                                 CSS(string='div {position: fixed; top: -2.7cm; left: 0cm;}')])
+
+        header_page = header.pages[0]
+        # exists_links = exists_links or header_page.links
+        exists_header_links = header_page.links
+        header_body = get_page_body(header_page._page_box.all_children())
+        header_body = header_body.copy_with_children(header_body.all_children())
+
+        # Template of footer
+        print comp.approve_rel
+        footer_out = render_template('footer.html', version_no=version_no, author=author,
+                                     full_name=current_user.full_name,
+                                     authoriser=comp.approve_rel.first_name + " " + comp.approve_rel.last_name,
+                                     date_of_issue=date_of_issue)
+        footer_html = HTML(string=footer_out)
+        footer = footer_html.render(stylesheets=[CSS('static/css/simple_report.css'),
+                                                 CSS(string='div {position: fixed; bottom: -2.1cm; left: 0cm;}')])
+
+        footer_page = footer.pages[0]
+        exists_footer_links = footer_page.links
+        footer_body = get_page_body(footer_page._page_box.all_children())
+        footer_body = footer_body.copy_with_children(footer_body.all_children())
+
         page_body = get_page_body(page._page_box.all_children())
+        print page_body
         page_body.children += header_body.all_children()
+        print page_body.children
         page_body.children += footer_body.all_children()
         # if exists_links:
         #     page.links.extend(header_page.links)
         #     page.links.extend(footer_page.links)
+
+        page.links.extend(header_page.links)
+        page.links.extend(footer_page.links)
 
 
     outfile = str(uuid.uuid4())
