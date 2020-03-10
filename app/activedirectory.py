@@ -3,6 +3,7 @@
 from suds.client import Client
 from suds.sudsobject import asdict
 from suds.cache import NoCache
+import ssl
 
 class UserAuthentication:
     def __init__(self):
@@ -14,7 +15,14 @@ class UserAuthentication:
 
         :return: client object
         """
-        url = 'http://10.182.155.37/UserAuthentication.asmx?WSDL'
+        try:
+            _create_unverified_https_context = ssl._create_unverified_context
+        except AttributeError:
+            pass
+        else:
+            ssl._create_default_https_context = _create_unverified_https_context
+
+        url = 'https://bioinfoweb.sch.nhs.uk/UserAuthentication.asmx?WSDL'
         client = Client(url, cache=NoCache())
         return client
 

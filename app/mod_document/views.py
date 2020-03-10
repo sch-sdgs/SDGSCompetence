@@ -148,11 +148,15 @@ def export_document(c_id):
 
     # Competence details
     title = comp.title
-    if config.get("QPULSE_MODULE") == True:
-        docid = comp.qpulsenum
-    else:
-        docid = None
+    # print "Qpulse number:"
+    # print comp.qpulsenum
+    # if config.get("QPULSE_MODULE") == True:
+    #     docid = comp.qpulsenum
+    # else:
+    #     docid = None
+
     version_no = comp.competence.current_version
+
     author = comp.creator_rel.first_name + ' ' + comp.creator_rel.last_name
     authoriser = comp.approve_rel.first_name + ' ' + comp.approve_rel.last_name
     scope = comp.scope
@@ -205,7 +209,7 @@ def export_document(c_id):
 
     print('***Rendering main document***')
     # Make main document
-    html_out = render_template('export_to_pdf.html', title=title, validity_period=comp.validity_rel.months, scope=scope, docid=docid ,version_no=version_no, author=author, full_name=current_user.full_name, subsection=subsection, constant=constant, qpulse_list=qpulse_list)
+    html_out = render_template('export_to_pdf.html', title=title, validity_period=comp.validity_rel.months, scope=scope, docid=c_id ,version_no=version_no, author=author, full_name=current_user.full_name, subsection=subsection, constant=constant, qpulse_list=qpulse_list)
     html = HTML(string=html_out)
 
     main_doc = html.render(stylesheets=[CSS('static/css/simple_report.css')])
@@ -214,7 +218,7 @@ def export_document(c_id):
 
     # Add headers and footers
     # header = html.render(stylesheets=[CSS(string='div {position: fixed; top: 1cm; left: 1cm;}')])
-    header_out = render_template('header.html', title=title, docid=docid)
+    header_out = render_template('header.html', title=title, docid=c_id)
     header_html = HTML(string=header_out)
     header = header_html.render(stylesheets=[CSS('static/css/simple_report.css'), CSS(string='div {position: fixed; top: -2.7cm; left: 0cm;}')])
 
@@ -242,9 +246,9 @@ def export_document(c_id):
         page_body = get_page_body(page._page_box.all_children())
         page_body.children += header_body.all_children()
         page_body.children += footer_body.all_children()
-        if exists_links:
-            page.links.extend(header_page.links)
-            page.links.extend(footer_page.links)
+        # if exists_links:
+        #     page.links.extend(header_page.links)
+        #     page.links.extend(footer_page.links)
 
 
     outfile = str(uuid.uuid4())
