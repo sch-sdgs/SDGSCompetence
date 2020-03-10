@@ -26,7 +26,7 @@ from app.competence import config
 document = Blueprint('document', __name__, template_folder='templates')
 
 # queries
-def get_doc_info(c_id):
+def get_doc_info(c_id, version):
     """
     Method to get doc infor from database
 
@@ -36,7 +36,7 @@ def get_doc_info(c_id):
     """
     print('query')
     competence_list = s.query(CompetenceDetails).\
-        filter(CompetenceDetails.c_id == c_id).first()
+        filter(CompetenceDetails.c_id == c_id).filter(CompetenceDetails.intro == version).first()
     return competence_list
 
 def get_subsections(c_id):
@@ -115,7 +115,7 @@ def get_page_body(boxes):
 
         return get_page_body(box.all_children())
 
-def export_document(c_id):
+def export_document(c_id, version):
     """
     Method to export a blank competence document to PDF
     :param c_id: ID of competence to be returned
@@ -130,21 +130,21 @@ def export_document(c_id):
     #qpulse = get_qpulsenums(c_id)
 
     ## Get variables using competence_view query from mod_competence views
-    v = get_latest_version(c_id)[0]
+    # v = get_latest_version(c_id)[0]
     print ":::::::::::"
 
-    comp = get_doc_info(c_id)
+    comp = get_doc_info(c_id, version)
     print comp
     print "get doc info returns: "
     print comp
-    const = competence_views.get_constant_subsections(c_id, v)
+    const = competence_views.get_constant_subsections(c_id, version)
     print "get constant subsection returns: "
     print const
-    subsec = competence_views.get_subsections(c_id, v)
+    subsec = competence_views.get_subsections(c_id, version)
     print "competence get subsections returns: "
     print subsec
     if config.get("QPULSE_MODULE") == True:
-        qpulse = get_qpulsenums(c_id, v)
+        qpulse = get_qpulsenums(c_id, version)
 
     # Competence details
     title = comp.title
@@ -155,7 +155,7 @@ def export_document(c_id):
     # else:
     #     docid = None
 
-    version_no = comp.competence.current_version
+    version_no = version
 
     author = comp.creator_rel.first_name + ' ' + comp.creator_rel.last_name
     authoriser = comp.approve_rel.first_name + ' ' + comp.approve_rel.last_name
@@ -302,7 +302,7 @@ def export_document_view():
         version = request.args.get('version')
         print('cid')
         print(c_id)
-        outfile = export_document(c_id)
+        outfile = export_document(c_id, version)
         uploads = app.config["UPLOAD_FOLDER"]
         filename = s.query(CompetenceDetails).filter(CompetenceDetails.c_id==c_id).first().title + ".pdf"
         return send_from_directory(directory=uploads, filename=outfile, as_attachment=True, attachment_filename=filename)
