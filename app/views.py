@@ -401,8 +401,6 @@ def utility_processor():
             html = '<span class="label label-danger">Expiring Within 5 Days</span>'
         elif check_margin(expiry_date,30):
             html = '<span class="label label-warning">Expiring Within 30 Days</span>'
-        elif check_margin(expiry_date, 90):
-            html = '<span class="label label-info">Expiring Within Days</span>'
         else:
             html = '<span class="label label-success">OK</span>'
 
@@ -521,7 +519,7 @@ def utility_processor():
                     else:
                         alerts["Assessments Expired"] += 1
                         count+=1
-                elif datetime.date.today() + relativedelta(months=+6) > i.date_expiry:
+                elif datetime.date.today() + relativedelta(months=+1) > i.date_expiry:
                     if "Assessments Expiring" not in alerts:
                         alerts["Assessments Expiring"] = 1
                         count += 1
@@ -795,7 +793,7 @@ def index(message=None):
 
                     expired_count += 1
 
-                elif datetime.date.today() + relativedelta(months=+6) > j.date_expiry:
+                elif datetime.date.today() + relativedelta(months=+1) > j.date_expiry:
                     if "expiring" not in counts[i.id]:
                         counts[i.id]["expiring"] = 0
                         counts[i.id]["expiring"] += 1
@@ -938,7 +936,7 @@ def notifications():
                     alerts["Assessments"]["Assessments Expiring"].append(i)
                     count += 1
                 else:
-                    alerts["Assessments"]["Assessments Expiring"]
+                    alerts["Assessments"]["Assessments Expiring"].append(i)
                     count += 1
 
     signoff = s.query(Evidence).filter(Evidence.signoff_id == current_user.database_id).filter(
