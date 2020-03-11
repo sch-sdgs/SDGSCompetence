@@ -121,6 +121,7 @@ import re
 from models import MonthlyReportNumbers, Service
 
 def check_notifications(user_id):
+    print "CHECKING EXPIRED ASSESSMENTS"
     expired = s.query(Assessments).filter(Assessments.user_id == user_id)
     alerts = {}
     count = 0
@@ -133,7 +134,7 @@ def check_notifications(user_id):
                 else:
                     alerts["Assessments Expired"] += 1
                     count += 1
-            elif datetime.date.today() + relativedelta(months=+6) > i.date_expiry:
+            elif datetime.date.today() + relativedelta(months=+1) > i.date_expiry:
                 if "Assessments Expiring" not in alerts:
                     alerts["Assessments Expiring"] = 1
                     count += 1
