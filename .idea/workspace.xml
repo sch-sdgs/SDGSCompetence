@@ -193,7 +193,7 @@
         <entry key="$PROJECT_DIR$/../SDGSPipeline" value="master" />
       </map>
     </option>
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../SDGSPipeline" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="ROOT_SYNC" value="DONT_SYNC" />
     <option name="UPDATE_TYPE" value="MERGE" />
   </component>
@@ -965,7 +965,20 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/SDGSCompetence$get_sample_sex.coverage" NAME="get_sample_sex Coverage Results" MODIFIED="1591277637089" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$run__1_.coverage" NAME="run (1) Coverage Results" MODIFIED="1597331060440" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../SDGSGelTools/app" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$count_PKD_variants.coverage" NAME="count_PKD_variants Coverage Results" MODIFIED="1575477296921" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$Unittests_in_test_count_umis_per_amplicon_py.coverage" NAME="Unittests in test_count_umis_per_amplicon.py Coverage Results" MODIFIED="1597408245935" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../MSI_pipeline/unit_tests" />
     <SUITE FILE_PATH="coverage/SDGSCompetence$compare_chrY.coverage" NAME="compare_chrY Coverage Results" MODIFIED="1573576294521" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
-    <SUITE FILE_PATH="coverage/SDGSCompetence$run.coverage" NAME="run Coverage Results" MODIFIED="1573482662709" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$Flask_____trialapp_hello_py_.coverage" NAME="Flask (../trialapp/hello.py) Coverage Results" MODIFIED="1596530663609" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$find_male_x.coverage" NAME="find_male_x Coverage Results" MODIFIED="1582298844233" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$check_for_variant.coverage" NAME="check_for_variant Coverage Results" MODIFIED="1593448049902" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$count_umis.coverage" NAME="count_umis Coverage Results" MODIFIED="1591893557419" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$extract_quality.coverage" NAME="extract_quality Coverage Results" MODIFIED="1588164197034" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$run__2_.coverage" NAME="run (2) Coverage Results" MODIFIED="1597841624780" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../SDGSGelTools/app" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$check_for_genotype_matches.coverage" NAME="check_for_genotype_matches Coverage Results" MODIFIED="1581954274755" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$check_BRCA1_extension.coverage" NAME="check_BRCA1_extension Coverage Results" MODIFIED="1584112491172" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$count_CTD_variants.coverage" NAME="count_CTD_variants Coverage Results" MODIFIED="1591196203738" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$run.coverage" NAME="run Coverage Results" MODIFIED="1592314539759" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../SDGSNextGenWeb/app" />
   </component>
 </project>
