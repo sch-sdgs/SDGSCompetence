@@ -1595,12 +1595,14 @@ def competence_history():
     ss.append('<h4>Subsection(s) Edited</h4>')
     for j in subsections:
         ss.append('<p class="text-red">- ' + j.name + "</p>")
-    if datetime.date.today() not in events:
-        events[datetime.date.today()] = []
 
-    events[datetime.date.today()].insert(0, ["Edited",
-                                             "<b>Edited by</b> " + i.creator_rel.first_name + " " + i.creator_rel.last_name,
-                                             ss])
+    ### why is this bit adding on an editing event today?
+    # if datetime.date.today() not in events:
+    #     events[datetime.date.today()] = []
+    #
+    # events[datetime.date.today()].insert(0, ["Edited",
+    #                                          "<b>Edited by</b> " + i.creator_rel.first_name + " " + i.creator_rel.last_name,
+    #                                          ss])
 
     return render_template('competence_history.html',
                            events=OrderedDict(sorted(events.items(), key=lambda t: t[0], reverse=True)))
