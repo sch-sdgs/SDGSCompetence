@@ -306,8 +306,7 @@ def page_not_found(e):
     :param e:
     :return: template login.html
     """
-    session['redirected_from'] = request.url
-    return redirect(url_for('login'))
+    return render_template('403.html'), 403
 
 
 def get_competence_from_subsections(subsection_ids):
