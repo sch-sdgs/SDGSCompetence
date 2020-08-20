@@ -11,7 +11,7 @@ from app.mod_training.views import get_competence_summary_by_user
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.sql.expression import func, and_, or_, case, exists, update,distinct
 import os
-from trello import TrelloApi
+#from trello import TrelloApi
 from app.competence import app, s, db
 from app.models import *
 from app.competence import config
@@ -237,9 +237,7 @@ class User(UserMixin):
         else:
             check = self.check_password(user[0].password)
 
-        print "HERE"
-        print check
-        if check:
+        if check != 'False':
             data = {"last_login": datetime.date.today()}
             s.query(Users).filter(Users.login == id).update(data)
             s.commit()
@@ -658,6 +656,8 @@ def login():
     elif request.method == 'POST':
         user = User(form.data["username"], password=form.data["password"])
         result = user.is_authenticated(id=form.data["username"], password=form.data["password"])
+        print("RESULT")
+        print(result)
         if result:
             login_user(user)
             identity_changed.send(current_app._get_current_object(),
@@ -968,21 +968,21 @@ def notifications():
 
     return render_template("notifications.html",alerts=alerts)
 
-@app.route('/bug_reports', methods=['POST','GET'])
-@login_required
-def bug_reports():
-
-    trello = TrelloApi(config.get("TRELLO_APP_KEY"),token='1c7e2c946ba584da3e125834ebc88f41f38a3f6286ee99e9a43682902ca82ccb')
-    token = trello.get_token_url('My App', expires='30days', write_access=True)
-
-    for i in trello.boards.get_list('59de4d6e5c1d9536f21019d9'):
-        if i["name"] == "Bug Reports":
-            list_id = i["id"]
-
-
-    if request.method == 'POST':
-        trello.cards.new(request.form["bug"] + "- " + current_user.full_name,list_id)
-
-    current_bugs = trello.lists.get_card(list_id=list_id)
-
-    return render_template("bug_reports.html",current_bugs=current_bugs)
+# @app.route('/bug_reports', methods=['POST','GET'])
+# @login_required
+# def bug_reports():
+#
+#     trello = TrelloApi(config.get("TRELLO_APP_KEY"),token='1c7e2c946ba584da3e125834ebc88f41f38a3f6286ee99e9a43682902ca82ccb')
+#     token = trello.get_token_url('My App', expires='30days', write_access=True)
+#
+#     for i in trello.boards.get_list('59de4d6e5c1d9536f21019d9'):
+#         if i["name"] == "Bug Reports":
+#             list_id = i["id"]
+#
+#
+#     if request.method == 'POST':
+#         trello.cards.new(request.form["bug"] + "- " + current_user.full_name,list_id)
+#
+#     current_bugs = trello.lists.get_card(list_id=list_id)
+#
+#     return render_template("bug_reports.html",current_bugs=current_bugs)
