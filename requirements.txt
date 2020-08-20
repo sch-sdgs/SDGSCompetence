@@ -27,3 +27,4 @@ python-docx==0.8.5
 mysql-python
 trello
 plotly
+email_validator
