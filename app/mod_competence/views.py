@@ -1205,7 +1205,9 @@ def edit_competence():
             CompetenceDetails.intro.desc()).first()
 
         form.edit_validity_period.choices = s.query(ValidityRef).values(ValidityRef.id, ValidityRef.months)
+        print(form.edit_validity_period.choices)
         form.edit_validity_period.default = comp_val_period.id
+        print(form.edit_validity_period.default)
 
         form.process()
 
