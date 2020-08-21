@@ -1192,9 +1192,14 @@ def edit_competence():
 
         comp_category = s.query(CompetenceCategory).join(CompetenceDetails).filter_by(c_id=c_id).order_by(
             CompetenceDetails.intro.desc()).first()
+        print("comp_category")
+        print(comp_category)
         form.edit_competency_type.choices = s.query(CompetenceCategory).values(CompetenceCategory.id,
                                                                                CompetenceCategory.category)
+
+        print(form.edit_competency_type.choices)
         form.edit_competency_type.default = comp_category.id
+        print(form.edit_competency_type.default)
 
         comp_val_period = s.query(ValidityRef).join(CompetenceDetails).filter_by(c_id=c_id).order_by(
             CompetenceDetails.intro.desc()).first()
@@ -1247,9 +1252,26 @@ def edit_competence():
                     sub_result["custom"][(subsection.s_id_rel.name,subsection.s_id_rel.id)] = []
                 sub_result["custom"][(subsection.s_id_rel.name,subsection.s_id_rel.id)].append(subsection)
 
+        print("sub_result:")
         print sub_result
+        print("competence_copy")
         competence_copy = create_copy_of_competence(c_id, current_version, comp.title, comp.scope, comp_val_period.id,
                                               comp.category_id, comp.approve_id)
+        print(competence_copy)
+        print("c_id")
+        print(c_id)
+        print("form")
+        print(form)
+        print("live")
+        print(live)
+        print("sub_result")
+        print(sub_result)
+        print("docs")
+        print(json.dumps(documents))
+        print("subsection_form")
+        print(subsection_form)
+        print("section_form")
+        print(subsection_form)
 
         return render_template('competence_edit.html', c_id=c_id, form=form, live=live, detail_id=competence_copy[0],
                                subsections=sub_result, version=competence_copy[1], docs=json.dumps(documents),subsection_form=subsection_form,section_form=section_form)
@@ -1265,6 +1287,7 @@ def create_copy_of_competence(c_id, current_version, title, scope, valid, type, 
         CompetenceDetails.intro == current_version).first()
     print query
     if query is None:
+        print("in if!")
         # make a copy of the competence
         c = CompetenceDetails(c_id=c_id, title=title, scope=scope, creator_id=current_user.database_id,
                               validity_period=valid, category_id=type, intro=current_version + 1,
@@ -1283,6 +1306,7 @@ def create_copy_of_competence(c_id, current_version, title, scope, valid, type, 
             s.commit()
         return (c.id,current_version+1)
     else:
+        print("In else!)")
         return (query.id,current_version+1)
 
 

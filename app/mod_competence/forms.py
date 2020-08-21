@@ -1,4 +1,4 @@
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
 from wtforms.fields import TextField, SubmitField, HiddenField, BooleanField, SelectField, TextAreaField, SelectMultipleField, Label, DateField
 from wtforms.validators import Required
@@ -7,14 +7,14 @@ from app.competence import s
 from app.models import *
 from sqlalchemy.sql.functions import concat
 
-class SectionForm(Form):
+class SectionForm(FlaskForm):
     subsection_name = TextField("Name")
     subsection_evidencetype = QuerySelectField("Evidence Type", query_factory=lambda: s.query(EvidenceTypeRef).all(),
                                                get_label="type")  # This belongs to a subsection
     subsection_comments = TextAreaField("Comment")
 
 
-class AddCompetence(Form):
+class AddCompetence(FlaskForm):
     title = TextField("Title", [Required("Enter a Title")])
     scope = TextField("Scope", [Required("Enter a Scope")])
     #qpulsenum = TextField("QPulse Doc ID", [Required("Enter a QPulse ID")]) #This needs to be added after competency creation!
@@ -26,7 +26,7 @@ class AddCompetence(Form):
     add_document = TextField("Add Related Document", [Required("Enter a Q-Pulse Document Number")])
     submit = SubmitField()
 
-class AddSection(Form):
+class AddSection(FlaskForm):
     add_h_and_s = TextField("Add Health and Safety Hazard")
     choose_section = QuerySelectField("Add Section" ,query_factory=lambda:s.query(Section).filter(Section.constant == 0).all(), get_label="name") #All sections in database
     choose_constant_section = QuerySelectField("Add Constant Section",
@@ -37,30 +37,30 @@ class AddSection(Form):
     constant_section=QuerySelectMultipleField("Test")
     add_constant_subsection = TextField("Add new item")
 
-class AddSubsection(Form):
+class AddSubsection(FlaskForm):
     name = TextField("Area of Competence")
     evidence = QuerySelectField("Evidence type", query_factory=lambda:s.query(EvidenceTypeRef).all(), get_label="type")
     comments =TextField("Comments")
 
 
-class AssignForm(Form):
+class AssignForm(FlaskForm):
     name = TextField("Area of Competence")
     due_date = DateField('Due Date', format='%Y-%m-%d')
     submit = SubmitField()
 
-class ExpiryForm(Form):
+class ExpiryForm(FlaskForm):
     full_name = TextField("Full Name")
     # due_date =  DateField('Due Date', format='%Y-%m-%d')
     # expiry_date = DateField('Expiry Date', format='%Y-%m-%d')
     submit = SubmitField()
 
-class UserAssignForm(Form):
+class UserAssignForm(FlaskForm):
     full_name = TextField("Full Name")
     due_date =  DateField('Due Date', format='%Y-%m-%d')
     expiry_date = DateField('Expiry Date', format='%Y-%m-%d')
     submit = SubmitField()
 
-class EditCompetency(Form):
+class EditCompetency(FlaskForm):
     #test_id=c_id
     edit_title = TextField("Title")
     edit_scope = TextField("Scope")
@@ -75,7 +75,7 @@ class EditCompetency(Form):
     #edit_constant
 
 
-class ViewCompetency(Form):
+class ViewCompetency(FlaskForm):
     view_title = TextField("Title:")
     view_scope = TextField("Scope:")
     # qpulsenum = TextField("QPulse Doc ID", [Required("Enter a QPulse ID")]) #This needs to be added after competency creation!
