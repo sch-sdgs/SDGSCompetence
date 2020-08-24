@@ -1194,9 +1194,7 @@ def edit_competence():
             CompetenceDetails.intro.desc()).first()
         print("comp_category")
         print(comp_category)
-        form.edit_competency_type.choices = s.query(CompetenceCategory).values(CompetenceCategory.id,
-                                                                               CompetenceCategory.category)
-
+        form.edit_competency_type.choices = [(row.id, row.category) for row in (s.query(CompetenceCategory).values(CompetenceCategory.id,CompetenceCategory.category))]
         print(form.edit_competency_type.choices)
         form.edit_competency_type.default = comp_category.id
         print(form.edit_competency_type.default)
@@ -1204,7 +1202,7 @@ def edit_competence():
         comp_val_period = s.query(ValidityRef).join(CompetenceDetails).filter_by(c_id=c_id).order_by(
             CompetenceDetails.intro.desc()).first()
 
-        form.edit_validity_period.choices = s.query(ValidityRef).values(ValidityRef.id, ValidityRef.months)
+        form.edit_validity_period.choices = [(row.id, row.months) for row in (s.query(ValidityRef).values(ValidityRef.id, ValidityRef.months))]
         print(form.edit_validity_period.choices)
         form.edit_validity_period.default = comp_val_period.id
         print(form.edit_validity_period.default)
@@ -1275,8 +1273,7 @@ def edit_competence():
         print("section_form")
         print(subsection_form)
 
-        return render_template('competence_edit.html', c_id=c_id, form=form, live=live, detail_id=competence_copy[0],
-                               subsections=sub_result, version=competence_copy[1], docs=json.dumps(documents),subsection_form=subsection_form,section_form=section_form)
+        return render_template('competence_edit.html', c_id=c_id, form=form, live=live, detail_id=competence_copy[0],subsections=sub_result, version=competence_copy[1], docs=json.dumps(documents),subsection_form=subsection_form,section_form=section_form)
     else:
         flash('You have to be an admin or the competence owner to edit the competence','danger')
         return redirect(url_for('competence.list_comptencies'))

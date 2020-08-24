@@ -66,8 +66,8 @@ class EditCompetency(FlaskForm):
     edit_scope = TextField("Scope")
     approval = TextField("Authoriser")
     # qpulsenum = TextField("QPulse Doc ID", [Required("Enter a QPulse ID")]) #This needs to be added after competency creation!
-    edit_validity_period = SelectField("Validity Period")
-    edit_competency_type = SelectField("Competence Category")
+    edit_validity_period = SelectField("Validity Period", coerce=int)
+    edit_competency_type = SelectField("Competence Category", coerce=int)
 
     ass_documents=QuerySelectMultipleField("Associated Documents",  query_factory=lambda:s.query(Documents).filter_by(c_id=18).all(), get_label="qpulse_no")
     add_document = TextField("Add Related Document", [Required("Enter a Q-Pulse Document Number")])
