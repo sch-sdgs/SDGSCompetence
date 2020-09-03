@@ -488,7 +488,7 @@
                                                         {#                                                            class="glyphicon glyphicon-repeat"></span></a>#}
                                                         <a data-toggle="tooltip" title="Delete"
                                                            class="btn btn-sm btn-flat btn-danger remove_training"
-                                                           id="{{ i.c_id }}"><i
+                                                           id="{{ i.c_id }}" version="{{ i.version }}"><i
                                                                 class="fa fa-remove"></i>
                                                         </a>
                                                     </div>
@@ -884,7 +884,27 @@
     {#        <!-- /.modal-dialog -->#}
     {#    </div>#}
 
-
+    <div class="modal modal-default" id="make_obsolete" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><i class="fa fa-exclamation-triangle text-red"></i> Are you sure you want to
+                        make this training obsolete?</h4>
+                </div>
+                <div class="modal-body">
+                    This will not delete the data, but will set it to obsolete status
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger btn-flat pull-left" id="confirmed">Yes Make Obsolete
+                    </button>
+                    <button type="button" class="btn btn-default btn-flat pull-right close_confirm">Close
+                    </button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
     <div class="modal modal-default" id="remove_confirm" style="display: none;">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -1038,11 +1058,13 @@
             });
 
             $('.remove_training').click(function () {
-                id = $(this).attr('id')
-                console.log("hello")
-                console.log(id)
-                $('#remove_confirm').show();
-                url = '{{ url_for("training.delete") }}?c_id=' + id
+                id = $(this).attr('id');
+                version = $(this).attr('version');
+                console.log("hello");
+                console.log(id);
+                console.log(version);
+                $('#make_obsolete').show();
+                url = '{{ url_for("training.delete") }}?c_id=' + id + '&version='+version
 
             });
 
