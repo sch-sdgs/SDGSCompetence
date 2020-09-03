@@ -654,55 +654,59 @@ def self_complete(assess_id):
 def delete():
 
     c_id = request.args["c_id"]
+    version = request.args["version"]
     #find assessments records for this competence for current user
-    assessments = s.query(Assessments).join(Subsection).filter(and_(Subsection.c_id == c_id,Assessments.user_id==current_user.database_id)).all()
+    assessments = s.query(Assessments).join(Subsection).filter(and_(Subsection.c_id == c_id,Assessments.user_id==current_user.database_id, Assessments.version==version)).all()
 
     for assessment in assessments:
-        evidence_rels = s.query(AssessmentEvidenceRelationship).filter(AssessmentEvidenceRelationship.assessment_id == assessment.id).all()
-        print evidence_rels
-        if len(evidence_rels) > 0:
-            for evidence_rel in evidence_rels:
-                print evidence_rel.evidence_id
-                #remove upload
-                print "removing upload"
-                files = s.query(Uploads).filter_by(evidence_id = evidence_rel.evidence_id).all()
-                if len(files) > 0:
-                    for file in files:
-                        try:
-                            os.remove(config.get("UPLOADED_FILES_DEST")+"/"+file.uuid)
-                            print "file removed"
-                        except OSError:
-                            print "couldn't remove file from filesystem"
-                print "deleting upload from db"
-                s.query(Uploads).filter_by(evidence_id = evidence_rel.evidence_id).delete()
-                s.commit()
+        ### actually we don't want to delete evidence, we want to just make it obsolete
+        # evidence_rels = s.query(AssessmentEvidenceRelationship).filter(AssessmentEvidenceRelationship.assessment_id == assessment.id).all()
+        # print evidence_rels
+        # if len(evidence_rels) > 0:
+        #     for evidence_rel in evidence_rels:
+                # print evidence_rel.evidence_id
+                # #remove upload
+                # print "removing upload"
+                # files = s.query(Uploads).filter_by(evidence_id = evidence_rel.evidence_id).all()
+                # if len(files) > 0:
+                #     for file in files:
+                #         try:
+                #             os.remove(config.get("UPLOADED_FILES_DEST")+"/"+file.uuid)
+                #             print "file removed"
+                #         except OSError:
+                #             print "couldn't remove file from filesystem"
+                # print "deleting upload from db"
+                # s.query(Uploads).filter_by(evidence_id = evidence_rel.evidence_id).delete()
+                # s.commit()
 
-                #remove_evidence_rel
-                print "removing evidence rel"
+                # #remove_evidence_rel
+                # print "removing evidence rel"
+                #
+                # s.query(AssessmentEvidenceRelationship).filter_by(id=evidence_rel.id).delete()
+                # s.commit()
 
-                s.query(AssessmentEvidenceRelationship).filter_by(id=evidence_rel.id).delete()
-                s.commit()
+                # print s.query(AssessmentEvidenceRelationship).filter_by(id=evidence_rel.id).all()
+                #
+                # # remove evidence
+                # print "removing evidence record in db"
+                # s.query(Evidence).filter_by(id=evidence_rel.evidence_id).delete()
+                # s.commit()
 
-                print s.query(AssessmentEvidenceRelationship).filter_by(id=evidence_rel.id).all()
+        # reassessments = s.query(AssessReassessRel).filter_by(assess_id=assessment.id).all()
+        # if len(reassessments) > 0:
+        #     for reassessment in reassessments:
+        #         print "removing reassessments"
+        #         s.query(Reassessments).filter_by(id=reassessment.reassess_id).delete()
+        #         s.commit()
+        #
+        # print "removing reassess rel"
+        # s.query(AssessReassessRel).filter_by(assess_id=assessment.id).delete()
+        # s.commit()
+        obsolete_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status=="Obsolete").first().id
+        data = {'status': obsolete_id}
 
-                # remove evidence
-                print "removing evidence record in db"
-                s.query(Evidence).filter_by(id=evidence_rel.evidence_id).delete()
-                s.commit()
-
-        reassessments = s.query(AssessReassessRel).filter_by(assess_id=assessment.id).all()
-        if len(reassessments) > 0:
-            for reassessment in reassessments:
-                print "removing reassessments"
-                s.query(Reassessments).filter_by(id=reassessment.reassess_id).delete()
-                s.commit()
-
-        print "removing reassess rel"
-        s.query(AssessReassessRel).filter_by(assess_id=assessment.id).delete()
-        s.commit()
-
-        print "removing reassessment"
-        s.query(Assessments).filter_by(id=assessment.id).delete()
+        print "making assessments obsolete"
+        s.query(Assessments).filter_by(id=assessment.id).update(data)
         s.commit()
 
     return json.dumps({'success': True})
