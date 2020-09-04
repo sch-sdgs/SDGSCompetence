@@ -672,11 +672,10 @@
                                                         class="fa fa-edit"></icon>
                                             </a>
 
-                                            {#                                                <a data-toggle="tooltip" title="Delete"#}
-                                            {#                                                   class="btn btn-sm btn-flat btn-danger remove_competence"#}
-                                            {#                                                   id="{{ i.id }}"><i#}
-                                            {#                                                        class="fa fa-remove"></i>#}
-                                            {#                                                </a>#}
+<!--                                            <a data-toggle="tooltip" title="Delete"-->
+<!--                                            class="btn btn-sm btn-flat btn-danger remove_competence"-->
+<!--                                            id="{{ i.c_id }}"><i class="fa fa-remove"></i>-->
+<!--                                             </a>-->
                                         </div>
                                     </td>
                                 </tr>
@@ -916,7 +915,7 @@
                     This will <b>permanently</b> remove this item! All data will be lost!
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger btn-flat pull-left" id="confirmed">Yes Delete
+                    <button type="button" class="btn btn-danger btn-flat pull-left" id="delete_confirmed">Yes Delete
                     </button>
                     <button type="button" class="btn btn-default btn-flat pull-right close_confirm">Close
                     </button>
@@ -1050,10 +1049,10 @@
 
 
             $('.remove_competence').click(function () {
-                id = $(this).attr('id')
-                console.log(id)
+                var compdetails_id = $(this).attr('id');
+                console.log(compdetails_id);
                 $('#remove_confirm').show();
-                url = '{{ url_for("competence.delete") }}?c_id=' + id
+                url = '{{ url_for("competence.delete") }}?id=' + compdetails_id
 
             });
 
@@ -1086,6 +1085,16 @@
                     success: function (response) {
                         location.reload();
                     },
+                });
+            });
+
+            $('#delete_confirmed').click(function () {
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    success: function (response) {
+                        location.reload();
+                    }
                 });
             });
 
