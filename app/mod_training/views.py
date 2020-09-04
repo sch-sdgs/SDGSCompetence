@@ -703,11 +703,13 @@ def delete():
         # s.query(AssessReassessRel).filter_by(assess_id=assessment.id).delete()
         # s.commit()
         obsolete_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status=="Obsolete").first().id
-        data = {'status': obsolete_id}
+        data = {'status': obsolete_id, 'due_date': None, 'date_expiry': None}
 
         print "making assessments obsolete"
         s.query(Assessments).filter_by(id=assessment.id).update(data)
         s.commit()
+
+        ### need to remove expiry date
 
     return json.dumps({'success': True})
 
