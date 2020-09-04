@@ -1387,23 +1387,28 @@ def edit_details():
 @competence.route('/delete', methods=['GET', 'POST'])
 @login_required
 def delete():
-    id = request.args.get('c_id')
+    id = request.args.get('id') ### This is the CompetenceDetails ID
     print id
     c_id = s.query(CompetenceDetails).filter(CompetenceDetails.id == id).first().c_id
 
     current_version = s.query(Competence).filter(Competence.id == c_id).first().current_version
-    s.query(Documents).filter(Documents.c_id == id).delete()
-    s.commit()
-    s.query(CompetenceDetails).filter(CompetenceDetails.c_id == c_id).filter(
-        CompetenceDetails.intro == current_version + 1).delete()
-    s.commit()
-    s.query(Subsection).filter(Subsection.c_id == c_id).filter(Subsection.intro == current_version + 1).delete()
-    s.commit()
     if current_version == 0:
+        s.query(Documents).filter(Documents.c_id == id).delete()
+        s.commit()
+        s.query(CompetenceDetails).filter(CompetenceDetails.c_id == c_id).filter(
+            CompetenceDetails.intro == current_version + 1).delete()
+        s.commit()
+        s.query(Subsection).filter(Subsection.c_id == c_id).filter(Subsection.intro == current_version + 1).delete()
+        s.commit()
+
+        s.query(SectionSortOrder).filter(SectionSortOrder.c_id == c_id).delete()
         s.query(Competence).filter(Competence.id == c_id).delete()
         s.commit()
 
-    return json.dumps({'success': True})
+        return json.dumps({'success': True})
+    else:
+        print("Something failed here")
+        return json.dumps({'success': False})
 
 
 def nearest(items, pivot):
