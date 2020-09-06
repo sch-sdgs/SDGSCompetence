@@ -1435,14 +1435,12 @@ def reporting():
         counts[service]["Expiring"] = 0
         counts[service]["Expired"] = 0
         counts[service]["Abandoned"] = 0
+        counts[service]["Obsolete"] = 0
 
         expired[service] = []
         expiring[service] = []
 
     for i in s.query(Assessments).all():
-        print i
-        print i.user_id_rel.serviceid
-        print i.status_rel.status
         if i.user_id_rel.service_rel is not None:
             if i.user_id_rel.active == 1:
                 service = i.user_id_rel.service_rel.name.replace(" ", "")
@@ -1457,7 +1455,7 @@ def reporting():
                         else:
                             user_expired[fullname] += 1
 
-                    elif datetime.date.today() + relativedelta(months=+6) > i.date_expiry:
+                    elif datetime.date.today() + relativedelta(months=+1) > i.date_expiry:
                         counts[service]["Expiring"] += 1
                         expiring[service].append(i)
                         if fullname not in user_expiring:
