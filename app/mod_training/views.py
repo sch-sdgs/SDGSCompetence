@@ -1447,7 +1447,7 @@ def user_report(id=None):
             assigned_to_completion_list.append(days_assigned_to_completion)
 
         ### do stuff for due dates section here, rather than looping again later on
-        if i.date_completed is not None:
+        if i.date_completed is not None and i.due_date is not None:
             if i.date_completed > i.due_date:
                 overdue_assessments+=1
             else:
