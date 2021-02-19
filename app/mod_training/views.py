@@ -1201,6 +1201,7 @@ def user_report(id=None):
 
     ###get ongoing competencies and split into overdue and in-date
 
+    ### get all assessments that are assigned, abandoned or waiting for sign-off
     assigned = s.query(Assessments)\
         .join(Subsection)\
         .join(Competence)\
@@ -1212,6 +1213,7 @@ def user_report(id=None):
         .filter(or_(AssessmentStatusRef.status == "Assigned", AssessmentStatusRef.status == "Active", AssessmentStatusRef.status == "Sign-Off"))\
         .all()
 
+    ### get all assessments that are abandoned
     abandoned_query = s.query(Assessments)\
         .join(Subsection)\
         .join(Competence)\
@@ -1231,7 +1233,6 @@ def user_report(id=None):
     expiring_within_month=[]
     today = datetime.date.today()
 
-    print "ONGOING ASSESSMENTS:"
 
     for j in assigned:
         ongoing_assessment_summary = get_competence_summary_by_user(c_id=j.ss_id_rel.c_id,u_id=id,version=j.version)
@@ -1241,12 +1242,8 @@ def user_report(id=None):
             ongoing.append(ongoing_assessment_summary)
 
     for i in abandoned_query:
-        print i.ss_id
         abandoned_assessment_summary = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id,u_id=id,version=i.version)
         abandoned.append(abandoned_assessment_summary)
-
-    print "ABANDONED:"
-    print abandoned
 
     ### get complete competencies and split into expiring, expired, and in-date
     complete = s.query(Assessments) \
@@ -1260,7 +1257,6 @@ def user_report(id=None):
         .filter(AssessmentStatusRef.status.in_(["Complete","Four Year Due"])) \
         .all()
 
-    print "COMPLETE ASSESSMENTS:"
 
     for i in complete:
         complete_assessment_summary = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=id, version=i.version)
@@ -1455,15 +1451,6 @@ def user_report(id=None):
 
             days_over_target = int((i.date_completed - i.due_date).days)
             days_over_target_list.append(days_over_target)
-
-    # assigned_to_activation_list = [5,6,2,34,6,7,3,3,6,10,15]
-    # activated_to_completion_list = [2,5,8,23,5,1,2,2,2,2,4,7,8]
-    # assigned_to_completion_list = [5,2,4,2,2,2,0,0,0,23,10,12,3]
-    # print assigned_to_activation_list
-    # print activated_to_completion_list
-    # print assigned_to_completion_list
-
-
 
     violin_data = [
         {
