@@ -1497,9 +1497,13 @@ def report_by_competence():
 @competence.route('/report_by_user', methods=['GET', 'POST'])
 @login_required
 def report_by_user():
-
-
-    return render_template('competence_report_by_user.html')
+    if request.method == 'GET':
+        return render_template('competence_report_by_user.html')
+    elif request.method == "POST":
+        user_full_name = request.form['full_name']
+        first_name, surname = user_full_name.split(' ')
+        user_id = s.query(Users).filter(and_(Users.first_name == first_name, Users.last_name == surname)).first().id
+        return redirect(url_for('training.user_report', id=user_id))
 
 
 @competence.route('/collections', methods=['GET', 'POST'])
