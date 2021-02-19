@@ -1437,8 +1437,8 @@ def reporting():
         counts[service]["Abandoned"] = 0
         counts[service]["Obsolete"] = 0
 
-        expired[service] = []
-        expiring[service] = []
+        expired[service] = {}
+        expiring[service] = {}
 
     for i in s.query(Assessments).all():
         if i.user_id_rel.service_rel is not None:
@@ -1446,26 +1446,33 @@ def reporting():
                 service = i.user_id_rel.service_rel.name.replace(" ", "")
                 fullname = i.user_id_rel.first_name + " " + i.user_id_rel.last_name
                 if i.date_expiry is not None:
+                    comp_title = i.ss_id_rel.c_id_rel.competence_detail[0].title
                     if datetime.date.today() > i.date_expiry:
-                        counts[service]["Expired"] += 1
-                        expired[service].append(i)
-
-                        if fullname not in user_expired:
+                        if fullname not in expired[service]:
+                            expired[service][fullname] = {comp_title: i.date_expiry}
+                            counts[service]["Expired"] += 1
                             user_expired[fullname] = 1
-                        else:
+                        elif fullname in expired[service] and comp_title not in expired[service][fullname]:
+                            expired[service][fullname][comp_title] = i.date_expiry
+                            counts[service]["Expired"] += 1
                             user_expired[fullname] += 1
+                        elif fullname in expired[service] and comp_title in expired[service][fullname]:
+                            if i.date_expiry < expired[service][fullname][comp_title]:
+                                expired[service][fullname][comp_title] = i.date_expiry
+
 
                     elif datetime.date.today() + relativedelta(months=+1) > i.date_expiry:
-                        counts[service]["Expiring"] += 1
-                        expiring[service].append(i)
-                        if fullname not in user_expiring:
+                        if fullname not in expiring[service]:
+                            expiring[service][fullname] = {comp_title: i.date_expiry}
+                            counts[service]["Expiring"] += 1
                             user_expiring[fullname] = 1
-                        else:
+                        elif fullname in expiring[service] and comp_title not in expiring[service][fullname]:
+                            expiring[service][fullname][comp_title] = i.date_expiry
+                            counts[service]["Expiring"] += 1
                             user_expiring[fullname] += 1
-                    else:
-                        counts[service][i.status_rel.status] += 1
-                else:
-                    counts[service][i.status_rel.status] += 1
+                        elif fullname in expiring[service] and comp_title in expiring[service][fullname]:
+                            if i.date_expiry < expiring[service][fullname][comp_title]:
+                                expiring[service][fullname][comp_title] = i.date_expiry
 
     return [counts,expired,expiring,user_expired,user_expiring,change]
 
@@ -1483,9 +1490,9 @@ def report_by_section():
     # for count in counts:
 
     return render_template('competence_report_by_section.html', counts=counts, historic=historic, expired=expired,
-                           expiring=expiring,
-                           user_expired=sorted(user_expired.items(), key=lambda key: key[1], reverse=True)[:5],
-                           user_expiring=sorted(user_expiring.items(), key=lambda key: key[1], reverse=True)[:5])
+                           expiring=expiring)
+                           # user_expired=sorted(user_expired.items(), key=lambda key: key[1], reverse=True)[:5],
+                           # user_expiring=sorted(user_expiring.items(), key=lambda key: key[1], reverse=True)[:5])
 
 @competence.route('/report_by_competence', methods=['GET', 'POST'])
 @login_required
