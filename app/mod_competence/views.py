@@ -1144,7 +1144,7 @@ def assign_competence_to_user(user_id, competence_id, due_date):
         for assessment in abandoned:
             s.query(AssessmentEvidenceRelationship).filter_by(assessment_id=assessment.id).delete()
             s.query(Assessments).filter_by(id=assessment.id).delete()
-            assessment_ids = None
+            # assessment_ids = None
 
     for sub_section in sub_sections:
         print "MEMEMEMEME"
@@ -1153,6 +1153,8 @@ def assign_competence_to_user(user_id, competence_id, due_date):
                         assign_id=current_user.database_id, version=current_version,
                         due_date=datetime.datetime.strptime(due_date, '%d/%m/%Y'))
         print a
+        print(a.id)
+        print(assessment_ids)
         s.add(a)
         s.commit()
         assessment_ids.append(a.id)
