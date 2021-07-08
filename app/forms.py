@@ -3,7 +3,7 @@ from flask_wtf import Form
 from wtforms.fields import TextField, SubmitField, HiddenField, PasswordField, RadioField, BooleanField, SelectField, TextAreaField, DateField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
 from wtforms.validators import Required
-from app.competence import s
+from app.competence import *
 from app.models import *
 
 

@@ -448,10 +448,10 @@
                                         <th class="col-md-1">Category</th>
                                         <th class="col-md-2">Competence</th>
                                         <th class="col-md-1">Version</th>
-                                        <th class="col-md-2">Some Sub-Sections...</th>
+                                        <th class="col-md-2">In-date / Expired</th>
                                         <th class="col-md-2">Date Complete</th>
                                         <th class="col-md-2">Earliest Date of Expiry</th>
-                                        <th class="col-md-2">Status</th>
+                                        <th class="col-md-2">Training Status</th>
                                         <th class="col-md-2">Actions</th>
                                         </thead>
                                         {% for i in complete %}
@@ -575,7 +575,8 @@
                                     <tr>
                                         <td>{{ i.category_rel.category }}</td>
                                         <td>{{ i.title }}</td>
-                                        <td>{{ i.date_created.strftime('%d-%m-%Y') }}</td>
+                                        <td>{{ i.date_created.strftime('%d-%m-%Y') }}
+                                        </td>
                                         <td>{{ i.approve_rel.first_name }} {{ i.approve_rel.last_name }}</td>
                                         {#                                        <td>{{ i.qpulsenum }}</td>#}
                                         <td>{{ get_approval_status(i.approved)|safe }}
@@ -648,6 +649,7 @@
                             <th>Category</th>
                             <th>Competence</th>
                             <th>Date Created</th>
+                            <th>Date Expiry</th>
                             <th>Authoriser</th>
                             <th>Actions</th>
                             </thead>
@@ -656,6 +658,15 @@
                                     <td>{{ i.category_rel.category }}</td>
                                     <td>{{ i.title }}</td>
                                     <td>{{ i.date_created.strftime('%d-%m-%Y') }}</td>
+                                    <td>
+                                        {% if i.date_expiry %}
+                                            {{ i.date_expiry.strftime('%d-%m-%Y') }}
+                                        {% endif %}
+
+                                        {% if i.expired == 1 %}
+                                            <span class="glyphicon glyphicon-alert" style="color: red"></span>
+                                        {% endif %}
+                                    </td>
                                     <td>{{ i.approve_rel.first_name }} {{ i.approve_rel.last_name }}</td>
                                     <td>
                                         <div class="btn-group" style="display: flex">

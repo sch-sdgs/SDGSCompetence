@@ -32,7 +32,6 @@ def view_cpd():
     This methods finds CPD events and details for the user, and renders the HTML, showing a table of CPD events.
     """
 
-    print "Welcome to the CPD module"
     user_id = current_user.database_id
     username = get_name_by_user_id(user_id)
 
@@ -47,13 +46,11 @@ def add_cpd():
     :return:
     """
     if request.method == 'GET':
-        print "Adding CPD event"
         form = AddEvent()
 
         return render_template('cpd_add.html', form=form)
 
     elif request.method == 'POST':
-        print "adding to DB"
         event_name = request.form['event_name']
         event_type = request.form["event_type"]
         date = request.form['date']
@@ -61,9 +58,6 @@ def add_cpd():
         location = request.form['location']
         cpd_points = request.form['cpd_points']
         comments = request.form['comments']
-
-
-        print ' '.join([event_name, event_type, date, role, location, comments, cpd_points])
 
         c = CPDEvents(user_id=current_user.database_id,
                       event_type=event_type,
@@ -86,10 +80,7 @@ def delete_cpd():
     :return:
     """
 
-    print "deleting CPD"
     id = request.args.get('id')
-    print id
-
     user_id = current_user.database_id
 
     event = s.query(CPDEvents).filter(CPDEvents.id == id).first()

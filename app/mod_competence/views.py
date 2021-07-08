@@ -4,7 +4,7 @@ from flask import Blueprint, jsonify, flash
 from flask_table import Table, Col, ButtonCol
 from sqlalchemy import and_, or_, case, func, asc, desc
 from flask import render_template, request, url_for, redirect, Blueprint
-from flask.ext.login import login_required, current_user
+from flask_login import login_required, current_user
 from app.views import get_competence_from_subsections, admin_permission
 from app.models import *
 from app.competence import s,send_mail
@@ -30,7 +30,6 @@ class DeleteCol(Col):
             **kwargs)
 
     def td_contents(self, item, attr_list):
-        print item
         return '<a href="#" class="remove btn btn-sm btn-danger" id="' + str(
             item.id) + '"><span class="glyphicon glyphicon-remove"></span></a>'
 
@@ -50,7 +49,6 @@ class ItemTableDocuments(Table):
 @competence.route('/remove', methods=['GET', 'POST'])
 @login_required
 def remove_subsection():
-    print "HELLO"
     id = request.args["id"]
     version = request.args["version"]
     data = {
@@ -98,7 +96,6 @@ def competent_staff():
             Competence.current_version == version).group_by(
             CompetenceDetails.id).all()
     for k in competence:
-        print k.competence_detail[0].title
         result[k.competence_detail[0].title]= OrderedDict()
         result[k.competence_detail[0].title]["constant"] = OrderedDict()
         result[k.competence_detail[0].title]["custom"] = OrderedDict()
@@ -108,24 +105,15 @@ def competent_staff():
         for x in for_order:
 
             check = s.query(Subsection).join(Competence).filter(Subsection.s_id == x.section_id).filter(and_(version <= Competence.current_version, Subsection.intro <= version,or_(Subsection.last > version,Subsection.last == None))).count()
-            print "CHECK:" +str(check)
-            print x.section_id_rel.name
             if check > 0 :
                 if x.section_id_rel.constant == 1:
                     result[k.competence_detail[0].title]["constant"][x.section_id_rel.name] = OrderedDict()
                 else:
                     result[k.competence_detail[0].title]["custom"][x.section_id_rel.name] = OrderedDict()
 
-        print result
         subsections = s.query(Subsection).join(Competence).filter(Subsection.c_id==k.id).filter(and_(version <= Competence.current_version,Subsection.intro <= version,or_(Subsection.last >= version,Subsection.last == None))).all()
         for j in subsections:
 
-            print j.name
-            print "hello"
-            print j.s_id_rel.name
-            print "into:"+str(j.intro)
-            print "last:"+str(j.last)
-            print "current:"+str(j.c_id_rel.current_version)
             # if j.s_id_rel.name not in result[k.competence_detail[0].title]:
             #     result[k.competence_detail[0].title][j.s_id_rel.name] = {}
             if j.s_id_rel.constant==1:
@@ -135,24 +123,17 @@ def competent_staff():
                 if j.name not in result[k.competence_detail[0].title]["custom"][j.s_id_rel.name]:
                     result[k.competence_detail[0].title]["custom"][j.s_id_rel.name][j.name] = []
 
-    print competent_staff
-    print json.dumps(result,indent=4)
+
     for i in competent_staff:
 
         if i.user_id_rel.active:
             c_name = i.ss_id_rel.c_id_rel.competence_detail[0].title
-            print c_name
             ss_name = i.ss_id_rel.name
-            print i.ss_id_rel.s_id_rel.name
-            print ss_name
             if i.ss_id_rel.s_id_rel.name in result[c_name]["custom"]:
                 if ss_name in result[c_name]["custom"][i.ss_id_rel.s_id_rel.name]:
                     result[c_name]["custom"][i.ss_id_rel.s_id_rel.name][ss_name].append(i)
             else:
                 result[c_name]["constant"][i.ss_id_rel.s_id_rel.name][ss_name].append(i)
-
-    print "THIS THIS THIS"
-    print result
 
     return render_template('competent_staff.html', result=result)
 
@@ -256,8 +237,6 @@ def add_competence():
 @competence.route('/addsections', methods=['GET', 'POST'])
 @login_required
 def add_sections():
-    print "hello in add_sections"
-
     f = request.form
     c_id = request.args.get('c_id')
     ss_sort_order=0
@@ -266,12 +245,9 @@ def add_sections():
             print(key)
             print(len(f.getlist(key)))
             for value in f.getlist(key):
-                print key, ":", value
                 s_id = key.split("_")[0]
                 item_add = s.query(ConstantSubsections.item).filter_by(id=value).first().item
                 evidence = s.query(EvidenceTypeRef.id).filter_by(type='Discussion').first().id
-                print "ITS HERE"
-                print item_add
                 ss_sort_order+=1
                 add_constant = Subsection(c_id=c_id, s_id=s_id, name=item_add, evidence=evidence, comments=None, sort_order=ss_sort_order)
                 s.add(add_constant)
@@ -405,7 +381,6 @@ def get_constant_subsections_web():
     result = []
     subsections = s.query(ConstantSubsections).filter(ConstantSubsections.s_id==id).all()
     for subsection in subsections:
-        print subsection.s_id
         result.append({"name":subsection.item,"id":subsection.id})
     return jsonify({"response":result})
 
@@ -453,7 +428,6 @@ def get_section():
 @competence.route('/delete_subsection', methods=['GET', 'POST'])
 @login_required
 def delete_subsection():
-    print request.json
     c_id = request.json['c_id']
     s_id = request.json['s_id']
     s.query(Subsection).filter_by(c_id=request.json['c_id']).filter_by(id=request.json["id"]).delete()
@@ -482,17 +456,13 @@ def add_sections_to_db():
     comments = request.json['comments']
     c_id = request.json['c_id']
     s_id = request.json['s_id']
-    print "IS IT HERE"
-    print name
-    print request.json
     if "version" in request.json:
         version = request.json['version']
     else:
         version = 1
     ### get max sort order
     ### increase sort order by 1
-    print "comp_id"
-    print c_id
+
     current_subsections = s.query(Subsection).filter(Subsection.c_id == c_id).all()
 
     max=0
@@ -539,15 +509,11 @@ def add_constant_sections_to_db():
     c_id = request.json['c_id']
     s_id = request.json['s_id']
     version = request.json['version']
-    print "HERE"
-    print name
     if type(name) != unicode:
         name = name[0]
     else:
         name = name
 
-    print name
-    print "DEBUG"
     sub = Subsection(name=name, c_id=c_id, s_id=s_id, evidence=4, sort_order=None, comments=None, intro=version)
     s.add(sub)
     s.commit()
@@ -685,7 +651,6 @@ def view_competence():
     id = s.query(CompetenceDetails).filter_by(c_id=c_id).filter(
         CompetenceDetails.intro == version).first().id
 
-    print "APPROVAL"
     if approved == False:
         approver_id = s.query(CompetenceDetails).filter_by(c_id=c_id).filter(
         CompetenceDetails.intro == version).first().approve_id
@@ -719,7 +684,6 @@ def view_competence():
     ##Get subsection details
     dict_subsecs = OrderedDict()
 
-    print "GETTING SUBSECTIONS!!!"
     subsections = get_subsections(c_id, version)
 
     for item in subsections:
@@ -733,7 +697,7 @@ def view_competence():
 
     dict_constants = OrderedDict()
     constants = get_constant_subsections(c_id, version)
-    print "CONSTANT SECTIONS:"
+
     for item in constants:
         # print item
         constant_sec_name = item.sec_name
@@ -810,7 +774,6 @@ def matrix():
         if i.name not in result[title]:
             result[title][i.name]=[]
         for user in users:
-            print user
             assessments = s.query(Assessments).filter(Assessments.ss_id==i.id).filter(Assessments.user_id==user.id).all()
             details = {user:assessments}
             result[title][i.name].append(details)
@@ -873,7 +836,7 @@ def approve(id=None, version=None, u_id=None):
 
 
     else:
-        print "not allowed"
+        print ("not allowed")
 
     competence = s.query(CompetenceDetails).filter(CompetenceDetails.c_id == id).filter(CompetenceDetails.intro == version).first()
     send_mail(competence.creator_id, "Competence Approved!",
@@ -932,7 +895,7 @@ def check_exists():
 @login_required
 def assign_user_to_competence():
     ids = request.args["ids"].split(",")
-    print ids
+
     if request.method == 'POST':
 
 
@@ -984,7 +947,7 @@ def assign_competences_to_user():
                 user_id = int(s.query(Users).filter_by(first_name=firstname, last_name=surname).first().id)
                 for c_id in ids:
                     final_id = assign_competence_to_user(user_id, int(c_id),due_date)
-                    print final_id
+
                     if final_id:
                         comp = s.query(Assessments).filter(Assessments.id.in_(final_id)).first()
                         current_version = s.query(Competence).filter(
@@ -1002,7 +965,6 @@ def assign_competences_to_user():
             Competence.current_version == CompetenceDetails.intro).values(CompetenceDetails.title)
         comptences = []
         for i in query:
-            print i.title
             comptences.append(i.title)
 
 
@@ -1014,8 +976,6 @@ def assign_competences_to_user():
 def change_subsection_order():
     data = request.json
     for count,id in enumerate(data):
-        print count
-        print id
         new_order = {"sort_order":count}
         s.query(Subsection).filter(Subsection.id == id).update(new_order)
     s.commit()
@@ -1025,12 +985,8 @@ def change_subsection_order():
 def change_section_order():
     data = request.json
     for c_id in data:
-        print "c_id:"+str(c_id)
         for count,name in enumerate(data[c_id]):
-            print count
             section_id = s.query(Section).filter(Section.name == name).first().id
-            print "name:"+str(name)
-            print "section_id:"+str(section_id)
 
             check = s.query(SectionSortOrder).filter(SectionSortOrder.c_id==c_id).filter(SectionSortOrder.section_id==section_id).count()
             if check == 0:
@@ -1067,8 +1023,6 @@ def make_user_competent(ids=None,users=None):
                 user_id = int(s.query(Users).filter_by(first_name=firstname, last_name=surname).first().id)
                 for c_id in ids:
                     final_ids = assign_competence_to_user(user_id, int(c_id),due_date)
-                    print "THIS ONE"
-                    print final_ids
                     if final_ids is not None:
 
                         for ass_id in final_ids:
@@ -1082,16 +1036,13 @@ def make_user_competent(ids=None,users=None):
                                     'signoff_id': current_user.database_id,
                                     'status': status_id,
                                     }
-                            print "hello"
-                            print data
+
                             s.query(Assessments).filter(Assessments.id == ass_id).update(data)
                             s.commit()
 
                         comp = s.query(Competence).join(CompetenceDetails).filter(Competence.id == int(c_id)).first()
-                        print comp.competence_detail
                         result[user].append(dict(comptence=comp.competence_detail[0].title, success=True))
                     else:
-                        print "fail"
                         return redirect(url_for('index'))
             else:
                 failed.append(user)
@@ -1099,15 +1050,12 @@ def make_user_competent(ids=None,users=None):
         if ids == None:
             return render_template('competence_assigned.html', result=result, failed=failed)
         else:
-            print "HERE"
             return render_template('competence_assigned.html', result=result, failed=failed)
     else:
-        print "oh dear"
         query = s.query(Competence).join(CompetenceDetails).filter(Competence.id.in_(ids)).values(
             CompetenceDetails.title)
         comptences = []
         for i in query:
-            print i.title
             comptences.append(i.title)
 
         return render_template('competence_override.html', form=form, competences=", ".join(comptences),
@@ -1147,14 +1095,9 @@ def assign_competence_to_user(user_id, competence_id, due_date):
             # assessment_ids = None
 
     for sub_section in sub_sections:
-        print "MEMEMEMEME"
-        print sub_section.name
         a = Assessments(status=status_id, ss_id=sub_section.id, user_id=int(user_id),
                         assign_id=current_user.database_id, version=current_version,
                         due_date=datetime.datetime.strptime(due_date, '%d/%m/%Y'))
-        print a
-        print(a.id)
-        print(assessment_ids)
         s.add(a)
         s.commit()
         assessment_ids.append(a.id)
@@ -1166,7 +1109,6 @@ def assign_competence_to_user(user_id, competence_id, due_date):
     except:
         s.rollback()
 
-    print "i did this"
     return assessment_ids
 
 
@@ -1194,20 +1136,14 @@ def edit_competence():
 
         comp_category = s.query(CompetenceCategory).join(CompetenceDetails).filter_by(c_id=c_id).order_by(
             CompetenceDetails.intro.desc()).first()
-        print("comp_category")
-        print(comp_category)
         form.edit_competency_type.choices = [(row.id, row.category) for row in (s.query(CompetenceCategory).values(CompetenceCategory.id,CompetenceCategory.category))]
-        print(form.edit_competency_type.choices)
         form.edit_competency_type.default = comp_category.id
-        print(form.edit_competency_type.default)
 
         comp_val_period = s.query(ValidityRef).join(CompetenceDetails).filter_by(c_id=c_id).order_by(
             CompetenceDetails.intro.desc()).first()
 
         form.edit_validity_period.choices = [(row.id, row.months) for row in (s.query(ValidityRef).values(ValidityRef.id, ValidityRef.months))]
-        print(form.edit_validity_period.choices)
         form.edit_validity_period.default = comp_val_period.id
-        print(form.edit_validity_period.default)
 
         form.process()
 
@@ -1254,26 +1190,8 @@ def edit_competence():
                     sub_result["custom"][(subsection.s_id_rel.name,subsection.s_id_rel.id)] = []
                 sub_result["custom"][(subsection.s_id_rel.name,subsection.s_id_rel.id)].append(subsection)
 
-        print("sub_result:")
-        print sub_result
-        print("competence_copy")
         competence_copy = create_copy_of_competence(c_id, current_version, comp.title, comp.scope, comp_val_period.id,
                                               comp.category_id, comp.approve_id)
-        print(competence_copy)
-        print("c_id")
-        print(c_id)
-        print("form")
-        print(form)
-        print("live")
-        print(live)
-        print("sub_result")
-        print(sub_result)
-        print("docs")
-        print(json.dumps(documents))
-        print("subsection_form")
-        print(subsection_form)
-        print("section_form")
-        print(subsection_form)
 
         return render_template('competence_edit.html', c_id=c_id, form=form, live=live, detail_id=competence_copy[0],subsections=sub_result, version=competence_copy[1], docs=json.dumps(documents),subsection_form=subsection_form,section_form=section_form)
     else:
@@ -1281,14 +1199,11 @@ def edit_competence():
         return redirect(url_for('competence.list_comptencies'))
 
 def create_copy_of_competence(c_id, current_version, title, scope, valid, type, approve_id):
-    print "hello"
     query = s.query(CompetenceDetails).filter(CompetenceDetails.c_id == c_id).filter(
         CompetenceDetails.intro == current_version + 1).first()
     current = s.query(CompetenceDetails).filter(CompetenceDetails.c_id == c_id).filter(
         CompetenceDetails.intro == current_version).first()
-    print query
     if query is None:
-        print("in if!")
         # make a copy of the competence
         c = CompetenceDetails(c_id=c_id, title=title, scope=scope, creator_id=current_user.database_id,
                               validity_period=valid, category_id=type, intro=current_version + 1,
@@ -1299,7 +1214,6 @@ def create_copy_of_competence(c_id, current_version, title, scope, valid, type, 
         s.commit()
 
         # copy docs across to new competence
-        print current.id
         current_docs = s.query(Documents).filter(Documents.c_id == current.id).all()
         for doc in current_docs:
             d = Documents(c_id=c.id, qpulse_no=doc.qpulse_no)
@@ -1307,7 +1221,6 @@ def create_copy_of_competence(c_id, current_version, title, scope, valid, type, 
             s.commit()
         return (c.id,current_version+1)
     else:
-        print("In else!)")
         return (query.id,current_version+1)
 
 
@@ -1352,19 +1265,16 @@ def edit_details():
             "approve_id": approve_id,
             "validity_period": valid,
             "category_id": type}
-    print data
 
     current_version = int(s.query(Competence).filter(Competence.id == c_id).first().current_version)
-    print current_version
     # competence hasn't been made live yet - it's at version 0
     if current_version == 0:
-        print "I AM HERE"
         try:
             s.query(CompetenceDetails).filter(CompetenceDetails.c_id == c_id).update(data)
             s.commit()
             return json.dumps({"success": True})
         except:
-            print "fail"
+            print ("fail")
     else:
         # check if a version exists above current version
         check = s.query(CompetenceDetails).filter(CompetenceDetails.c_id == c_id).filter(
@@ -1390,7 +1300,6 @@ def edit_details():
 @login_required
 def delete():
     id = request.args.get('id') ### This is the CompetenceDetails ID
-    print id
     c_id = s.query(CompetenceDetails).filter(CompetenceDetails.id == id).first().c_id
 
     current_version = s.query(Competence).filter(Competence.id == c_id).first().current_version
@@ -1517,19 +1426,15 @@ def trial_viewer():
     result={}
     for i in current_data:
         #find out how many are trained and partially and in training
-        print i.title
-        print i.c_id
         #count how many subsections are in the competence
         number_of_subsections = s.query(Subsection).join(Competence).filter(and_(Subsection.intro <= Competence.current_version,or_(Subsection.last >= Competence.current_version,Subsection.last == None))).filter(Subsection.c_id == i.c_id).count()
-        print number_of_subsections
         #get all assessments by user?
         counts = s.query(func.count(Assessments.id).label("count"),Assessments.user_id.label("user_id"),Assessments.status.label("status_id"),AssessmentStatusRef.status.label("status")).join(AssessmentStatusRef).join(Subsection).join(Competence).join(CompetenceDetails).filter(and_(CompetenceDetails.intro <= Competence.current_version,or_(CompetenceDetails.last >= Competence.current_version,CompetenceDetails.last == None))).filter(Subsection.c_id == i.c_id).filter(Assessments.ss_id == Subsection.id).group_by(Assessments.user_id,Assessments.status).all()
-        print counts
+
         trained=0
         partial=0
         in_training=0
         for j in counts:
-            print j
             users_done = []
             if j.status == "Complete":
                 if j.count == number_of_subsections:
@@ -1565,12 +1470,9 @@ def competence_history():
     events = {}
     ids = request.args.get('ids').split(",")
     c_id = ids[0]
-    print c_id
     competence = s.query(Competence).filter(Competence.id == c_id).first()
     version = competence.current_version
     title = {}
-
-    print competence.competence_detail
 
     for count, i in enumerate(competence.competence_detail):
         if i.date_of_approval is not None:
@@ -1583,13 +1485,10 @@ def competence_history():
         if i.date_created not in events:
             events[i.date_created] = []
 
-        print "count " + str(count) + " title " + i.title + " intro " + str(i.intro)
-
         ss = []
 
         title["current"] = i.title
 
-        print title
         if "previous" in title and "current" in title:
             if title["previous"] != title["current"]:
                 ss.append('<h4>Title Edited</h4>')

@@ -1,6 +1,6 @@
 from flask import Flask, request,session, render_template
 import atexit
-from apscheduler.scheduler import Scheduler
+
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import inspect
@@ -33,8 +33,8 @@ handler = TimedRotatingFileHandler('PerformanceSummary.log', when="d", interval=
 handler.setLevel(logging.INFO)
 
 #set up cron to allow jobs for monthly reports and backups
-cron = Scheduler(daemon=True)
-cron.start()
+# cron = Scheduler(daemon=True)
+# cron.start()
 
 from flask_mail import Mail,Message
 
@@ -43,27 +43,18 @@ mail.init_app(app)
 
 
 def send_async_email(msg):
-    print "in async mail!"
     with app.test_request_context():
-        print "inside app thing!"
-        print msg
         mail.send(msg)
 
 def send_mail(user_id,subject,message):
 
     if config.get("MAIL") != False:
-        print "USER:"
-        print user_id
         #recipient_user_name = s.query(Users).filter(Users.id == int(user_id)).first().login
         recipient_email = s.query(Users).filter(Users.id == int(user_id)).first().email
-        print recipient_email
-        print "SENDING EMAIL"
-        print message
         msg = Message('CompetenceDB: '+subject, sender="notifications@competencedb.com", recipients=[recipient_email])
         msg.body = 'text body'
         msg.html = '<b>You have a notification on CompetenceDB</b><br><br>'+message+'<br><br>View all your notifications <a href="'+request.url_root+'notifications">here</a>'
         thr = Thread(target=send_async_email, args=[msg])
-        print thr
         thr.start()
 
 
@@ -71,8 +62,6 @@ def send_mail(user_id,subject,message):
 def send_mail_unknown(email,subject,message):
 
     if config.get("MAIL") != False:
-        print "SENDING EMAIL"
-        print message
         msg = Message('CompetenceDB: '+subject, sender="notifications@competencedb.com", recipients=[email])
         msg.body = 'text body'
         msg.html = message
@@ -121,7 +110,6 @@ import re
 from models import MonthlyReportNumbers, Service
 
 def check_notifications(user_id):
-    print "CHECKING EXPIRED ASSESSMENTS"
     expired = s.query(Assessments).filter(Assessments.user_id == user_id)
     alerts = {}
     count = 0
@@ -159,76 +147,20 @@ def check_notifications(user_id):
 #####
 # cron jobs to do things like check for expiring competencies, check for 4 year reassessments
 #####
-
-@cron.interval_schedule(days=30)
-def report_scheduler():
-    """
-    runs reporting method from mod_competence - adds numbers to monthly reports table
-    """
-
-    counts, expired, expiring, user_expired, user_expiring, change = reporting()
-    for service in counts:
-        db_service = re.sub(r"(\w)([A-Z])", r"\1 \2", service)
-        service_id = s.query(Service).filter(Service.name == db_service).first().id
-        m = MonthlyReportNumbers(service_id=service_id,date=datetime.date.today(),assigned=counts[service]["Assigned"],active=counts[service]["Active"],expiring=counts[service]["Expiring"],expired=counts[service]["Expired"])
-        s.add(m)
-    try:
-        s.commit()
-    except:
-        print "error"
-
-@cron.interval_schedule(days=7)
-def expiry_emailer():
-    """
-    checks database for any notifications and sends a summary every week
-    """
-    users = s.query(Users).filter(Users.active==1)
-    for user in users:
-        count,alerts = check_notifications(user.id)
-        if count > 0:
-            lines=["<b>Outstanding notifications</b><br>"]
-            for i in alerts:
-                with app.test_request_context():
-                    time.sleep(5)
-                    send_mail(user.id, "You have outstanding notifications!", "<br>".join(lines))
-
-
-@cron.interval_schedule(days=1)
-def four_year_checker():
-    """
-    check assessments every day for 4 year expiry
-    """
-
-    #do 46 months to give 2 months warning
-    four_years_ago = datetime.date.today() - relativedelta(months=46)
-
-    assessments = s.query(Assessments).join(AssessmentStatusRef).filter(
-        AssessmentStatusRef.status == "Complete").filter(Assessments.date_completed <= four_years_ago)
-
-
-    done = []
-    for assessment in assessments:
-
-        #update assessment status to indicate that 4 year is now due (maybe set them all?)
-        status = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Four Year Due").first().id
-        data = { "status": status }
-        s.query(Assessments).filter(Assessments.id == assessment.id).update(data)
-
-        #only send email once for that competency
-        if str(assessment.user_id) + ":" + str(assessment.ss_id_rel.c_id) not in done:
-
-            lines = [assessment.ss_id_rel.c_id_rel.competence_detail[0].title + " is due for a four year reassessment."]
-            lines.append("You originally completed this competency on "+str(assessment.date_completed))
-            lines.append("Please arrange a suitable time with your trainer to reassess you competence fully.")
-
-            with app.test_request_context():
-                time.sleep(5)
-                send_mail(assessment.user_id ,"Four Year Competency Reassessment Required: "+ assessment.ss_id_rel.c_id_rel.competence_detail[0].title,"<br><br>".join(lines))
-
-        done.append(str(assessment.user_id) + ":" + str(assessment.ss_id_rel.c_id))
-
-    s.commit()
-
-
-# Shutdown your cron thread if the web process is stopped
-atexit.register(lambda: cron.shutdown(wait=False))
+#
+# @cron.interval_schedule(days=30)
+# def report_scheduler():
+#     """
+#     runs reporting method from mod_competence - adds numbers to monthly reports table
+#     """
+#
+#     counts, expired, expiring, user_expired, user_expiring, change = reporting()
+#     for service in counts:
+#         db_service = re.sub(r"(\w)([A-Z])", r"\1 \2", service)
+#         service_id = s.query(Service).filter(Service.name == db_service).first().id
+#         m = MonthlyReportNumbers(service_id=service_id,date=datetime.date.today(),assigned=counts[service]["Assigned"],active=counts[service]["Active"],expiring=counts[service]["Expiring"],expired=counts[service]["Expired"])
+#         s.add(m)
+#     try:
+#         s.commit()
+#     except:
+#         print ("error")

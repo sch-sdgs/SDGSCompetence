@@ -14,7 +14,6 @@ class QPulseWeb:
         """
         url = 'https://bioinfoweb.sch.nhs.uk/QPulseWeb.asmx?WSDL'
         client = Client(url, cache=NoCache())
-        print client
         return client
 
 

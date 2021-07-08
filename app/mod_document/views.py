@@ -11,7 +11,7 @@ from flask import Blueprint, jsonify
 from flask_table import Table, Col
 from sqlalchemy import and_, or_, case, func
 from flask import render_template, request, url_for, redirect, Blueprint, send_from_directory
-from flask.ext.login import login_required, current_user
+from flask_login import login_required, current_user
 from app.views import admin_permission
 from app.models import *
 from app.competence import s
@@ -34,7 +34,7 @@ def get_doc_info(c_id, version):
     :type c_id: INT
     :return:
     """
-    print('query')
+
     competence_list = s.query(CompetenceDetails).\
         filter(CompetenceDetails.c_id == c_id).filter(CompetenceDetails.intro == version).first()
     return competence_list
@@ -62,8 +62,6 @@ def get_subsections(c_id):
     subsection_list = []
     for i in subsections:
         subsection_list.append(i)
-    print "here"
-    print subsection_list
     return subsection_list
 
 def get_qpulsenums(c_id, version):
@@ -76,8 +74,6 @@ def get_qpulsenums(c_id, version):
 
     doc_list = []
     for i in qpulse_no_list:
-        print "IN QPULSE LIST:"
-        print i
         doc_list.append(i)
     return doc_list
 
@@ -131,18 +127,10 @@ def export_document(c_id, version):
 
     ## Get variables using competence_view query from mod_competence views
     # v = get_latest_version(c_id)[0]
-    print ":::::::::::"
 
     comp = get_doc_info(c_id, version)
-    print comp
-    print "get doc info returns: "
-    print comp
     const = competence_views.get_constant_subsections(c_id, version)
-    print "get constant subsection returns: "
-    print const
     subsec = competence_views.get_subsections(c_id, version)
-    print "competence get subsections returns: "
-    print subsec
     if config.get("QPULSE_MODULE") == True:
         qpulse = get_qpulsenums(c_id, version)
 
@@ -175,8 +163,6 @@ def export_document(c_id, version):
         evidence_type = sub.type
         value_list = [subsection_name, comments, evidence_type]#, sub_version,constant, sub_id]
         subsection.setdefault(sec_name,[]).append(value_list)
-    print "**************** This is everything in sub: "
-    print subsection
 
     #constant section details
     constant = OrderedDict()
@@ -188,21 +174,15 @@ def export_document(c_id, version):
         evidence = c[3]
         value_list = [sec_name, sec_comments, evidence]
         constant.setdefault(sec_type,[]).append(value_list)
-    print "**************** This is everything in const: "
-    print constant
 
     #associated qpulse documents
     qpulse_list = {}
     if config.get("QPULSE_MODULE") == True:
-        print qpulse
         for qpulse_no in qpulse:
             d = s.query(QPulseDetails).first()
-            print d
             qpulse_name = QPulseWeb().get_doc_by_id(d.username, d.password, qpulse_no)
             qpulse_list[qpulse_no]=qpulse_name
 
-    for i in qpulse_list:
-        print i
 
     # evidence - this will be for downloading completed competences
     evidence_list = {}
@@ -242,8 +222,6 @@ def export_document(c_id, version):
     # Insert header and footer in main doc
 
     for page in main_doc.pages:
-        print "HEADER & FOOTER"
-        print page
         header_out = render_template('header.html', title=title, docid=c_id)
         header_html = HTML(string=header_out)
         header = header_html.render(stylesheets=[CSS('static/css/simple_report.css'),
@@ -256,7 +234,6 @@ def export_document(c_id, version):
         header_body = header_body.copy_with_children(header_body.all_children())
 
         # Template of footer
-        print comp.approve_rel
         footer_out = render_template('footer.html', version_no=version_no, author=author,
                                      full_name=current_user.full_name,
                                      authoriser=comp.approve_rel.first_name + " " + comp.approve_rel.last_name,
@@ -271,9 +248,7 @@ def export_document(c_id, version):
         footer_body = footer_body.copy_with_children(footer_body.all_children())
 
         page_body = get_page_body(page._page_box.all_children())
-        print page_body
         page_body.children += header_body.all_children()
-        print page_body.children
         page_body.children += footer_body.all_children()
         # if exists_links:
         #     page.links.extend(header_page.links)
@@ -296,12 +271,9 @@ def export_document_view():
     View to export competence to PDF
     :return:
     """
-    print(request.method)
     if request.method == 'GET':
         c_id = request.args.get('c_id')
         version = request.args.get('version')
-        print('cid')
-        print(c_id)
         outfile = export_document(c_id, version)
         uploads = app.config["UPLOAD_FOLDER"]
         filename = s.query(CompetenceDetails).filter(CompetenceDetails.c_id==c_id).first().title + ".pdf"
@@ -310,33 +282,25 @@ def export_document_view():
 
 @document.route('/export_trial', methods=['GET', 'POST'])
 def export_trial_report():
-    print "HELLO"
     ids = [int(i) for i in request.args.get('ids').split(",")]
-    print ids
     uploads = app.config["UPLOAD_FOLDER"]
-    print uploads
 
 
     current_data = s.query(CompetenceDetails).join(Competence).filter(CompetenceDetails.c_id.in_(ids)).filter(
         Competence.current_version == CompetenceDetails.intro).all()
-    print current_data
 
     result = {}
     for i in current_data:
         #find out how many are trained and partially and in training
-        print i.title
-        print i.c_id
         #count how many subsections are in the competence
         number_of_subsections = s.query(Subsection).join(Competence).filter(and_(Subsection.intro <= Competence.current_version,or_(Subsection.last >= Competence.current_version,Subsection.last == None))).filter(Subsection.c_id == i.c_id).count()
-        print number_of_subsections
         #get all assessments by user?
         counts = s.query(func.count(Assessments.id).label("count"),Assessments.user_id.label("user_id"),Assessments.status.label("status_id"),AssessmentStatusRef.status.label("status")).join(AssessmentStatusRef).join(Subsection).join(Competence).join(CompetenceDetails).filter(and_(CompetenceDetails.intro <= Competence.current_version,or_(CompetenceDetails.last >= Competence.current_version,CompetenceDetails.last == None))).filter(Subsection.c_id == i.c_id).filter(Assessments.ss_id == Subsection.id).group_by(Assessments.user_id,Assessments.status).all()
-        print counts
+
         trained=0
         partial=0
         in_training=0
         for j in counts:
-            print j
             users_done = []
             if j.status == "Complete":
                 if j.count == number_of_subsections:
@@ -397,8 +361,6 @@ def export_trial_report():
     # Insert header and footer in main doc
 
     for page in main_doc.pages:
-        print "HEADER & FOOTER"
-        print page
         page_body = get_page_body(page._page_box.all_children())
         page_body.children += header_body.all_children()
         page_body.children += footer_body.all_children()
@@ -409,7 +371,5 @@ def export_trial_report():
     outfile = str(uuid.uuid4())
 
     out_name = main_doc.write_pdf(target=app.config["UPLOAD_FOLDER"] + "/" + outfile)
-    print outfile
-    print out_name
 
     return send_from_directory(directory=uploads, filename=outfile, as_attachment=True, attachment_filename="trial_report.pdf")

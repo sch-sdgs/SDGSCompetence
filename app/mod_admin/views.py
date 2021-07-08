@@ -5,10 +5,10 @@ from sqlalchemy import exc
 from flask import Blueprint
 from flask import flash,render_template, request, url_for, redirect, Blueprint, jsonify, make_response
 from flask_login import login_required, current_user
-from app.views import admin_permission
+from app.views import *
 from forms import *
 from app.models import *
-from app.competence import s
+from app.competence import *
 import datetime
 import time
 import io
@@ -324,7 +324,6 @@ def users_add():
 
         s.add(u)
         s.commit()
-        print request.form.getlist('userrole')
         for role_id in request.form.getlist('userrole'):
             urr = UserRoleRelationship(userrole_id=int(role_id), user_id=u.id)
             s.add(urr)
@@ -374,7 +373,6 @@ def users_edit(id=None):
         form.userrole.process_data(userrole_ids)
 
         form.section.choices = s.query(Service.id, Service.name).all()
-        print form.section.choices
         form.section.process_data(user.serviceid)
 
         return render_template("users_edit.html", id=id, form=form)
@@ -401,7 +399,6 @@ def users_edit(id=None):
 
         if "staff_no" in request.form:
             staff_no = request.form["staff_no"]
-            print "HELLO"
         else:
             staff_no = s.query(Users).filter_by(id=id).first().staff_no
 
@@ -436,8 +433,6 @@ def dropdown_choices():
         except KeyError:
             pass
 
-    print "requesting"
-    print request.json['question_id']
     choices = s.query(DropDownChoices).filter(DropDownChoices.question_id==request.json['question_id'])
 
     return jsonify({"response":render_template("dropdown_choices.html",data=choices)})
@@ -454,7 +449,6 @@ def delete_dropdown_choice():
 @admin.route('/questions',methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def reassessment_questions():
-    print "hello"
     form = QuestionsForm()
     q_id = 0
     dropdown=False
@@ -486,7 +480,6 @@ def reassessment_questions_edit(question_id=None, commit=None):
         form=QuestionsForm()
         question = s.query(QuestionsRef).filter_by(id=question_id).first()
         form.type.default = question.answer_type
-        print question.answer_type
         form.process()
         form.question.data = question.question
         dropdown=False
@@ -503,7 +496,6 @@ def reassessment_questions_edit(question_id=None, commit=None):
             dropdown = True
             choices = s.query(DropDownChoices).filter(DropDownChoices.question_id == question_id)
             length = len(choices.all())
-            print length
             choices_html = render_template("dropdown_choices.html",data=choices)
         else:
             return redirect(url_for('admin.reassessment_questions'))
@@ -748,8 +740,7 @@ def sections():
         s.commit()
 
     sections = s.query(Section).all()
-    for i in sections:
-        print i.constant
+
     return render_template("sections.html", form=form, data=sections)
 
 
@@ -768,9 +759,7 @@ def sections_edit(id=None):
         form.constant.data = "checked"
 
     if request.method == 'POST':
-        print "hello"
         if "constant" in request.form:
-            print "here"
             answer = True
         else:
             answer = False
@@ -1071,7 +1060,6 @@ def transform_view():
                     Users.last_name.like(two + "%")).first()
                 if line_manager_query:
                     line_manager_id = line_manager_query.id
-                    print "linemanage_id " + str(line_manager_id)
                     line_manager_role_id = s.query(UserRolesRef).filter_by(role="LINEMANAGER").first().id
                     count = s.query(UserRoleRelationship).filter_by(user_id=line_manager_id).filter_by(
                         userrole_id=line_manager_role_id).count()
@@ -1084,7 +1072,7 @@ def transform_view():
 
             result = UserAuthentication().get_username_from_user_detail(first.replace(" ", ""), last)
             if result == "False":
-                print first + " " + last
+                print (first + " " + last)
             else:
                 result = json.loads(result)
                 users = s.query(Users).filter_by(login=result["Username"]).count()
@@ -1128,11 +1116,8 @@ def transform_view():
                     s.refresh(ur)
 
                 band_db = s.query(Users).filter_by(id=user_id).first().band
-                print band
                 if not band_db:
                     s.query(Users).filter_by(id=user_id).update({'band': band})
-
-    print s.commit()
 
 
 @admin.route('/qpulse_details', methods=["GET","POST"])
