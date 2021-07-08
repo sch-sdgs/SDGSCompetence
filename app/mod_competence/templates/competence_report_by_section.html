@@ -15,6 +15,9 @@
 </section>
 
 <!-- Main content -->
+<section class="content container-fluid">
+    <h3>Expired Assessments</h3>
+<!-- Main content -->
     <section class="content container-fluid">
     <h3>Trends: % Expired Competencies</h3>
         <div class="box-body" style="height:300px; width:80%; background-color: white">
@@ -145,7 +148,8 @@
 
 
 
-{#    <script src="/static/bower_components/chart.js/Chart.js"></script>#}
+
+<script src="/static/bower_components/chart.js/Chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.2.0/chart.min.js" integrity="sha512-VMsZqo0ar06BMtg0tPsdgRADvl0kDHpTbugCBBrL55KmucH6hP9zWdLIWY//OTfMnzz6xWQRxQqsUFefwHuHyg==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.2.0/chart.esm.js" integrity="sha512-iPOvgg5RoL9rL/XjfFdBqjAlStti+ik8BmLYu12vwlD5jgCCdw7R8kI9mtHU7fMUSaRwG+w56i0xrAm/tnVj7w==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.2.0/chart.js" integrity="sha512-opXrgVcTHsEVdBUZqTPlW9S8+99hNbaHmXtAdXXc61OUU6gOII5ku/PzZFqexHXc3hnK8IrJKHo+T7O4GRIJcw==" crossorigin="anonymous"></script>
@@ -153,14 +157,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.2.0/helpers.esm.min.js" integrity="sha512-4OeC7P+qUXB7Kpyeu1r5Y209JLXfCkwGKDpk8vnXzeNGMnpTr6hzOz2lMm7h0oxRBVu2ZCPRkCBPMmIlWsbaHg==" crossorigin="anonymous"></script>
 
 
- <script>
-
      var expired = $('.expired').DataTable({
             "pageLength": 10,
             "ordering": true,
             "order": [[0, "asc"], [1, "asc"]]
         });
 
+                    ]
 
       var expiring = $('.expiring').DataTable({
         "pageLength": 10,
@@ -255,134 +258,5 @@ var myChart = new Chart(ctx, {
 });
 
 </script>
-
-
-
-
-<!--    <script>-->
-
-
-<!--        $(function () {-->
-<!--            /* ChartJS-->
-<!--             * -&#45;&#45;&#45;&#45;&#45;&#45;-->
-<!--             * Here we will create a few charts using ChartJS-->
-<!--             */-->
-
-<!--            var data_expired = {-->
-<!--                labels: [-->
-<!--                    {% for name in user_expired %}-->
-<!--                        "{{ name[0] }}",-->
-<!--                    {% endfor %}-->
-
-<!--                ],-->
-<!--                datasets: [{-->
-<!--                    data: [-->
-<!--                        {% for name in user_expired %}-->
-<!--                            {{ name[1] }},-->
-<!--                        {% endfor %}-->
-
-<!--                    ]-->
-
-<!--                }]-->
-<!--            }-->
-
-<!--            var data_expiring = {-->
-<!--                labels: [-->
-<!--                    {% for name in user_expiring %}-->
-<!--                        "{{ name[0] }}",-->
-<!--                    {% endfor %}-->
-
-<!--                ],-->
-<!--                datasets: [{-->
-<!--                    data: [-->
-<!--                        {% for name in user_expiring %}-->
-<!--                            {{ name[1] }},-->
-<!--                        {% endfor %}-->
-
-<!--                    ]-->
-
-<!--                }]-->
-<!--            }-->
-<!--            //-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
-<!--            //- BAR CHART - -->
-<!--            //-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
-<!--            var barChartCanvas = $('#barChart').get(0).getContext('2d')-->
-<!--            var barChart = new Chart(barChartCanvas)-->
-<!--            var barChartData = data_expired-->
-<!--            barChartData.datasets[0].fillColor = '#ef4923'-->
-<!--            barChartData.datasets[0].strokeColor = '#ef4923'-->
-<!--            barChartData.datasets[0].pointColor = '#ef4923'-->
-<!--            var barChartOptions = {-->
-<!--                //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value-->
-<!--                scaleBeginAtZero: true,-->
-<!--                //Boolean - Whether grid lines are shown across the chart-->
-<!--                scaleShowGridLines: true,-->
-<!--                //String - Colour of the grid lines-->
-<!--                scaleGridLineColor: 'rgba(0,0,0,.05)',-->
-<!--                //Number - Width of the grid lines-->
-<!--                scaleGridLineWidth: 1,-->
-<!--                //Boolean - Whether to show horizontal lines (except X axis)-->
-<!--                scaleShowHorizontalLines: true,-->
-<!--                //Boolean - Whether to show vertical lines (except Y axis)-->
-<!--                scaleShowVerticalLines: true,-->
-<!--                //Boolean - If there is a stroke on each bar-->
-<!--                barShowStroke: true,-->
-<!--                //Number - Pixel width of the bar stroke-->
-<!--                barStrokeWidth: 2,-->
-<!--                //Number - Spacing between each of the X value sets-->
-<!--                barValueSpacing: 5,-->
-<!--                //Number - Spacing between data sets within X values-->
-<!--                barDatasetSpacing: 1,-->
-<!--                //String - A legend template-->
-<!--                {#      legendTemplate          : '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span style="background-color:<%=datasets[i].fillColor%>"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>',#}-->
-<!--                //Boolean - whether to make the chart responsive-->
-<!--                responsive: true,-->
-<!--                maintainAspectRatio: true-->
-<!--            }-->
-
-<!--            barChartOptions.datasetFill = false-->
-<!--            barChart.Bar(barChartData, barChartOptions)-->
-
-<!--            var barChartCanvas = $('#barChart_expiring').get(0).getContext('2d')-->
-<!--            var barChart = new Chart(barChartCanvas)-->
-<!--            var barChartData = data_expiring-->
-<!--            barChartData.datasets[0].fillColor = '#ef8f23'-->
-<!--            barChartData.datasets[0].strokeColor = '#ef8f23'-->
-<!--            barChartData.datasets[0].pointColor = '#ef8f23'-->
-<!--            var barChartOptions = {-->
-<!--                //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value-->
-<!--                scaleBeginAtZero: true,-->
-<!--                //Boolean - Whether grid lines are shown across the chart-->
-<!--                scaleShowGridLines: true,-->
-<!--                //String - Colour of the grid lines-->
-<!--                scaleGridLineColor: 'rgba(0,0,0,.05)',-->
-<!--                //Number - Width of the grid lines-->
-<!--                scaleGridLineWidth: 1,-->
-<!--                //Boolean - Whether to show horizontal lines (except X axis)-->
-<!--                scaleShowHorizontalLines: true,-->
-<!--                //Boolean - Whether to show vertical lines (except Y axis)-->
-<!--                scaleShowVerticalLines: true,-->
-<!--                //Boolean - If there is a stroke on each bar-->
-<!--                barShowStroke: true,-->
-<!--                //Number - Pixel width of the bar stroke-->
-<!--                barStrokeWidth: 2,-->
-<!--                //Number - Spacing between each of the X value sets-->
-<!--                barValueSpacing: 5,-->
-<!--                //Number - Spacing between data sets within X values-->
-<!--                barDatasetSpacing: 1,-->
-<!--                //String - A legend template-->
-<!--                {#      legendTemplate          : '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span style="background-color:<%=datasets[i].fillColor%>"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>',#}-->
-<!--                //Boolean - whether to make the chart responsive-->
-<!--                responsive: true,-->
-<!--                maintainAspectRatio: true-->
-<!--            }-->
-
-<!--            barChartOptions.datasetFill = false-->
-<!--            barChart.Bar(barChartData, barChartOptions)-->
-
-
-<!--        })-->
-
-<!--    </script>-->
 
 {% endblock %}

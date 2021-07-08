@@ -1,19 +1,8 @@
 {% extends "base2.html" %}
 {% block content %}
 
-
-
-
-
-
-
-
-            <h1>Reports By User</h1>
+            <h1>Get User Report</h1>
             <small></small>
-            {#            <ol class="breadcrumb">#}
-            {#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
-            {#                <li class="active">Here</li>#}
-            {#            </ol>#}
             {% if message %}
                 <div class="alert alert-danger">
                     <strong>Fail Whale!</strong> {{ message }}
@@ -24,7 +13,7 @@
 
         <!-- Main content -->
         <section class="content container-fluid">
-            <form id="quick_competence" class="form-inline">
+            <form id="user_autocomplete" class="form-inline" action="{{ url_for('competence.report_by_user') }}" method="POST">
 
                 <div class="input-group col-xs-12">
                     <input type="text" name="full_name" id="full_name" class="form-control"

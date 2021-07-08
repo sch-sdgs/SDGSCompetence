@@ -99,49 +99,49 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 select: true
             })
 
-            var expired = $('.expired').DataTable({
-                "pageLength": 10,
-                "columnDefs": [
-                    {
-                        "targets": [0],
-                        "visible": false,
-                        "searchable": false
-                    }],
-                select: true
-            })
+            // var expired = $('.expired').DataTable({
+            //     "pageLength": 10,
+            //     "columnDefs": [
+            //         {
+            //             "targets": [0],
+            //             "visible": false,
+            //             "searchable": false
+            //         }],
+            //     select: true
+            // })
 
-            var expiring = $('.expiring').DataTable({
-                "pageLength": 10,
-                "columnDefs": [
-                    {
-                        "targets": [0],
-                        "visible": false,
-                        "searchable": false
-                    }],
-                select: true
-            })
+            // var expiring = $('.expiring').DataTable({
+            //     "pageLength": 10,
+            //     "columnDefs": [
+            //         {
+            //             "targets": [0],
+            //             "visible": false,
+            //             "searchable": false
+            //         }],
+            //     select: true
+            // })
 
-            {#            var competencies = $('.competencies').DataTable({#}
-            {#                "pageLength": 25,#}
-            {#                "columnDefs": [#}
-            {#                    {#}
-            {#                        "targets": [0,1],#}
-            {#                        "visible": false,#}
-            {#                        "searchable": false#}
-            {#                    }],#}
-            {#                select: true#}
-            {#            })#}
-
-            {#            var competencies = $('.competencies_previous').DataTable({#}
-            {#                "pageLength": 25,#}
-            {#                "columnDefs": [#}
-            {#                    {#}
-            {#                        "targets": [0,1],#}
-            {#                        "visible": false,#}
-            {#                        "searchable": false#}
-            {#                    }],#}
-            {#                select: true#}
-            {#            })#}
+            // {#            var competencies = $('.competencies').DataTable({#}
+            // {#                "pageLength": 25,#}
+            // {#                "columnDefs": [#}
+            // {#                    {#}
+            // {#                        "targets": [0,1],#}
+            // {#                        "visible": false,#}
+            // {#                        "searchable": false#}
+            // {#                    }],#}
+            // {#                select: true#}
+            // {#            })#}
+            //
+            // {#            var competencies = $('.competencies_previous').DataTable({#}
+            // {#                "pageLength": 25,#}
+            // {#                "columnDefs": [#}
+            // {#                    {#}
+            // {#                        "targets": [0,1],#}
+            // {#                        "visible": false,#}
+            // {#                        "searchable": false#}
+            // {#                    }],#}
+            // {#                select: true#}
+            // {#            })#}
 
             $(".action").click(function () {
                 console.log("hello")
@@ -597,25 +597,9 @@ desired effect
               </span>
                     </a>
                     <ul class="treeview-menu">
-
-
-                        <li><a href="{{ url_for('competence.report_by_section') }}"><i class="fa fa-circle-o"></i>By
-                            Section</a>
-
-                        </li>
-{##}
-{#                        <li><a href="{{ url_for('competence.report_by_competence') }}"><i class="fa fa-circle-o"></i>By#}
-{#                            Competence</a>#}
-{##}
-{#                        </li>#}
-{##}
-{#                        <li><a href="{{ url_for('competence.report_by_user') }}"><i class="fa fa-circle-o"></i>By#}
-{#                            User</a>#}
-{##}
-{#                        </li>#}
-                         <li><a href="{{ url_for('competence.trial_viewer') }}"><i class="fa fa-circle-o"></i>Trial Viewer</a>
-                        </li>
-
+                        <li><a href="{{ url_for('competence.report_by_section') }}"><i class="fa fa-circle-o"></i>By Section</a></li>
+                        <li><a href="{{ url_for('competence.report_by_user') }}"><i class="fa fa-circle-o"></i>By User</a></li>
+                        <li><a href="{{ url_for('competence.trial_viewer') }}"><i class="fa fa-circle-o"></i>All Competencies</a></li>
                     </ul>
                 </li>
 

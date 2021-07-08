@@ -1132,6 +1132,7 @@ def user_report(id=None):
 
     ###get ongoing competencies and split into overdue and in-date
 
+    ### get all assessments that are assigned, abandoned or waiting for sign-off
     assigned = s.query(Assessments)\
         .join(Subsection)\
         .join(Competence)\
@@ -1143,6 +1144,7 @@ def user_report(id=None):
         .filter(or_(AssessmentStatusRef.status == "Assigned", AssessmentStatusRef.status == "Active", AssessmentStatusRef.status == "Sign-Off"))\
         .all()
 
+    ### get all assessments that are abandoned
     abandoned_query = s.query(Assessments)\
         .join(Subsection)\
         .join(Competence)\
@@ -1370,7 +1372,7 @@ def user_report(id=None):
             assigned_to_completion_list.append(days_assigned_to_completion)
 
         ### do stuff for due dates section here, rather than looping again later on
-        if i.date_completed is not None:
+        if i.date_completed is not None and i.due_date is not None:
             if i.date_completed > i.due_date:
                 overdue_assessments+=1
             else:
@@ -1378,15 +1380,6 @@ def user_report(id=None):
 
             days_over_target = int((i.date_completed - i.due_date).days)
             days_over_target_list.append(days_over_target)
-
-    # assigned_to_activation_list = [5,6,2,34,6,7,3,3,6,10,15]
-    # activated_to_completion_list = [2,5,8,23,5,1,2,2,2,2,4,7,8]
-    # assigned_to_completion_list = [5,2,4,2,2,2,0,0,0,23,10,12,3]
-    # print assigned_to_activation_list
-    # print activated_to_completion_list
-    # print assigned_to_completion_list
-
-
 
     violin_data = [
         {

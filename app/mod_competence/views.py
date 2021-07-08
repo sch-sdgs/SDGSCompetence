@@ -1348,8 +1348,8 @@ def reporting():
         counts[service]["Abandoned"] = 0
         counts[service]["Obsolete"] = 0
 
-        expired[service] = []
-        expiring[service] = []
+        expired[service] = {}
+        expiring[service] = {}
 
     for i in s.query(Assessments).all():
         if i.user_id_rel.service_rel is not None:
@@ -1357,26 +1357,33 @@ def reporting():
                 service = i.user_id_rel.service_rel.name.replace(" ", "")
                 fullname = i.user_id_rel.first_name + " " + i.user_id_rel.last_name
                 if i.date_expiry is not None:
+                    comp_title = i.ss_id_rel.c_id_rel.competence_detail[0].title
                     if datetime.date.today() > i.date_expiry:
-                        counts[service]["Expired"] += 1
-                        expired[service].append(i)
-
-                        if fullname not in user_expired:
+                        if fullname not in expired[service]:
+                            expired[service][fullname] = {comp_title: i.date_expiry}
+                            counts[service]["Expired"] += 1
                             user_expired[fullname] = 1
-                        else:
+                        elif fullname in expired[service] and comp_title not in expired[service][fullname]:
+                            expired[service][fullname][comp_title] = i.date_expiry
+                            counts[service]["Expired"] += 1
                             user_expired[fullname] += 1
+                        elif fullname in expired[service] and comp_title in expired[service][fullname]:
+                            if i.date_expiry < expired[service][fullname][comp_title]:
+                                expired[service][fullname][comp_title] = i.date_expiry
+
 
                     elif datetime.date.today() + relativedelta(months=+1) > i.date_expiry:
-                        counts[service]["Expiring"] += 1
-                        expiring[service].append(i)
-                        if fullname not in user_expiring:
+                        if fullname not in expiring[service]:
+                            expiring[service][fullname] = {comp_title: i.date_expiry}
+                            counts[service]["Expiring"] += 1
                             user_expiring[fullname] = 1
-                        else:
+                        elif fullname in expiring[service] and comp_title not in expiring[service][fullname]:
+                            expiring[service][fullname][comp_title] = i.date_expiry
+                            counts[service]["Expiring"] += 1
                             user_expiring[fullname] += 1
-                    else:
-                        counts[service][i.status_rel.status] += 1
-                else:
-                    counts[service][i.status_rel.status] += 1
+                        elif fullname in expiring[service] and comp_title in expiring[service][fullname]:
+                            if i.date_expiry < expiring[service][fullname][comp_title]:
+                                expiring[service][fullname][comp_title] = i.date_expiry
 
     return [counts,expired,expiring,user_expired,user_expiring,change]
 
@@ -1394,9 +1401,9 @@ def report_by_section():
     # for count in counts:
 
     return render_template('competence_report_by_section.html', counts=counts, historic=historic, expired=expired,
-                           expiring=expiring,
-                           user_expired=sorted(user_expired.items(), key=lambda key: key[1], reverse=True)[:5],
-                           user_expiring=sorted(user_expiring.items(), key=lambda key: key[1], reverse=True)[:5])
+                           expiring=expiring)
+                           # user_expired=sorted(user_expired.items(), key=lambda key: key[1], reverse=True)[:5],
+                           # user_expiring=sorted(user_expiring.items(), key=lambda key: key[1], reverse=True)[:5])
 
 @competence.route('/report_by_competence', methods=['GET', 'POST'])
 @login_required
@@ -1408,9 +1415,13 @@ def report_by_competence():
 @competence.route('/report_by_user', methods=['GET', 'POST'])
 @login_required
 def report_by_user():
-
-
-    return render_template('competence_report_by_user.html')
+    if request.method == 'GET':
+        return render_template('competence_report_by_user.html')
+    elif request.method == "POST":
+        user_full_name = request.form['full_name']
+        first_name, surname = user_full_name.split(' ')
+        user_id = s.query(Users).filter(and_(Users.first_name == first_name, Users.last_name == surname)).first().id
+        return redirect(url_for('training.user_report', id=user_id))
 
 
 @competence.route('/collections', methods=['GET', 'POST'])
@@ -1421,45 +1432,58 @@ def collections():
 @competence.route('/trial_viewer', methods=['GET', 'POST'])
 @login_required
 def trial_viewer():
-    current_data = s.query(CompetenceDetails).join(Competence).filter(
-        Competence.current_version == CompetenceDetails.intro).all()
+    ### get all current competencies ###
+    current_data = s.query(CompetenceDetails).join(Competence).filter(Competence.current_version == CompetenceDetails.intro).all()
     result={}
-    for i in current_data:
-        #find out how many are trained and partially and in training
+    for comp in current_data: #loop through each competency, find out how many are trained, expired and partially and in training
+
         #count how many subsections are in the competence
-        number_of_subsections = s.query(Subsection).join(Competence).filter(and_(Subsection.intro <= Competence.current_version,or_(Subsection.last >= Competence.current_version,Subsection.last == None))).filter(Subsection.c_id == i.c_id).count()
-        #get all assessments by user?
-        counts = s.query(func.count(Assessments.id).label("count"),Assessments.user_id.label("user_id"),Assessments.status.label("status_id"),AssessmentStatusRef.status.label("status")).join(AssessmentStatusRef).join(Subsection).join(Competence).join(CompetenceDetails).filter(and_(CompetenceDetails.intro <= Competence.current_version,or_(CompetenceDetails.last >= Competence.current_version,CompetenceDetails.last == None))).filter(Subsection.c_id == i.c_id).filter(Assessments.ss_id == Subsection.id).group_by(Assessments.user_id,Assessments.status).all()
+        number_of_subsections = s.query(Subsection).join(Competence).filter(and_(Subsection.intro <= Competence.current_version,or_(Subsection.last >= Competence.current_version,Subsection.last == None))).filter(Subsection.c_id == comp.c_id).count()
+
+        #get all assessments for this competence by user
+        counts = s.query(func.count(Assessments.id).label("count"),Assessments.user_id.label("user_id"),Assessments.status.label("status_id"),AssessmentStatusRef.status.label("status"))\
+            .join(AssessmentStatusRef).join(Subsection).join(Competence).join(CompetenceDetails)\
+            .filter(and_(CompetenceDetails.intro <= Competence.current_version,or_(CompetenceDetails.last >= Competence.current_version, CompetenceDetails.last == None)))\
+            .filter(Subsection.c_id == comp.c_id).filter(Assessments.ss_id == Subsection.id)\
+            .group_by(Assessments.user_id).all()
 
         trained=0
         partial=0
         in_training=0
-        for j in counts:
-            users_done = []
-            if j.status == "Complete":
-                if j.count == number_of_subsections:
-                    #user is fully trained - now check for expiry
+        expired=0
 
-                    trained+=1
-                    users_done.append(j.user_id)
-                elif j.count < number_of_subsections:
-                    #user is partially trained
-                    partial+=1
-                    users_done.append(j.user_id)
-            if j.status == "Active":
-                if j.user_id not in users_done:
-                    in_training+=1
-                    users_done.append(j.user_id)
+        for user_entry in counts: ### loop through users that are on this competence
+            if (s.query(Users).filter(Users.id == user_entry.user_id).first()).active == 1: ### check if user is actually active
+                statuses = []
 
-        #NEED TO TAKE INTO ACCOUNT EXPIRY
-        #Counter(z)
+                ### get all assessments for this user for this competence, put statuses in list
+                users_assessments = s.query(Assessments).join(Subsection).filter(Assessments.user_id == user_entry.user_id).filter(Subsection.c_id == comp.c_id).all()
+                for entry in users_assessments:
+                    if entry.status == 3: ### assessment is complete, check for expiry
+                        if datetime.date.today() > entry.date_expiry:
+                            statuses.append('Expired')
+                        else:
+                            statuses.append('Complete')
+                    elif entry.status == 1 or entry.status == 7: ### assessment is active or waiting for sign-off
+                        statuses.append('In training')
 
-        result[i.c_id]={"title":i.title,
+                ### from statuses list, decide on overall training status for this user for this competence, and add to counts
+                if "In training" in statuses:
+                    in_training += 1
+                elif "Expired" in statuses:
+                    expired+=1
+                elif "Complete" in statuses:
+                    if len(statuses) == int(number_of_subsections):
+                        trained+=1
+                    elif len(statuses) < int(number_of_subsections):
+                        partial+=1
+
+        result[comp.c_id]={"title":comp.title,
                         "trained":trained,
-                        "expired":0,
+                        "expired":expired,
                         "partial":partial,
                         "training":in_training,
-                        "category":i.category_rel.category}
+                        "category":comp.category_rel.category}
 
 
     return render_template('trial_viewer.html', current_data=current_data,result=result)
