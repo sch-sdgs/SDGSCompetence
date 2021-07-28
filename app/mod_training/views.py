@@ -333,9 +333,22 @@ def reassessment():
         form = Reassessment()
         ss_id_list = get_ss_id_from_assessment(assess_id_list)
 
-        competent_users = get_competent_users(ss_id_list)
-
+        # TODO: update this so inactive admins are not shown
         choices = []
+        # add admins to reassessment authorisers
+        authoriser_config = config["AUTHORISER"].split(",")
+        authoriser_choices = []
+        if "ADMIN" in authoriser_config:
+            admin_users = s.query(UserRoleRelationship).join(UserRolesRef).join(Users).filter(
+                UserRolesRef.role == "ADMIN").all()
+            for i in admin_users:
+                id = i.user_id_rel.id
+                name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name + " (ADMIN)"
+                is_active = i.user_id_rel.active
+                if id != current_user.database_id and is_active == True:
+                    choices.append((id, name))
+
+        competent_users = get_competent_users(ss_id_list)
         for user in competent_users:
             if user.id != current_user.database_id:
                 choices.append((user.id, user.name))
