@@ -80,13 +80,14 @@ def get_competent_users(ss_id_list):
 
     users = s.query(Users). \
         join(Assessments, Assessments.user_id == Users.id). \
-        join(AssessmentStatusRef). \
-        filter(AssessmentStatusRef.status == "Complete",
-               Assessments.date_expiry > datetime.date.today(),
-               Assessments.ss_id.in_(ss_id_list)). \
-        group_by(Users.id).having(func.count(Assessments.ss_id.in_(ss_id_list)) == len(ss_id_list)). \
+        join(AssessmentStatusRef) \
+        .filter(AssessmentStatusRef.status == "Complete") \
+        .filter(Assessments.date_expiry > datetime.date.today()) \
+        .filter(Assessments.ss_id.in_(ss_id_list)) \
+        .filter(Users.active==1) \
+        .group_by(Users.id).having(func.count(Assessments.ss_id.in_(ss_id_list)) == len(ss_id_list)). \
         values(Users.id, (Users.first_name + ' ' + Users.last_name).label('name'))
-    print users
+
     return users
 
 
@@ -463,6 +464,7 @@ def upload_evidence(c_id=None, s_ids=None,version=None):
     #deal with authorisers
     authoriser_config = config["AUTHORISER"].split(",")
     authoriser_choices = []
+    competent_users = get_competent_users(ss_id_list)
     if "COMPETENT_STAFF" in authoriser_config:
         for user in competent_users:
             authoriser_choices.append((user.id, user.name))
@@ -477,9 +479,12 @@ def upload_evidence(c_id=None, s_ids=None,version=None):
         admin_users = s.query(UserRoleRelationship).join(UserRolesRef).join(Users).filter(
             UserRolesRef.role == "ADMIN").all()
         for i in admin_users:
+            check_name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name
             id = i.user_id_rel.id
-            name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name + " (ADMIN)"
-            authoriser_choices.append((id, name))
+            if (id, check_name) not in authoriser_choices:
+                name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name + " (ADMIN)"
+                authoriser_choices.append((id, name))
+
     if "COMPETENCY_AUTHORISER" in authoriser_config:
         trainers = s.query(UserRoleRelationship).join(UserRolesRef).join(Users).filter(
             UserRolesRef.role == "COMPETENCY_AUTHORISER").all()
