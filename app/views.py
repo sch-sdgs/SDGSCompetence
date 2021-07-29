@@ -728,7 +728,7 @@ def index(message=None):
     displays the users dashboard
     :return: template index.html
     """
-    print current_user.database_id
+
     linereports = s.query(Users).filter_by(line_managerid=int(current_user.database_id)).filter_by(active=True).all()
     linereports_inactive = s.query(Users).filter_by(line_managerid=int(current_user.database_id)).filter_by(
         active=False).count()
@@ -776,7 +776,7 @@ def index(message=None):
                 AssessmentStatusRef.status == "Abandoned").all())
         abandoned_count += counts[i.id]["abandoned"]
 
-    expired = s.query(Assessments).filter(Assessments.user_id == current_user.database_id)
+    #expired = s.query(Assessments).filter(Assessments.user_id == current_user.database_id)
     alerts = {}
     alerts["Assessments"] = {}
     for i in linereports:
@@ -855,15 +855,12 @@ def index(message=None):
         .all()
 
 
-    print complete
     all_complete = []
     for i in complete:
-        print "COMPLETE"
-        print i
         result = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
         if result.completed != None:
             all_complete.append(result)
-    print all_complete
+
     obsolete = s.query(Assessments) \
         .join(Subsection) \
         .join(Competence) \
@@ -875,35 +872,11 @@ def index(message=None):
         .filter(AssessmentStatusRef.status.in_(["Obsolete"])) \
         .all()
 
-    # print "HELLO"
-    # print obsolete
-    # all_obsolete = []
-    # for i in obsolete:
-    #     print "OBSOLETE"
-    #     print i
-    #     result = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
-    #     if result.completed != None:
-    #         all_obsolete.append(result)
-
 
     signoff = s.query(Evidence).join(EvidenceTypeRef).filter(Evidence.signoff_id == current_user.database_id).filter(Evidence.is_correct == None).all()
     signoff_competence = s.query(CompetenceDetails).filter(and_(CompetenceDetails.approve_id == current_user.database_id,CompetenceDetails.approved != None,CompetenceDetails.approved != 1)).all()
-    print "SIGN_OFF"
 
-    for i in signoff:
-        print i
-        print i.evidence_type_rel.type
-        print i.evidence
-        print i.id
-        print i.evidence_type_id
-        # print i.type
     signoff_reassessment = s.query(Reassessments).join(AssessReassessRel).join(Assessments).filter(Reassessments.signoff_id==current_user.database_id).filter(Reassessments.is_correct == None).all()
-
-    # signoff_reassessments = {key: [i for i in value] for key, value in
-    #           itertools.groupby(signoff_reassessment, lambda item: item.assess_rel.user_id_rel )}
-
-
-
 
     accept_form = RateEvidence()
     return render_template("index.html", message=message, expiring_count=expiring_count, expired_count=expired_count, complete=all_complete, obsolete=obsolete, accept_form=accept_form, signoff=signoff, assigned_count=assigned_count,
@@ -962,7 +935,6 @@ def notifications():
         reassessments_query = s.query(Reassessments).filter(Reassessments.signoff_id == current_user.database_id).filter(
             Reassessments.is_correct == None).all()
         alerts["Reassessment Approval"] = reassessments_query
-
 
 
     return render_template("notifications.html",alerts=alerts)

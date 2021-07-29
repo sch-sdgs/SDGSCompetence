@@ -82,13 +82,14 @@ def get_competent_users(ss_id_list):
 
     users = s.query(Users). \
         join(Assessments, Assessments.user_id == Users.id). \
-        join(AssessmentStatusRef). \
-        filter(AssessmentStatusRef.status == "Complete",
-               Assessments.date_expiry > datetime.date.today(),
-               Assessments.ss_id.in_(ss_id_list)). \
-        group_by(Users.id).having(func.count(Assessments.ss_id.in_(ss_id_list)) == len(ss_id_list)). \
+        join(AssessmentStatusRef) \
+        .filter(AssessmentStatusRef.status == "Complete") \
+        .filter(Assessments.date_expiry > datetime.date.today()) \
+        .filter(Assessments.ss_id.in_(ss_id_list)) \
+        .filter(Users.active==1) \
+        .group_by(Users.id).having(func.count(Assessments.ss_id.in_(ss_id_list)) == len(ss_id_list)). \
         values(Users.id, (Users.first_name + ' ' + Users.last_name).label('name'))
-    print users
+
     return users
 
 
@@ -470,16 +471,20 @@ def upload_evidence(c_id=None, s_ids=None,version=None):
             trainer_choices.append((id, name))
     if "ADMIN" in trainer_config:
         admin_users = s.query(UserRoleRelationship).join(UserRolesRef).join(Users).filter(
-            UserRolesRef.role == "ADMIN").all()
+            UserRolesRef.role == "ADMIN").filter(Users.active==1).all()
         for i in admin_users:
+            check_name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name
             id = i.user_id_rel.id
-            name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name + " (ADMIN)"
-            trainer_choices.append((id, name))
+            if (id, check_name) not in trainer_choices:
+                id = i.user_id_rel.id
+                name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name + " (ADMIN)"
+                trainer_choices.append((id, name))
 
     #deal with authorisers
     #TODO: remove inactive users in all of these
     authoriser_config = config["AUTHORISER"].split(",")
     authoriser_choices = []
+    competent_users = get_competent_users(ss_id_list)
     if "COMPETENT_STAFF" in authoriser_config:
         for user in competent_users:
             authoriser_choices.append((user.id, user.name))
@@ -492,11 +497,14 @@ def upload_evidence(c_id=None, s_ids=None,version=None):
             authoriser_choices.append((id, name))
     if "ADMIN" in authoriser_config:
         admin_users = s.query(UserRoleRelationship).join(UserRolesRef).join(Users).filter(
-            UserRolesRef.role == "ADMIN").all()
+            UserRolesRef.role == "ADMIN").filter(Users.active==1).all()
         for i in admin_users:
+            check_name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name
             id = i.user_id_rel.id
-            name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name + " (ADMIN)"
-            authoriser_choices.append((id, name))
+            if (id, check_name) not in authoriser_choices:
+                name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name + " (ADMIN)"
+                authoriser_choices.append((id, name))
+
     if "COMPETENCY_AUTHORISER" in authoriser_config:
         trainers = s.query(UserRoleRelationship).join(UserRolesRef).join(Users).filter(
             UserRolesRef.role == "COMPETENCY_AUTHORISER").all()
@@ -1220,6 +1228,7 @@ def user_report(id=None):
 
     ###get ongoing competencies and split into overdue and in-date
 
+    ### get all assessments that are assigned, abandoned or waiting for sign-off
     assigned = s.query(Assessments)\
         .join(Subsection)\
         .join(Competence)\
@@ -1231,6 +1240,7 @@ def user_report(id=None):
         .filter(or_(AssessmentStatusRef.status == "Assigned", AssessmentStatusRef.status == "Active", AssessmentStatusRef.status == "Sign-Off"))\
         .all()
 
+    ### get all assessments that are abandoned
     abandoned_query = s.query(Assessments)\
         .join(Subsection)\
         .join(Competence)\
@@ -1250,7 +1260,6 @@ def user_report(id=None):
     expiring_within_month=[]
     today = datetime.date.today()
 
-    print "ONGOING ASSESSMENTS:"
 
     for j in assigned:
         ongoing_assessment_summary = get_competence_summary_by_user(c_id=j.ss_id_rel.c_id,u_id=id,version=j.version)
@@ -1260,12 +1269,8 @@ def user_report(id=None):
             ongoing.append(ongoing_assessment_summary)
 
     for i in abandoned_query:
-        print i.ss_id
         abandoned_assessment_summary = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id,u_id=id,version=i.version)
         abandoned.append(abandoned_assessment_summary)
-
-    print "ABANDONED:"
-    print abandoned
 
     ### get complete competencies and split into expiring, expired, and in-date
     complete = s.query(Assessments) \
@@ -1279,7 +1284,6 @@ def user_report(id=None):
         .filter(AssessmentStatusRef.status.in_(["Complete","Four Year Due"])) \
         .all()
 
-    print "COMPLETE ASSESSMENTS:"
 
     for i in complete:
         complete_assessment_summary = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=id, version=i.version)
@@ -1466,7 +1470,7 @@ def user_report(id=None):
             assigned_to_completion_list.append(days_assigned_to_completion)
 
         ### do stuff for due dates section here, rather than looping again later on
-        if i.date_completed is not None:
+        if i.date_completed is not None and i.due_date is not None:
             if i.date_completed > i.due_date:
                 overdue_assessments+=1
             else:
@@ -1474,15 +1478,6 @@ def user_report(id=None):
 
             days_over_target = int((i.date_completed - i.due_date).days)
             days_over_target_list.append(days_over_target)
-
-    # assigned_to_activation_list = [5,6,2,34,6,7,3,3,6,10,15]
-    # activated_to_completion_list = [2,5,8,23,5,1,2,2,2,2,4,7,8]
-    # assigned_to_completion_list = [5,2,4,2,2,2,0,0,0,23,10,12,3]
-    # print assigned_to_activation_list
-    # print activated_to_completion_list
-    # print assigned_to_completion_list
-
-
 
     violin_data = [
         {
