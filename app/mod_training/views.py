@@ -455,7 +455,7 @@ def upload_evidence(c_id=None, s_ids=None,version=None):
             trainer_choices.append((id, name))
     if "ADMIN" in trainer_config:
         admin_users = s.query(UserRoleRelationship).join(UserRolesRef).join(Users).filter(
-            UserRolesRef.role == "ADMIN").all()
+            UserRolesRef.role == "ADMIN").filter(Users.active==1).all()
         for i in admin_users:
             id = i.user_id_rel.id
             name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name + " (ADMIN)"
@@ -477,7 +477,7 @@ def upload_evidence(c_id=None, s_ids=None,version=None):
             authoriser_choices.append((id, name))
     if "ADMIN" in authoriser_config:
         admin_users = s.query(UserRoleRelationship).join(UserRolesRef).join(Users).filter(
-            UserRolesRef.role == "ADMIN").all()
+            UserRolesRef.role == "ADMIN").filter(Users.active==1).all()
         for i in admin_users:
             check_name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name
             id = i.user_id_rel.id
