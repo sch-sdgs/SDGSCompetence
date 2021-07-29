@@ -74,6 +74,8 @@ def get_ss_id_from_assessment(assess_id_list):
 
 def get_competent_users(ss_id_list):
     # todo: add competence author to this list
+    # TODO: remove inactive users
+    # TODO: remove duplicate users
 
     print "HELLO THERE"
     print ss_id_list
@@ -333,11 +335,9 @@ def reassessment():
         form = Reassessment()
         ss_id_list = get_ss_id_from_assessment(assess_id_list)
 
-        # TODO: update this so inactive admins are not shown
         choices = []
         # add admins to reassessment authorisers
         authoriser_config = config["AUTHORISER"].split(",")
-        authoriser_choices = []
         if "ADMIN" in authoriser_config:
             admin_users = s.query(UserRoleRelationship).join(UserRolesRef).join(Users).filter(
                 UserRolesRef.role == "ADMIN").all()
@@ -345,10 +345,12 @@ def reassessment():
                 id = i.user_id_rel.id
                 name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name + " (ADMIN)"
                 is_active = i.user_id_rel.active
-                if id != current_user.database_id and is_active == True:
-                    choices.append((id, name))
+                if id != current_user.database_id:
+                    if is_active:
+                        choices.append((id, name))
 
         competent_users = get_competent_users(ss_id_list)
+        #TODO remove inactive users (through original function!!)
         for user in competent_users:
             if user.id != current_user.database_id:
                 choices.append((user.id, user.name))
@@ -450,6 +452,7 @@ def upload_evidence(c_id=None, s_ids=None,version=None):
     form = UploadEvidence()
 
     ss_id_list = get_ss_id_from_assessment(ass_ids)
+    # TODO remove inactive useres (from original function)
     competent_users = get_competent_users(ss_id_list)
 
     # deal with trainers
@@ -474,6 +477,7 @@ def upload_evidence(c_id=None, s_ids=None,version=None):
             trainer_choices.append((id, name))
 
     #deal with authorisers
+    #TODO: remove inactive users in all of these
     authoriser_config = config["AUTHORISER"].split(",")
     authoriser_choices = []
     if "COMPETENT_STAFF" in authoriser_config:
@@ -600,6 +604,7 @@ def signoff(assess_id):
             print assess_id
             ss_id_list = get_ss_id_from_assessment([assess_id])
             print ss_id_list
+            #TODO remove inactive users (from main function)
             competent_users = get_competent_users(ss_id_list)
 
             sub_section_name = ass.ss_id_rel.name
@@ -609,6 +614,7 @@ def signoff(assess_id):
                 choices.append((user.id, user.name))
 
             #append competence author
+            #TODO append competence author code is here!
             author = s.query(Users).filter(Users.id == ass.ss_id_rel.c_id_rel.competence_detail[0].creator_id).first()
             choices.append((author.id,author.first_name + " " + author.last_name))
 
