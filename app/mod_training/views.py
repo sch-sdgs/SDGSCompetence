@@ -897,13 +897,16 @@ def process_evidence():
 
 
     uploaded_files = request.files.getlist("file")
+    #print uploaded_files
 
     if len(uploaded_files) > 0:
 
-        # generate uuid incase someone uploads file of same name and it's actually different - store real name in db
-        upload_filename = str(uuid.uuid4())
-
         for f in uploaded_files:
+            #TODO check if this upload affects the other upload options (Eg. competency)
+
+            # generate uuid incase someone uploads file of same name and it's actually different - store real name in db
+            upload_filename = str(uuid.uuid4())
+            f.stream.seek(0)
             f.save(os.path.join(app.config['UPLOAD_FOLDER'], upload_filename))
             u = Uploads(upload_filename, f.filename, current_user.database_id, e.id)
             s.add(u)
