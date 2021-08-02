@@ -1,0 +1,131 @@
+{%  extends "base2.html" %}
+{%  block content %}
+
+    <!-- wrap in if HOS in current user roles -->
+        <h2 class="page-header"><i class="fa fa-users"></i> My Service</h2>
+
+        <!-- Staff quick links box -->
+        <div class="row">
+            <div class="col-md 12">
+                <div class="box box-solid bg-gray-light" id="training">
+                    <div class="box-header">
+                        <h3 class="box-title text-black"><i class="fa fa-link"></i> Quick Links</h3>
+                    </div>
+                    <div class="box-body">
+                        {% for report in linereports %}
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default dropdown-toggle pad_bottom" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-user"></i> {{ report.first_name }} {{ report.last_name }} <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for('competence.assign_user_to_competence') }}?ids={{ report.id }}">Assign a Competence</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="{{ url_for('training.user_report', id=report.id) }}">View User Report</a></li>
+                            </ul>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Competence Status Summary section -->
+            <div class="col-md-6">
+                <div class="box box-solid bg-gray-light" id="training">
+                    <div class="box-header">
+                        <h3 class="box-title text-black"><i class="fa fa-bar-chart"></i> Competence Status Summary</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="chart">
+                            <canvas id="barChart" style="height: 300px; width: 497px;" width="621" height="300"></canvas>
+                        </div>
+                        <small>* This is a count of total assessments and not total competences.</small><br>
+                        <small>† This includes expired/expiring competencies.</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expired and Expiring Competencies section -->
+            <div class="col-md-6 fill">
+                <div class="box box-danger" id="training">
+                    <div class="box-header">
+                        <h3 class="box-title"><i class="fa fa-calendar-times-o"></i> Expiring/Expired Competencies</h3>
+                    </div>
+                    <div class="box-body">
+                        <table class="table table-condensed">
+                            <thead>
+                                <th>User</th>
+                                <th>Expiring</th>
+                                <th>Expired</th>
+                            </thead>
+                            {% for report in linereports %}
+                                {% if "expiring" in counts[report.id] or "expired" in counts[report.id] %}
+                                    <tr>
+                                        <td>{{ report.first_name }} {{ report.last_name }}</td>
+                                        <td>
+                                            {% if "expiring" in counts[report.id] %}
+                                                {{ counts[report.id]["expiring"] }}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </table>
+                        <small>* This is a count of total assessments and not total competencies.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Counts section -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box collapsed-box" id="training">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Detailed Counts</h3>
+                        <div class="pull-right box-tools">
+                            <button type="button" class="btn btn-default btn-flat btn-sm pull-right" data-widget="collapse" data-toggle="tooltip" title="" style="margin-right: 5px;" data-original-title="Collapse"><i class="fa fa plus"></i></button>
+                        </div>
+                    </div>
+                    <div class="box-body table-responsive table-striped table-condensed">
+                        <table class="table table-responsive table-striped table-condensed table-hover no-padding">
+                            <thead>
+                                <th class="col-md-3">Name</th>
+                                <th class="col-md-1">Assigned</th>
+                                <th class="col-md-1">Active</th>
+                                <th class="col-md-1">Sign-Off</th>
+                                <th class="col-md-1">Complete †</th>
+                                <th class="col-md-1">Failed</th>
+                                <th class="col-md-1">Abandoned</th>
+                                <th class="col-md-1">Obsolete</th>
+                                <th class="col-md-1">Expiring</th>
+                                <th class="col-md-1">Expired</th>
+                            </thead>
+                            {% for report in linereports %}
+                                <tr>
+                                    <td>{{ report.first_name }} {{ report.last_name }}</td>
+                                    <td>{{ counts[report.id]["assigned"] }}</td>
+                                    <td>{{ counts[report.id]["active"] }}</td>
+                                    <td>{{ counts[report.id]["sign-off"] }}</td>
+                                    <td>{{ counts[report.id]["complete"] }}</td>
+                                    <td>{{ counts[report.id]["failed"] }}</td>
+                                    <td>{{ counts[report.id]["abandoned"] }}</td>
+                                    <td>{{ counts[report.id]["obsolete"] }}</td>
+                                    <td>{% if "expiring" in counts[report.id] %}{{ counts[report.id]["expiring"] }}{% else %}0{% endif %}</td>
+                                    <td>{% if "expired" in counts[report.id] %}{{ counts[report.id]["expired"] }}{% else %}0{% endif %}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                        <small>* This is a count of total assessments and not total competencies.</small>
+                        <small>† This includes expired/expiring competencies.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Javascript -->
+        <script src="/static/bower_components/chart.js/Chart.js"></script>
+
+    <!-- endif -->
+{%  endblock %}

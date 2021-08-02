@@ -29,6 +29,8 @@ admin = Blueprint('admin', __name__, template_folder='templates')
 def convertTimestampToSQLDateTime(value):
     return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(value))
 
+#TODO add change line manager to form in admin
+#TODO add change line manager field to HTML
 
 # ajax methods
 @admin.route('/get_user_details', methods=['GET', 'POST'])

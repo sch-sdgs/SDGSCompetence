@@ -191,7 +191,6 @@ class CompetenceJobRelationship(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     competence_id = db.Column(db.Integer, db.ForeignKey("competence.id"), unique=False, nullable=False)
     jobrole_id = db.Column(db.Integer, db.ForeignKey("job_roles.id"), unique=False, nullable=False)
-
     jobroles_id_rel = db.relationship("JobRoles", lazy='joined', foreign_keys=[jobrole_id])
     competence_id_rel = db.relationship("Competence", lazy='joined', foreign_keys=[competence_id])
 
@@ -240,6 +239,7 @@ class Users(db.Model):
     linemanager_rel = db.relationship("Users", remote_side=[id])
 
     service_rel = db.relationship("Service", lazy='joined', foreign_keys=[serviceid])
+
 
     def __init__(self, login, first_name, last_name, email, serviceid, active, password=None, line_managerid=None, staff_no=None):
         self.login = login
@@ -563,12 +563,17 @@ class AssessmentEvidenceRelationship(db.Model):
 class Service(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(1000), unique=True, nullable=False)
+    #TODO: add head of service (FK: Users)
+
+    #TODO add relationship to users table
 
     def __init__(self, name):
         self.name = name
+        #TODO add HOS to init
 
     def __repr__(self):
         return '<Service %r>' % self.name
+    #TODO add HOS to repr
 
 
 # class StatusCounts(db.model):

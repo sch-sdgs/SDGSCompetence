@@ -33,7 +33,7 @@ user_permission = Permission(RoleNeed('USER'))
 linemanager_permission = Permission(RoleNeed('LINEMANAGER'))
 admin_permission = Permission(RoleNeed('ADMIN'))
 privilege_permission = Permission(RoleNeed('PRIVILEGE'))
-
+#TODO add new permission level
 
 @app.route('/setup', methods=['GET', 'POST'])
 def setup():
@@ -45,6 +45,7 @@ def setup():
         if s.query(Users).count()==0:
 
             #create required roles
+            #TODO add new role to this list
             roles = ["USER","LINEMANAGER","ADMIN","PRIVILEGE"]
             for role in roles:
                 if s.query(UserRolesRef).filter(UserRolesRef.role==role).count() == 0:
@@ -575,6 +576,8 @@ def autocomplete_linemanager():
     print manager_list
 
     return jsonify(json_list=manager_list)
+
+#TODO add autocomplete head of service
 
 @app.route('/autocomplete_user', methods=['GET'])
 def autocomplete():
