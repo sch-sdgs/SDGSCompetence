@@ -17,15 +17,11 @@ hos = Blueprint('hos', __name__, template_folder='templates')
 @hos_permission.require(http_exception=403)
 def index():
     #TODO: Inactive users are still showing up
-    #TODO: expired/expiring competencies not updating (populating detailed counts but not expired/expiring section)
-    #TODO: make it show the graph
-    #TODO: toggle button in default counts not showing up as image - grey box instead
     """
     populates the head of service page
     return: index template for head of service
     """
     """Get the service name"""
-    #TODO fix this query - stumbling on the hos id join
     service_name_query = s.query(Service) \
         .join(Users, Users.id == Service.head_of_service_id) \
         .filter(Service.head_of_service_id == int(current_user.database_id)) \
@@ -39,7 +35,7 @@ def index():
     linereports = s.query(Users) \
         .join(Service, Service.id == Users.serviceid) \
         .filter(Service.name == service_name) \
-        .filter(Users.active == 1) \
+        .filter(Users.active == True) \
         .all()
     counts = {}
     active_count = 0
@@ -224,10 +220,9 @@ def index():
         .filter(AssessmentStatusRef.status.in_(["Obsolete"])) \
         .all()
 
-    #TODO update the arguments in render_template
     return render_template('service_overview.html', service_name=service_name, expired_count=expired_count, complete=all_complete, obsolete=obsolete, assigned_count=assigned_count,
                            active_count=active_count, signoff_count=signoff_count, failed_count=failed_count, complete_count=complete_count, linereports=linereports,
-                           abandoned_count=abandoned_count, counts=counts, assigned=all_assigned, active=active)
+                           abandoned_count=abandoned_count, counts=counts, assigned=all_assigned, active=active, expiring_count=expiring_count)
 
 def index():
     """

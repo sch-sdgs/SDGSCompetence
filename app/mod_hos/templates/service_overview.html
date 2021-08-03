@@ -63,11 +63,8 @@
                                 {% if "expiring" in counts[report.id] or "expired" in counts[report.id] %}
                                     <tr>
                                         <td>{{ report.first_name }} {{ report.last_name }}</td>
-                                        <td>
-                                            {% if "expiring" in counts[report.id] %}
-                                                {{ counts[report.id]["expiring"] }}
-                                            {% endif %}
-                                        </td>
+                                        <td>{{ counts[report.id]["expiring"] | default("-", true) }}</td>
+                                        <td>{{ counts[report.id]["expired"] | default("-", true) }}</td>
                                     </tr>
                                 {% endif %}
                             {% endfor %}
@@ -85,7 +82,7 @@
                     <div class="box-header with-border">
                         <h3 class="box-title">Detailed Counts</h3>
                         <div class="pull-right box-tools">
-                            <button type="button" class="btn btn-default btn-flat btn-sm pull-right" data-widget="collapse" data-toggle="tooltip" title="" style="margin-right: 5px;" data-original-title="Collapse"><i class="fa fa plus"></i></button>
+                            <button type="button" class="btn btn-default btn-flat btn-sm pull-right" data-widget="collapse" data-toggle="tooltip" title="" style="margin-right: 5px;" data-original-title="Collapse"><i class="fa fa-plus"></i></button>
                         </div>
                     </div>
                     <div class="box-body table-responsive table-striped table-condensed">
@@ -126,6 +123,67 @@
 
         <!-- Javascript -->
         <script src="/static/bower_components/chart.js/Chart.js"></script>
+        <script>
+        $(function () {
+            /* ChartJS
+             * -------
+             * Here we will create a few charts using ChartJS
+             */
+
+            var data = {
+                labels: ['Assigned', 'Active', 'Sign-Off', 'Complete †', 'Failed', 'Abandoned', 'Obselete', 'Expiring', 'Expired'],
+                datasets: [{
+                    data: [{{ assigned_count }}, {{ active_count }}, {{ signoff_count }}, {{ complete_count }}, {{ failed_count }}, {{ abandoned_count }}, 0, {{ expiring_count }}, {{ expired_count }}],
+                    label: 'Digital Goods',
+                    fillColor: '#EA5D4E',
+                    strokeColor: 'rgba(60,141,188,0.8)',
+                    pointColor: '#3b8bba',
+                    pointStrokeColor: 'rgba(60,141,188,1)',
+                    pointHighlightFill: '#fff',
+                    pointHighlightStroke: 'rgba(60,141,188,1)',
+                }]
+            }
+            //-------------
+            //- BAR CHART -
+            //-------------
+            var barChartCanvas = $('#barChart').get(0).getContext('2d')
+            var barChart = new Chart(barChartCanvas)
+            var barChartData = data
+            barChartData.datasets[0].fillColor = '#EA5D4E'
+            barChartData.datasets[0].strokeColor = '#8c8c8c'
+            barChartData.datasets[0].pointColor = '#ffcc00'
+            var barChartOptions = {
+                //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+                scaleBeginAtZero: true,
+                //Boolean - Whether grid lines are shown across the chart
+                scaleShowGridLines: true,
+                //String - Colour of the grid lines
+                scaleGridLineColor: 'rgba(0,0,0,.05)',
+                //Number - Width of the grid lines
+                scaleGridLineWidth: 0,
+                //Boolean - Whether to show horizontal lines (except X axis)
+                scaleShowHorizontalLines: true,
+                //Boolean - Whether to show vertical lines (except Y axis)
+                scaleShowVerticalLines: true,
+                //Boolean - If there is a stroke on each bar
+                barShowStroke: true,
+                //Number - Pixel width of the bar stroke
+                barStrokeWidth: 1,
+                //Number - Spacing between each of the X value sets
+                barValueSpacing: 5,
+                //Number - Spacing between data sets within X values
+                barDatasetSpacing: 1,
+                //String - A legend template
+                {#      legendTemplate          : '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span style="background-color:<%=datasets[i].fillColor%>"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>',#}
+                //Boolean - whether to make the chart responsive
+                responsive: true,
+                maintainAspectRatio: true
+            };
+
+            barChartOptions.datasetFill = false
+            barChart.Bar(barChartData, barChartOptions)
+        })
+        </script>
 
     <!-- endif -->
 {%  endblock %}
