@@ -33,7 +33,7 @@ user_permission = Permission(RoleNeed('USER'))
 linemanager_permission = Permission(RoleNeed('LINEMANAGER'))
 admin_permission = Permission(RoleNeed('ADMIN'))
 privilege_permission = Permission(RoleNeed('PRIVILEGE'))
-#TODO add new permission level
+hos_permission = Permission(RoleNeed('HEADOFSERVICE'))
 
 @app.route('/setup', methods=['GET', 'POST'])
 def setup():
@@ -45,8 +45,7 @@ def setup():
         if s.query(Users).count()==0:
 
             #create required roles
-            #TODO add new role to this list
-            roles = ["USER","LINEMANAGER","ADMIN","PRIVILEGE"]
+            roles = ["USER","LINEMANAGER","ADMIN","PRIVILEGE", "HEADOFSERVICE"]
             for role in roles:
                 if s.query(UserRolesRef).filter(UserRolesRef.role==role).count() == 0:
                     r = UserRolesRef(role=role)

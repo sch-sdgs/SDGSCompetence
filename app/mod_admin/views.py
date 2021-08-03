@@ -576,6 +576,7 @@ def deletejobrole(id=None):
 @admin.route('/service', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def service():
+    #TODO add ability to change head of service
     """
     administer the available services - a service is "Lab Services" "Constitutional" etc
     :return: render template service.html
@@ -588,8 +589,16 @@ def service():
         s.commit()
 
     services = s.query(Service).all()
+    data = []
+    for service in services:
+        service_dict = dict(service)
+        if service.head_of_service_id_rel:
+            service_dict["head_of_service"] = service.head_of_service_id_rel.first_name + " " + service.head_of_service_id_rel.last_name
+        else:
+            service_dict["head_of_service"] = None
+        data.append(service_dict)
 
-    return render_template("service.html", form=form, data=services)
+    return render_template("service.html", form=form, data=data)
 
 
 @admin.route('/service/edit/<id>', methods=['GET', 'POST'])

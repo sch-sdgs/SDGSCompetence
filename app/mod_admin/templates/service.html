@@ -64,13 +64,17 @@
                     <table class="table table-striped">
                         <thead>
                         <th>Service</th>
+                        <th>Head of Service</th>
                         <th>Edit</th>
                         <th>Delete</th>
                         </thead>
 
                         {% for service_object in data %}
                             <tr>
-                                <td>{{ service_object.name }}</td>
+                                <!--<td>{{ service_object.name }}</td>
+                                <td>{{ service_object.head_of_service_id }}</td>-->
+                                <td>{{ service_object["name"] }}</td>
+                                <td>{{ service_object["head_of_service"] }}</td>
                                 <td><a href="{{ url_for('admin.service_edit', id=service_object.id) }}"><span
                                         class="label label-primary"><span
                                         class="glyphicon glyphicon-pencil"></span></span></a>

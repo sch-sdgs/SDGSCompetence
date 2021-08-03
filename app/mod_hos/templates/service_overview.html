@@ -2,7 +2,7 @@
 {%  block content %}
 
     <!-- wrap in if HOS in current user roles -->
-        <h2 class="page-header"><i class="fa fa-users"></i> My Service</h2>
+        <h2 class="page-header"><i class="fa fa-users"></i> My Service - {{ service_name | default("TEST PAGE", true) }}</h2>
 
         <!-- Staff quick links box -->
         <div class="row">
