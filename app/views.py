@@ -560,7 +560,7 @@ def utility_processor():
 @app.route('/autocomplete_linemanager', methods=['GET'])
 def autocomplete_linemanager():
     """
-    autocompletes a user once their name is being types
+    autocompletes a user once their name is being typed
     :return: jsonified list of users for ajax to use
     """
     search = request.args.get('linemanager')
@@ -576,7 +576,27 @@ def autocomplete_linemanager():
 
     return jsonify(json_list=manager_list)
 
-#TODO add autocomplete head of service
+
+@app.route('/autocomplete_hos', methods=['GET'])
+def autocomplete_hos():
+    """
+    autocompletes a user once their name is being typed
+    :return: jsonified list of users for ajax to use
+    """
+    hos = s.query(Users) \
+        .join(UserRoleRelationship) \
+        .filter(Users.active==1) \
+        .filter(UserRoleRelationship.userrole_id==5) \
+        .all()
+
+    hos_list = []
+    for i in hos:
+        name = i.first_name + " " + i.last_name
+        hos_list.append(name)
+
+    print(hos_list)
+
+    return jsonify(json_list=hos_list)
 
 @app.route('/autocomplete_user', methods=['GET'])
 def autocomplete():

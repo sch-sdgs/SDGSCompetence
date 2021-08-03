@@ -234,7 +234,7 @@ class Users(db.Model):
     last_login = db.Column(db.DATE, unique=False, nullable=True)
     active = db.Column(db.BOOLEAN, unique=False, default=True, nullable=False)
     line_managerid = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=True)
-    serviceid = db.Column(db.Integer, db.ForeignKey("service.id"), unique=False, nullable=True)
+    serviceid = db.Column(db.Integer, db.ForeignKey("service.id"), unique=True, nullable=False)
 
     linemanager_rel = db.relationship("Users", remote_side=[id])
 

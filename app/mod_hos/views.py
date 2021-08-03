@@ -17,6 +17,7 @@ hos = Blueprint('hos', __name__, template_folder='templates')
 @hos_permission.require(http_exception=403)
 def index():
     #TODO: Inactive users are still showing up
+    #TODO: this is SLOW why is it so slow
     """
     populates the head of service page
     return: index template for head of service
@@ -35,7 +36,7 @@ def index():
     linereports = s.query(Users) \
         .join(Service, Service.id == Users.serviceid) \
         .filter(Service.name == service_name) \
-        .filter(Users.active == True) \
+        .filter(Users.active == 1) \
         .all()
     counts = {}
     active_count = 0
@@ -139,7 +140,6 @@ def index():
                     expiring_count += 1
 
     # Find complete and incomplete competencies
-    # TODO doesn't need joining on something?
     competencies_incomplete = s.query(CompetenceDetails) \
         .join(Competence) \
         .filter(CompetenceDetails.creator_id == current_user.database_id) \

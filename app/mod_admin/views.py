@@ -29,9 +29,6 @@ admin = Blueprint('admin', __name__, template_folder='templates')
 def convertTimestampToSQLDateTime(value):
     return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(value))
 
-#TODO add change line manager to form in admin
-#TODO add change line manager field to HTML
-
 # ajax methods
 @admin.route('/get_user_details', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
@@ -227,7 +224,7 @@ def change_password():
 
 @admin.route('/users/request_reset_password', methods=['GET', 'POST'])
 def request_reset_password():
-    form = ReserPassword()
+    form = ResetPassword()
     if request.method == 'POST':
         if s.query(Users).filter_by(email=request.form["email"]).first():
             user = s.query(Users).filter_by(email=request.form["email"]).one()
@@ -294,7 +291,7 @@ def reset_password(id):
             # flash("Your password reset link expired.  Please generate a new one" +
             #       " here.", "danger")
             return redirect(url_for("admin.request_reset_password"))
-        return render_template('reset_password.html', id=id, form=ReserPassword())
+        return render_template('reset_password.html', id=id, form=ResetPassword())
 
 
 @admin.route('/users/add', methods=['GET', 'POST'])
@@ -576,7 +573,7 @@ def deletejobrole(id=None):
 @admin.route('/service', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def service():
-    #TODO add ability to change head of service
+    #TODO sort out autocomplete for changing HoS
     """
     administer the available services - a service is "Lab Services" "Constitutional" etc
     :return: render template service.html
@@ -592,11 +589,14 @@ def service():
     data = []
     for service in services:
         service_dict = dict(service)
+        service_dict["id"] = service.id
         if service.head_of_service_id_rel:
             service_dict["head_of_service"] = service.head_of_service_id_rel.first_name + " " + service.head_of_service_id_rel.last_name
         else:
             service_dict["head_of_service"] = None
         data.append(service_dict)
+
+    print data
 
     return render_template("service.html", form=form, data=data)
 
@@ -604,6 +604,9 @@ def service():
 @admin.route('/service/edit/<id>', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def service_edit(id=None):
+    #TODO add ability to edit HOS
+    #TODO add new line managager to the database
+    #TODO add autocomplete HOS function
     """
     edit service
     :param id: service id
@@ -618,7 +621,7 @@ def service_edit(id=None):
         s.commit()
         return redirect(url_for('admin.service'))
 
-    return render_template("shervice_edit.html", form=form, id=id)
+    return render_template("service_edit.html", form=form, id=id)
 
 
 @admin.route('/service/delete/<id>', methods=['GET', 'POST'])

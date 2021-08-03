@@ -68,6 +68,7 @@ class AssessmentStatusForm(Form):
 
 class ServiceForm(Form):
     name=StringField("Service",  [Required("Enter a service")])
+    head_of_service = StringField("Head of Service", [Required("Enter the head of service")])
     submit = SubmitField()
 
 class JobRoleForm(Form):
