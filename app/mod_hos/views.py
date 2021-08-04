@@ -16,7 +16,6 @@ hos = Blueprint('hos', __name__, template_folder='templates')
 @login_required
 @hos_permission.require(http_exception=403)
 def index():
-    #TODO: Inactive users are still showing up
     #TODO: this is SLOW why is it so slow
     """
     populates the head of service page
@@ -231,5 +230,3 @@ def index():
     """
     return render_template('service_overview.html')
 
-
-#TODO alter base2.html to add HOS role to sidebar

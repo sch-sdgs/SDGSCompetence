@@ -69,6 +69,9 @@ def check_line_manager():
         return jsonify({"response":False})
 
 
+#TODO: add check for head of service?
+
+
 @admin.route('/')
 @admin_permission.require(http_exception=403)
 def index():
@@ -581,7 +584,17 @@ def service():
     form = ServiceForm()
 
     if request.method == 'POST':
-        n = Service(name=request.form['name'])
+        if request.form["head_of_service"] != "":
+            firstname, surname = request.form["head_of_service"].split(" ")
+            head_of_service_id = int(s.query(Users) \
+                                     .filter_by(first_name=firstname,
+                                                last_name=surname) \
+                                     .first() \
+                                     .id)
+        else:
+            head_of_service_id = None
+
+        n = Service(name=request.form['name'], head_of_service_id=head_of_service_id)
         s.add(n)
         s.commit()
 
@@ -604,9 +617,7 @@ def service():
 @admin.route('/service/edit/<id>', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def service_edit(id=None):
-    #TODO add ability to edit HOS
-    #TODO add new line managager to the database
-    #TODO add autocomplete HOS function
+    #TODO add JS autocomplete HOS function
     """
     edit service
     :param id: service id
@@ -615,9 +626,24 @@ def service_edit(id=None):
     form = ServiceForm()
     service = s.query(Service).filter_by(id=id).first()
     form.name.data = service.name
+    hos_result = s.query(Users.first_name, Users.last_name) \
+        .filter_by(id=service.head_of_service_id).first()
+    if hos_result is not None:
+        form.head_of_service.data = hos_result[0] + " " + hos_result[1]
+    else:
+        form.head_of_service.data = None
 
     if request.method == 'POST':
-        s.query(Service).filter_by(id=id).update({'name': request.form["name"]})
+        if request.form["head_of_service"] != "":
+            firstname, surname = request.form["head_of_service"].split(" ")
+            hos_id = int(s.query(Users) \
+                         .filter_by(first_name=firstname,
+                                    last_name=surname) \
+                         .first() \
+                         .id)
+
+        s.query(Service).filter_by(id=id).update({'name': request.form["name"],
+                                                  'head_of_service_id': hos_id})
         s.commit()
         return redirect(url_for('admin.service'))
 
