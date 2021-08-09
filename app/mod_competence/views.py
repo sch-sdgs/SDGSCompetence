@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from flask import Blueprint, jsonify, flash
+from flask import Blueprint, jsonify, flash, Markup
 from flask_table import Table, Col, ButtonCol
 from sqlalchemy import and_, or_, case, func, asc, desc
 from flask import render_template, request, url_for, redirect, Blueprint
@@ -17,6 +17,8 @@ from datetime import datetime as dt
 from dateutil.relativedelta import relativedelta
 from app.views import index
 from collections import Counter
+import plotly.graph_objects as go
+from plotly.offline import plot
 
 competence = Blueprint('competence', __name__, template_folder='templates')
 
@@ -1416,29 +1418,20 @@ def nearest(items, pivot):
 
 
 def reporting():
-    counts = {}
     expired = {}
     expiring = {}
-    user_expired = {}
-    user_expiring = {}
-    change = {}
+    overdue = {}
+    activated_three_month = {}
+
     # get current
     services = s.query(Service).all()
     for i in services:
         service = i.name.replace(" ", "")
-        counts[service] = dict()
-        counts[service]["Complete"] = 0
-        counts[service]["Sign-Off"] = 0
-        counts[service]["Active"] = 0
-        counts[service]["Failed"] = 0
-        counts[service]["Assigned"] = 0
-        counts[service]["Expiring"] = 0
-        counts[service]["Expired"] = 0
-        counts[service]["Abandoned"] = 0
-        counts[service]["Obsolete"] = 0
 
         expired[service] = {}
         expiring[service] = {}
+        overdue[service] = {}
+        activated_three_month[service] = {}
 
     for i in s.query(Assessments).all():
         if i.user_id_rel.service_rel is not None:
@@ -1450,12 +1443,8 @@ def reporting():
                     if datetime.date.today() > i.date_expiry:
                         if fullname not in expired[service]:
                             expired[service][fullname] = {comp_title: i.date_expiry}
-                            counts[service]["Expired"] += 1
-                            user_expired[fullname] = 1
                         elif fullname in expired[service] and comp_title not in expired[service][fullname]:
                             expired[service][fullname][comp_title] = i.date_expiry
-                            counts[service]["Expired"] += 1
-                            user_expired[fullname] += 1
                         elif fullname in expired[service] and comp_title in expired[service][fullname]:
                             if i.date_expiry < expired[service][fullname][comp_title]:
                                 expired[service][fullname][comp_title] = i.date_expiry
@@ -1464,35 +1453,139 @@ def reporting():
                     elif datetime.date.today() + relativedelta(months=+1) > i.date_expiry:
                         if fullname not in expiring[service]:
                             expiring[service][fullname] = {comp_title: i.date_expiry}
-                            counts[service]["Expiring"] += 1
-                            user_expiring[fullname] = 1
                         elif fullname in expiring[service] and comp_title not in expiring[service][fullname]:
                             expiring[service][fullname][comp_title] = i.date_expiry
-                            counts[service]["Expiring"] += 1
-                            user_expiring[fullname] += 1
                         elif fullname in expiring[service] and comp_title in expiring[service][fullname]:
                             if i.date_expiry < expiring[service][fullname][comp_title]:
                                 expiring[service][fullname][comp_title] = i.date_expiry
 
-    return [counts,expired,expiring,user_expired,user_expiring,change]
+                if i.status_rel.status in ["Active", "Assigned", "Failed", "Sign-Off"]:
+                    if i.due_date < datetime.date.today():
+                        comp_title = i.ss_id_rel.c_id_rel.competence_detail[0].title
+                        if fullname not in overdue[service]:
+                            overdue[service][fullname] = {comp_title: i.due_date}
+                        elif fullname in overdue[service] and comp_title not in overdue[service][fullname]:
+                            overdue[service][fullname][comp_title] = i.due_date
+
+                if i.status_rel.status == "Active":
+                    if datetime.date.today() + relativedelta(months=-3) > i.date_activated:
+                        comp_title = i.ss_id_rel.c_id_rel.competence_detail[0].title
+                        if fullname not in activated_three_month[service]:
+                            activated_three_month[service][fullname] = {comp_title: i.due_date}
+                        elif fullname in activated_three_month[service] and comp_title not in activated_three_month[service][fullname]:
+                            activated_three_month[service][fullname][comp_title] = i.due_date
+
+
+    return [expired,expiring, overdue, activated_three_month]
 
 @competence.route('/report_by_section', methods=['GET', 'POST'])
 @login_required
 def report_by_section():
-    counts, expired, expiring, user_expired, user_expiring, change = reporting()
+    expired, expiring, overdue, activated_three_month = reporting()
 
-    # get historic
-    all_reports_date = [r.date for r in s.query(MonthlyReportNumbers.date)]
-    most_recent_data = nearest(all_reports_date, datetime.datetime.now())
-    historic = s.query(MonthlyReportNumbers).filter(MonthlyReportNumbers.date == most_recent_data).order_by(
-        MonthlyReportNumbers.service_id.asc()).all()
+    monthly_numbers = s.query(MonthlyReportNumbers).join(Service).order_by(desc(MonthlyReportNumbers.date))
+    dates = []
+    expired_dict = {}
+    overdue_dict = {}
+    completed_assessments_dict = {}
+    completed_reassessments_dict = {}
+    activated_dict = {}
+    activated_three_month_dict = {}
+    four_year_expiry_dict = {}
 
-    # for count in counts:
+    colour_list=['rgb(2,16,176)', 'rgb(5,168,32)', 'rgb(5,179,232)']
+    colour_dict={}
+    for count, service in enumerate(s.query(Service).all()):
+        colour_dict[service.name] = colour_list[count]
 
-    return render_template('competence_report_by_section.html', counts=counts, historic=historic, expired=expired,
-                           expiring=expiring)
-                           # user_expired=sorted(user_expired.items(), key=lambda key: key[1], reverse=True)[:5],
-                           # user_expiring=sorted(user_expiring.items(), key=lambda key: key[1], reverse=True)[:5])
+    for entry in monthly_numbers:
+        if entry.date not in dates:
+            dates.append(entry.date)
+
+        service = str(entry.service_id_rel.name)
+        if service not in expired_dict:
+            expired_dict[service] = [int(entry.expired_assessments)]
+            overdue_dict[service] = [int(entry.overdue_training)]
+            completed_assessments_dict[service] = [int(entry.completed_assessments)]
+            completed_reassessments_dict[service] = [int(entry.completed_reassessments)]
+            activated_dict[service] = [int(entry.activated_assessments)]
+            activated_three_month_dict[service] = [int(entry.activated_three_month_assessments)]
+            four_year_expiry_dict[service] = [int(entry.four_year_expiry_assessments)]
+        else:
+            expired_dict[service].append(int(entry.expired_assessments))
+            overdue_dict[service].append(int(entry.overdue_training))
+            completed_assessments_dict[service].append(int(entry.completed_assessments))
+            completed_reassessments_dict[service].append(int(entry.completed_reassessments))
+            activated_dict[service].append(int(entry.activated_assessments))
+            activated_three_month_dict[service].append(int(entry.activated_three_month_assessments))
+            four_year_expiry_dict[service].append(int(entry.four_year_expiry_assessments))
+
+    expired_fig = go.Figure()
+    overdue_fig = go.Figure()
+    completed_assessments_fig = go.Figure()
+    completed_reassessments_fig = go.Figure()
+    activated_assessments_fig = go.Figure()
+    activated_assessments_three_month_fig = go.Figure()
+    four_year_expiry_fig = go.Figure()
+
+    ### assessments expired graph, left-side ###
+    for service in expired_dict:
+        expired_fig.add_trace(go.Scatter(x=dates, y=expired_dict[service], mode='lines+markers', name=service, line_color=colour_dict[service]))
+    expired_fig.update_xaxes(dtick="D1", tickformat="%e %b\n%Y")
+    expired_fig.update_layout(height=300, width=650, margin=dict(t=0, l=10, b=10, r=30), showlegend=False)
+    expired_plot = plot(expired_fig, output_type="div")
+
+    ### training overdue graph, right-side ###
+    for service in overdue_dict:
+        overdue_fig.add_trace(go.Scatter(x=dates, y=overdue_dict[service], mode='lines+markers', name=service, line_color=colour_dict[service]))
+    overdue_fig.update_xaxes(dtick="D1", tickformat="%e %b\n%Y")
+    overdue_fig.update_layout(height=300, width=800, margin=dict(t=0, l=50, b=10, r=0), showlegend=True)
+    overdue_plot = plot(overdue_fig, output_type="div")
+
+    ### completed assessments graph, left-side ###
+    for service in completed_assessments_dict:
+        completed_assessments_fig.add_trace(go.Scatter(x=dates, y=completed_assessments_dict[service], mode='lines+markers', name=service, line_color=colour_dict[service]))
+    completed_assessments_fig.update_xaxes(dtick="D1", tickformat="%e %b\n%Y")
+    completed_assessments_fig.update_layout(height=300, width=650, margin=dict(t=0, l=10, b=10, r=30), showlegend=False)
+    completed_assessments_plot = plot(completed_assessments_fig, output_type="div")
+
+    ### completed reassessments graph, right-side ###
+    for service in completed_reassessments_dict:
+        completed_reassessments_fig.add_trace(go.Scatter(x=dates, y=completed_reassessments_dict[service], mode='lines+markers', name=service, line_color=colour_dict[service]))
+    completed_reassessments_fig.update_xaxes(dtick="D1", tickformat="%e %b\n%Y")
+    completed_reassessments_fig.update_layout(height=300, width=800, margin=dict(t=0, l=50, b=10, r=0), showlegend=True)
+    completed_reassessments_plot = plot(completed_reassessments_fig, output_type="div")
+
+    ### activated assessments graph, left-sde ###
+    for service in activated_dict:
+        activated_assessments_fig.add_trace(go.Scatter(x=dates, y=activated_dict[service], mode='lines+markers', name=service, line_color=colour_dict[service]))
+    activated_assessments_fig.update_xaxes(dtick="D1", tickformat="%e %b\n%Y")
+    activated_assessments_fig.update_layout(height=300, width=650, margin=dict(t=0, l=10, b=10, r=30), showlegend=False)
+    activated_assessments_plot = plot(activated_assessments_fig, output_type="div")
+
+    ### activated threemonths ago graph, right-side ###
+    for service in activated_three_month_dict:
+        activated_assessments_three_month_fig.add_trace(go.Scatter(x=dates, y=activated_three_month_dict[service], mode='lines+markers', name=service, line_color=colour_dict[service]))
+    activated_assessments_three_month_fig.update_xaxes(dtick="D1", tickformat="%e %b\n%Y")
+    activated_assessments_three_month_fig.update_layout(height=300, width=800, margin=dict(t=0, l=50, b=10, r=0), showlegend=True)
+    activated_assessments_three_month_plot = plot(activated_assessments_three_month_fig, output_type="div")
+
+    ### four year expiry graph, left-side ###
+    for service in four_year_expiry_dict:
+        four_year_expiry_fig.add_trace(go.Scatter(x=dates, y=four_year_expiry_dict[service], mode='lines+markers', name=service, line_color=colour_dict[service]))
+    four_year_expiry_fig.update_xaxes(dtick="D1", tickformat="%e %b\n%Y")
+    four_year_expiry_fig.update_layout(height=300, width=800, margin=dict(t=0, l=10, b=10, r=30), showlegend=True)
+    four_year_expiry_plot = plot(four_year_expiry_fig, output_type="div")
+
+    return render_template('competence_report_by_section.html', expired=expired,
+                           expiring=expiring, overdue=overdue, activated_three_month=activated_three_month,
+                           expired_plot=Markup(expired_plot), overdue_plot=Markup(overdue_plot),
+                           completed_assessments_plot=Markup(completed_assessments_plot),
+                           completed_reassessments_plot=Markup(completed_reassessments_plot),
+                           activated_assessments_plot=Markup(activated_assessments_plot),
+                           activated_assessments_three_month_plot=Markup(activated_assessments_three_month_plot),
+                           four_year_expiry_plot=Markup(four_year_expiry_plot))
+
 
 @competence.route('/report_by_competence', methods=['GET', 'POST'])
 @login_required
