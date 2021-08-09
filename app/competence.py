@@ -83,7 +83,7 @@ scheduler = APScheduler()
 scheduler.init_app(app)
 scheduler.start()
 
-@scheduler.task('cron', id="log_monthly_numbers", month="*", day_of_month='1')
+@scheduler.task('cron', id="log_monthly_numbers", month="*", day='1')
 def log_completed_assessments_and_reassessments():
     print("executing cron job")
     todays_date = datetime.date.today()
