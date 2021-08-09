@@ -191,7 +191,6 @@ class CompetenceJobRelationship(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     competence_id = db.Column(db.Integer, db.ForeignKey("competence.id"), unique=False, nullable=False)
     jobrole_id = db.Column(db.Integer, db.ForeignKey("job_roles.id"), unique=False, nullable=False)
-
     jobroles_id_rel = db.relationship("JobRoles", lazy='joined', foreign_keys=[jobrole_id])
     competence_id_rel = db.relationship("Competence", lazy='joined', foreign_keys=[competence_id])
 
@@ -235,11 +234,12 @@ class Users(db.Model):
     last_login = db.Column(db.DATE, unique=False, nullable=True)
     active = db.Column(db.BOOLEAN, unique=False, default=True, nullable=False)
     line_managerid = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=True)
-    serviceid = db.Column(db.Integer, db.ForeignKey("service.id"), unique=False, nullable=True)
+    serviceid = db.Column(db.Integer, db.ForeignKey("service.id"), unique=True, nullable=False)
 
     linemanager_rel = db.relationship("Users", remote_side=[id])
 
     service_rel = db.relationship("Service", lazy='joined', foreign_keys=[serviceid])
+
 
     def __init__(self, login, first_name, last_name, email, serviceid, active, password=None, line_managerid=None, staff_no=None):
         self.login = login
@@ -562,10 +562,20 @@ class AssessmentEvidenceRelationship(db.Model):
 
 class Service(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(1000), unique=True, nullable=False)
+    name = db.Column(db.String(1000), unique=True, nullable=True)
+    head_of_service_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=True, nullable=False)
+    #TODO make HOS ID nullable=False after testing
 
-    def __init__(self, name):
+    head_of_service_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[head_of_service_id])
+
+    def __init__(self, name, head_of_service_id):
         self.name = name
+        self.head_of_service_id = head_of_service_id
+
+    def __iter__(self):
+        yield 'name', self.name
+        yield 'head_of_service_id', self.head_of_service_id
+        yield 'head_of_service_id_rel', self.head_of_service_id_rel
 
     def __repr__(self):
         return '<Service %r>' % self.name
