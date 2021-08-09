@@ -614,7 +614,7 @@ class SubsectionAutocomplete(db.Model):
 
 class MonthlyReportNumbers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DATETIME, unique=False, nullable=False)
+    date = db.Column(db.DATE, unique=False, nullable=False)
     expired_assessments = db.Column(db.Integer, unique=False, nullable=False)
     service_id = db.Column(db.Integer, db.ForeignKey("service.id"), unique=False, nullable=False)
     completed_assessments = db.Column(db.Integer, unique=False, nullable=False)
@@ -628,7 +628,7 @@ class MonthlyReportNumbers(db.Model):
 
     def __init__(self, service_id, expired_assessments, completed_assessments, completed_reassessments, overdue_training,
                  activated_assessments, activated_three_month_assessments, four_year_expiry_assessments):
-        self.date = datetime.datetime.today()
+        self.date = datetime.date.today()
         self.service_id = service_id
         self.expired_assessments = expired_assessments
         self.completed_assessments = completed_assessments
