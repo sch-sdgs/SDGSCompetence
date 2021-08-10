@@ -29,7 +29,6 @@ admin = Blueprint('admin', __name__, template_folder='templates')
 def convertTimestampToSQLDateTime(value):
     return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(value))
 
-
 # ajax methods
 @admin.route('/get_user_details', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
@@ -68,6 +67,9 @@ def check_line_manager():
         return jsonify({"response":False})
     else:
         return jsonify({"response":False})
+
+
+#TODO: add check for head of service?
 
 
 @admin.route('/')
@@ -225,7 +227,7 @@ def change_password():
 
 @admin.route('/users/request_reset_password', methods=['GET', 'POST'])
 def request_reset_password():
-    form = ReserPassword()
+    form = ResetPassword()
     if request.method == 'POST':
         if s.query(Users).filter_by(email=request.form["email"]).first():
             user = s.query(Users).filter_by(email=request.form["email"]).one()
@@ -292,7 +294,7 @@ def reset_password(id):
             # flash("Your password reset link expired.  Please generate a new one" +
             #       " here.", "danger")
             return redirect(url_for("admin.request_reset_password"))
-        return render_template('reset_password.html', id=id, form=ReserPassword())
+        return render_template('reset_password.html', id=id, form=ResetPassword())
 
 
 @admin.route('/users/add', methods=['GET', 'POST'])
@@ -574,6 +576,7 @@ def deletejobrole(id=None):
 @admin.route('/service', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def service():
+    #TODO sort out autocomplete for changing HoS
     """
     administer the available services - a service is "Lab Services" "Constitutional" etc
     :return: render template service.html
@@ -581,18 +584,40 @@ def service():
     form = ServiceForm()
 
     if request.method == 'POST':
-        n = Service(name=request.form['name'])
+        if request.form["head_of_service"] != "":
+            firstname, surname = request.form["head_of_service"].split(" ")
+            head_of_service_id = int(s.query(Users) \
+                                     .filter_by(first_name=firstname,
+                                                last_name=surname) \
+                                     .first() \
+                                     .id)
+        else:
+            head_of_service_id = None
+
+        n = Service(name=request.form['name'], head_of_service_id=head_of_service_id)
         s.add(n)
         s.commit()
 
     services = s.query(Service).all()
+    data = []
+    for service in services:
+        service_dict = dict(service)
+        service_dict["id"] = service.id
+        if service.head_of_service_id_rel:
+            service_dict["head_of_service"] = service.head_of_service_id_rel.first_name + " " + service.head_of_service_id_rel.last_name
+        else:
+            service_dict["head_of_service"] = None
+        data.append(service_dict)
 
-    return render_template("service.html", form=form, data=services)
+    print data
+
+    return render_template("service.html", form=form, data=data)
 
 
 @admin.route('/service/edit/<id>', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def service_edit(id=None):
+    #TODO add JS autocomplete HOS function
     """
     edit service
     :param id: service id
@@ -601,13 +626,28 @@ def service_edit(id=None):
     form = ServiceForm()
     service = s.query(Service).filter_by(id=id).first()
     form.name.data = service.name
+    hos_result = s.query(Users.first_name, Users.last_name) \
+        .filter_by(id=service.head_of_service_id).first()
+    if hos_result is not None:
+        form.head_of_service.data = hos_result[0] + " " + hos_result[1]
+    else:
+        form.head_of_service.data = None
 
     if request.method == 'POST':
-        s.query(Service).filter_by(id=id).update({'name': request.form["name"]})
+        if request.form["head_of_service"] != "":
+            firstname, surname = request.form["head_of_service"].split(" ")
+            hos_id = int(s.query(Users) \
+                         .filter_by(first_name=firstname,
+                                    last_name=surname) \
+                         .first() \
+                         .id)
+
+        s.query(Service).filter_by(id=id).update({'name': request.form["name"],
+                                                  'head_of_service_id': hos_id})
         s.commit()
         return redirect(url_for('admin.service'))
 
-    return render_template("shervice_edit.html", form=form, id=id)
+    return render_template("service_edit.html", form=form, id=id)
 
 
 @admin.route('/service/delete/<id>', methods=['GET', 'POST'])

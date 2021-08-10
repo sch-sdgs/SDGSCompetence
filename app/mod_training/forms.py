@@ -1,6 +1,6 @@
 from flask.ext.wtf import Form
 from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
-from wtforms.fields import TextField, SubmitField, HiddenField, BooleanField, SelectField, TextAreaField, SelectMultipleField, FileField, DateField
+from wtforms.fields import SubmitField, HiddenField, BooleanField, SelectField, TextAreaField, SelectMultipleField, FileField, DateField, StringField
 from wtforms.validators import Required
 
 from app.competence import s
@@ -22,8 +22,8 @@ class UploadEvidence(Form):
     assessor = SelectField(label="Who will sign-off this evidence?")
     evidence_observation = TextAreaField(label="Evidence")
     evidence_discussion = TextAreaField(label="Evidence")
-    case = TextField(label="Case")
-    result = TextField(label="Result")
+    case = StringField(label="Case")
+    result = StringField(label="Result")
     assid = HiddenField("AssesmentID")
     submit = SubmitField('Submit Evidence')
 
@@ -35,8 +35,8 @@ class SubSectionsForm(Form):
     submit=SubmitField('Continue')
 
 class UserAssignForm(Form):
-    trainer = TextField("Trainer")
-    assessor = TextField("Assessor")
+    trainer = StringField("Trainer")
+    assessor = StringField("Assessor")
     assid = HiddenField("AssesmentID")
     submit = SubmitField()
 
@@ -45,4 +45,5 @@ class SignOffForm(Form):
     date = DateField('Date Trained',
                    format='%Y-%m-%d', default=datetime.date.today)
     assessor = SelectField(label="Assessor")
+    #TODO you can click submit multiple times which causes asignee to receive multiple emails
     submit = SubmitField()

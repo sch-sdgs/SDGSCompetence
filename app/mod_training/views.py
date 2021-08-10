@@ -334,13 +334,26 @@ def reassessment():
         form = Reassessment()
         ss_id_list = get_ss_id_from_assessment(assess_id_list)
 
-        competent_users = get_competent_users(ss_id_list)
-
         choices = []
+
+        competent_users = get_competent_users(ss_id_list)
         for user in competent_users:
             if user.id != current_user.database_id:
                 choices.append((user.id, user.name))
-        #todo append competence author
+        # todo append competence author
+        # add admins to reassessment authorisers
+        authoriser_config = config["AUTHORISER"].split(",")
+        if "ADMIN" in authoriser_config:
+            admin_users = s.query(UserRoleRelationship).join(UserRolesRef).join(Users).filter(
+                UserRolesRef.role == "ADMIN").filter(Users.active==1).all()
+            for i in admin_users:
+                check_name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name
+                id = i.user_id_rel.id
+                if (id, check_name) not in choices:
+                    name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name + " (ADMIN)"
+                    if id != current_user.database_id:
+                        choices.append((id, name))
+
 
         form.signoff_id.choices = choices
         return render_template('reassessment.html', data=data, c_id=c_id, user_id=u_id,
@@ -464,10 +477,13 @@ def upload_evidence(c_id=None, s_ids=None,version=None):
                 name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name + " (ADMIN)"
                 trainer_choices.append((id, name))
 
+    ss_id_list = get_ss_id_from_assessment(ass_ids)
+    competent_users = get_competent_users(ss_id_list)
+
     #deal with authorisers
+    #Add competent staff to authorisors
     authoriser_config = config["AUTHORISER"].split(",")
     authoriser_choices = []
-    competent_users = get_competent_users(ss_id_list)
     if "COMPETENT_STAFF" in authoriser_config:
         for user in competent_users:
             authoriser_choices.append((user.id, user.name))
@@ -604,6 +620,7 @@ def signoff(assess_id):
                 choices.append((user.id, user.name))
 
             #append competence author
+            #TODO append competence author code is here!
             author = s.query(Users).filter(Users.id == ass.ss_id_rel.c_id_rel.competence_detail[0].creator_id).first()
             choices.append((author.id,author.first_name + " " + author.last_name))
 
@@ -880,13 +897,16 @@ def process_evidence():
 
 
     uploaded_files = request.files.getlist("file")
+    #print uploaded_files
 
     if len(uploaded_files) > 0:
 
-        # generate uuid incase someone uploads file of same name and it's actually different - store real name in db
-        upload_filename = str(uuid.uuid4())
-
         for f in uploaded_files:
+            #TODO check if this upload affects the other upload options (Eg. competency)
+
+            # generate uuid incase someone uploads file of same name and it's actually different - store real name in db
+            upload_filename = str(uuid.uuid4())
+            f.stream.seek(0)
             f.save(os.path.join(app.config['UPLOAD_FOLDER'], upload_filename))
             u = Uploads(upload_filename, f.filename, current_user.database_id, e.id)
             s.add(u)
