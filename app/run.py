@@ -6,4 +6,4 @@ if __name__ == "__main__":
     db.create_all()
     db.session.commit()
 
-    app.run(debug=True, host='10.182.131.21', port=5007, threaded=True)
+    app.run(debug=False, host='10.182.155.27', port=52025, threaded=True)
