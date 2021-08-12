@@ -23,7 +23,6 @@ numpy==1.11.0
 pandas==0.18.1
 weasyprint==0.42.3
 python-docx==0.8.5
-mysql-python
 trello
 plotly
 email_validator
