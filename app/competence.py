@@ -9,6 +9,8 @@ from flask_login import current_user
 from threading import Thread
 from dateutil.relativedelta import relativedelta
 import json
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
 app = Flask(__name__)
 app.secret_key = 'development key'
@@ -81,12 +83,14 @@ app.register_blueprint(hos,url_prefix='/hos')
 ### Scheduled Jobs ###
 ######################
 
-scheduler = APScheduler()
-scheduler.init_app(app)
-scheduler.start()
+# scheduler = APScheduler()
+# scheduler.init_app(app)
+# scheduler.start()
 
-@scheduler.task('cron', id="log_monthly_numbers", month="*", day='1')
-# @scheduler.task('cron', id="log_monthly_numbers", month="*", day='*', hour=11, minute=10)
+
+
+# @scheduler.task('cron', id="log_monthly_numbers", month="*", day='1')
+# @scheduler.task('cron', id="log_monthly_numbers", month="*", day='*', hour=13, minute=50)
 def log_completed_assessments_and_reassessments():
     print("executing cron job")
     todays_date = datetime.date.today()
@@ -176,8 +180,11 @@ def log_completed_assessments_and_reassessments():
         s.commit()
 
 
-
-
+database = config.get('SQLALCHEMY_DATABASE_URI')
+print(database)
+scheduler = BackgroundScheduler(jobstores={'default': SQLAlchemyJobStore(url=database, tablename='job_store')})
+scheduler.start()
+scheduler.add_job(log_completed_assessments_and_reassessments, 'cron', hour=15, minute=10)
 
 
 
