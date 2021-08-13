@@ -1,23 +1,22 @@
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
-from wtforms.fields import TextField, SubmitField, HiddenField, BooleanField, SelectMultipleField, SelectField, TextAreaField,PasswordField
-from wtforms.validators import Required
-
+from wtforms.fields import SubmitField, BooleanField, SelectMultipleField, SelectField, TextAreaField,PasswordField, StringField
+from wtforms.validators import DataRequired
 from app.competence import s
 from app.models import *
 
 
-class UserRoleForm(Form):
-    role = TextField("Role",  [Required("Enter a Username")])
+class UserRoleForm(FlaskForm):
+    role = StringField("Role",  [DataRequired("Enter a Username")])
     submit = SubmitField("Add Role")
 
-class UserForm(Form):
-    username = TextField("User Name", [Required("Enter a Username")])
-    firstname = TextField("First Name", [Required("Enter a Username")])
-    surname = TextField("Surname", [Required("Enter a Username")])
-    email = TextField("Email", [Required("Enter a Username")])
-    staff_no = TextField("Staff Number", [Required("Enter a Username")])
-    linemanager = TextField("Line Manager")
+class UserForm(FlaskForm):
+    username = StringField("User Name", [DataRequired("Enter a Username")])
+    firstname = StringField("First Name", [DataRequired("Enter a Username")])
+    surname = StringField("Surname", [DataRequired("Enter a Username")])
+    email = StringField("Email", [DataRequired("Enter a Username")])
+    staff_no = StringField("Staff Number", [DataRequired("Enter a Username")])
+    linemanager = StringField("Line Manager")
     jobrole = QuerySelectMultipleField("Job Role", query_factory=lambda: s.query(JobRoles).all(), get_label="job")
     userrole = QuerySelectMultipleField("User Role", query_factory=lambda: s.query(UserRolesRef).all(), get_label="role")
     section = QuerySelectField("Section", query_factory=lambda: s.query(Service).all(),
@@ -25,82 +24,83 @@ class UserForm(Form):
     submit = SubmitField()
 
 
-class UserEditForm(Form):
-    username = TextField("User Name", [Required("Enter a Username")])
-    firstname = TextField("First Name", [Required("Enter a Username")])
-    surname = TextField("Surname", [Required("Enter a Username")])
-    email = TextField("Email", [Required("Enter a Username")])
-    staff_no = TextField("Staff Number", [Required("Enter a Username")])
-    linemanager = TextField("Line Manager")
+class UserEditForm(FlaskForm):
+    username = StringField("User Name", [DataRequired("Enter a Username")])
+    firstname = StringField("First Name", [DataRequired("Enter a Username")])
+    surname = StringField("Surname", [DataRequired("Enter a Username")])
+    email = StringField("Email", [DataRequired("Enter a Username")])
+    staff_no = StringField("Staff Number", [DataRequired("Enter a Username")])
+    linemanager = StringField("Line Manager")
     jobrole = SelectMultipleField("Job Role")
     userrole = SelectMultipleField("User Role")
     section = SelectField("Section")
     submit = SubmitField()
 
-class EvidenceTypeForm(Form):
-    type=TextField("Evidence Type",  [Required("Enter an Evidence Type")])
+class EvidenceTypeForm(FlaskForm):
+    type=StringField("Evidence Type",  [DataRequired("Enter an Evidence Type")])
     submit = SubmitField()
 
 
-class CompetenceCategoryForm(Form):
-    category=TextField("Competence Type",  [Required("Enter an Evidence Type")])
+class CompetenceCategoryForm(FlaskForm):
+    category=StringField("Competence Type",  [DataRequired("Enter an Evidence Type")])
     submit = SubmitField()
 
 
-class SectionForm(Form):
-    name=TextField("Section Name",  [Required("Enter a Section Name")])
+class SectionForm(FlaskForm):
+    name=StringField("Section Name",  [DataRequired("Enter a Section Name")])
     constant=BooleanField("Applicable to all competencies?")
     submit = SubmitField()
 
-class ConstantSubSectionForm(Form):
-    name=TextField("SubSection Name",  [Required("Enter a Subsection Name")])
+class ConstantSubSectionForm(FlaskForm):
+    name=StringField("SubSection Name",  [DataRequired("Enter a Subsection Name")])
     section=SelectField("Section")
     submit = SubmitField()
 
 
-class ValidityPeriodForm(Form):
-    months=TextField("Validity period (months)",  [Required("Enter a Duration in months")])
+class ValidityPeriodForm(FlaskForm):
+    months=StringField("Validity period (months)",  [DataRequired("Enter a Duration in months")])
     submit = SubmitField()
 
-class AssessmentStatusForm(Form):
-    status=TextField("Assessment Status",  [Required("Enter an Assessment Status")])
+class AssessmentStatusForm(FlaskForm):
+    status=StringField("Assessment Status",  [DataRequired("Enter an Assessment Status")])
     submit = SubmitField()
 
-class ServiceForm(Form):
-    name=TextField("Service",  [Required("Enter a service")])
+class ServiceForm(FlaskForm):
+    name=StringField("Service",  [DataRequired("Enter a service")])
     submit = SubmitField()
 
-class JobRoleForm(Form):
-    job=TextField("Job Role",  [Required("Enter a job role")])
+class JobRoleForm(FlaskForm):
+    job=StringField("Job Role",  [DataRequired("Enter a job role")])
     submit = SubmitField()
 
-class QuestionsForm(Form):
-    question = TextField("Reassessment Question", [Required("Enter a reassessment question")])
+class QuestionsForm(FlaskForm):
+    question = StringField("Reassessment Question", [DataRequired("Enter a reassessment question")])
     choices=[("Free text", "Free text"),("Date","Date"), ("Yes/no","Yes/no"), ("Dropdown","Dropdown")]
     type = SelectField("Answer type", choices=choices)
     submit = SubmitField()
 
-class DropDownForm(Form):
-    choice=TextField("Dropdown Choice",  [Required("Enter an dropdown choice")])
+class DropDownForm(FlaskForm):
+    choice=StringField("Dropdown Choice",  [DataRequired("Enter an dropdown choice")])
     submit = SubmitField()
 
-class SubSectionAutoComplete(Form):
-    phrase = TextAreaField("Phrase(s)", [Required("Enter a phrase")])
+class SubSectionAutoComplete(FlaskForm):
+    phrase = TextAreaField("Phrase(s)", [DataRequired("Enter a phrase")])
     submit = SubmitField()
 
-class QPulseDetailsForm(Form):
-    username = TextField("Q-Pulse Username")
+class QPulseDetailsForm(FlaskForm):
+    username = StringField("Q-Pulse Username")
     password = PasswordField("Q-Pulse Password")
     password_reenter = PasswordField("Re-Enter Q-Pulse Password")
     submit = SubmitField("Update Details")
 
-class ChangePassword(Form):
+class ChangePassword(FlaskForm):
     old_password = PasswordField("Old Password")
     new_password = PasswordField("New Password")
     new_password_check = PasswordField("Re-Enter New Password")
     submit = SubmitField()
-class ReserPassword(Form):
-    email = TextField("Registered Email")
+
+class ResetPassword(FlaskForm):
+    email = StringField("Registered Email")
     new_password = PasswordField("New Password")
     new_password_check = PasswordField("Re-Enter New Password")
     submit = SubmitField()
