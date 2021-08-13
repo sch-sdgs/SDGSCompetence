@@ -7,6 +7,8 @@ import itertools
 from functools import wraps
 from flask_login import current_user
 from threading import Thread
+from dateutil.relativedelta import relativedelta
+import json
 
 app = Flask(__name__)
 app.secret_key = 'development key'
@@ -83,9 +85,102 @@ scheduler = APScheduler()
 scheduler.init_app(app)
 scheduler.start()
 
-# @scheduler.task('cron', id="log_monthly_numbers", hour=5, day_of_month=1)
-# def log_completed_assessments_and_reassessments():
-#
+@scheduler.task('cron', id="log_monthly_numbers", month="*", day='1')
+# @scheduler.task('cron', id="log_monthly_numbers", month="*", day='*', hour=11, minute=10)
+def log_completed_assessments_and_reassessments():
+    print("executing cron job")
+    todays_date = datetime.date.today()
+
+    counts = {
+        'complete_assessments': {},
+        'complete_reassessments': {},
+        'expired_assessments': {},
+        'overdue_training': {},
+        'activated_assessments': {},
+        'activated_three_months_ago': {},
+        'four_year_expiry_assessments': {}
+    }
+
+    ### initialise counts for services ###
+    services = s.query(Service).all()
+    for service in services:
+        service_id = service.id
+        for item in counts:
+            counts[item][service_id] = 0
+
+    complete_assessments = s.query(Assessments) \
+            .join(Users, Assessments.user_id == Users.id)\
+            .join(Subsection)\
+            .join(Competence)\
+            .join(CompetenceDetails)\
+            .join(AssessmentStatusRef)\
+            .filter(CompetenceDetails.intro == Competence.current_version) \
+            .filter(Users.active == 1)\
+            .all()
+
+    for assessment in complete_assessments:
+        service_id = assessment.user_id_rel.serviceid
+
+        if assessment.status_rel.status == "Complete" or assessment.status_rel.status == "Four Year Due":
+            if todays_date + relativedelta(months=-1) < assessment.date_completed: ### assessment has been completed in past month
+                counts['complete_assessments'][service_id] +=1
+            if todays_date > assessment.date_expiry:
+                counts['expired_assessments'][service_id] +=1
+            if todays_date + relativedelta(months=-49) < assessment.date_completed < todays_date + relativedelta(months=-48):
+                counts['four_year_expiry_assessments'][service_id]+=1
+
+        elif assessment.status_rel.status == "Active":
+            if todays_date + relativedelta(months=-1) < assessment.date_activated: ### assessment has been activated in the past month
+                counts['activated_assessments'][service_id] +=1
+            if todays_date + relativedelta(months=-3) > assessment.date_activated: ###assessmented has been activated but not completed in 3 months
+                counts['activated_three_months_ago'][service_id] +=1
+
+        elif assessment.status_rel.status in ["Active", "Assigned", "Failed", "Sign-Off"]:
+            if todays_date > assessment.due_date:
+                counts['overdue_training'][service_id] +=1
+
+
+
+    complete_reassessments = s.query(AssessReassessRel) \
+        .join(Reassessments) \
+        .join(Assessments) \
+        .join(Users, Assessments.user_id == Users.id) \
+        .join(Subsection) \
+        .join(Competence) \
+        .join(CompetenceDetails) \
+        .join(AssessmentStatusRef) \
+        .filter(CompetenceDetails.intro == Competence.current_version) \
+        .filter(AssessmentStatusRef.status.in_(["Complete", "Four Year Due"])) \
+        .filter(Users.active == 1) \
+        .filter(Reassessments.is_correct == 1) \
+        .all()
+
+    for reassessment in complete_reassessments:
+        if todays_date + relativedelta(months=-1) < reassessment.reassess_rel.date_completed:
+            service_id = reassessment.assess_rel.user_id_rel.serviceid
+            counts['complete_reassessments'][service_id]+=1
+
+    print(json.dumps(counts, indent=4))
+
+    for service in services:
+        service_id = service.id
+        entry = MonthlyReportNumbers(service_id=service_id,
+                                     expired_assessments=counts['expired_assessments'][service_id],
+                                     completed_assessments=counts['complete_assessments'][service_id],
+                                     completed_reassessments=counts['complete_reassessments'][service_id],
+                                     overdue_training=counts['overdue_training'][service_id],
+                                     activated_assessments=counts['activated_assessments'][service_id],
+                                     activated_three_month_assessments=counts['activated_three_months_ago'][service_id],
+                                     four_year_expiry_assessments=counts['four_year_expiry_assessments'][service_id])
+        s.add(entry)
+        s.commit()
+
+
+
+
+
+
+
 # def log_expired_competencies();
 #
 # def log_overdue_training():

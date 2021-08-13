@@ -901,6 +901,7 @@ def index(message=None):
     signoff_reassessment = s.query(Reassessments).join(AssessReassessRel).join(Assessments).filter(Reassessments.signoff_id==current_user.database_id).filter(Reassessments.is_correct == None).all()
 
     accept_form = RateEvidence()
+
     return render_template("index.html", message=message, expiring_count=expiring_count, expired_count=expired_count, complete=all_complete, obsolete=obsolete, accept_form=accept_form, signoff=signoff, assigned_count=assigned_count,
                            active_count=active_count, signoff_count=signoff_count, failed_count=failed_count, complete_count=complete_count, linereports=linereports,
                            linereports_inactive=linereports_inactive, competences_incomplete=competences_incomplete,

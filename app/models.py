@@ -624,24 +624,29 @@ class SubsectionAutocomplete(db.Model):
 
 class MonthlyReportNumbers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DATETIME, unique=False, nullable=False)
-    assigned = db.Column(db.Integer,unique=False, nullable=False)
-    active = db.Column(db.Integer, unique=False, nullable=False)
-    expiring = db.Column(db.Integer, unique=False, nullable=False)
-    expired = db.Column(db.Integer, unique=False, nullable=False)
-    abandoned = db.Column(db.Integer, unique=False, nullable=False)
+    date = db.Column(db.DATE, unique=False, nullable=False)
+    expired_assessments = db.Column(db.Integer, unique=False, nullable=False)
     service_id = db.Column(db.Integer, db.ForeignKey("service.id"), unique=False, nullable=False)
+    completed_assessments = db.Column(db.Integer, unique=False, nullable=False)
+    completed_reassessments = db.Column(db.Integer, unique=False, nullable=False)
+    overdue_training = db.Column(db.Integer, unique=False, nullable=False)
+    activated_assessments = db.Column(db.Integer, unique=False, nullable=False)
+    activated_three_month_assessments = db.Column(db.Integer, unique=False, nullable=False)
+    four_year_expiry_assessments = db.Column(db.Integer, unique=False, nullable=False)
 
     service_id_rel = db.relationship("Service", lazy='joined', foreign_keys=[service_id])
 
-    def __init__(self, date, assigned,active,expiring,expired,service_id):
-        self.date = datetime.datetime.today()
-        self.assigned = assigned
-        self.active = active
-        self.expiring = expiring
-        self.expired = expired
+    def __init__(self, service_id, expired_assessments, completed_assessments, completed_reassessments, overdue_training,
+                 activated_assessments, activated_three_month_assessments, four_year_expiry_assessments):
+        self.date = datetime.date.today()
         self.service_id = service_id
-
+        self.expired_assessments = expired_assessments
+        self.completed_assessments = completed_assessments
+        self.completed_reassessments = completed_reassessments
+        self.overdue_training = overdue_training
+        self.activated_assessments = activated_assessments
+        self.activated_three_month_assessments = activated_three_month_assessments
+        self.four_year_expiry_assessments = four_year_expiry_assessments
 
     def __repr__(self):
         return '<MonthlyReportNumbers %r>' % self.date

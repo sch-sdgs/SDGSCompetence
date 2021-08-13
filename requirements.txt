@@ -18,14 +18,14 @@ fabric==1.13.1
 avro
 flask_principal==0.4.0
 uuid==1.30
-apscheduler==2.1.2
 python-dateutil==2.5.3
 numpy==1.11.0
 pandas==0.18.1
 weasyprint==0.42.3
 python-docx==0.8.5
-mysql-python
 trello
 plotly
 email_validator
 werkzeug==0.16.1
+Flask-APScheduler
+mysqlclient

@@ -1,7 +1,8 @@
 
-FROM tiangolo/uwsgi-nginx-flask:python2.7
+FROM tiangolo/meinheld-gunicorn:python2.7
 
 RUN apt-get update
+RUN apt-get -y install apt-utils
 RUN apt-get -y install default-jdk
 RUN apt-get -y install ca-certificates
 RUN apt-get -y install build-essential python-dev libssl-dev libffi-dev
