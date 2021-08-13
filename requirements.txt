@@ -27,5 +27,5 @@ trello
 plotly
 email_validator
 werkzeug==0.16.1
-Flask-APScheduler
+apscheduler
 mysqlclient
