@@ -23,3 +23,4 @@ trello
 plotly
 email_validator
 suds-py3
+mysqlclient
