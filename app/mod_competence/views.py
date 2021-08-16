@@ -509,7 +509,7 @@ def add_constant_sections_to_db():
     c_id = request.json['c_id']
     s_id = request.json['s_id']
     version = request.json['version']
-    if type(name) != unicode:
+    if type(name) != str:
         name = name[0]
     else:
         name = name
