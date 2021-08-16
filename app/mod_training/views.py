@@ -9,7 +9,7 @@ from sqlalchemy.orm import aliased
 import datetime
 from dateutil.relativedelta import relativedelta
 import os
-from forms import *
+from app.mod_training.forms import *
 import uuid
 import json
 from collections import OrderedDict
@@ -63,7 +63,9 @@ def utility_processor():
 
 def get_ss_id_from_assessment(assess_id_list):
     assess_id_list = [ int(x) for x in assess_id_list ]
-    ss_ids_res = s.query(Assessments).filter(Assessments.id.in_(assess_id_list)).values(Assessments.ss_id)
+    ss_ids_res = s.query(Assessments). \
+        filter(Assessments.id.in_(assess_id_list)). \
+        values(Assessments.ss_id)
     ss_ids = []
 
     for ss_id in ss_ids_res:
@@ -77,7 +79,7 @@ def get_competent_users(ss_id_list):
 
     users = s.query(Users). \
         join(Assessments, Assessments.user_id == Users.id). \
-        join(AssessmentStatusRef). \
+        join(AssessmentStatusRef, Assessments.status_rel). \
         filter(AssessmentStatusRef.status == "Complete",
                Assessments.date_expiry > datetime.date.today(),
                Assessments.ss_id.in_(ss_id_list)). \
@@ -86,12 +88,14 @@ def get_competent_users(ss_id_list):
     return users
 
 
-def get_competence_by_user(c_id, u_id,version):
+def get_competence_by_user(c_id, u_id, version):
     """
     Method to get information for competence for a given user
 
     :param c_id: ID for competence
     :param u_id: ID of user
+    :param version: version of competence
+
     :return:
     """
     # get ID for user
@@ -101,13 +105,13 @@ def get_competence_by_user(c_id, u_id,version):
     # get info for competence (assessments table)
 
     competence_result = s.query(Assessments). \
-        join(Subsection). \
-        join(Section). \
-        join(SectionSortOrder). \
-        join(Competence). \
+        join(Subsection, Assessments.ss_id_rel). \
+        join(Section, Subsection.s_id_rel). \
+        join(SectionSortOrder, Section.sort_order_rel). \
+        join(Competence, Subsection.c_id_rel). \
         join(CompetenceDetails, and_(Competence.id==CompetenceDetails.c_id,CompetenceDetails.intro==version)). \
-        join(AssessmentStatusRef). \
-        join(EvidenceTypeRef). \
+        join(AssessmentStatusRef, Assessments.status_rel). \
+        join(EvidenceTypeRef, Subsection.evidence_rel). \
         filter(AssessmentStatusRef.status != "Obsolete" ). \
         filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id, Competence.id == c_id, Assessments.version==version)). \
         order_by(asc(Section.name)).order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).\
@@ -116,13 +120,23 @@ def get_competence_by_user(c_id, u_id,version):
                AssessmentStatusRef.status, Assessments.date_of_training,
                Assessments.date_completed, Assessments.date_expiry, Assessments.comments.label('training_comments'),Assessments.version,SectionSortOrder.sort_order)
 
+    print(competence_result)
+
     result = {'constant': OrderedDict(), 'custom': OrderedDict()}
 
-    for_order = s.query(SectionSortOrder).filter(SectionSortOrder.c_id == c_id).order_by(
-        asc(SectionSortOrder.sort_order)).all()
+    for_order = s.query(SectionSortOrder). \
+        filter(SectionSortOrder.c_id == c_id). \
+        order_by(asc(SectionSortOrder.sort_order)). \
+        all()
+
     for x in for_order:
-        check = s.query(Subsection).filter(Subsection.s_id == x.section_id).filter(
-            and_(Subsection.intro <= version, or_(Subsection.last > version, Subsection.last == None))).count()
+        check = s.query(Subsection). \
+            filter(Subsection.s_id == x.section_id). \
+            filter(and_(
+            Subsection.intro <= version,
+            or_(Subsection.last > version,
+                Subsection.last is None))). \
+            count()
 
         if check > 0:
             if x.section_id_rel.constant == 1:
@@ -133,8 +147,9 @@ def get_competence_by_user(c_id, u_id,version):
                 result["custom"][x.section_id_rel.name] = {'complete': 0, 'total': 0, 'subsections': []}
 
     for c in competence_result:
-        evidence = s.query(AssessmentEvidenceRelationship).filter(
-            AssessmentEvidenceRelationship.assessment_id == c.ass_id).all()
+        evidence = s.query(AssessmentEvidenceRelationship). \
+            filter(AssessmentEvidenceRelationship.assessment_id == c.ass_id). \
+            all()
 
         if c.constant:
             d = 'constant'
@@ -384,7 +399,7 @@ def view_current_competence():
         detail_id = s.query(CompetenceDetails).join(Competence).filter(CompetenceDetails.c_id == c_id).filter(and_(CompetenceDetails.intro <= version,
                                                                  or_(
                                                                      CompetenceDetails.last >= version,
-                                                                     CompetenceDetails.last == None))).first().id
+                                                                     CompetenceDetails.last is None))).first().id
 
         videos = s.query(Videos).filter(Videos.c_id==detail_id).all()
         four_year_check = s.query(Assessments).join(Subsection).join(Competence).join(AssessmentStatusRef).filter(Assessments.user_id==u_id).filter(AssessmentStatusRef.status=="Four Year Due").filter(Competence.id==c_id).count()
