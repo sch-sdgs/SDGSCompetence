@@ -1,12 +1,8 @@
-from collections import OrderedDict
-from sqlalchemy.orm import load_only
-from sqlalchemy.sql.expression import exists
 from sqlalchemy import exc
-from flask import Blueprint
 from flask import flash,render_template, request, url_for, redirect, Blueprint, jsonify, make_response
 from flask_login import login_required, current_user
 from app.views import *
-from forms import *
+from app.mod_admin.forms import *
 from app.models import *
 from app.competence import *
 import datetime
@@ -40,7 +36,7 @@ def get_user_details():
     """
     username = request.args["username"]
     u = UserAuthentication().get_user_detail_from_username(username)
-    return jsonify({"response":u});
+    return jsonify({"response":u})
 
 
 @admin.route('/check_line_manager', methods=['GET', 'POST'])
@@ -225,7 +221,7 @@ def change_password():
 
 @admin.route('/users/request_reset_password', methods=['GET', 'POST'])
 def request_reset_password():
-    form = ReserPassword()
+    form = ResetPassword()
     if request.method == 'POST':
         if s.query(Users).filter_by(email=request.form["email"]).first():
             user = s.query(Users).filter_by(email=request.form["email"]).one()
@@ -264,9 +260,9 @@ def reset_password(id):
             flash("Your password and password verification didn't match."
                   , "danger")
             return redirect(url_for("pwreset_get", id=id))
-            if len(request.form["password"]) < 8:
-                flash("Your password needs to be at least 8 characters", "danger")
-                return redirect(url_for("pwreset_get", id=id))
+        if len(request.form["password"]) < 8:
+            flash("Your password needs to be at least 8 characters", "danger")
+            return redirect(url_for("pwreset_get", id=id))
         user_reset = s.query(PWReset).filter_by(reset_key=id).one()
         try:
             s.query(Users).filter_by(id=user_reset.user_id).update({'password': generate_password_hash(request.form["new_password"])})
@@ -292,7 +288,7 @@ def reset_password(id):
             # flash("Your password reset link expired.  Please generate a new one" +
             #       " here.", "danger")
             return redirect(url_for("admin.request_reset_password"))
-        return render_template('reset_password.html', id=id, form=ReserPassword())
+        return render_template('reset_password.html', id=id, form=ResetPassword())
 
 
 @admin.route('/users/add', methods=['GET', 'POST'])
