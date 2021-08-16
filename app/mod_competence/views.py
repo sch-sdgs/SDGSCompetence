@@ -1394,7 +1394,7 @@ def report_by_section():
 
     # get historic
     all_reports_date = [r.date for r in s.query(MonthlyReportNumbers.date)]
-    most_recent_data = nearest(all_reports_date, datetime.datetime.now())
+    most_recent_data = nearest(all_reports_date, datetime.datetime.now().date())
     historic = s.query(MonthlyReportNumbers).filter(MonthlyReportNumbers.date == most_recent_data).order_by(
         MonthlyReportNumbers.service_id.asc()).all()
 

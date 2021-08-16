@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4783f288-aaa5-4ace-9f51-c82da759ae56" name="Default" comment="closing negatives now only takes">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mod_competence/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/mod_competence/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,14 +57,21 @@
     </option>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="develop_lizzy" />
+        <entry key="$PROJECT_DIR$" value="dev_naomi_service_overview" />
         <entry key="$PROJECT_DIR$/../SDGSNextGenWeb" value="master" />
         <entry key="$PROJECT_DIR$/../SDGSPipeline" value="master" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="ROOT_SYNC" value="DONT_SYNC" />
-    <option name="UPDATE_TYPE" value="MERGE" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="ProjectId" id="1TKy8OdmsJTrABWkjC3KbU3hDqo" />
   <component name="ProjectInspectionProfilesVisibleTreeState">
@@ -95,10 +104,10 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../sdgsnextgenweb" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PythonContentEntriesConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -116,7 +125,7 @@
       <recent name="C:\Users\dnamdp\Documents\Code\SDGSCompetence\app\mod_competence\templates" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.SDGSCompetence">
+  <component name="RunManager" selected="Python.run">
     <configuration default="true" type="tests" factoryName="Attests">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -209,7 +218,7 @@
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
-        <env name="CONFIG" value="/home/bioinfo/lsollars/wc/SDGSCompetence/app/config.py" />
+        <env name="CONFIG" value="config.py" />
       </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/app" />
@@ -336,69 +345,7 @@
       <workItem from="1618928510790" duration="3062000" />
       <workItem from="1619090497722" duration="449000" />
       <workItem from="1620394680811" duration="14000" />
-    </task>
-    <task id="LOCAL-00040" summary="bug with evidence type">
-      <created>1523008041278</created>
-      <option name="number" value="00040" />
-      <option name="presentableId" value="LOCAL-00040" />
-      <option name="project" value="LOCAL" />
-      <updated>1523008041278</updated>
-    </task>
-    <task id="LOCAL-00041" summary="fixed documents, subsections etc">
-      <created>1523010844473</created>
-      <option name="number" value="00041" />
-      <option name="presentableId" value="LOCAL-00041" />
-      <option name="project" value="LOCAL" />
-      <updated>1523010844473</updated>
-    </task>
-    <task id="LOCAL-00042" summary="fixed documents, subsections etc">
-      <created>1523011492626</created>
-      <option name="number" value="00042" />
-      <option name="presentableId" value="LOCAL-00042" />
-      <option name="project" value="LOCAL" />
-      <updated>1523011492626</updated>
-    </task>
-    <task id="LOCAL-00043" summary="fixed issue with constant subsections being a tuple">
-      <created>1523015016090</created>
-      <option name="number" value="00043" />
-      <option name="presentableId" value="LOCAL-00043" />
-      <option name="project" value="LOCAL" />
-      <updated>1523015016090</updated>
-    </task>
-    <task id="LOCAL-00044" summary="fixing some bugs">
-      <created>1523547928718</created>
-      <option name="number" value="00044" />
-      <option name="presentableId" value="LOCAL-00044" />
-      <option name="project" value="LOCAL" />
-      <updated>1523547928718</updated>
-    </task>
-    <task id="LOCAL-00045" summary="loads of updates&#10;&#10;- abandon competence works&#10;- viewing competence now split into sections&#10;- force authorise works&#10;- deleting a competence works&#10;- make use competent completion screen works&#10;- rejecting draft competencies works">
-      <created>1531403061829</created>
-      <option name="number" value="00045" />
-      <option name="presentableId" value="LOCAL-00045" />
-      <option name="project" value="LOCAL" />
-      <updated>1531403061829</updated>
-    </task>
-    <task id="LOCAL-00046" summary="loads of updates&#10;&#10;- abandon competence works&#10;- viewing competence now split into sections&#10;- force authorise works&#10;- deleting a competence works&#10;- make use competent completion screen works&#10;- rejecting draft competencies works">
-      <created>1531404546811</created>
-      <option name="number" value="00046" />
-      <option name="presentableId" value="LOCAL-00046" />
-      <option name="project" value="LOCAL" />
-      <updated>1531404546811</updated>
-    </task>
-    <task id="LOCAL-00047" summary="competent staff page now displays staff in active training">
-      <created>1531409060816</created>
-      <option name="number" value="00047" />
-      <option name="presentableId" value="LOCAL-00047" />
-      <option name="project" value="LOCAL" />
-      <updated>1531409060816</updated>
-    </task>
-    <task id="LOCAL-00048" summary="- implementing due dates and a traffic light system">
-      <created>1531493386287</created>
-      <option name="number" value="00048" />
-      <option name="presentableId" value="LOCAL-00048" />
-      <option name="project" value="LOCAL" />
-      <updated>1531493386287</updated>
+      <workItem from="1629101048140" duration="7008000" />
     </task>
     <task id="LOCAL-00049" summary="- starting work on the extra reporting requested">
       <created>1531735156643</created>
@@ -680,7 +627,70 @@
       <option name="project" value="LOCAL" />
       <updated>1597913364686</updated>
     </task>
-    <option name="localTasksCounter" value="89" />
+    <task id="LOCAL-00089" summary="updated syntax in mod_admin/forms.py">
+      <created>1628859780388</created>
+      <option name="number" value="00089" />
+      <option name="presentableId" value="LOCAL-00089" />
+      <option name="project" value="LOCAL" />
+      <updated>1628859780388</updated>
+    </task>
+    <task id="LOCAL-00090" summary="updated admin views to accept forms">
+      <created>1629108718164</created>
+      <option name="number" value="00090" />
+      <option name="presentableId" value="LOCAL-00090" />
+      <option name="project" value="LOCAL" />
+      <updated>1629108718165</updated>
+    </task>
+    <task id="LOCAL-00091" summary="Updated mod_training/forms to flask_wtf">
+      <created>1629109322641</created>
+      <option name="number" value="00091" />
+      <option name="presentableId" value="LOCAL-00091" />
+      <option name="project" value="LOCAL" />
+      <updated>1629109322641</updated>
+    </task>
+    <task id="LOCAL-00092" summary="updated mod_training/views for update to FlaskForm">
+      <created>1629109466857</created>
+      <option name="number" value="00092" />
+      <option name="presentableId" value="LOCAL-00092" />
+      <option name="project" value="LOCAL" />
+      <updated>1629109466857</updated>
+    </task>
+    <task id="LOCAL-00093" summary="added mysqlclient to requirements.txt">
+      <created>1629109493572</created>
+      <option name="number" value="00093" />
+      <option name="presentableId" value="LOCAL-00093" />
+      <option name="project" value="LOCAL" />
+      <updated>1629109493572</updated>
+    </task>
+    <task id="LOCAL-00094" summary="updated mod_competence forms to FlaskForm">
+      <created>1629110093151</created>
+      <option name="number" value="00094" />
+      <option name="presentableId" value="LOCAL-00094" />
+      <option name="project" value="LOCAL" />
+      <updated>1629110093151</updated>
+    </task>
+    <task id="LOCAL-00095" summary="Updated unicode reference to str">
+      <created>1629110354836</created>
+      <option name="number" value="00095" />
+      <option name="presentableId" value="LOCAL-00095" />
+      <option name="project" value="LOCAL" />
+      <updated>1629110354836</updated>
+    </task>
+    <task id="LOCAL-00096" summary="updated forms.py to FlaskForm">
+      <created>1629110561114</created>
+      <option name="number" value="00096" />
+      <option name="presentableId" value="LOCAL-00096" />
+      <option name="project" value="LOCAL" />
+      <updated>1629110561114</updated>
+    </task>
+    <task id="LOCAL-00097" summary="updated mod_cpd to FlaskForm">
+      <created>1629111201266</created>
+      <option name="number" value="00097" />
+      <option name="presentableId" value="LOCAL-00097" />
+      <option name="project" value="LOCAL" />
+      <updated>1629111201266</updated>
+    </task>
+    <option name="localTasksCounter" value="98" />
     <servers />
   </component>
   <component name="TodoView">
@@ -726,15 +736,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="version 0.1" />
-    <MESSAGE value="missing jinja extension &quot;do&quot;" />
-    <MESSAGE value="v0.1.1" />
-    <MESSAGE value="- added q-pulse password editing facility&#10;- fixing bugs in sort order that caused competencies to be displayed multiple time." />
-    <MESSAGE value="v0.1.2" />
-    <MESSAGE value="- sorted order on download pdf fixed&#10;- added statement to pdf&#10;- fixed videos" />
-    <MESSAGE value="- Document title fixed in pdf download" />
-    <MESSAGE value="- adding authentication outside of active directory&#10;- fix to pdf header&#10;- fix to competences that are abandoned" />
-    <MESSAGE value="- adding nginx.conf so that I can specify certs" />
     <MESSAGE value="Some changes - xmas break mean I forgot what :(" />
     <MESSAGE value="removing config file" />
     <MESSAGE value="- Fixing bug in index where status wasn't correctly being querried&#10;- Download is now landscape and is better layed out with correct headings" />
@@ -751,19 +752,24 @@
     <MESSAGE value="committing to pull from master" />
     <MESSAGE value="line endings" />
     <MESSAGE value="fixed bug where no password can still login" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed bug where no password can still login" />
+    <MESSAGE value="updated syntax in mod_admin/forms.py" />
+    <MESSAGE value="updated admin views to accept forms" />
+    <MESSAGE value="Updated mod_training/forms to flask_wtf" />
+    <MESSAGE value="updated mod_training/views for update to FlaskForm" />
+    <MESSAGE value="added mysqlclient to requirements.txt" />
+    <MESSAGE value="updated mod_competence forms to FlaskForm" />
+    <MESSAGE value="Updated unicode reference to str" />
+    <MESSAGE value="updated forms.py to FlaskForm" />
+    <MESSAGE value="updated mod_cpd to FlaskForm" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated mod_cpd to FlaskForm" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/app/mod_admin/views.py</url>
-          <line>891</line>
+          <line>887</line>
           <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="python-line">
-          <url>file://$PROJECT_DIR$/app/mod_admin/views.py</url>
-          <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/app/mod_training/forms.py</url>
@@ -771,7 +777,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/app/mod_training/views.py</url>
-          <line>435</line>
+          <line>450</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
@@ -781,7 +787,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/app/mod_training/views.py</url>
-          <line>629</line>
+          <line>644</line>
           <option name="timeStamp" value="8" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
@@ -800,22 +806,18 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/app/mod_training/views.py</url>
-          <line>400</line>
+          <line>415</line>
           <option name="timeStamp" value="16" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/app/mod_training/views.py</url>
-          <line>516</line>
+          <line>531</line>
           <option name="timeStamp" value="17" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/app/views.py</url>
           <line>890</line>
           <option name="timeStamp" value="18" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/app/mod_admin/forms.py</url>
-          <option name="timeStamp" value="20" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/app/mod_document/views.py</url>
@@ -830,20 +832,20 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/SDGSCompetence$find_male_x.coverage" NAME="find_male_x Coverage Results" MODIFIED="1582298844233" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
     <SUITE FILE_PATH="coverage/SDGSCompetence$count_umis.coverage" NAME="count_umis Coverage Results" MODIFIED="1591893557419" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
-    <SUITE FILE_PATH="coverage/SDGSCompetence$get_sample_sex.coverage" NAME="get_sample_sex Coverage Results" MODIFIED="1591277637089" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
     <SUITE FILE_PATH="coverage/SDGSCompetence$Flask_____trialapp_hello_py_.coverage" NAME="Flask (../trialapp/hello.py) Coverage Results" MODIFIED="1596530663609" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$extract_quality.coverage" NAME="extract_quality Coverage Results" MODIFIED="1588164197034" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
     <SUITE FILE_PATH="coverage/SDGSCompetence$check_for_variant.coverage" NAME="check_for_variant Coverage Results" MODIFIED="1593448049902" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
-    <SUITE FILE_PATH="coverage/SDGSCompetence$check_BRCA1_extension.coverage" NAME="check_BRCA1_extension Coverage Results" MODIFIED="1584112491172" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
-    <SUITE FILE_PATH="coverage/SDGSCompetence$Unittests_in_test_count_umis_per_amplicon_py.coverage" NAME="Unittests in test_count_umis_per_amplicon.py Coverage Results" MODIFIED="1597408245935" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../MSI_pipeline/unit_tests" />
-    <SUITE FILE_PATH="coverage/SDGSCompetence$check_for_genotype_matches.coverage" NAME="check_for_genotype_matches Coverage Results" MODIFIED="1581954274755" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$find_male_x.coverage" NAME="find_male_x Coverage Results" MODIFIED="1582298844233" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
     <SUITE FILE_PATH="coverage/SDGSCompetence$run__1_.coverage" NAME="run (1) Coverage Results" MODIFIED="1597331060440" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../SDGSGelTools/app" />
     <SUITE FILE_PATH="coverage/SDGSCompetence$count_CTD_variants.coverage" NAME="count_CTD_variants Coverage Results" MODIFIED="1591196203738" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
     <SUITE FILE_PATH="coverage/SDGSCompetence$compare_chrY.coverage" NAME="compare_chrY Coverage Results" MODIFIED="1573576294521" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
-    <SUITE FILE_PATH="coverage/SDGSCompetence$count_PKD_variants.coverage" NAME="count_PKD_variants Coverage Results" MODIFIED="1575477296921" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
-    <SUITE FILE_PATH="coverage/SDGSCompetence$run.coverage" NAME="run Coverage Results" MODIFIED="1597848996853" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
-    <SUITE FILE_PATH="coverage/SDGSCompetence$extract_quality.coverage" NAME="extract_quality Coverage Results" MODIFIED="1588164197034" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$get_sample_sex.coverage" NAME="get_sample_sex Coverage Results" MODIFIED="1591277637089" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
     <SUITE FILE_PATH="coverage/SDGSCompetence$run__2_.coverage" NAME="run (2) Coverage Results" MODIFIED="1597841624780" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../SDGSGelTools/app" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$Unittests_in_test_count_umis_per_amplicon_py.coverage" NAME="Unittests in test_count_umis_per_amplicon.py Coverage Results" MODIFIED="1597408245935" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../MSI_pipeline/unit_tests" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$check_for_genotype_matches.coverage" NAME="check_for_genotype_matches Coverage Results" MODIFIED="1581954274755" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$count_PKD_variants.coverage" NAME="count_PKD_variants Coverage Results" MODIFIED="1575477296921" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$check_BRCA1_extension.coverage" NAME="check_BRCA1_extension Coverage Results" MODIFIED="1584112491172" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../sdgs" />
+    <SUITE FILE_PATH="coverage/SDGSCompetence$run.coverage" NAME="run Coverage Results" MODIFIED="1629109137134" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
   </component>
 </project>
