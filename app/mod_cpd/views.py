@@ -2,7 +2,7 @@ from flask import Flask, render_template, redirect, request, url_for, session, c
     send_from_directory, jsonify, Markup
 from flask_login import login_required, login_user, logout_user, LoginManager, UserMixin, \
     current_user
-from forms import *
+from app.mod_cpd.forms import *
 
 cpd = Blueprint('cpd', __name__, template_folder='templates')
 
