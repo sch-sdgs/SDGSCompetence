@@ -1,31 +1,23 @@
-
-from flask_wtf import Form
-from wtforms.fields import TextField, SubmitField, HiddenField, PasswordField, RadioField, BooleanField, SelectField, TextAreaField, DateField
+from wtforms.fields import HiddenField, TextAreaField, DateField, StringField, PasswordField, BooleanField, SubmitField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
-from wtforms.validators import Required
 from app.competence import *
 from app.models import *
+from flask_wtf import FlaskForm
+from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 
 
-class Login(Form):
-    username  = TextField("Username")
+class Login(FlaskForm):
+    username  = StringField("Username")
     password = PasswordField("Password")
     submit = SubmitField("Login")
     next = HiddenField("Next")
 
-class RateEvidence(Form):
+class RateEvidence(FlaskForm):
     comments = TextAreaField("Comments")
     assid = HiddenField("id")
     submit = SubmitField("Submit")
     expiry_date = DateField('Override Automated Expiry Date? (optional)', format='%Y-%m-%d')
 
-
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
-from models import Users
-
-# ...
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
