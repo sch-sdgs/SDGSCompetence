@@ -1,12 +1,11 @@
-from flask.ext.wtf import Form
-from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
-from wtforms.fields import TextField, SubmitField, HiddenField, BooleanField, SelectField, TextAreaField, SelectMultipleField, FileField, DateField
-from wtforms.validators import Required
+from flask_wtf import FlaskForm
+from wtforms.ext.sqlalchemy.fields import QuerySelectField
+from wtforms.fields import SubmitField, HiddenField, SelectField, TextAreaField, FileField, DateField, StringField
 
 from app.competence import s
 from app.models import *
 
-class UploadEvidence(Form):
+class UploadEvidence(FlaskForm):
     """
     For to submit evidence for a competence
     """
@@ -22,25 +21,25 @@ class UploadEvidence(Form):
     assessor = SelectField(label="Who will sign-off this evidence?")
     evidence_observation = TextAreaField(label="Evidence")
     evidence_discussion = TextAreaField(label="Evidence")
-    case = TextField(label="Case")
-    result = TextField(label="Result")
+    case = StringField(label="Case")
+    result = StringField(label="Result")
     assid = HiddenField("AssesmentID")
     submit = SubmitField('Submit Evidence')
 
-class Reassessment(Form):
+class Reassessment(FlaskForm):
     signoff_id=SelectField(label="Authoriser")
 
-class SubSectionsForm(Form):
+class SubSectionsForm(FlaskForm):
     ids=HiddenField()
     submit=SubmitField('Continue')
 
-class UserAssignForm(Form):
-    trainer = TextField("Trainer")
-    assessor = TextField("Assessor")
+class UserAssignForm(FlaskForm):
+    trainer = StringField("Trainer")
+    assessor = StringField("Assessor")
     assid = HiddenField("AssesmentID")
     submit = SubmitField()
 
-class SignOffForm(Form):
+class SignOffForm(FlaskForm):
     trainer = SelectField(label="Trainer")
     date = DateField('Date Trained',
                    format='%Y-%m-%d', default=datetime.date.today)
