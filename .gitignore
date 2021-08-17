@@ -14,3 +14,5 @@ dist
 stardb
 StarDB.egg-info
 app/config.py
+
+workspace.xml

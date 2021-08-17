@@ -632,6 +632,11 @@ desired effect
 {#                    </ul>#}
 {#                </li>#}
 
+                <!-- wrap this in HOS permissions -->
+                {%  if "HEADOFSERVICE" in current_user.roles %}
+                <li><a href="{{ url_for('hos.index') }}"><i class="fa fa-user-plus"></i> <span>Service Overview</span></a></li>
+                {%  endif %}
+
                 {% if "ADMIN" in current_user.roles %}
                     <li class="header">Admin</li>
                     <li class="treeview">

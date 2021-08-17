@@ -193,7 +193,6 @@ class CompetenceJobRelationship(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     competence_id = db.Column(db.Integer, db.ForeignKey("competence.id"), unique=False, nullable=False)
     jobrole_id = db.Column(db.Integer, db.ForeignKey("job_roles.id"), unique=False, nullable=False)
-
     jobroles_id_rel = db.relationship("JobRoles", lazy='joined', foreign_keys=[jobrole_id])
     competence_id_rel = db.relationship("Competence", lazy='joined', foreign_keys=[competence_id])
 
@@ -237,11 +236,12 @@ class Users(db.Model):
     last_login = db.Column(db.DATE, unique=False, nullable=True)
     active = db.Column(db.BOOLEAN, unique=False, default=True, nullable=False)
     line_managerid = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=True)
-    serviceid = db.Column(db.Integer, db.ForeignKey("service.id"), unique=False, nullable=True)
+    serviceid = db.Column(db.Integer, db.ForeignKey("service.id"), unique=True, nullable=False)
 
     linemanager_rel = db.relationship("Users", remote_side=[id])
 
     service_rel = db.relationship("Service", lazy='joined', foreign_keys=[serviceid])
+
 
     def __init__(self, login, first_name, last_name, email, serviceid, active, password=None, line_managerid=None, staff_no=None):
         self.login = login
@@ -564,10 +564,20 @@ class AssessmentEvidenceRelationship(db.Model):
 
 class Service(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(1000), unique=True, nullable=False)
+    name = db.Column(db.String(1000), unique=True, nullable=True)
+    head_of_service_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=True, nullable=False)
+    #TODO make HOS ID nullable=False after testing
 
-    def __init__(self, name):
+    head_of_service_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[head_of_service_id])
+
+    def __init__(self, name, head_of_service_id):
         self.name = name
+        self.head_of_service_id = head_of_service_id
+
+    def __iter__(self):
+        yield 'name', self.name
+        yield 'head_of_service_id', self.head_of_service_id
+        yield 'head_of_service_id_rel', self.head_of_service_id_rel
 
     def __repr__(self):
         return '<Service %r>' % self.name
@@ -616,24 +626,29 @@ class SubsectionAutocomplete(db.Model):
 
 class MonthlyReportNumbers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DATETIME, unique=False, nullable=False)
-    assigned = db.Column(db.Integer,unique=False, nullable=False)
-    active = db.Column(db.Integer, unique=False, nullable=False)
-    expiring = db.Column(db.Integer, unique=False, nullable=False)
-    expired = db.Column(db.Integer, unique=False, nullable=False)
-    abandoned = db.Column(db.Integer, unique=False, nullable=False)
+    date = db.Column(db.DATE, unique=False, nullable=False)
+    expired_assessments = db.Column(db.Integer, unique=False, nullable=False)
     service_id = db.Column(db.Integer, db.ForeignKey("service.id"), unique=False, nullable=False)
+    completed_assessments = db.Column(db.Integer, unique=False, nullable=False)
+    completed_reassessments = db.Column(db.Integer, unique=False, nullable=False)
+    overdue_training = db.Column(db.Integer, unique=False, nullable=False)
+    activated_assessments = db.Column(db.Integer, unique=False, nullable=False)
+    activated_three_month_assessments = db.Column(db.Integer, unique=False, nullable=False)
+    four_year_expiry_assessments = db.Column(db.Integer, unique=False, nullable=False)
 
     service_id_rel = db.relationship("Service", lazy='joined', foreign_keys=[service_id])
 
-    def __init__(self, date, assigned,active,expiring,expired,service_id):
-        self.date = datetime.datetime.today()
-        self.assigned = assigned
-        self.active = active
-        self.expiring = expiring
-        self.expired = expired
+    def __init__(self, service_id, expired_assessments, completed_assessments, completed_reassessments, overdue_training,
+                 activated_assessments, activated_three_month_assessments, four_year_expiry_assessments):
+        self.date = datetime.date.today()
         self.service_id = service_id
-
+        self.expired_assessments = expired_assessments
+        self.completed_assessments = completed_assessments
+        self.completed_reassessments = completed_reassessments
+        self.overdue_training = overdue_training
+        self.activated_assessments = activated_assessments
+        self.activated_three_month_assessments = activated_three_month_assessments
+        self.four_year_expiry_assessments = four_year_expiry_assessments
 
     def __repr__(self):
         return '<MonthlyReportNumbers %r>' % self.date

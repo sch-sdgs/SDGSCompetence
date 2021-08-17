@@ -44,4 +44,5 @@ class SignOffForm(FlaskForm):
     date = DateField('Date Trained',
                    format='%Y-%m-%d', default=datetime.date.today)
     assessor = SelectField(label="Assessor")
+    #TODO you can click submit multiple times which causes asignee to receive multiple emails
     submit = SubmitField()

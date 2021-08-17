@@ -24,7 +24,7 @@ user_permission = Permission(RoleNeed('USER'))
 linemanager_permission = Permission(RoleNeed('LINEMANAGER'))
 admin_permission = Permission(RoleNeed('ADMIN'))
 privilege_permission = Permission(RoleNeed('PRIVILEGE'))
-
+hos_permission = Permission(RoleNeed('HEADOFSERVICE'))
 
 @app.route('/setup', methods=['GET', 'POST'])
 def setup():
@@ -36,7 +36,7 @@ def setup():
         if s.query(Users).count()==0:
 
             #create required roles
-            roles = ["USER","LINEMANAGER","ADMIN","PRIVILEGE"]
+            roles = ["USER","LINEMANAGER","ADMIN","PRIVILEGE", "HEADOFSERVICE"]
             for role in roles:
                 if s.query(UserRolesRef).filter(UserRolesRef.role==role).count() == 0:
                     r = UserRolesRef(role=role)
@@ -548,7 +548,7 @@ def utility_processor():
 @app.route('/autocomplete_linemanager', methods=['GET'])
 def autocomplete_linemanager():
     """
-    autocompletes a user once their name is being types
+    autocompletes a user once their name is being typed
     :return: jsonified list of users for ajax to use
     """
     search = request.args.get('linemanager')
@@ -561,6 +561,28 @@ def autocomplete_linemanager():
         manager_list.append(name)
 
     return jsonify(json_list=manager_list)
+
+
+@app.route('/autocomplete_hos', methods=['GET'])
+def autocomplete_hos():
+    """
+    autocompletes a user once their name is being typed
+    :return: jsonified list of users for ajax to use
+    """
+    hos = s.query(Users) \
+        .join(UserRoleRelationship) \
+        .filter(Users.active==1) \
+        .filter(UserRoleRelationship.userrole_id==5) \
+        .all()
+
+    hos_list = []
+    for i in hos:
+        name = i.first_name + " " + i.last_name
+        hos_list.append(name)
+
+    print(hos_list)
+
+    return jsonify(json_list=hos_list)
 
 @app.route('/autocomplete_user', methods=['GET'])
 def autocomplete():
@@ -863,6 +885,7 @@ def index(message=None):
     signoff_reassessment = s.query(Reassessments).join(AssessReassessRel).join(Assessments).filter(Reassessments.signoff_id==current_user.database_id).filter(Reassessments.is_correct == None).all()
 
     accept_form = RateEvidence()
+
     return render_template("index.html", message=message, expiring_count=expiring_count, expired_count=expired_count, complete=all_complete, obsolete=obsolete, accept_form=accept_form, signoff=signoff, assigned_count=assigned_count,
                            active_count=active_count, signoff_count=signoff_count, failed_count=failed_count, complete_count=complete_count, linereports=linereports,
                            linereports_inactive=linereports_inactive, competences_incomplete=competences_incomplete,
