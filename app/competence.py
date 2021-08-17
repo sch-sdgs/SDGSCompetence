@@ -15,8 +15,6 @@ from sqlalchemy.sql.expression import and_
 from threading import Thread
 from dateutil.relativedelta import relativedelta
 import json
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
 app = Flask(__name__)
 app.secret_key = 'development key'

@@ -597,8 +597,6 @@ def service():
             service_dict["head_of_service"] = None
         data.append(service_dict)
 
-    print data
-
     return render_template("service.html", form=form, data=data)
 
 

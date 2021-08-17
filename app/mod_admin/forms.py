@@ -67,6 +67,7 @@ class AssessmentStatusForm(FlaskForm):
 
 class ServiceForm(FlaskForm):
     name=StringField("Service",  [DataRequired("Enter a service")])
+    head_of_service=StringField("Head of Service", [DataRequired("Enter the head of service")])
     submit = SubmitField()
 
 class JobRoleForm(FlaskForm):
