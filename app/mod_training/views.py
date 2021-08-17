@@ -19,8 +19,6 @@ from plotly.offline import plot
 import plotly.graph_objs as go
 import datetime
 
-
-
 training = Blueprint('training', __name__, template_folder='templates')
 
 
@@ -88,39 +86,8 @@ def get_competent_users(ss_id_list):
     return users
 
 
-def get_competence_by_user(c_id, u_id, version):
-    """
-    Method to get information for competence for a given user
-
-    :param c_id: ID for competence
-    :param u_id: ID of user
-    :param version: version of competence
-
-    :return:
-    """
-    # get ID for user
-
-    #users_alias = aliased(Users)
-
-    # get info for competence (assessments table)
-
-    competence_result = s.query(Assessments). \
-        join(Subsection, Assessments.ss_id_rel). \
-        join(Section, Subsection.s_id_rel). \
-        join(SectionSortOrder, Section.sort_order_rel). \
-        join(Competence, Subsection.c_id_rel). \
-        join(CompetenceDetails, and_(Competence.id==CompetenceDetails.c_id,CompetenceDetails.intro==version)). \
-        join(AssessmentStatusRef, Assessments.status_rel). \
-        join(EvidenceTypeRef, Subsection.evidence_rel). \
-        filter(AssessmentStatusRef.status != "Obsolete" ). \
-        filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id, Competence.id == c_id, Assessments.version==version)). \
-        order_by(asc(Section.name)).order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).\
-        values(Assessments.id.label('ass_id'), Section.name, Section.constant, Subsection.id, Assessments.trainer_id, Assessments.signoff_id,
-               Subsection.name.label('area_of_competence'), Subsection.comments.label('notes'), EvidenceTypeRef.type,
-               AssessmentStatusRef.status, Assessments.date_of_training,
-               Assessments.date_completed, Assessments.date_expiry, Assessments.comments.label('training_comments'),Assessments.version,SectionSortOrder.sort_order)
-
-    print(competence_result)
+def get_for_order(c_id, version):
+    print("I am the get_for_order function pre-query")
 
     result = {'constant': OrderedDict(), 'custom': OrderedDict()}
 
@@ -128,24 +95,117 @@ def get_competence_by_user(c_id, u_id, version):
         filter(SectionSortOrder.c_id == c_id). \
         order_by(asc(SectionSortOrder.sort_order)). \
         all()
+    print(len(for_order))
+
+    print("I have successfully queried for 'for_order'")
 
     for x in for_order:
+        print(x)
         check = s.query(Subsection). \
             filter(Subsection.s_id == x.section_id). \
-            filter(and_(
-            Subsection.intro <= version,
-            or_(Subsection.last > version,
-                Subsection.last is None))). \
+            filter(and_(Subsection.intro <= version,
+                        or_(Subsection.last > version,
+                            Subsection.last is None))). \
             count()
+        print(check)
 
+        print("is the check greater than 0?")
         if check > 0:
+            print("greater than 0!")
             if x.section_id_rel.constant == 1:
                 result["constant"][x.section_id_rel.name] = OrderedDict()
                 result["constant"][x.section_id_rel.name] = {'complete': 0, 'total': 0, 'subsections': []}
             else:
                 result["custom"][x.section_id_rel.name] = OrderedDict()
                 result["custom"][x.section_id_rel.name] = {'complete': 0, 'total': 0, 'subsections': []}
+        else:
+            print("getting on with it then...")
 
+    print(result)
+    print("I have finished the for order stuff")
+    return result
+
+def get_competence_result(c_id, u_id, version, result):
+    competence_result = s.query(Assessments). \
+        join(Subsection, Assessments.ss_id_rel). \
+        join(Section, Subsection.s_id_rel). \
+        join(SectionSortOrder, Section.sort_order_rel). \
+        join(Competence, Subsection.c_id_rel). \
+        join(CompetenceDetails, and_(
+            Competence.id == CompetenceDetails.c_id,
+            CompetenceDetails.intro == version)). \
+        join(AssessmentStatusRef, Assessments.status_rel). \
+        join(EvidenceTypeRef, Subsection.evidence_rel). \
+        filter(AssessmentStatusRef.status != "Obsolete"). \
+        filter(and_(Assessments.user_id == u_id,
+                    Subsection.c_id == c_id,
+                    Competence.id == c_id,
+                    Assessments.version == version)). \
+        order_by(asc(Section.name)). \
+        order_by(asc(Subsection.sort_order)). \
+        order_by(asc(SectionSortOrder.sort_order)). \
+        values(Assessments.id.label('ass_id'), Section.name, Section.constant, Subsection.id, Assessments.trainer_id,
+               Assessments.signoff_id,
+               Subsection.name.label('area_of_competence'), Subsection.comments.label('notes'), EvidenceTypeRef.type,
+               AssessmentStatusRef.status, Assessments.date_of_training,
+               Assessments.date_completed, Assessments.date_expiry, Assessments.comments.label('training_comments'),
+               Assessments.version, SectionSortOrder.sort_order)
+
+    print("I have got the competence result query")
+
+    for c in competence_result:
+
+        if c.constant:
+            d = 'constant'
+        else:
+            d = 'custom'
+        print(d)
+
+        trainer = "-"
+        if c.trainer_id is not None:
+            print(c.trainer_id)
+            q = s.query(Users). \
+                filter(Users.id == c.trainer_id). \
+                first()
+            print(q)
+            trainer = q.first_name + " " + q.last_name
+            print(trainer)
+        else:
+            print ("trainer is none")
+
+        assessor = "-"
+        if c.signoff_id is not None:
+            q = s.query(Users). \
+                filter(Users.id == c.signoff_id). \
+                first()
+            assessor = q.first_name + " " + q.last_name
+            print(assessor)
+        else:
+            print("assessor is none")
+
+        if c.name not in result[d].keys():
+            result[d][c.name] = {'complete': 0, 'total': 0, 'subsections': []}
+            print(result)
+        else:
+            print("c.name is in result[d].keys")
+
+        break
+
+        #TODO: it's the evidence query that's being a problem.
+
+
+        # print("querying evidence...")
+        # evidence = s.query(AssessmentEvidenceRelationship). \
+        #     filter(AssessmentEvidenceRelationship.assessment_id == c.ass_id). \
+        #     all()
+        # print("queried evidence")
+        # print(evidence)
+
+    return competence_result
+
+
+def parse_competence_result(competence_result, result):
+    print("I am the start of the parse competence function")
     for c in competence_result:
         evidence = s.query(AssessmentEvidenceRelationship). \
             filter(AssessmentEvidenceRelationship.assessment_id == c.ass_id). \
@@ -156,10 +216,10 @@ def get_competence_by_user(c_id, u_id, version):
         else:
             d = 'custom'
 
-        #todo repleace this with relationship in assessments - back_populates?
+        # todo repleace this with relationship in assessments - back_populates?
         trainer = "-"
         if c.trainer_id is not None:
-            q = s.query(Users).filter(Users.id==c.trainer_id).first()
+            q = s.query(Users).filter(Users.id == c.trainer_id).first()
             trainer = q.first_name + " " + q.last_name
 
         assessor = "-"
@@ -167,11 +227,10 @@ def get_competence_by_user(c_id, u_id, version):
             q = s.query(Users).filter(Users.id == c.signoff_id).first()
             assessor = q.first_name + " " + q.last_name
 
-
         if c.name not in result[d].keys():
             result[d][c.name] = {'complete': 0, 'total': 0, 'subsections': []}
 
-        #Feb 2018 - I have changed this here to be the assessment id - instead of the c.id
+        # Feb 2018 - I have changed this here to be the assessment id - instead of the c.id
         subsection = {'id': c.ass_id,
                       'name': c.area_of_competence,
                       'status': c.status,
@@ -190,7 +249,120 @@ def get_competence_by_user(c_id, u_id, version):
         subsection_list.append(subsection)
         result[d][c.name]['subsections'] = subsection_list
 
+    print("I am the end of the parse competence function")
     return result
+
+
+def get_competence_by_user(c_id, u_id, version):
+    result = get_for_order(c_id, version)
+    competence_result = get_competence_result(c_id, u_id, version, result)
+    #result = check_for_order(for_order, version)
+    result = parse_competence_result(competence_result, result)
+    return result
+# def get_competence_by_user(c_id, u_id, version):
+#     """
+#     Method to get information for competence for a given user
+#
+#     :param c_id: ID for competence
+#     :param u_id: ID of user
+#     :param version: version of competence
+#
+#     :return:
+#     """
+#     # get ID for user
+#
+#     #users_alias = aliased(Users)
+#
+#     # get info for competence (assessments table)
+#
+#     competence_result = s.query(Assessments). \
+#         join(Subsection, Assessments.ss_id_rel). \
+#         join(Section, Subsection.s_id_rel). \
+#         join(SectionSortOrder, Section.sort_order_rel). \
+#         join(Competence, Subsection.c_id_rel). \
+#         join(CompetenceDetails, and_(Competence.id==CompetenceDetails.c_id,CompetenceDetails.intro==version)). \
+#         join(AssessmentStatusRef, Assessments.status_rel). \
+#         join(EvidenceTypeRef, Subsection.evidence_rel). \
+#         filter(AssessmentStatusRef.status != "Obsolete" ). \
+#         filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id, Competence.id == c_id, Assessments.version==version)). \
+#         order_by(asc(Section.name)).order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).\
+#         values(Assessments.id.label('ass_id'), Section.name, Section.constant, Subsection.id, Assessments.trainer_id, Assessments.signoff_id,
+#                Subsection.name.label('area_of_competence'), Subsection.comments.label('notes'), EvidenceTypeRef.type,
+#                AssessmentStatusRef.status, Assessments.date_of_training,
+#                Assessments.date_completed, Assessments.date_expiry, Assessments.comments.label('training_comments'),Assessments.version,SectionSortOrder.sort_order)
+#
+#     print(competence_result)
+#
+#     result = {'constant': OrderedDict(), 'custom': OrderedDict()}
+#
+#     #TODO this is throwing up an error x 2
+#     for_order = s.query(SectionSortOrder). \
+#         filter(SectionSortOrder.c_id == c_id). \
+#         order_by(asc(SectionSortOrder.sort_order)). \
+#         all()
+#
+#     for x in for_order:
+#         check = s.query(Subsection). \
+#             filter(Subsection.s_id == x.section_id). \
+#             filter(and_(
+#             Subsection.intro <= version,
+#             or_(Subsection.last > version,
+#                 Subsection.last is None))). \
+#             count()
+#
+#         if check > 0:
+#             if x.section_id_rel.constant == 1:
+#                 result["constant"][x.section_id_rel.name] = OrderedDict()
+#                 result["constant"][x.section_id_rel.name] = {'complete': 0, 'total': 0, 'subsections': []}
+#             else:
+#                 result["custom"][x.section_id_rel.name] = OrderedDict()
+#                 result["custom"][x.section_id_rel.name] = {'complete': 0, 'total': 0, 'subsections': []}
+#
+#     for c in competence_result:
+#         evidence = s.query(AssessmentEvidenceRelationship). \
+#             filter(AssessmentEvidenceRelationship.assessment_id == c.ass_id). \
+#             all()
+#
+#         if c.constant:
+#             d = 'constant'
+#         else:
+#             d = 'custom'
+#
+#         #todo repleace this with relationship in assessments - back_populates?
+#         trainer = "-"
+#         if c.trainer_id is not None:
+#             q = s.query(Users).filter(Users.id==c.trainer_id).first()
+#             trainer = q.first_name + " " + q.last_name
+#
+#         assessor = "-"
+#         if c.signoff_id is not None:
+#             q = s.query(Users).filter(Users.id == c.signoff_id).first()
+#             assessor = q.first_name + " " + q.last_name
+#
+#
+#         if c.name not in result[d].keys():
+#             result[d][c.name] = {'complete': 0, 'total': 0, 'subsections': []}
+#
+#         #Feb 2018 - I have changed this here to be the assessment id - instead of the c.id
+#         subsection = {'id': c.ass_id,
+#                       'name': c.area_of_competence,
+#                       'status': c.status,
+#                       'evidence_type': c.type,
+#                       'assessor': assessor,
+#                       'date_of_completion': filter_for_none(c.date_completed),
+#                       'notes': filter_for_none(c.notes),
+#                       'training_comments': filter_for_none(c.training_comments),
+#                       'trainer': trainer,
+#                       'date_of_training': filter_for_none(c.date_of_training),
+#                       'evidence': filter_for_none(evidence)}
+#         if c.date_completed:
+#             result[d][c.name]['complete'] += 1
+#         result[d][c.name]['total'] += 1
+#         subsection_list = result[d][c.name]['subsections']
+#         subsection_list.append(subsection)
+#         result[d][c.name]['subsections'] = subsection_list
+#
+#     return result
 
 
 def get_competence_summary_by_user(c_id, u_id,version):
@@ -387,19 +559,36 @@ def view_current_competence():
 
     :return:
     """
+    #TODO get_competence_summary_by_user is throwing up an error
     if request.method == 'GET':
-
-
         c_id = request.args.get('c_id')
         version = request.args.get('version')
         u_id = current_user.database_id
+
         competence_summary = get_competence_summary_by_user(c_id, u_id,version)
+
         section_list = get_competence_by_user(c_id, u_id,version)
-        reassessments = s.query(Reassessments).join(AssessReassessRel).join(Assessments).join(AssessmentStatusRef).join(Subsection).join(Competence).filter(AssessmentStatusRef.status != "Obsolete").filter(Assessments.user_id==u_id).filter(Competence.id==c_id).filter(Assessments.version==version).all()
-        detail_id = s.query(CompetenceDetails).join(Competence).filter(CompetenceDetails.c_id == c_id).filter(and_(CompetenceDetails.intro <= version,
-                                                                 or_(
-                                                                     CompetenceDetails.last >= version,
-                                                                     CompetenceDetails.last is None))).first().id
+
+        reassessments = s.query(Reassessments). \
+            join(AssessReassessRel). \
+            join(Assessments). \
+            join(AssessmentStatusRef). \
+            join(Subsection). \
+            join(Competence). \
+            filter(AssessmentStatusRef.status != "Obsolete"). \
+            filter(Assessments.user_id==u_id). \
+            filter(Competence.id==c_id). \
+            filter(Assessments.version==version). \
+            all()
+
+        detail_id = s.query(CompetenceDetails). \
+            join(Competence, CompetenceDetails.competence). \
+            filter(CompetenceDetails.c_id == c_id). \
+            filter(and_(CompetenceDetails.intro <= version,
+                        or_(CompetenceDetails.last >= version,
+                            CompetenceDetails.last is None))). \
+            first(). \
+            id
 
         videos = s.query(Videos).filter(Videos.c_id==detail_id).all()
         four_year_check = s.query(Assessments).join(Subsection).join(Competence).join(AssessmentStatusRef).filter(Assessments.user_id==u_id).filter(AssessmentStatusRef.status=="Four Year Due").filter(Competence.id==c_id).count()
@@ -888,6 +1077,7 @@ def select_subsections():
 
     :return:
     """
+    #TODO get_competence_by_user is throwing up an error
     c_id = request.args.get('c_id')
     version = request.args.get('version')
     u_id = current_user.database_id
