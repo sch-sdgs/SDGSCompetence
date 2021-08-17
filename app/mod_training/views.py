@@ -85,7 +85,8 @@ def get_competent_users(ss_id_list):
         values(Users.id, (Users.first_name + ' ' + Users.last_name).label('name'))
     return users
 
-
+#TODO: docstrings
+#TODO: remove print statements
 def get_for_order(c_id, version):
     print("I am the get_for_order function pre-query")
 
