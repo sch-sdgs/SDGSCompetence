@@ -95,19 +95,20 @@ def get_for_order(c_id, version):
         filter(SectionSortOrder.c_id == c_id). \
         order_by(asc(SectionSortOrder.sort_order)). \
         all()
-    print(len(for_order))
+    print(f"length of for_order query: {len(for_order)}")
+    print(f"for order: {for_order}")
 
     print("I have successfully queried for 'for_order'")
 
     for x in for_order:
-        print(x)
+        print(f"x: {x}")
         check = s.query(Subsection). \
             filter(Subsection.s_id == x.section_id). \
             filter(and_(Subsection.intro <= version,
                         or_(Subsection.last > version,
                             Subsection.last is None))). \
             count()
-        print(check)
+        print(f"check: {check}")
 
         print("is the check greater than 0?")
         if check > 0:
@@ -119,13 +120,13 @@ def get_for_order(c_id, version):
                 result["custom"][x.section_id_rel.name] = OrderedDict()
                 result["custom"][x.section_id_rel.name] = {'complete': 0, 'total': 0, 'subsections': []}
         else:
-            print("getting on with it then...")
+            print("check <= 0, getting on with it then...")
 
     print(result)
     print("I have finished the for order stuff")
     return result
 
-def get_competence_result(c_id, u_id, version, result):
+def get_competence_result(c_id, u_id, version):
     competence_result = s.query(Assessments). \
         join(Subsection, Assessments.ss_id_rel). \
         join(Section, Subsection.s_id_rel). \
@@ -152,112 +153,111 @@ def get_competence_result(c_id, u_id, version, result):
                Assessments.version, SectionSortOrder.sort_order)
 
     print("I have got the competence result query")
-
+    #print(f"competence result query length: {len(list(competence_result))}")
+    competence_result_dictionary = {}
     for c in competence_result:
+        competence_result_dictionary[c.ass_id] = {
+            "name" : c.name,
+            "constant" : c.constant,
+            "id" : c.id,
+            "trainer_id" : c.trainer_id,
+            "signoff_id" : c.signoff_id,
+            "area_of_competence" : c.area_of_competence,
+            "notes" : c.notes,
+            "type" : c.type,
+            "status" : c.status,
+            "date_of_training" : c.date_of_training,
+            "date_completed" : c.date_completed,
+            "date_expiry" : c.date_expiry,
+            "training_comments" : c.training_comments,
+            "version" : c.version,
+            "sort_order" : c.sort_order
+        }
+    print(competence_result_dictionary)
+        #break
 
-        if c.constant:
-            d = 'constant'
-        else:
-            d = 'custom'
-        print(d)
-
-        trainer = "-"
-        if c.trainer_id is not None:
-            print(c.trainer_id)
-            q = s.query(Users). \
-                filter(Users.id == c.trainer_id). \
-                first()
-            print(q)
-            trainer = q.first_name + " " + q.last_name
-            print(trainer)
-        else:
-            print ("trainer is none")
-
-        assessor = "-"
-        if c.signoff_id is not None:
-            q = s.query(Users). \
-                filter(Users.id == c.signoff_id). \
-                first()
-            assessor = q.first_name + " " + q.last_name
-            print(assessor)
-        else:
-            print("assessor is none")
-
-        if c.name not in result[d].keys():
-            result[d][c.name] = {'complete': 0, 'total': 0, 'subsections': []}
-            print(result)
-        else:
-            print("c.name is in result[d].keys")
-
-        break
-
-        #TODO: it's the evidence query that's being a problem.
+    #return competence_result
+    return competence_result_dictionary
 
 
-        # print("querying evidence...")
-        # evidence = s.query(AssessmentEvidenceRelationship). \
-        #     filter(AssessmentEvidenceRelationship.assessment_id == c.ass_id). \
-        #     all()
-        # print("queried evidence")
-        # print(evidence)
-
-    return competence_result
-
+# def get_evidence_for_competence_result(assessment_id):
+#     evidence = s.query(AssessmentEvidenceRelationship). \
+#         filter(AssessmentEvidenceRelationship.assessment_id == assessment_id). \
+#         all()
+#     return evidence
 
 def parse_competence_result(competence_result, result):
     print("I am the start of the parse competence function")
-    for c in competence_result:
+    print(competence_result)
+    for key, values in competence_result.items():
+        print(f"assessment id: {key}")
+        print(f"{values}")
+
+        if values["constant"]:
+            d = "constant"
+        else:
+            d = "custom"
+        print(f"d: {d}")
+
+        if values["name"] not in result[d].keys():
+            result[d][values["name"]] = {"complete": 0, "total": 0, "subsections": []}
+        print(f"result: {result}")
+
+        #assessment_id = key
+        #evidence = get_evidence_for_competence_result(assessment_id)
         evidence = s.query(AssessmentEvidenceRelationship). \
-            filter(AssessmentEvidenceRelationship.assessment_id == c.ass_id). \
+            filter(AssessmentEvidenceRelationship.assessment_id == key). \
             all()
 
-        if c.constant:
-            d = 'constant'
-        else:
-            d = 'custom'
+        print(f"evidence: {evidence}")
+        print(type(evidence))
 
-        # todo repleace this with relationship in assessments - back_populates?
         trainer = "-"
-        if c.trainer_id is not None:
-            q = s.query(Users).filter(Users.id == c.trainer_id).first()
+        if values["trainer_id"] is not None:
+            q = s.query(Users).filter(Users.id == values["trainer_id"]).first()
             trainer = q.first_name + " " + q.last_name
+        print(f"trainer: {trainer}")
 
         assessor = "-"
-        if c.signoff_id is not None:
-            q = s.query(Users).filter(Users.id == c.signoff_id).first()
+        if values["signoff_id"] is not None:
+            q = s.query(Users).filter(Users.id == values["signoff_id"]).first()
             assessor = q.first_name + " " + q.last_name
+        print(f"assessor: {assessor}")
 
-        if c.name not in result[d].keys():
-            result[d][c.name] = {'complete': 0, 'total': 0, 'subsections': []}
+        subsection = {"id": key,
+                      "name": values["area_of_competence"],
+                      "status": values["status"],
+                      "evidence_type": values["type"],
+                      "assessor": assessor,
+                      "date_of_completion": filter_for_none(values["date_completed"]),
+                      "notes": filter_for_none(values["notes"]),
+                      "training_comments": filter_for_none(values["training_comments"]),
+                      "trainer": trainer,
+                      "date_of_training": filter_for_none(values["date_of_training"]),
+                      "evidence": filter_for_none(evidence)}
 
-        # Feb 2018 - I have changed this here to be the assessment id - instead of the c.id
-        subsection = {'id': c.ass_id,
-                      'name': c.area_of_competence,
-                      'status': c.status,
-                      'evidence_type': c.type,
-                      'assessor': assessor,
-                      'date_of_completion': filter_for_none(c.date_completed),
-                      'notes': filter_for_none(c.notes),
-                      'training_comments': filter_for_none(c.training_comments),
-                      'trainer': trainer,
-                      'date_of_training': filter_for_none(c.date_of_training),
-                      'evidence': filter_for_none(evidence)}
-        if c.date_completed:
-            result[d][c.name]['complete'] += 1
-        result[d][c.name]['total'] += 1
-        subsection_list = result[d][c.name]['subsections']
+        if values["date_completed"]:
+            result[d][values["name"]]["complete"] += 1
+        result[d][values["name"]]["total"] += 1
+        subsection_list = result[d][values["name"]]["subsections"]
         subsection_list.append(subsection)
-        result[d][c.name]['subsections'] = subsection_list
+        result[d][values["name"]]["subsections"] = subsection_list
+
+        print(f"result: {result}")
 
     print("I am the end of the parse competence function")
     return result
 
 
 def get_competence_by_user(c_id, u_id, version):
+    print(f"getting for_order...")
     result = get_for_order(c_id, version)
-    competence_result = get_competence_result(c_id, u_id, version, result)
+    print(f"getting competence result...")
+    competence_result = get_competence_result(c_id, u_id, version)
     #result = check_for_order(for_order, version)
+    print(f"parsing competence result...")
     result = parse_competence_result(competence_result, result)
+    print(f"result: {result}")
     return result
 # def get_competence_by_user(c_id, u_id, version):
 #     """
@@ -581,14 +581,31 @@ def view_current_competence():
             filter(Assessments.version==version). \
             all()
 
-        detail_id = s.query(CompetenceDetails). \
-            join(Competence, CompetenceDetails.competence). \
+        # detail_id = s.query(CompetenceDetails). \
+        #     join(Competence, CompetenceDetails.competence). \
+        #     filter(CompetenceDetails.c_id == c_id). \
+        #     filter(and_(CompetenceDetails.intro <= version,
+        #                 or_(CompetenceDetails.last >= version,
+        #                     CompetenceDetails.last is None))). \
+        #     first(). \
+        #     id
+        print(f"c_id: {c_id}")
+        print(f"version: {version}")
+        # detail_query = s.query(CompetenceDetails). \
+        #     join(Competence, CompetenceDetails.competence). \
+        #     filter(CompetenceDetails.c_id == c_id). \
+        #     filter(and_(CompetenceDetails.intro <= version,
+        #                 or_(CompetenceDetails.last >= version,
+        #                     CompetenceDetails.last is None))). \
+        #     first()
+        #TODO work out which bits of this actually need to stay
+        detail_query = s.query(CompetenceDetails). \
             filter(CompetenceDetails.c_id == c_id). \
-            filter(and_(CompetenceDetails.intro <= version,
-                        or_(CompetenceDetails.last >= version,
-                            CompetenceDetails.last is None))). \
-            first(). \
-            id
+            first()
+        print(f"detail query: {detail_query}")
+        detail_id = detail_query.id
+        print(f"detail query id: {detail_id}")
+
 
         videos = s.query(Videos).filter(Videos.c_id==detail_id).all()
         four_year_check = s.query(Assessments).join(Subsection).join(Competence).join(AssessmentStatusRef).filter(Assessments.user_id==u_id).filter(AssessmentStatusRef.status=="Four Year Due").filter(Competence.id==c_id).count()
