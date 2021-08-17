@@ -591,18 +591,17 @@ def view_current_competence():
         #     id
         print(f"c_id: {c_id}")
         print(f"version: {version}")
-        # detail_query = s.query(CompetenceDetails). \
-        #     join(Competence, CompetenceDetails.competence). \
-        #     filter(CompetenceDetails.c_id == c_id). \
-        #     filter(and_(CompetenceDetails.intro <= version,
-        #                 or_(CompetenceDetails.last >= version,
-        #                     CompetenceDetails.last is None))). \
-        #     first()
-        #TODO work out which bits of this actually need to stay
+
+        # Note: you need to use the bad syntax 'C.f == None' for the query to work
         detail_query = s.query(CompetenceDetails). \
+            join(Competence, CompetenceDetails.competence). \
             filter(CompetenceDetails.c_id == c_id). \
+            filter(CompetenceDetails.intro <= version). \
+            filter(or_(CompetenceDetails.last >= version,
+                       CompetenceDetails.last == None)). \
             first()
         print(f"detail query: {detail_query}")
+        print(f"detail_query.last: {detail_query.last}")
         detail_id = detail_query.id
         print(f"detail query id: {detail_id}")
 
