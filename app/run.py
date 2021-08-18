@@ -7,3 +7,5 @@ if __name__ == "__main__":
     db.session.commit()
 
     app.run(debug=True, host='10.182.155.27', port=52023, threaded=True)
+
+#TODO upgrade requirements file with versions
