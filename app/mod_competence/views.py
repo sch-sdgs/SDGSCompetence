@@ -336,14 +336,27 @@ def add_sections():
 #edit the competence - everything gets copied and is at v2 - if you then delete last is v2 - but this is an issue.
 
 def get_subsections(c_id, version):
+    #TODO this needs explicit joins
 
     subsec_list = []
 
-    subsecs = s.query(Subsection).join(Section).join(SectionSortOrder).join(Competence).join(EvidenceTypeRef).filter(
-        Subsection.c_id == c_id).filter(SectionSortOrder.c_id == c_id).filter(Section.constant == 0).filter(
-        and_(Subsection.intro <= version, or_(Subsection.last == None, Subsection.last == version))).order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).values(
-        Section.name.label('sec_name'), Subsection.name.label('subsec_name'),
-        Subsection.comments, EvidenceTypeRef.type,SectionSortOrder.sort_order)
+    subsecs = s.query(Subsection). \
+        join(Section, Subsection.s_id_rel). \
+        join(SectionSortOrder, Section.sort_order_rel). \
+        join(Competence, SectionSortOrder.c_id_rel). \
+        join(EvidenceTypeRef, Subsection.evidence_rel). \
+        filter(Subsection.c_id == c_id). \
+        filter(SectionSortOrder.c_id == c_id). \
+        filter(Section.constant == 0). \
+        filter(and_(Subsection.intro <= version,
+                    or_(Subsection.last == None,
+                        Subsection.last == version))). \
+        order_by(asc(Subsection.sort_order)). \
+        order_by(asc(SectionSortOrder.sort_order)). \
+        values(Section.name.label('sec_name'),
+               Subsection.name.label('subsec_name'),
+               Subsection.comments, EvidenceTypeRef.type,
+               SectionSortOrder.sort_order)
 
     sorted_result = sorted(list(subsecs),
                               key=lambda a: a.sort_order,
@@ -357,10 +370,20 @@ def get_subsections(c_id, version):
 
 def get_constant_subsections(c_id, version):
     constant_subsec_list = []
-    constant_subsecs = s.query(Subsection).join(Section).join(SectionSortOrder).join(Competence).join(EvidenceTypeRef).filter(
-        Subsection.c_id == c_id).filter(Section.constant == 1).filter(SectionSortOrder.c_id == c_id).filter(
-        and_(Subsection.intro <= version, or_(Subsection.last == None, Subsection.last == version))).order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).values(
-        Section.name.label('sec_name'), Subsection.name.label('subsec_name'),
+    constant_subsecs = s.query(Subsection). \
+        join(Section, Subsection.s_id_rel). \
+        join(SectionSortOrder, Section.sort_order_rel). \
+        join(Competence, SectionSortOrder.c_id_rel). \
+        join(EvidenceTypeRef, Subsection.evidence_rel). \
+        filter(Subsection.c_id == c_id). \
+        filter(Section.constant == 1). \
+        filter(SectionSortOrder.c_id == c_id). \
+        filter(and_(Subsection.intro <= version,
+                    or_(Subsection.last == None,
+                        Subsection.last == version))). \
+        order_by(asc(Subsection.sort_order)). \
+        order_by(asc(SectionSortOrder.sort_order)). \
+        values(Section.name.label('sec_name'), Subsection.name.label('subsec_name'),
         Subsection.comments, EvidenceTypeRef.type,SectionSortOrder.sort_order, Subsection.c_id)
 
 
@@ -629,6 +652,8 @@ def view_competence():
     version = request.args["version"]
     get_comp_title = s.query(CompetenceDetails.title).filter_by(c_id=c_id).filter(
         CompetenceDetails.intro == version).first()
+    print(f"get_comp_title: {get_comp_title}")
+    print(type(get_comp_title))
 
     creator_id = s.query(CompetenceDetails.creator_id).filter_by(c_id=c_id).filter(
         CompetenceDetails.intro == version).first().creator_id
@@ -636,7 +661,14 @@ def view_competence():
     intro = s.query(CompetenceDetails.intro).filter_by(c_id=c_id).filter(
         CompetenceDetails.intro == version).first().intro
 
+    #TODO I think the utf-8 encoding is adding a b at the start of everything
+
     comp_title = ','.join(repr(x.encode('utf-8')) for x in get_comp_title).replace("'", "")
+    print(f"comp_title: {comp_title}")
+    if comp_title.startswith('b'):
+        comp_title = comp_title[1:]
+        print(f"new comp_title: {comp_title}")
+    print(type(comp_title))
 
     get_comp_scope = s.query(CompetenceDetails.scope).filter_by(c_id=c_id).filter(
         CompetenceDetails.intro == version).first()
