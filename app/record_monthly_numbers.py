@@ -105,6 +105,29 @@ def main():
         if todays_date + relativedelta(months=-1) < date_completed:
             counts['complete_reassessments'][service_id]+=1
 
+    for service in services:
+        for service_id in service:
+            sql = '''INSERT INTO monthly_report_numbers (date, expired_assessments, service_id, completed_assessments, completed_reassessments,
+            overdue_training, activated_assessments, activated_three_month_assessments, four_year_expiry_assessments) VALUES (%s, %s, %s, %s, %s,%s, %s, %s, %s)'''
+
+            c.execute(sql, [(todays_date, counts['expired_assessments'][service_id], service_id, counts['complete_assessments'][service_id],
+                            counts['complete_reassessments'][service_id], counts['overdue_training'][service_id], counts['activated_assessments'][service_id],
+                            counts['activated_three_months_ago'][service_id], counts['four_year_expiry_assessments'][service_id])])
+
+
+    # for service in services:
+    #     service_id = service.id
+    #     entry = MonthlyReportNumbers(service_id=service_id,
+    #                                  expired_assessments=counts['expired_assessments'][service_id],
+    #                                  completed_assessments=counts['complete_assessments'][service_id],
+    #                                  completed_reassessments=counts['complete_reassessments'][service_id],
+    #                                  overdue_training=counts['overdue_training'][service_id],
+    #                                  activated_assessments=counts['activated_assessments'][service_id],
+    #                                  activated_three_month_assessments=counts['activated_three_months_ago'][service_id],
+    #                                  four_year_expiry_assessments=counts['four_year_expiry_assessments'][service_id])
+    #     s.add(entry)
+    #     s.commit()
+
 
 if __name__ == '__main__':
     main()
