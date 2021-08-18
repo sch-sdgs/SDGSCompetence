@@ -1,5 +1,5 @@
 
-FROM tiangolo/meinheld-gunicorn:python2.7
+FROM tiangolo/meinheld-gunicorn:python3.6
 
 RUN apt-get update
 RUN apt-get -y install apt-utils
