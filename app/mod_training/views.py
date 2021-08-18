@@ -86,35 +86,32 @@ def get_competent_users(ss_id_list):
         values(Users.id, (Users.first_name + ' ' + Users.last_name).label('name'))
     return users
 
-#TODO: docstrings
-#TODO: remove print statements
-def get_for_order(c_id, version):
-    print("I am the get_for_order function pre-query")
 
+def get_for_order(c_id, version):
+    """
+    Gets the 'for order' fpr a competency, and updates the 'result' dictionary
+    :param c_id: ID for competence
+    :param version: Version for competence
+    :return result: dictionary with some information about the competency
+    """
     result = {'constant': OrderedDict(), 'custom': OrderedDict()}
 
     for_order = s.query(SectionSortOrder). \
         filter(SectionSortOrder.c_id == c_id). \
         order_by(asc(SectionSortOrder.sort_order)). \
         all()
-    print(f"length of for_order query: {len(for_order)}")
-    print(f"for order: {for_order}")
 
-    print("I have successfully queried for 'for_order'")
 
     for x in for_order:
-        print(f"x: {x}")
+        ### Need to keep Subsection.last == None instead of is None for query to function correctly
         check = s.query(Subsection). \
             filter(Subsection.s_id == x.section_id). \
             filter(and_(Subsection.intro <= version,
                         or_(Subsection.last > version,
-                            Subsection.last is None))). \
+                            Subsection.last == None))). \
             count()
-        print(f"check: {check}")
 
-        print("is the check greater than 0?")
         if check > 0:
-            print("greater than 0!")
             if x.section_id_rel.constant == 1:
                 result["constant"][x.section_id_rel.name] = OrderedDict()
                 result["constant"][x.section_id_rel.name] = {'complete': 0, 'total': 0, 'subsections': []}
@@ -122,13 +119,19 @@ def get_for_order(c_id, version):
                 result["custom"][x.section_id_rel.name] = OrderedDict()
                 result["custom"][x.section_id_rel.name] = {'complete': 0, 'total': 0, 'subsections': []}
         else:
-            print("check <= 0, getting on with it then...")
+            continue
 
-    print(result)
-    print("I have finished the for order stuff")
     return result
 
+
 def get_competence_result(c_id, u_id, version):
+    """
+    Gets competency information and converts to dictionary for further queries
+    :param c_id: ID for competency
+    :param u_id: ID for user
+    :param version: Version for competency
+    :return competence_result_dictionary: Result of the competency query converted to a dictionary for further processing
+    """
     competence_result = s.query(Assessments). \
         join(Subsection, Assessments.ss_id_rel). \
         join(Section, Subsection.s_id_rel). \
@@ -154,8 +157,6 @@ def get_competence_result(c_id, u_id, version):
                Assessments.date_completed, Assessments.date_expiry, Assessments.comments.label('training_comments'),
                Assessments.version, SectionSortOrder.sort_order)
 
-    print("I have got the competence result query")
-    #print(f"competence result query length: {len(list(competence_result))}")
     competence_result_dictionary = {}
     for c in competence_result:
         competence_result_dictionary[c.ass_id] = {
@@ -175,56 +176,40 @@ def get_competence_result(c_id, u_id, version):
             "version" : c.version,
             "sort_order" : c.sort_order
         }
-    print(competence_result_dictionary)
-        #break
 
-    #return competence_result
     return competence_result_dictionary
 
 
-# def get_evidence_for_competence_result(assessment_id):
-#     evidence = s.query(AssessmentEvidenceRelationship). \
-#         filter(AssessmentEvidenceRelationship.assessment_id == assessment_id). \
-#         all()
-#     return evidence
-
 def parse_competence_result(competence_result, result):
-    print("I am the start of the parse competence function")
-    print(competence_result)
+    """
+    Performs further queries based on the competency result to populate additional fields (eg. trainer)
+    :param competence_result: the result of the competence_result query, converted to a dictionary
+    :param result: the result dictionary that has already been processed in the get_for_order() function
+    :return result: A dictionary with all necessary information about the competency
+    """
     for key, values in competence_result.items():
-        print(f"assessment id: {key}")
-        print(f"{values}")
 
         if values["constant"]:
             d = "constant"
         else:
             d = "custom"
-        print(f"d: {d}")
 
         if values["name"] not in result[d].keys():
             result[d][values["name"]] = {"complete": 0, "total": 0, "subsections": []}
-        print(f"result: {result}")
 
-        #assessment_id = key
-        #evidence = get_evidence_for_competence_result(assessment_id)
         evidence = s.query(AssessmentEvidenceRelationship). \
             filter(AssessmentEvidenceRelationship.assessment_id == key). \
             all()
-
-        print(f"evidence: {evidence}")
-        print(type(evidence))
 
         trainer = "-"
         if values["trainer_id"] is not None:
             q = s.query(Users).filter(Users.id == values["trainer_id"]).first()
             trainer = q.first_name + " " + q.last_name
-        print(f"trainer: {trainer}")
 
         assessor = "-"
         if values["signoff_id"] is not None:
             q = s.query(Users).filter(Users.id == values["signoff_id"]).first()
             assessor = q.first_name + " " + q.last_name
-        print(f"assessor: {assessor}")
 
         subsection = {"id": key,
                       "name": values["area_of_competence"],
@@ -245,21 +230,21 @@ def parse_competence_result(competence_result, result):
         subsection_list.append(subsection)
         result[d][values["name"]]["subsections"] = subsection_list
 
-        print(f"result: {result}")
-
-    print("I am the end of the parse competence function")
     return result
 
 
 def get_competence_by_user(c_id, u_id, version):
-    print(f"getting for_order...")
+    """
+    Runs the necessary functions to get information about a given competence for a given user
+    08/21 NC - has been split from original method to 3 methods during upgrade to py3
+    :param c_id: ID for the competency
+    :param u_id: ID for the user
+    :param version: Version for the competency
+    :return result: Dictionary with all necessary information about the competency
+    """
     result = get_for_order(c_id, version)
-    print(f"getting competence result...")
     competence_result = get_competence_result(c_id, u_id, version)
-    #result = check_for_order(for_order, version)
-    print(f"parsing competence result...")
     result = parse_competence_result(competence_result, result)
-    print(f"result: {result}")
     return result
 # def get_competence_by_user(c_id, u_id, version):
 #     """
