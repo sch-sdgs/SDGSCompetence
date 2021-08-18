@@ -1,8 +1,7 @@
 # SDGSCompetence
 
 A user-friendly Flask-Python web application for recording and monitoring training in a department or team. The
-entire app is Dockerised and therefore portable across different host servers. Currently, it runs an uwsgi-nginx-flask 
-python2.7 Docker image, though we are now updating this to Python3. 
+entire app is Dockerised and therefore portable across different host servers. Currently, it runs a meinheld-gunicorn Docker image. 
 
 ### Requirements:
 * Linux server (we have tested on Ubuntu) with Docker installed
