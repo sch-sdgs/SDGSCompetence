@@ -384,6 +384,7 @@ def users_edit(id=None):
         else:
             line_manager_id = None
 
+        #TODO: this is timing out
         s.query(UserJobRelationship).filter_by(user_id=id).delete()
         s.query(UserRoleRelationship).filter_by(user_id=id).delete()
 

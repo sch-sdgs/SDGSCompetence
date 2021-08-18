@@ -132,6 +132,7 @@ def get_competence_result(c_id, u_id, version):
     :param version: Version for competency
     :return competence_result_dictionary: Result of the competency query converted to a dictionary for further processing
     """
+    #TODO specify the relatiionships better (see error)
     competence_result = s.query(Assessments). \
         join(Subsection, Assessments.ss_id_rel). \
         join(Section, Subsection.s_id_rel). \
