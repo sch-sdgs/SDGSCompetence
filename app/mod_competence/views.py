@@ -663,20 +663,24 @@ def view_competence():
 
     #TODO I think the utf-8 encoding is adding a b at the start of everything
 
-    comp_title = ','.join(repr(x.encode('utf-8')) for x in get_comp_title).replace("'", "")
-    print(f"comp_title: {comp_title}")
-    if comp_title.startswith('b'):
-        comp_title = comp_title[1:]
-        print(f"new comp_title: {comp_title}")
-    print(type(comp_title))
+    # comp_title = ','.join(repr(x.encode('utf-8')) for x in get_comp_title).replace("'", "")
+    # if comp_title.startswith('b'):
+    #     comp_title = comp_title[1:]
+    comp_title = ','.join(x for x in get_comp_title).replace("'", "")
 
     get_comp_scope = s.query(CompetenceDetails.scope).filter_by(c_id=c_id).filter(
         CompetenceDetails.intro == version).first()
-    comp_scope = ','.join(repr(x.encode('utf-8')) for x in get_comp_scope).replace("'", "")
+    # comp_scope = ','.join(repr(x.encode('utf-8')) for x in get_comp_scope).replace("'", "")
+    # if comp_scope.startswith('b'):
+    #     comp_scope = comp_scope[1:]
+    comp_scope = ','.join(x for x in get_comp_scope).replace("'", "")
 
     get_comp_category = s.query(CompetenceCategory.category).join(CompetenceDetails).filter_by(c_id=c_id).filter(
         CompetenceDetails.intro == version).first()
-    comp_category = ','.join(repr(x.encode('utf-8')) for x in get_comp_category).replace("'", "")
+    # comp_category = ','.join(repr(x.encode('utf-8')) for x in get_comp_category).replace("'", "")
+    # if comp_category.startswith('b'):
+    #     comp_category = comp_category[1:]
+    comp_category = ','.join(x for x in get_comp_category).replace("'", "")
 
     get_comp_val_period = s.query(ValidityRef.months).join(CompetenceDetails).filter_by(c_id=c_id).filter(
         CompetenceDetails.intro == version).first()
@@ -705,7 +709,10 @@ def view_competence():
         docs = s.query(Documents.qpulse_no).join(CompetenceDetails).filter(CompetenceDetails.intro == version).filter_by(
             c_id=c_id)
         for doc in docs:
-            doc_id = ','.join(repr(x.encode('utf-8')) for x in doc).replace("'", "")
+            # doc_id = ','.join(repr(x.encode('utf-8')) for x in doc).replace("'", "")
+            # if doc_id.startswith('b'):
+            #     doc_id = doc_id[1:]
+            doc_id = ','.join(x for x in doc).replace("'", "")
             d = s.query(QPulseDetails).first()
             username = d.username
             password = d.password
