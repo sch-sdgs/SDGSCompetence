@@ -33,7 +33,8 @@ class UserEditForm(FlaskForm):
     linemanager = StringField("Line Manager")
     jobrole = SelectMultipleField("Job Role")
     userrole = SelectMultipleField("User Role")
-    section = SelectField("Section")
+    #section = SelectField("Section")
+    section = QuerySelectField("Section", query_factory=lambda: s.query(Service).all(), get_label="name")
     submit = SubmitField()
 
 class EvidenceTypeForm(FlaskForm):
