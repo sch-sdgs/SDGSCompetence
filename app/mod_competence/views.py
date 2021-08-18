@@ -1003,8 +1003,11 @@ def assign_competences_to_user():
 
         return render_template('competence_assigned.html', result=result, failed=failed)
     else:
-        query = s.query(Competence).join(CompetenceDetails).filter(Competence.id.in_(ids)).filter(
-            Competence.current_version == CompetenceDetails.intro).values(CompetenceDetails.title)
+        query = s.query(Competence). \
+            join(CompetenceDetails, Competence.competence_detail). \
+            filter(Competence.id.in_(ids)). \
+            filter(Competence.current_version == CompetenceDetails.intro). \
+            values(CompetenceDetails.title)
         comptences = []
         for i in query:
             comptences.append(i.title)
