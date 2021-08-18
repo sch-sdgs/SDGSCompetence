@@ -1531,49 +1531,49 @@ def report_by_section():
     ### assessments expired graph, left-side ###
     for service in expired_dict:
         expired_fig.add_trace(go.Scatter(x=dates, y=expired_dict[service], mode='lines+markers', name=service, line_color=colour_dict[service]))
-    expired_fig.update_xaxes(dtick="D1", tickformat="%e %b\n%Y")
+    expired_fig.update_xaxes(dtick="M1", tickformat="%e %b\n%Y")
     expired_fig.update_layout(height=300, width=650, margin=dict(t=0, l=10, b=10, r=30), showlegend=False)
     expired_plot = plot(expired_fig, output_type="div")
 
     ### training overdue graph, right-side ###
     for service in overdue_dict:
         overdue_fig.add_trace(go.Scatter(x=dates, y=overdue_dict[service], mode='lines+markers', name=service, line_color=colour_dict[service]))
-    overdue_fig.update_xaxes(dtick="D1", tickformat="%e %b\n%Y")
+    overdue_fig.update_xaxes(dtick="M1", tickformat="%e %b\n%Y")
     overdue_fig.update_layout(height=300, width=800, margin=dict(t=0, l=50, b=10, r=0), showlegend=True)
     overdue_plot = plot(overdue_fig, output_type="div")
 
     ### completed assessments graph, left-side ###
     for service in completed_assessments_dict:
         completed_assessments_fig.add_trace(go.Scatter(x=dates, y=completed_assessments_dict[service], mode='lines+markers', name=service, line_color=colour_dict[service]))
-    completed_assessments_fig.update_xaxes(dtick="D1", tickformat="%e %b\n%Y")
+    completed_assessments_fig.update_xaxes(dtick="M1", tickformat="%e %b\n%Y")
     completed_assessments_fig.update_layout(height=300, width=650, margin=dict(t=0, l=10, b=10, r=30), showlegend=False)
     completed_assessments_plot = plot(completed_assessments_fig, output_type="div")
 
     ### completed reassessments graph, right-side ###
     for service in completed_reassessments_dict:
         completed_reassessments_fig.add_trace(go.Scatter(x=dates, y=completed_reassessments_dict[service], mode='lines+markers', name=service, line_color=colour_dict[service]))
-    completed_reassessments_fig.update_xaxes(dtick="D1", tickformat="%e %b\n%Y")
+    completed_reassessments_fig.update_xaxes(dtick="M1", tickformat="%e %b\n%Y")
     completed_reassessments_fig.update_layout(height=300, width=800, margin=dict(t=0, l=50, b=10, r=0), showlegend=True)
     completed_reassessments_plot = plot(completed_reassessments_fig, output_type="div")
 
     ### activated assessments graph, left-sde ###
     for service in activated_dict:
         activated_assessments_fig.add_trace(go.Scatter(x=dates, y=activated_dict[service], mode='lines+markers', name=service, line_color=colour_dict[service]))
-    activated_assessments_fig.update_xaxes(dtick="D1", tickformat="%e %b\n%Y")
+    activated_assessments_fig.update_xaxes(dtick="M1", tickformat="%e %b\n%Y")
     activated_assessments_fig.update_layout(height=300, width=650, margin=dict(t=0, l=10, b=10, r=30), showlegend=False)
     activated_assessments_plot = plot(activated_assessments_fig, output_type="div")
 
     ### activated threemonths ago graph, right-side ###
     for service in activated_three_month_dict:
         activated_assessments_three_month_fig.add_trace(go.Scatter(x=dates, y=activated_three_month_dict[service], mode='lines+markers', name=service, line_color=colour_dict[service]))
-    activated_assessments_three_month_fig.update_xaxes(dtick="D1", tickformat="%e %b\n%Y")
+    activated_assessments_three_month_fig.update_xaxes(dtick="M1", tickformat="%e %b\n%Y")
     activated_assessments_three_month_fig.update_layout(height=300, width=800, margin=dict(t=0, l=50, b=10, r=0), showlegend=True)
     activated_assessments_three_month_plot = plot(activated_assessments_three_month_fig, output_type="div")
 
     ### four year expiry graph, left-side ###
     for service in four_year_expiry_dict:
         four_year_expiry_fig.add_trace(go.Scatter(x=dates, y=four_year_expiry_dict[service], mode='lines+markers', name=service, line_color=colour_dict[service]))
-    four_year_expiry_fig.update_xaxes(dtick="D1", tickformat="%e %b\n%Y")
+    four_year_expiry_fig.update_xaxes(dtick="M1", tickformat="%e %b\n%Y")
     four_year_expiry_fig.update_layout(height=300, width=800, margin=dict(t=0, l=10, b=10, r=30), showlegend=True)
     four_year_expiry_plot = plot(four_year_expiry_fig, output_type="div")
 
