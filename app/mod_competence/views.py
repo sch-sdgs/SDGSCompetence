@@ -9,7 +9,8 @@ from app.views import get_competence_from_subsections, admin_permission
 from app.models import *
 from app.competence import s,send_mail
 from app.competence import config
-from app.mod_competence.forms import *
+#from app.mod_competence.forms import *
+from mod_competence.forms import *
 import json
 from app.qpulseweb import *
 from collections import defaultdict

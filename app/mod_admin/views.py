@@ -2,7 +2,8 @@ from sqlalchemy import exc
 from flask import flash,render_template, request, url_for, redirect, Blueprint, jsonify, make_response
 from flask_login import login_required, current_user
 from app.views import *
-from app.mod_admin.forms import *
+#from app.mod_admin.forms import *
+from mod_admin.forms import *
 from app.models import *
 from app.competence import *
 import datetime
