@@ -767,7 +767,7 @@ def accept_reassessment(id=None):
 def download(filename, alias):
     #    uploads = os.path.join(current_app.root_path, app.config['UPLOAD_FOLDER'])
     uploads = app.config["UPLOAD_FOLDER"]
-    return send_from_directory(directory=uploads, filename=filename, as_attachment=True, attachment_filename=alias)
+    return send_from_directory(directory=uploads, path=filename, as_attachment=True, attachment_filename=alias)
 
 @training.route('/signoff/<int:assess_id>', methods=['GET', 'POST'])
 @login_required
