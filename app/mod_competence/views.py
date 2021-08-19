@@ -717,8 +717,7 @@ def view_competence():
             username = d.username
             password = d.password
             q = QPulseWeb()
-            doc_name = q.get_doc_by_id(username=username, password=password, docNumber=doc)
-
+            doc_name = q.get_doc_by_id(username=username, password=password, docNumber=doc_id)
             if doc_id is not "":
                 dict_docs[doc_id] = doc_name
 
