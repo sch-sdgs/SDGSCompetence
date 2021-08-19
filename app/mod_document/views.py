@@ -373,4 +373,4 @@ def export_trial_report():
 
     out_name = main_doc.write_pdf(target=app.config["UPLOAD_FOLDER"] + "/" + outfile)
 
-    return send_from_directory(directory=uploads, filename=outfile, as_attachment=True, attachment_filename="trial_report.pdf")
+    return send_from_directory(directory=uploads, path=outfile, as_attachment=True, attachment_filename="trial_report.pdf")
