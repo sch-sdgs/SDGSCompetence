@@ -371,7 +371,7 @@ def users_edit(id=None):
         form.userrole.choices = s.query(UserRolesRef.id, UserRolesRef.role).all()
         form.userrole.process_data(userrole_ids)
 
-        form.section.choices = s.query(Service.id, Service.name).all()
+        form.section.data = user.service_rel
         form.section.process_data(user.serviceid)
 
         return render_template("users_edit.html", id=id, form=form)
@@ -384,7 +384,6 @@ def users_edit(id=None):
         else:
             line_manager_id = None
 
-        #TODO: this is timing out
         s.query(UserJobRelationship).filter_by(user_id=id).delete()
         s.query(UserRoleRelationship).filter_by(user_id=id).delete()
 
@@ -401,6 +400,8 @@ def users_edit(id=None):
             staff_no = request.form["staff_no"]
         else:
             staff_no = s.query(Users).filter_by(id=id).first().staff_no
+
+        #service_id =
 
         data = {
             'login': request.form["username"],
