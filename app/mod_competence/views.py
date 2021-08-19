@@ -476,7 +476,12 @@ def delete_subsection():
 @competence.route('/add_subsection_to_db', methods=['GET', 'POST'])
 @login_required
 def add_sections_to_db():
+    """
+    Adds new subsection to the database
+    """
+
     # method adds subsections to database
+    # Gets information on existing subsections
     name = request.json['name']
     evidence_id = request.json['evidence_id']
     comments = request.json['comments']
@@ -486,10 +491,10 @@ def add_sections_to_db():
         version = request.json['version']
     else:
         version = 1
-    ### get max sort order
-    ### increase sort order by 1
 
+    # Quries current subsections, gets the max sort_order and increases by 1
     current_subsections = s.query(Subsection).filter(Subsection.c_id == c_id).all()
+    print(f"current subsections: {current_subsections}")
 
     max=0
     for i in current_subsections:
@@ -498,10 +503,13 @@ def add_sections_to_db():
                 max = i.sort_order
     new_sort_order = max+1
 
+    # Creates a new subsection from data in form
     sub = Subsection(name=name, evidence=int(evidence_id), comments=comments, c_id=c_id, s_id=s_id,intro=version, sort_order=new_sort_order)
     s.add(sub)
     s.commit()
+    sub_id = int(sub.id)
 
+    # what is this doing
     check = s.query(SectionSortOrder).filter(SectionSortOrder.c_id == c_id).filter(
         SectionSortOrder.section_id == s_id).count()
     if check > 0:
@@ -514,15 +522,24 @@ def add_sections_to_db():
         s.add(sort_order)
         s.commit()
 
-
-    result = s.query(Subsection).join(Competence).join(Section).join(EvidenceTypeRef).filter(
-        Competence.id == c_id).filter(Section.id == s_id). \
+    # what is this doing
+    result = s.query(Subsection). \
+        join(Competence, Subsection.c_id_rel). \
+        join(Section, Subsection.s_id_rel). \
+        join(EvidenceTypeRef, Subsection.evidence_rel). \
+        filter(Competence.id == c_id). \
+        filter(Section.id == s_id). \
         values(Subsection.id, Subsection.name, EvidenceTypeRef.type, Subsection.comments)
 
     table = ItemTableSubsections(result, classes=['table', 'table-bordered', 'table-striped', 'section_' + str(s_id)])
     # print str(c_id) + ' ' + str(s_id) + ' ' + 'should add new subsection to selected section'
+    # if "plain" in request.args:
+    #     return jsonify({'id':sub.id})
+    # else:
+    #     return jsonify({"response":table})
+
     if "plain" in request.args:
-        return jsonify({'id':sub.id})
+        return jsonify({'id':sub_id})
     else:
         return jsonify({"response":table})
 
