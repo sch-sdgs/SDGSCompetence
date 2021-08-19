@@ -1493,23 +1493,28 @@ def user_report(id=None):
     training_plot = plot(fig, output_type="div")
 
     #get documents written and authorised by user
-    creater_dates_dict={}
+    creator_dates_dict={}
     approver_dates_dict={}
     creater_dates = []
     creater_counts=[]
     approver_dates=[]
     approver_counts=[]
 
-    creater_query = s.query(CompetenceDetails).filter(CompetenceDetails.creator_id == id).values(CompetenceDetails.date_created)
+    creator_query = s.query(CompetenceDetails).filter(CompetenceDetails.creator_id == id).values(CompetenceDetails.date_created)
+    print(f"creator query: {creator_query}")
+    #DO NOT REMOVE THIS STATEMENT without it the page won't load
+    #TODO work out how to fix this properly
+    for creator in creator_query:
+        print(creator)
     approver_query = s.query(CompetenceDetails).filter(CompetenceDetails.approve_id == id).values(CompetenceDetails.date_of_approval)
+    print(f"approver query: {approver_query}")
 
-
-    for i in creater_query:
+    for i in creator_query:
         if i.date_created is not None:
-            if i.date_created not in creater_dates_dict:
-                creater_dates_dict[i.date_created] = 1
+            if i.date_created not in creator_dates_dict:
+                creator_dates_dict[i.date_created] = 1
             else:
-                creater_dates_dict[i.date_created] +=1
+                creator_dates_dict[i.date_created] +=1
 
     for i in approver_query:
         if i.date_of_approval is not None:
@@ -1524,8 +1529,8 @@ def user_report(id=None):
             approver_dates.append(date)
             approver_counts.append(approver_dates_dict_filled[date])
 
-    if len(creater_dates_dict.keys()) > 0:
-        creater_dates_dict_filled = fill_time_series(creater_dates_dict)
+    if len(creator_dates_dict.keys()) > 0:
+        creater_dates_dict_filled = fill_time_series(creator_dates_dict)
         for date in sorted(creater_dates_dict_filled):
             creater_dates.append(date)
             creater_counts.append(creater_dates_dict_filled[date])
