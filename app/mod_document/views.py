@@ -259,6 +259,7 @@ def export_document(c_id, version):
 
 
     outfile = str(uuid.uuid4())
+    print(f"outfile: {outfile}")
 
     out_name = main_doc.write_pdf(target=app.config["UPLOAD_FOLDER"]+"/"+ outfile)
     return outfile
@@ -277,7 +278,7 @@ def export_document_view():
         outfile = export_document(c_id, version)
         uploads = app.config["UPLOAD_FOLDER"]
         filename = s.query(CompetenceDetails).filter(CompetenceDetails.c_id==c_id).first().title + ".pdf"
-        return send_from_directory(directory=uploads, filename=outfile, as_attachment=True, attachment_filename=filename)
+        return send_from_directory(directory=uploads, path=outfile, as_attachment=True, attachment_filename=filename)
 
 
 @document.route('/export_trial', methods=['GET', 'POST'])
