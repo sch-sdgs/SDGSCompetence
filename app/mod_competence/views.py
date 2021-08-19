@@ -1361,11 +1361,13 @@ def edit_details():
 @login_required
 def delete():
     id = request.args.get('id') ### This is the CompetenceDetails ID
-    c_id = s.query(CompetenceDetails).filter(CompetenceDetails.id == id).first().c_id
+    c_id = s.query(CompetenceDetails).filter(CompetenceDetails.id == id).first().c_id ### this is the Competence id
 
     current_version = s.query(Competence).filter(Competence.id == c_id).first().current_version
     if current_version == 0:
         s.query(Documents).filter(Documents.c_id == id).delete()
+        s.commit()
+        s.query(CompetenceRejectionReasons).filter(CompetenceRejectionReasons.c_detail_id == id).delete()
         s.commit()
         s.query(CompetenceDetails).filter(CompetenceDetails.c_id == c_id).filter(
             CompetenceDetails.intro == current_version + 1).delete()
