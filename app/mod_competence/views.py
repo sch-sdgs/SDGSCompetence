@@ -336,7 +336,6 @@ def add_sections():
 #edit the competence - everything gets copied and is at v2 - if you then delete last is v2 - but this is an issue.
 
 def get_subsections(c_id, version):
-    #TODO this needs explicit joins
 
     subsec_list = []
 
@@ -1362,8 +1361,8 @@ def edit_details():
 def delete():
     id = request.args.get('id') ### This is the CompetenceDetails ID
     c_id = s.query(CompetenceDetails).filter(CompetenceDetails.id == id).first().c_id ### this is the Competence id
+    current_version = s.query(Competence).filter(Competence.id == c_id).first().current_version ### this is the Competence current version
 
-    current_version = s.query(Competence).filter(Competence.id == c_id).first().current_version
     if current_version == 0:
         s.query(Documents).filter(Documents.c_id == id).delete()
         s.commit()
@@ -1374,12 +1373,24 @@ def delete():
         s.commit()
         s.query(Subsection).filter(Subsection.c_id == c_id).filter(Subsection.intro == current_version + 1).delete()
         s.commit()
-
         s.query(SectionSortOrder).filter(SectionSortOrder.c_id == c_id).delete()
+        s.commit()
         s.query(Competence).filter(Competence.id == c_id).delete()
         s.commit()
-
         return json.dumps({'success': True})
+
+    elif current_version >= 1:
+        s.query(Documents).filter(Documents.c_id == id).delete()
+        s.commit()
+        s.query(CompetenceRejectionReasons).filter(CompetenceRejectionReasons.c_detail_id == id).delete()
+        s.commit()
+        s.query(CompetenceDetails).filter(CompetenceDetails.c_id == c_id).filter(
+            CompetenceDetails.intro == current_version + 1).delete()
+        s.commit()
+        s.query(Subsection).filter(Subsection.c_id == c_id).filter(Subsection.intro == current_version + 1).delete()
+        s.commit()
+        return json.dumps({'success': True})
+
     else:
         print("Something failed here")
         return json.dumps({'success': False})
