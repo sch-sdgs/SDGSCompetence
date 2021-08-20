@@ -306,32 +306,41 @@ def users_add():
     if request.method == 'POST':
         now = datetime.datetime.now()
 
-        if request.form["linemanager"] != "":
-            firstname, surname = request.form["linemanager"].split(" ")
-            line_manager_id = int(s.query(Users).filter_by(first_name=firstname, last_name=surname).first().id)
+        ### checks if user already exists in database
+        username = request.form["username"]
+        username_query = s.query(Users).filter_by(login=username).first()
+        if username_query:
+            flash("That username is already taken!", "danger")
+            render_template("users_add.html", form=form)
+
         else:
-            line_manager_id = None
 
-        u = Users(login=request.form["username"],
-                  first_name=request.form["firstname"],
-                  last_name=request.form["surname"],
-                  email=request.form["email"],
-                  staff_no=request.form["staff_no"],
-                  serviceid=request.form["section"],
-                  active=True,
-                  line_managerid=line_manager_id)
+            if request.form["linemanager"] != "":
+                firstname, surname = request.form["linemanager"].split(" ")
+                line_manager_id = int(s.query(Users).filter_by(first_name=firstname, last_name=surname).first().id)
+            else:
+                line_manager_id = None
 
-        s.add(u)
-        s.commit()
-        for role_id in request.form.getlist('userrole'):
-            urr = UserRoleRelationship(userrole_id=int(role_id), user_id=u.id)
-            s.add(urr)
+            u = Users(login=request.form["username"],
+                      first_name=request.form["firstname"],
+                      last_name=request.form["surname"],
+                      email=request.form["email"],
+                      staff_no=request.form["staff_no"],
+                      serviceid=request.form["section"],
+                      active=True,
+                      line_managerid=line_manager_id)
 
-        for job_id in request.form.getlist('jobrole'):
-            urr = UserJobRelationship(jobrole_id=int(job_id), user_id=u.id)
-            s.add(urr)
-        s.commit()
-        return redirect(url_for('admin.users_view'))
+            s.add(u)
+            s.commit()
+            for role_id in request.form.getlist('userrole'):
+                urr = UserRoleRelationship(userrole_id=int(role_id), user_id=u.id)
+                s.add(urr)
+
+            for job_id in request.form.getlist('jobrole'):
+                urr = UserJobRelationship(jobrole_id=int(job_id), user_id=u.id)
+                s.add(urr)
+            s.commit()
+            return redirect(url_for('admin.users_view'))
 
     return render_template("users_add.html", form=form)
 
