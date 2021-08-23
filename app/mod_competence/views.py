@@ -574,7 +574,6 @@ def document_autocomplete():
     docs = s.query(Documents.qpulse_no).distinct()
     doc_list = []
     for i in docs:
-        print(i)
         doc_list.append(i.qpulse_no)
 
     return jsonify(json_list=doc_list)
