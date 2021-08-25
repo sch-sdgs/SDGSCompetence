@@ -576,7 +576,6 @@ def deletejobrole(id=None):
 @admin.route('/service', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def service():
-    #TODO sort out autocomplete for changing HoS
     """
     administer the available services - a service is "Lab Services" "Constitutional" etc
     :return: render template service.html
@@ -615,7 +614,6 @@ def service():
 @admin.route('/service/edit/<id>', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def service_edit(id=None):
-    #TODO add JS autocomplete HOS function
     """
     edit service
     :param id: service id
@@ -868,8 +866,6 @@ def constant_subsections_edit(id=None):
     form.section.default = subsection_name.s_id
     form.process()
     form.name.data = subsection_name.item
-
-    ##todo here
 
     if request.method == 'POST':
 

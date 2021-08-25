@@ -566,7 +566,6 @@ class Service(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(1000), unique=True, nullable=True)
     head_of_service_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=True, nullable=False)
-    #TODO make HOS ID nullable=False after testing
 
     head_of_service_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[head_of_service_id])
 

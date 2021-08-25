@@ -132,7 +132,7 @@ def get_competence_result(c_id, u_id, version):
     :param version: Version for competency
     :return competence_result_dictionary: Result of the competency query converted to a dictionary for further processing
     """
-    #TODO specify the relatiionships better (see error)
+    #TODO specify the relationships better (see error) (note: works, just could be formatted better)
     competence_result = s.query(Assessments). \
         join(Subsection, Assessments.ss_id_rel). \
         join(Section, Subsection.s_id_rel). \
@@ -283,7 +283,7 @@ def get_competence_by_user(c_id, u_id, version):
 #
 #     result = {'constant': OrderedDict(), 'custom': OrderedDict()}
 #
-#     #TODO this is throwing up an error x 2
+#
 #     for_order = s.query(SectionSortOrder). \
 #         filter(SectionSortOrder.c_id == c_id). \
 #         order_by(asc(SectionSortOrder.sort_order)). \
@@ -560,7 +560,6 @@ def view_current_competence():
 
     :return:
     """
-    #TODO get_competence_summary_by_user is throwing up an error
     if request.method == 'GET':
         c_id = request.args.get('c_id')
         version = request.args.get('version')
@@ -1108,7 +1107,6 @@ def select_subsections():
 
     :return:
     """
-    #TODO get_competence_by_user is throwing up an error
     c_id = request.args.get('c_id')
     version = request.args.get('version')
     u_id = current_user.database_id

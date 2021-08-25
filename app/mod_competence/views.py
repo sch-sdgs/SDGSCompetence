@@ -676,8 +676,6 @@ def view_competence():
     intro = s.query(CompetenceDetails.intro).filter_by(c_id=c_id).filter(
         CompetenceDetails.intro == version).first().intro
 
-    #TODO I think the utf-8 encoding is adding a b at the start of everything
-
     # comp_title = ','.join(repr(x.encode('utf-8')) for x in get_comp_title).replace("'", "")
     # if comp_title.startswith('b'):
     #     comp_title = comp_title[1:]
@@ -1123,7 +1121,6 @@ def make_user_competent(ids=None,users=None):
 
 def assign_competence_to_user(user_id, competence_id, due_date):
     status_id = s.query(AssessmentStatusRef).filter_by(status="Assigned").first().id
-    # TODO Not Working
     # gets subsections for competence
     current_version = s.query(Competence).filter(Competence.id == competence_id).first().current_version
     sub_sections = s.query(Subsection).filter(Subsection.c_id == competence_id).filter(
