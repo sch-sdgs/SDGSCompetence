@@ -10,6 +10,7 @@ class UserRoleForm(FlaskForm):
     role = StringField("Role",  [DataRequired("Enter a Username")])
     submit = SubmitField("Add Role")
 
+
 class UserForm(FlaskForm):
     username = StringField("User Name", [DataRequired("Enter a Username")])
     firstname = StringField("First Name", [DataRequired("Enter a Username")])
@@ -19,8 +20,7 @@ class UserForm(FlaskForm):
     linemanager = StringField("Line Manager")
     jobrole = QuerySelectMultipleField("Job Role", query_factory=lambda: s.query(JobRoles).all(), get_label="job")
     userrole = QuerySelectMultipleField("User Role", query_factory=lambda: s.query(UserRolesRef).all(), get_label="role")
-    section = QuerySelectField("Section", query_factory=lambda: s.query(Service).all(),
-                                        get_label="name")
+    section = QuerySelectField("Section", query_factory=lambda: s.query(Service).all(), get_label="name")
     submit = SubmitField()
 
 
@@ -33,9 +33,9 @@ class UserEditForm(FlaskForm):
     linemanager = StringField("Line Manager")
     jobrole = SelectMultipleField("Job Role")
     userrole = SelectMultipleField("User Role")
-    #section = SelectField("Section")
     section = QuerySelectField("Section", query_factory=lambda: s.query(Service).all(), get_label="name")
     submit = SubmitField()
+
 
 class EvidenceTypeForm(FlaskForm):
     type=StringField("Evidence Type",  [DataRequired("Enter an Evidence Type")])
@@ -52,6 +52,7 @@ class SectionForm(FlaskForm):
     constant=BooleanField("Applicable to all competencies?")
     submit = SubmitField()
 
+
 class ConstantSubSectionForm(FlaskForm):
     name=StringField("SubSection Name",  [DataRequired("Enter a Subsection Name")])
     section=SelectField("Section")
@@ -62,18 +63,22 @@ class ValidityPeriodForm(FlaskForm):
     months=StringField("Validity period (months)",  [DataRequired("Enter a Duration in months")])
     submit = SubmitField()
 
+
 class AssessmentStatusForm(FlaskForm):
     status=StringField("Assessment Status",  [DataRequired("Enter an Assessment Status")])
     submit = SubmitField()
+
 
 class ServiceForm(FlaskForm):
     name=StringField("Service",  [DataRequired("Enter a service")])
     head_of_service=StringField("Head of Service", [DataRequired("Enter the head of service")])
     submit = SubmitField()
 
+
 class JobRoleForm(FlaskForm):
     job=StringField("Job Role",  [DataRequired("Enter a job role")])
     submit = SubmitField()
+
 
 class QuestionsForm(FlaskForm):
     question = StringField("Reassessment Question", [DataRequired("Enter a reassessment question")])
@@ -81,13 +86,16 @@ class QuestionsForm(FlaskForm):
     type = SelectField("Answer type", choices=choices)
     submit = SubmitField()
 
+
 class DropDownForm(FlaskForm):
     choice=StringField("Dropdown Choice",  [DataRequired("Enter an dropdown choice")])
     submit = SubmitField()
 
+
 class SubSectionAutoComplete(FlaskForm):
     phrase = TextAreaField("Phrase(s)", [DataRequired("Enter a phrase")])
     submit = SubmitField()
+
 
 class QPulseDetailsForm(FlaskForm):
     username = StringField("Q-Pulse Username")
@@ -95,11 +103,13 @@ class QPulseDetailsForm(FlaskForm):
     password_reenter = PasswordField("Re-Enter Q-Pulse Password")
     submit = SubmitField("Update Details")
 
+
 class ChangePassword(FlaskForm):
     old_password = PasswordField("Old Password")
     new_password = PasswordField("New Password")
     new_password_check = PasswordField("Re-Enter New Password")
     submit = SubmitField()
+
 
 class ResetPassword(FlaskForm):
     email = StringField("Registered Email")
