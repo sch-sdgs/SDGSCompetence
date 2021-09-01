@@ -1,90 +1,80 @@
 {% extends "base2.html" %}
 {% block content %}
 
+<section>
+    <h1>Job Roles</h1>
+    {% if message %}
+        <div class="alert alert-danger">
+            <strong>Fail Whale!</strong> {{ message }}
+        </div>
+    {% endif %}
+</section>
 
-
-
-
-
-            <h1>
-                Job Roles
-                <small></small>
-            </h1>
-            <ol class="breadcrumb">
-                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                <li class="active">Here</li>
-            </ol>
-            {% if message %}
-                <div class="alert alert-danger">
-                    <strong>Fail Whale!</strong> {{ message }}
-                </div>
-            {% endif %}
-        </section>
-
-        <!-- Main content -->
-        <section class="content container-fluid">
-            <div class="callout callout-success">
-                <h4>Editing this OK</h4>
-
-                <p>This page is here to create and delete job roles for CompetenceDB - I.e. CLINICAL BIOINFORMATICIAN. This
+<!-- Main content -->
+<section class="content container-fluid">
+    <div class="callout callout-success">
+        <h4>Editing this OK</h4>
+        <p>This page is here to create and delete job roles for CompetenceDB - I.e. CLINICAL BIOINFORMATICIAN. This
                     will affect people with these roles assigned to them. Probably better not to delete.</p>
-            </div>
-
-            <div class="box" id="training">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Add Job Role</h3>
-
-                </div>
-                <div class="box-body">
-                    <form action="{{ url_for('admin.jobroles') }}" method="POST" class="form-horizontal">
-                        <fieldset>
-
-                            <div class="form-group">
-                                {{ form.job.label(class_="col-lg-2 control-label") }}
-                                <div class="col-lg-10">
-                                    {{ form.job(required="required",class_="form-control") }}
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-lg-10 col-lg-offset-2">
-                                    {{ form.submit(class_="btn btn-primary btn-flat") }}
-                                </div>
-                            </div>
-                        </fieldset>
-                    </form>
-                </div>
-            </div>
-
-
-            <div class="box" id="training">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Job Roles</h3>
-
-                </div>
-                <div class="box-body">
-                    <table class="table table-striped">
-                        <thead>
-                        <th>Role</th>
-                        <th>Edit</th>
-                        <th>Delete</th>
-                        </thead>
-
-                        {% for job_object in data %}
-                            <tr>
-                                <td>{{ job_object.job }}</td>
-                                <td><a href="{{ url_for('admin.jobroles_edit', id=job_object.id) }}"><span
-                                        class="label label-primary"><span
-                                        class="glyphicon glyphicon-pencil"></span></span></a></td>
-                                <td><a href="{{ url_for('admin.deletejobrole', id=job_object.id) }}"><span
-                                        class="label label-danger"><span
-                                        class="glyphicon glyphicon-remove"></span></span></a></td>
-                            </tr>
-                        {% endfor %}
-
-                    </table>
-                </div>
-            </div>
-        </section>
     </div>
+
+    <div class="box" id="training">
+        <div class="box-header with-border">
+            <h3 class="box-title">Add Job Role</h3>
+        </div>
+
+        <div class="box-body">
+            <form action="{{ url_for('admin.jobroles') }}" method="POST" class="form-horizontal">
+                <fieldset>
+                    <div class="form-group">
+                        {{ form.job.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.job(required="required",class_="form-control") }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-lg-10 col-lg-offset-2">
+                            {{ form.submit(class_="btn btn-primary btn-flat") }}
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+
+    <div class="box" id="training">
+        <div class="box-header with-border">
+            <h3 class="box-title">Job Roles</h3>
+        </div>
+
+        <div class="box-body">
+            <table class="table table-striped">
+                <thead>
+                <th>Role</th>
+                <th>Edit</th>
+                <th>Delete</th>
+                </thead>
+
+                {% for job_object in data %}
+                    <tr>
+                        <td>{{ job_object.job }}</td>
+                        <td><a href="{{ url_for('admin.jobroles_edit', id=job_object.id) }}">
+                            <span class="label label-primary">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                            </span>
+                        </a></td>
+                        <td><a href="{{ url_for('admin.deletejobrole', id=job_object.id) }}">
+                            <span class="label label-danger">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </span>
+                        </a></td>
+                    </tr>
+                {% endfor %}
+
+            </table>
+        </div>
+    </div>
+</section>
+
 
 {% endblock %}
