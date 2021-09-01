@@ -1,91 +1,76 @@
 {% extends "base2.html" %}
 {% block content %}
 
+    <section>
+        <h1>Validity Periods</h1>
+        {% if message %}
+            <div class="alert alert-danger">
+                <strong>Fail Whale!</strong> {{ message }}
+            </div>
+        {% endif %}
+    </section>
 
-
-
-
-
-            <h1>
-                Validity Periods
-                <small></small>
-            </h1>
-            <ol class="breadcrumb">
-                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                <li class="active">Here</li>
-            </ol>
-            {% if message %}
-                <div class="alert alert-danger">
-                    <strong>Fail Whale!</strong> {{ message }}
-                </div>
-            {% endif %}
-        </section>
-
-        <!-- Main content -->
-        <section class="content container-fluid">
-            <div class="callout callout-danger">
-                <h4>Editing this Is Dangerous</h4>
-
-                <p>This page is here to create and delete validity periods for CompetenceDB - I.e. 6, 12 Months etc. You can
+    <!-- Main content -->
+    <section class="content container-fluid">
+        <div class="callout callout-danger">
+            <h4>Editing this Is Dangerous</h4>
+            <p>This page is here to create and delete validity periods for CompetenceDB - I.e. 6, 12 Months etc. You can
                     add new validity periods but removing or editing will have unexpected consequences.</p>
+        </div>
+
+        <div class="box" id="training">
+            <div class="box-header with-border">
+                <h3 class="box-title">Add Validity Period</h3>
             </div>
-
-            <div class="box" id="training">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Add Validity Period</h3>
-
-                </div>
-                <div class="box-body">
-                    <form action="{{ url_for('admin.validityperiods') }}" method="POST" class="form-horizontal">
-                        <fieldset>
-                            <div class="form-group">
-                                {{ form.months.label(class_="col-lg-2 control-label") }}
-                                <div class="col-lg-10">
-                                    {{ form.months(required="required",class_="form-control") }}
-                                </div>
+            <div class="box-body">
+                <form action="{{ url_for('admin.validityperiods') }}" method="POST" class="form-horizontal">
+                    <fieldset>
+                        <div class="form-group">
+                            {{ form.months.label(class_="col-lg-2 control-label") }}
+                            <div class="col-lg-10">
+                                {{ form.months(required="required",class_="form-control") }}
                             </div>
-                            <div class="form-group">
-                                <div class="col-lg-10 col-lg-offset-2">
-                                    {{ form.submit(class_="btn btn-primary") }}
-                                </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-10 col-lg-offset-2">
+                                {{ form.submit(class_="btn btn-primary") }}
                             </div>
-                        </fieldset>
-                    </form>
-                </div>
+                        </div>
+                    </fieldset>
+                </form>
             </div>
+        </div>
 
-
-            <div class="box" id="training">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Validity Periods</h3>
-
-                </div>
-                <div class="box-body">
-                    <table class="table table-striped">
-                        <thead>
-                        <th>Months</th>
-                        <th>Edit</th>
-                        <th>Delete</th>
-                        </thead>
-
-                        {% for validity_object in data %}
-                            <tr>
-                                <td>{{ validity_object.months }}</td>
-                                <td><a href="{{ url_for('admin.validityperiods_edit', id=validity_object.id) }}"><span
-                                        class="label label-primary"><span
-                                        class="glyphicon glyphicon-pencil"></span></span></a></td>
-                                <td><a href="{{ url_for('admin.deletevalidityperiod', id=validity_object.id) }}"><span
-                                        class="label label-danger"><span
-                                        class="glyphicon glyphicon-remove"></span></span></a></td>
-                            </tr>
-                        {% endfor %}
-
-                    </table>
-                </div>
+        <div class="box" id="training">
+            <div class="box-header with-border">
+                <h3 class="box-title">Validity Periods</h3>
             </div>
-        </section>
-    </div>
+            <div class="box-body">
+                <table class="table table-striped">
+                    <thead>
+                    <th>Months</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                    </thead>
 
-
+                    {% for validity_object in data %}
+                        <tr>
+                            <td>{{ validity_object.months }}</td>
+                            <td><a href="{{ url_for('admin.validityperiods_edit', id=validity_object.id) }}">
+                                <span class="label label-primary">
+                                    <span class="glyphicon glyphicon-pencil"></span>
+                                </span>
+                            </a></td>
+                            <td><a href="{{ url_for('admin.deletevalidityperiod', id=validity_object.id) }}">
+                                <span class="label label-danger">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                </span>
+                            </a></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                </div>
+        </div>
+    </section>
 
 {% endblock %}}
