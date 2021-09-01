@@ -9,7 +9,7 @@ from sqlalchemy.orm import aliased
 import datetime
 from dateutil.relativedelta import relativedelta
 import os
-from forms import *
+from app.mod_training.forms import *
 import uuid
 import json
 from collections import OrderedDict
@@ -18,8 +18,6 @@ import pandas as pd
 from plotly.offline import plot
 import plotly.graph_objs as go
 import datetime
-
-
 
 training = Blueprint('training', __name__, template_folder='templates')
 
@@ -63,7 +61,9 @@ def utility_processor():
 
 def get_ss_id_from_assessment(assess_id_list):
     assess_id_list = [ int(x) for x in assess_id_list ]
-    ss_ids_res = s.query(Assessments).filter(Assessments.id.in_(assess_id_list)).values(Assessments.ss_id)
+    ss_ids_res = s.query(Assessments). \
+        filter(Assessments.id.in_(assess_id_list)). \
+        values(Assessments.ss_id)
     ss_ids = []
 
     for ss_id in ss_ids_res:
@@ -75,9 +75,6 @@ def get_ss_id_from_assessment(assess_id_list):
 def get_competent_users(ss_id_list):
     # todo: add competence author to this list
 
-    print "HELLO THERE"
-    print ss_id_list
-
     users = s.query(Users). \
         join(Assessments, Assessments.user_id == Users.id). \
         join(AssessmentStatusRef) \
@@ -87,50 +84,32 @@ def get_competent_users(ss_id_list):
         .filter(Users.active==1) \
         .group_by(Users.id).having(func.count(Assessments.ss_id.in_(ss_id_list)) == len(ss_id_list)). \
         values(Users.id, (Users.first_name + ' ' + Users.last_name).label('name'))
-
     return users
 
 
-def get_competence_by_user(c_id, u_id,version):
+def get_for_order(c_id, version):
     """
-    Method to get information for competence for a given user
-
+    Gets the 'for order' fpr a competency, and updates the 'result' dictionary
     :param c_id: ID for competence
-    :param u_id: ID of user
-    :return:
+    :param version: Version for competence
+    :return result: dictionary with some information about the competency
     """
-    # get ID for user
-
-    #users_alias = aliased(Users)
-
-    # get info for competence (assessments table)
-
-    competence_result = s.query(Assessments). \
-        join(Subsection). \
-        join(Section). \
-        join(SectionSortOrder). \
-        join(Competence). \
-        join(CompetenceDetails, and_(Competence.id==CompetenceDetails.c_id,CompetenceDetails.intro==version)). \
-        join(AssessmentStatusRef). \
-        join(EvidenceTypeRef). \
-        filter(AssessmentStatusRef.status != "Obsolete" ). \
-        filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id, Competence.id == c_id, Assessments.version==version)). \
-        order_by(asc(Section.name)).order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).\
-        values(Assessments.id.label('ass_id'), Section.name, Section.constant, Subsection.id, Assessments.trainer_id, Assessments.signoff_id,
-               Subsection.name.label('area_of_competence'), Subsection.comments.label('notes'), EvidenceTypeRef.type,
-               AssessmentStatusRef.status, Assessments.date_of_training,
-               Assessments.date_completed, Assessments.date_expiry, Assessments.comments.label('training_comments'),Assessments.version,SectionSortOrder.sort_order)
-
-    print "COUNT"
-    print competence_result
-
     result = {'constant': OrderedDict(), 'custom': OrderedDict()}
 
-    for_order = s.query(SectionSortOrder).filter(SectionSortOrder.c_id == c_id).order_by(
-        asc(SectionSortOrder.sort_order)).all()
+    for_order = s.query(SectionSortOrder). \
+        filter(SectionSortOrder.c_id == c_id). \
+        order_by(asc(SectionSortOrder.sort_order)). \
+        all()
+
+
     for x in for_order:
-        check = s.query(Subsection).filter(Subsection.s_id == x.section_id).filter(
-            and_(Subsection.intro <= version, or_(Subsection.last > version, Subsection.last == None))).count()
+        ### Need to keep Subsection.last == None instead of is None for query to function correctly
+        check = s.query(Subsection). \
+            filter(Subsection.s_id == x.section_id). \
+            filter(and_(Subsection.intro <= version,
+                        or_(Subsection.last > version,
+                            Subsection.last == None))). \
+            count()
 
         if check > 0:
             if x.section_id_rel.constant == 1:
@@ -139,53 +118,239 @@ def get_competence_by_user(c_id, u_id,version):
             else:
                 result["custom"][x.section_id_rel.name] = OrderedDict()
                 result["custom"][x.section_id_rel.name] = {'complete': 0, 'total': 0, 'subsections': []}
-
-    print json.dumps(result, indent=4)
-
-    for c in competence_result:
-        evidence = s.query(AssessmentEvidenceRelationship).filter(
-            AssessmentEvidenceRelationship.assessment_id == c.ass_id).all()
-
-        if c.constant:
-            d = 'constant'
         else:
-            d = 'custom'
+            continue
 
-        #todo repleace this with relationship in assessments - back_populates?
+    return result
+
+
+def get_competence_result(c_id, u_id, version):
+    """
+    Gets competency information and converts to dictionary for further queries
+    :param c_id: ID for competency
+    :param u_id: ID for user
+    :param version: Version for competency
+    :return competence_result_dictionary: Result of the competency query converted to a dictionary for further processing
+    """
+    #TODO specify the relationships better (see error) (note: works, just could be formatted better)
+    competence_result = s.query(Assessments). \
+        join(Subsection, Assessments.ss_id_rel). \
+        join(Section, Subsection.s_id_rel). \
+        join(SectionSortOrder, Section.sort_order_rel). \
+        join(Competence, Subsection.c_id_rel). \
+        join(CompetenceDetails, and_(
+            Competence.id == CompetenceDetails.c_id,
+            CompetenceDetails.intro == version)). \
+        join(AssessmentStatusRef, Assessments.status_rel). \
+        join(EvidenceTypeRef, Subsection.evidence_rel). \
+        filter(AssessmentStatusRef.status != "Obsolete"). \
+        filter(and_(Assessments.user_id == u_id,
+                    Subsection.c_id == c_id,
+                    Competence.id == c_id,
+                    Assessments.version == version)). \
+        order_by(asc(Section.name)). \
+        order_by(asc(Subsection.sort_order)). \
+        order_by(asc(SectionSortOrder.sort_order)). \
+        values(Assessments.id.label('ass_id'), Section.name, Section.constant, Subsection.id, Assessments.trainer_id,
+               Assessments.signoff_id,
+               Subsection.name.label('area_of_competence'), Subsection.comments.label('notes'), EvidenceTypeRef.type,
+               AssessmentStatusRef.status, Assessments.date_of_training,
+               Assessments.date_completed, Assessments.date_expiry, Assessments.comments.label('training_comments'),
+               Assessments.version, SectionSortOrder.sort_order)
+
+    competence_result_dictionary = {}
+    for c in competence_result:
+        competence_result_dictionary[c.ass_id] = {
+            "name" : c.name,
+            "constant" : c.constant,
+            "id" : c.id,
+            "trainer_id" : c.trainer_id,
+            "signoff_id" : c.signoff_id,
+            "area_of_competence" : c.area_of_competence,
+            "notes" : c.notes,
+            "type" : c.type,
+            "status" : c.status,
+            "date_of_training" : c.date_of_training,
+            "date_completed" : c.date_completed,
+            "date_expiry" : c.date_expiry,
+            "training_comments" : c.training_comments,
+            "version" : c.version,
+            "sort_order" : c.sort_order
+        }
+
+    return competence_result_dictionary
+
+
+def parse_competence_result(competence_result, result):
+    """
+    Performs further queries based on the competency result to populate additional fields (eg. trainer)
+    :param competence_result: the result of the competence_result query, converted to a dictionary
+    :param result: the result dictionary that has already been processed in the get_for_order() function
+    :return result: A dictionary with all necessary information about the competency
+    """
+    for key, values in competence_result.items():
+
+        if values["constant"]:
+            d = "constant"
+        else:
+            d = "custom"
+
+        if values["name"] not in result[d].keys():
+            result[d][values["name"]] = {"complete": 0, "total": 0, "subsections": []}
+
+        evidence = s.query(AssessmentEvidenceRelationship). \
+            filter(AssessmentEvidenceRelationship.assessment_id == key). \
+            all()
+
         trainer = "-"
-        if c.trainer_id is not None:
-            q = s.query(Users).filter(Users.id==c.trainer_id).first()
+        if values["trainer_id"] is not None:
+            q = s.query(Users).filter(Users.id == values["trainer_id"]).first()
             trainer = q.first_name + " " + q.last_name
 
         assessor = "-"
-        if c.signoff_id is not None:
-            q = s.query(Users).filter(Users.id == c.signoff_id).first()
+        if values["signoff_id"] is not None:
+            q = s.query(Users).filter(Users.id == values["signoff_id"]).first()
             assessor = q.first_name + " " + q.last_name
 
+        subsection = {"id": key,
+                      "name": values["area_of_competence"],
+                      "status": values["status"],
+                      "evidence_type": values["type"],
+                      "assessor": assessor,
+                      "date_of_completion": filter_for_none(values["date_completed"]),
+                      "notes": filter_for_none(values["notes"]),
+                      "training_comments": filter_for_none(values["training_comments"]),
+                      "trainer": trainer,
+                      "date_of_training": filter_for_none(values["date_of_training"]),
+                      "evidence": filter_for_none(evidence)}
 
-        if c.name not in result[d].keys():
-            result[d][c.name] = {'complete': 0, 'total': 0, 'subsections': []}
-
-        #Feb 2018 - I have changed this here to be the assessment id - instead of the c.id
-        subsection = {'id': c.ass_id,
-                      'name': c.area_of_competence,
-                      'status': c.status,
-                      'evidence_type': c.type,
-                      'assessor': assessor,
-                      'date_of_completion': filter_for_none(c.date_completed),
-                      'notes': filter_for_none(c.notes),
-                      'training_comments': filter_for_none(c.training_comments),
-                      'trainer': trainer,
-                      'date_of_training': filter_for_none(c.date_of_training),
-                      'evidence': filter_for_none(evidence)}
-        if c.date_completed:
-            result[d][c.name]['complete'] += 1
-        result[d][c.name]['total'] += 1
-        subsection_list = result[d][c.name]['subsections']
+        if values["date_completed"]:
+            result[d][values["name"]]["complete"] += 1
+        result[d][values["name"]]["total"] += 1
+        subsection_list = result[d][values["name"]]["subsections"]
         subsection_list.append(subsection)
-        result[d][c.name]['subsections'] = subsection_list
+        result[d][values["name"]]["subsections"] = subsection_list
 
     return result
+
+
+def get_competence_by_user(c_id, u_id, version):
+    """
+    Runs the necessary functions to get information about a given competence for a given user
+    08/21 NC - has been split from original method to 3 methods during upgrade to py3
+    :param c_id: ID for the competency
+    :param u_id: ID for the user
+    :param version: Version for the competency
+    :return result: Dictionary with all necessary information about the competency
+    """
+    result = get_for_order(c_id, version)
+    competence_result = get_competence_result(c_id, u_id, version)
+    result = parse_competence_result(competence_result, result)
+    return result
+# def get_competence_by_user(c_id, u_id, version):
+#     """
+#     Method to get information for competence for a given user
+#
+#     :param c_id: ID for competence
+#     :param u_id: ID of user
+#     :param version: version of competence
+#
+#     :return:
+#     """
+#     # get ID for user
+#
+#     #users_alias = aliased(Users)
+#
+#     # get info for competence (assessments table)
+#
+#     competence_result = s.query(Assessments). \
+#         join(Subsection, Assessments.ss_id_rel). \
+#         join(Section, Subsection.s_id_rel). \
+#         join(SectionSortOrder, Section.sort_order_rel). \
+#         join(Competence, Subsection.c_id_rel). \
+#         join(CompetenceDetails, and_(Competence.id==CompetenceDetails.c_id,CompetenceDetails.intro==version)). \
+#         join(AssessmentStatusRef, Assessments.status_rel). \
+#         join(EvidenceTypeRef, Subsection.evidence_rel). \
+#         filter(AssessmentStatusRef.status != "Obsolete" ). \
+#         filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id, Competence.id == c_id, Assessments.version==version)). \
+#         order_by(asc(Section.name)).order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).\
+#         values(Assessments.id.label('ass_id'), Section.name, Section.constant, Subsection.id, Assessments.trainer_id, Assessments.signoff_id,
+#                Subsection.name.label('area_of_competence'), Subsection.comments.label('notes'), EvidenceTypeRef.type,
+#                AssessmentStatusRef.status, Assessments.date_of_training,
+#                Assessments.date_completed, Assessments.date_expiry, Assessments.comments.label('training_comments'),Assessments.version,SectionSortOrder.sort_order)
+#
+#     print(competence_result)
+#
+#     result = {'constant': OrderedDict(), 'custom': OrderedDict()}
+#
+#
+#     for_order = s.query(SectionSortOrder). \
+#         filter(SectionSortOrder.c_id == c_id). \
+#         order_by(asc(SectionSortOrder.sort_order)). \
+#         all()
+#
+#     for x in for_order:
+#         check = s.query(Subsection). \
+#             filter(Subsection.s_id == x.section_id). \
+#             filter(and_(
+#             Subsection.intro <= version,
+#             or_(Subsection.last > version,
+#                 Subsection.last is None))). \
+#             count()
+#
+#         if check > 0:
+#             if x.section_id_rel.constant == 1:
+#                 result["constant"][x.section_id_rel.name] = OrderedDict()
+#                 result["constant"][x.section_id_rel.name] = {'complete': 0, 'total': 0, 'subsections': []}
+#             else:
+#                 result["custom"][x.section_id_rel.name] = OrderedDict()
+#                 result["custom"][x.section_id_rel.name] = {'complete': 0, 'total': 0, 'subsections': []}
+#
+#     for c in competence_result:
+#         evidence = s.query(AssessmentEvidenceRelationship). \
+#             filter(AssessmentEvidenceRelationship.assessment_id == c.ass_id). \
+#             all()
+#
+#         if c.constant:
+#             d = 'constant'
+#         else:
+#             d = 'custom'
+#
+#         #todo repleace this with relationship in assessments - back_populates?
+#         trainer = "-"
+#         if c.trainer_id is not None:
+#             q = s.query(Users).filter(Users.id==c.trainer_id).first()
+#             trainer = q.first_name + " " + q.last_name
+#
+#         assessor = "-"
+#         if c.signoff_id is not None:
+#             q = s.query(Users).filter(Users.id == c.signoff_id).first()
+#             assessor = q.first_name + " " + q.last_name
+#
+#
+#         if c.name not in result[d].keys():
+#             result[d][c.name] = {'complete': 0, 'total': 0, 'subsections': []}
+#
+#         #Feb 2018 - I have changed this here to be the assessment id - instead of the c.id
+#         subsection = {'id': c.ass_id,
+#                       'name': c.area_of_competence,
+#                       'status': c.status,
+#                       'evidence_type': c.type,
+#                       'assessor': assessor,
+#                       'date_of_completion': filter_for_none(c.date_completed),
+#                       'notes': filter_for_none(c.notes),
+#                       'training_comments': filter_for_none(c.training_comments),
+#                       'trainer': trainer,
+#                       'date_of_training': filter_for_none(c.date_of_training),
+#                       'evidence': filter_for_none(evidence)}
+#         if c.date_completed:
+#             result[d][c.name]['complete'] += 1
+#         result[d][c.name]['total'] += 1
+#         subsection_list = result[d][c.name]['subsections']
+#         subsection_list.append(subsection)
+#         result[d][c.name]['subsections'] = subsection_list
+#
+#     return result
 
 
 def get_competence_summary_by_user(c_id, u_id,version):
@@ -244,7 +409,7 @@ def activate_assessments(ids, u_id,version):
 
     :return:
     """
-    print "here"
+
     if ids[0] != "":
         ids = [int(x) for x in ids]
     else:
@@ -254,13 +419,6 @@ def activate_assessments(ids, u_id,version):
     activated = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Active").first().id
     assigned = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Assigned").first().id
 
-    print('activated = ' + str(activated))
-    print('assigned = ' + str(assigned))
-    print('query')
-    print(s.query(Assessments).filter(
-        and_(Assessments.user_id == u_id, Assessments.status == assigned, Assessments.id.in_(ids))))
-    print(s.query(Assessments).filter(
-        and_(Assessments.user_id == u_id, Assessments.status == assigned, Assessments.id.in_(ids))))
     statement = s.query(Assessments). \
         filter(and_(Assessments.version==version,Assessments.user_id == u_id, Assessments.status == assigned, Assessments.id.in_(ids))). \
         update({Assessments.status: activated, Assessments.date_activated: datetime.date.today()},
@@ -298,15 +456,10 @@ def reassessment():
         version = request.args.get('version')
 
         current_version = s.query(Competence).filter(Competence.id == c_id).first().current_version
-        print "YEAH"
-        print version
-        print current_version
-        print "----"
         if int(version) < int(current_version):
             from app.views import index
             return index(message="There is a new version of this competence so it cannot be re-assessed!")
 
-        print c_id
 
         assess_id_list = request.args.get('assess_id_list').split(',')
 
@@ -361,7 +514,6 @@ def reassessment():
                                assess_id_list=','.join(assess_id_list),version=version)
 
     elif request.method == 'POST':
-        print "now posting"
         questions = s.query(QuestionsRef).filter(QuestionsRef.active == True).all()
 
         signoff_id = request.form["signoff_id"]
@@ -409,18 +561,50 @@ def view_current_competence():
     :return:
     """
     if request.method == 'GET':
-
-
         c_id = request.args.get('c_id')
         version = request.args.get('version')
         u_id = current_user.database_id
+
         competence_summary = get_competence_summary_by_user(c_id, u_id,version)
+
         section_list = get_competence_by_user(c_id, u_id,version)
-        reassessments = s.query(Reassessments).join(AssessReassessRel).join(Assessments).join(AssessmentStatusRef).join(Subsection).join(Competence).filter(AssessmentStatusRef.status != "Obsolete").filter(Assessments.user_id==u_id).filter(Competence.id==c_id).filter(Assessments.version==version).all()
-        detail_id = s.query(CompetenceDetails).join(Competence).filter(CompetenceDetails.c_id == c_id).filter(and_(CompetenceDetails.intro <= version,
-                                                                 or_(
-                                                                     CompetenceDetails.last >= version,
-                                                                     CompetenceDetails.last == None))).first().id
+
+        reassessments = s.query(Reassessments). \
+            join(AssessReassessRel). \
+            join(Assessments). \
+            join(AssessmentStatusRef). \
+            join(Subsection). \
+            join(Competence). \
+            filter(AssessmentStatusRef.status != "Obsolete"). \
+            filter(Assessments.user_id==u_id). \
+            filter(Competence.id==c_id). \
+            filter(Assessments.version==version). \
+            all()
+
+        # detail_id = s.query(CompetenceDetails). \
+        #     join(Competence, CompetenceDetails.competence). \
+        #     filter(CompetenceDetails.c_id == c_id). \
+        #     filter(and_(CompetenceDetails.intro <= version,
+        #                 or_(CompetenceDetails.last >= version,
+        #                     CompetenceDetails.last is None))). \
+        #     first(). \
+        #     id
+        print(f"c_id: {c_id}")
+        print(f"version: {version}")
+
+        # Note: you need to use the bad syntax 'C.f == None' for the query to work
+        detail_query = s.query(CompetenceDetails). \
+            join(Competence, CompetenceDetails.competence). \
+            filter(CompetenceDetails.c_id == c_id). \
+            filter(CompetenceDetails.intro <= version). \
+            filter(or_(CompetenceDetails.last >= version,
+                       CompetenceDetails.last == None)). \
+            first()
+        print(f"detail query: {detail_query}")
+        print(f"detail_query.last: {detail_query.last}")
+        detail_id = detail_query.id
+        print(f"detail query id: {detail_id}")
+
 
         videos = s.query(Videos).filter(Videos.c_id==detail_id).all()
         four_year_check = s.query(Assessments).join(Subsection).join(Competence).join(AssessmentStatusRef).filter(Assessments.user_id==u_id).filter(AssessmentStatusRef.status=="Four Year Due").filter(Competence.id==c_id).count()
@@ -448,6 +632,7 @@ def upload_evidence(c_id=None, s_ids=None,version=None):
     """
 
     ass_ids = json.loads(request.form["ids"])
+
     form = UploadEvidence()
 
     ss_id_list = get_ss_id_from_assessment(ass_ids)
@@ -558,21 +743,11 @@ def accept_reassessment(id=None):
 
 
         for i in s.query(Reassessments).join(AssessReassessRel).join(Assessments).filter(Reassessments.id == id).all():
-            print "HERE"
             for j in i.assessments_rel:
                 current_version = j.assess_rel.ss_id_rel.c_id_rel.current_version
-                print "CURRENT"
-                print current_version
                 for detail in j.assess_rel.ss_id_rel.c_id_rel.competence_detail:
                     if detail.intro <= current_version:
-                        print "CURRENT EXPIRY"
-                        print i.date_completed
                         new_expiry = i.date_completed + relativedelta(months=detail.validity_rel.months)
-                        print "NEW_EXPIRY"
-                        print new_expiry
-
-
-                print j.assess_id
 
                 data = {
                     'date_expiry':new_expiry
@@ -591,8 +766,7 @@ def accept_reassessment(id=None):
 def download(filename, alias):
     #    uploads = os.path.join(current_app.root_path, app.config['UPLOAD_FOLDER'])
     uploads = app.config["UPLOAD_FOLDER"]
-    print uploads
-    return send_from_directory(directory=uploads, filename=filename, as_attachment=True, attachment_filename=alias)
+    return send_from_directory(directory=uploads, path=filename, as_attachment=True, attachment_filename=alias)
 
 @training.route('/signoff/<int:assess_id>', methods=['GET', 'POST'])
 @login_required
@@ -608,9 +782,7 @@ def signoff(assess_id):
 
         if count != 0:
             form = SignOffForm()
-            print assess_id
             ss_id_list = get_ss_id_from_assessment([assess_id])
-            print ss_id_list
             competent_users = get_competent_users(ss_id_list)
 
             sub_section_name = ass.ss_id_rel.name
@@ -641,14 +813,12 @@ def signoff(assess_id):
                 'signoff_id': request.form['assessor'],
                 'status': status_id,
                 }
-        print data
         s.query(Assessments).filter(Assessments.id==assess_id).update(data)
         s.commit()
 
 @training.route('/self_complete/<int:assess_id>', methods=['GET', 'POST'])
 @login_required
 def self_complete(assess_id):
-    print assess_id
     c_id = request.args.get('c_id')
     version = request.args.get('version')
     status_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Complete").first().id
@@ -657,8 +827,6 @@ def self_complete(assess_id):
 
     for detail in query.ss_id_rel.c_id_rel.competence_detail:
         if detail.intro <= query.version:
-            print "YOY"
-            print detail
             months_valid = detail.validity_rel.months
 
     data = {'trainer_id': current_user.database_id,
@@ -668,8 +836,7 @@ def self_complete(assess_id):
             'signoff_id': current_user.database_id,
             'status': status_id,
             }
-    print "hello"
-    print data
+
     s.query(Assessments).filter(Assessments.id == assess_id).update(data)
     s.commit()
     return redirect(url_for('training.view_current_competence')+"?c_id="+str(c_id)+"&version="+str(version))
@@ -730,7 +897,6 @@ def delete():
         obsolete_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status=="Obsolete").first().id
         data = {'status': obsolete_id, 'due_date': None, 'date_expiry': None}
 
-        print "making assessments obsolete"
         s.query(Assessments).filter_by(id=assessment.id).update(data)
         s.commit()
 
@@ -744,8 +910,6 @@ def delete():
 @login_required
 def abandon():
     c_id = request.args["c_id"]
-    print "hello"
-    print c_id
     version = request.args["version"]
     abandon_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status=="Abandoned").first().id
     data = {'status':abandon_id}
@@ -826,20 +990,14 @@ def process_evidence():
     c_id = request.args.get('c_id')
     version = request.args.get('version')
     status_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Sign-Off").first().id
-    for i in request.form:
-        print i
+
 
     evidence_type = s.query(EvidenceTypeRef).filter(EvidenceTypeRef.id == int(request.form['evidence_type'])).first().type
-
-    print evidence_type
-
-
 
     if evidence_type == "Case":
         evidence = request.form.getlist('case')
         result = request.form.getlist('result')
         for i in zip(evidence,result):
-            print i
             e = Evidence(is_correct=None, signoff_id=request.form['assessor'], date=datetime.date.today(),
                          evidence=i[0], result=i[1],
                          comments=None, evidence_type_id=request.form["evidence_type"])
@@ -858,9 +1016,6 @@ def process_evidence():
             result = None
 
         if evidence_type == "Observation":
-            print "Observation"
-            print "HERE ME"
-            print request.form['evidence_observation']
             evidence = request.form['evidence_observation']
             result = None
 
@@ -896,7 +1051,6 @@ def process_evidence():
     s.commit()
 
     uploaded_files = request.files.getlist("file")
-    # print uploaded_files
 
     if len(uploaded_files) > 0:
 
@@ -904,6 +1058,7 @@ def process_evidence():
             # this prevents an additional blank file being uploaded
             if f.content_type == 'application/octet-stream':
                 continue
+
             # generate uuid in case someone uploads file of same name and it's actually different - store real name in db
             upload_filename = str(uuid.uuid4())
             f.stream.seek(0)
@@ -912,7 +1067,6 @@ def process_evidence():
             s.add(u)
         s.commit()
 
-    print request.form['assessor']
     # send_mail(request.form['assessor'], "Evidence awaiting your review",
     #           "You have evidence from <b>" + current_user.full_name + "</b> awaiting your review")
     send_mail(request.form['assessor'], "Evidence awaiting your review", "")
@@ -980,28 +1134,22 @@ def select_subsections():
         elif forward_action == "reassess":
             heading = heading.format("Reassess")
             required_status = ["Complete"]
-        print "HERE HERE"
-        print u_id
+
         return render_template('select_subsections.html', competence=c_id, user={'name': competence_summary.user,
                                                                                  'id': u_id},
                                title=competence_summary.title, validity=competence_summary.months, heading=heading,
                                section_list=section_list, required_status=required_status, action=forward_action,
                                form=form,version=version)
     else:
-        print request.form["ids"]
         ids = form.ids.data.replace('"', '').replace('[', '').replace(']', '').split(',')
         if forward_action == "assign":
             pass
         elif forward_action == "activate":
-            print "THIS IS ME"
-            print ids
             result = activate_assessments(ids, u_id,version)
             if result == False:
                 return redirect(url_for('training.view_current_competence', c_id=c_id, user=u_id, version=version))
 
         elif forward_action == "evidence":
-            print "HELLO"
-            print ids
             return upload_evidence(c_id, ids,version)
         elif forward_action == "reassess":
             return redirect(url_for('training.reassessment')+"?c_id="+str(c_id)+"&version="+str(version)+"&assess_id_list="+",".join(ids))
@@ -1020,23 +1168,19 @@ def retract_evidence():
     Uploads (if applicable) also remain
     :return:
     """
-    print "HELLO RETRACTING"
 
     user_id = current_user.database_id
     version = request.args.get('version')
     c_id = request.args.get('c_id')
 
     evidence_id = request.args.get('evidence_id')
-    print "EVIDENCE ID: "+ str(evidence_id)
 
     assessment_id = request.args.get('assessment_id')
-    print "ASSESSMENT ID:" +str(assessment_id)
     assessment = s.query(Assessments).filter(Assessments.id==assessment_id).all()
     if len(assessment) == 1 and int(assessment[0].user_id) == int(user_id) and int(assessment[0].status) == 7:
-        print "IN IF"
         evidence = s.query(AssessmentEvidenceRelationship).filter(AssessmentEvidenceRelationship.assessment_id==int(assessment_id)).all()
         if len(evidence)==1:
-            print "setting assessment status to 1 (active), remove trainer and signoff information"
+            print ("setting assessment status to 1 (active), remove trainer and signoff information")
             assessment[0].status = 1
             assessment[0].date_of_training = None
             assessment[0].trainer_id = None
@@ -1044,7 +1188,7 @@ def retract_evidence():
             s.commit()
         elif len(evidence)>1:
             ### assessment goes back to most recent evidence status
-            print "more evidence - deciding status"
+            print ("more evidence - deciding status")
             dates={}
             for i in evidence:
                 if int(i.evidence_id) != int(evidence_id):
@@ -1058,7 +1202,6 @@ def retract_evidence():
 
             ### get most recent date - this determines the status of the assessment
             most_recent = max(dates.keys())
-            print most_recent
 
             if dates[most_recent] == "correct":
                 assessment[0].status = 3
@@ -1070,12 +1213,10 @@ def retract_evidence():
                 assessment[0].status = 7
                 assessment[0].date_of_training = most_recent.strftime("%Y-%m-%d")
 
-            print assessment[0].status
             s.commit()
 
     evidence_assess_rel = s.query(AssessmentEvidenceRelationship).filter(AssessmentEvidenceRelationship.evidence_id==int(evidence_id)).filter(AssessmentEvidenceRelationship.assessment_id==int(assessment_id)).all()
     if len(evidence_assess_rel) == 1:
-        print "deleting"
         s.delete(evidence_assess_rel[0])
         s.commit()
 
@@ -1104,7 +1245,6 @@ def activate_competence():
     """
     u_id = request.args.get('u_id')
     c_id = request.args.get('c_id')
-    print "LOOK AT ME"
     activate_assessments(c_id, u_id)
     return redirect(url_for('training.view_current_competence', c_id=c_id, user=u_id))
 
@@ -1139,7 +1279,7 @@ def bulk_distribute():
 
     elif request.method == "POST":
         for i in zip(request.form.getlist('assid'), request.form.getlist('trainer'), request.form.getlist('assessor')):
-            print i
+            print (i)
 
 @training.route('/four_year_activate/<c_id>', methods=['GET', 'POST'])
 @login_required
@@ -1163,7 +1303,6 @@ def four_year_activate(c_id = None):
     status_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Obsolete").first().id
     data = { 'status': status_id }
     for assessment in assessments:
-        print "setting " + assessment.ss_id_rel.name + " to obsolete"
         s.query(Assessments).filter(Assessments.id == assessment.id).update(data)
     s.commit()
 
@@ -1182,8 +1321,6 @@ def four_year_activate(c_id = None):
 @training.route('/test', methods=['GET', 'POST'])
 def test():
     four_years_ago = datetime.date.today() - relativedelta(months=48)
-
-    print four_years_ago
 
     assessments = s.query(Assessments).join(AssessmentStatusRef).filter(
         AssessmentStatusRef.status == "Complete").filter(Assessments.date_completed <= four_years_ago)
@@ -1204,7 +1341,7 @@ def test():
             lines.append("You originally completed this competency on "+str(assessment.date_completed))
             lines.append("Please arrange a suitable time with your trainer to reassess you competence fully.")
 
-            print send_mail(assessment.user_id ,"Four Year Competency Reassessment Required: "+ assessment.ss_id_rel.c_id_rel.competence_detail[0].title,"<br><br>".join(lines))
+            print (send_mail(assessment.user_id ,"Four Year Competency Reassessment Required: "+ assessment.ss_id_rel.c_id_rel.competence_detail[0].title,"<br><br>".join(lines)))
 
         done.append(str(assessment.user_id) + ":" + str(assessment.ss_id_rel.c_id))
 
@@ -1261,7 +1398,6 @@ def user_report(id=None):
     expiring_within_month=[]
     today = datetime.date.today()
 
-
     for j in assigned:
         ongoing_assessment_summary = get_competence_summary_by_user(c_id=j.ss_id_rel.c_id,u_id=id,version=j.version)
         if ongoing_assessment_summary.due_date <= today:
@@ -1284,7 +1420,6 @@ def user_report(id=None):
         .filter(CompetenceDetails.intro == Competence.current_version) \
         .filter(AssessmentStatusRef.status.in_(["Complete","Four Year Due"])) \
         .all()
-
 
     for i in complete:
         complete_assessment_summary = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=id, version=i.version)
@@ -1356,23 +1491,28 @@ def user_report(id=None):
     training_plot = plot(fig, output_type="div")
 
     #get documents written and authorised by user
-    creater_dates_dict={}
+    creator_dates_dict={}
     approver_dates_dict={}
     creater_dates = []
     creater_counts=[]
     approver_dates=[]
     approver_counts=[]
 
-    creater_query = s.query(CompetenceDetails).filter(CompetenceDetails.creator_id == id).values(CompetenceDetails.date_created)
+    creator_query = s.query(CompetenceDetails).filter(CompetenceDetails.creator_id == id).values(CompetenceDetails.date_created)
+    print(f"creator query: {creator_query}")
+    #DO NOT REMOVE THIS STATEMENT without it the page won't load
+    #TODO work out how to fix this properly
+    for creator in creator_query:
+        print(creator)
     approver_query = s.query(CompetenceDetails).filter(CompetenceDetails.approve_id == id).values(CompetenceDetails.date_of_approval)
+    print(f"approver query: {approver_query}")
 
-
-    for i in creater_query:
+    for i in creator_query:
         if i.date_created is not None:
-            if i.date_created not in creater_dates_dict:
-                creater_dates_dict[i.date_created] = 1
+            if i.date_created not in creator_dates_dict:
+                creator_dates_dict[i.date_created] = 1
             else:
-                creater_dates_dict[i.date_created] +=1
+                creator_dates_dict[i.date_created] +=1
 
     for i in approver_query:
         if i.date_of_approval is not None:
@@ -1387,8 +1527,8 @@ def user_report(id=None):
             approver_dates.append(date)
             approver_counts.append(approver_dates_dict_filled[date])
 
-    if len(creater_dates_dict.keys()) > 0:
-        creater_dates_dict_filled = fill_time_series(creater_dates_dict)
+    if len(creator_dates_dict.keys()) > 0:
+        creater_dates_dict_filled = fill_time_series(creator_dates_dict)
         for date in sorted(creater_dates_dict_filled):
             creater_dates.append(date)
             creater_counts.append(creater_dates_dict_filled[date])

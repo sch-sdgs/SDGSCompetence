@@ -16,7 +16,6 @@ hos = Blueprint('hos', __name__, template_folder='templates')
 @login_required
 @hos_permission.require(http_exception=403)
 def index():
-    #TODO: this is SLOW why is it so slow
     """
     populates the head of service page
     return: index template for head of service
@@ -94,7 +93,7 @@ def index():
                 .all()
         )
         failed_count += counts[i.id]["failed"]
-        # Obsolete competencies by staff member #TODO why is this here?!
+        # Obsolete competencies by staff member
         counts[i.id]["obsolete"] = len(
             s.query(Assessments) \
                 .join(AssessmentStatusRef) \

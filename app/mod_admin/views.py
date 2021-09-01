@@ -1,14 +1,11 @@
-from collections import OrderedDict
-from sqlalchemy.orm import load_only
-from sqlalchemy.sql.expression import exists
 from sqlalchemy import exc
-from flask import Blueprint
 from flask import flash,render_template, request, url_for, redirect, Blueprint, jsonify, make_response
 from flask_login import login_required, current_user
-from app.views import admin_permission
-from forms import *
+from app.views import *
+#from app.mod_admin.forms import *
+from mod_admin.forms import *
 from app.models import *
-from app.competence import s
+from app.competence import *
 import datetime
 import time
 import io
@@ -39,7 +36,7 @@ def get_user_details():
     """
     username = request.args["username"]
     u = UserAuthentication().get_user_detail_from_username(username)
-    return jsonify({"response":u});
+    return jsonify({"response":u})
 
 
 @admin.route('/check_line_manager', methods=['GET', 'POST'])
@@ -266,9 +263,9 @@ def reset_password(id):
             flash("Your password and password verification didn't match."
                   , "danger")
             return redirect(url_for("pwreset_get", id=id))
-            if len(request.form["password"]) < 8:
-                flash("Your password needs to be at least 8 characters", "danger")
-                return redirect(url_for("pwreset_get", id=id))
+        if len(request.form["password"]) < 8:
+            flash("Your password needs to be at least 8 characters", "danger")
+            return redirect(url_for("pwreset_get", id=id))
         user_reset = s.query(PWReset).filter_by(reset_key=id).one()
         try:
             s.query(Users).filter_by(id=user_reset.user_id).update({'password': generate_password_hash(request.form["new_password"])})
@@ -309,33 +306,41 @@ def users_add():
     if request.method == 'POST':
         now = datetime.datetime.now()
 
-        if request.form["linemanager"] != "":
-            firstname, surname = request.form["linemanager"].split(" ")
-            line_manager_id = int(s.query(Users).filter_by(first_name=firstname, last_name=surname).first().id)
+        ### checks if user already exists in database
+        username = request.form["username"]
+        username_query = s.query(Users).filter_by(login=username).first()
+        if username_query:
+            flash("That username is already taken!", "danger")
+            render_template("users_add.html", form=form)
+
         else:
-            line_manager_id = None
 
-        u = Users(login=request.form["username"],
-                  first_name=request.form["firstname"],
-                  last_name=request.form["surname"],
-                  email=request.form["email"],
-                  staff_no=request.form["staff_no"],
-                  serviceid=request.form["section"],
-                  active=True,
-                  line_managerid=line_manager_id)
+            if request.form["linemanager"] != "":
+                firstname, surname = request.form["linemanager"].split(" ")
+                line_manager_id = int(s.query(Users).filter_by(first_name=firstname, last_name=surname).first().id)
+            else:
+                line_manager_id = None
 
-        s.add(u)
-        s.commit()
-        print request.form.getlist('userrole')
-        for role_id in request.form.getlist('userrole'):
-            urr = UserRoleRelationship(userrole_id=int(role_id), user_id=u.id)
-            s.add(urr)
+            u = Users(login=request.form["username"],
+                      first_name=request.form["firstname"],
+                      last_name=request.form["surname"],
+                      email=request.form["email"],
+                      staff_no=request.form["staff_no"],
+                      serviceid=request.form["section"],
+                      active=True,
+                      line_managerid=line_manager_id)
 
-        for job_id in request.form.getlist('jobrole'):
-            urr = UserJobRelationship(jobrole_id=int(job_id), user_id=u.id)
-            s.add(urr)
-        s.commit()
-        return redirect(url_for('admin.users_view'))
+            s.add(u)
+            s.commit()
+            for role_id in request.form.getlist('userrole'):
+                urr = UserRoleRelationship(userrole_id=int(role_id), user_id=u.id)
+                s.add(urr)
+
+            for job_id in request.form.getlist('jobrole'):
+                urr = UserJobRelationship(jobrole_id=int(job_id), user_id=u.id)
+                s.add(urr)
+            s.commit()
+            return redirect(url_for('admin.users_view'))
 
     return render_template("users_add.html", form=form)
 
@@ -375,8 +380,7 @@ def users_edit(id=None):
         form.userrole.choices = s.query(UserRolesRef.id, UserRolesRef.role).all()
         form.userrole.process_data(userrole_ids)
 
-        form.section.choices = s.query(Service.id, Service.name).all()
-        print form.section.choices
+        form.section.data = user.service_rel
         form.section.process_data(user.serviceid)
 
         return render_template("users_edit.html", id=id, form=form)
@@ -403,9 +407,10 @@ def users_edit(id=None):
 
         if "staff_no" in request.form:
             staff_no = request.form["staff_no"]
-            print "HELLO"
         else:
             staff_no = s.query(Users).filter_by(id=id).first().staff_no
+
+        #service_id =
 
         data = {
             'login': request.form["username"],
@@ -438,8 +443,6 @@ def dropdown_choices():
         except KeyError:
             pass
 
-    print "requesting"
-    print request.json['question_id']
     choices = s.query(DropDownChoices).filter(DropDownChoices.question_id==request.json['question_id'])
 
     return jsonify({"response":render_template("dropdown_choices.html",data=choices)})
@@ -456,7 +459,6 @@ def delete_dropdown_choice():
 @admin.route('/questions',methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def reassessment_questions():
-    print "hello"
     form = QuestionsForm()
     q_id = 0
     dropdown=False
@@ -488,7 +490,6 @@ def reassessment_questions_edit(question_id=None, commit=None):
         form=QuestionsForm()
         question = s.query(QuestionsRef).filter_by(id=question_id).first()
         form.type.default = question.answer_type
-        print question.answer_type
         form.process()
         form.question.data = question.question
         dropdown=False
@@ -505,7 +506,6 @@ def reassessment_questions_edit(question_id=None, commit=None):
             dropdown = True
             choices = s.query(DropDownChoices).filter(DropDownChoices.question_id == question_id)
             length = len(choices.all())
-            print length
             choices_html = render_template("dropdown_choices.html",data=choices)
         else:
             return redirect(url_for('admin.reassessment_questions'))
@@ -576,7 +576,6 @@ def deletejobrole(id=None):
 @admin.route('/service', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def service():
-    #TODO sort out autocomplete for changing HoS
     """
     administer the available services - a service is "Lab Services" "Constitutional" etc
     :return: render template service.html
@@ -609,15 +608,12 @@ def service():
             service_dict["head_of_service"] = None
         data.append(service_dict)
 
-    print data
-
     return render_template("service.html", form=form, data=data)
 
 
 @admin.route('/service/edit/<id>', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def service_edit(id=None):
-    #TODO add JS autocomplete HOS function
     """
     edit service
     :param id: service id
@@ -788,8 +784,7 @@ def sections():
         s.commit()
 
     sections = s.query(Section).all()
-    for i in sections:
-        print i.constant
+
     return render_template("sections.html", form=form, data=sections)
 
 
@@ -808,9 +803,7 @@ def sections_edit(id=None):
         form.constant.data = "checked"
 
     if request.method == 'POST':
-        print "hello"
         if "constant" in request.form:
-            print "here"
             answer = True
         else:
             answer = False
@@ -873,8 +866,6 @@ def constant_subsections_edit(id=None):
     form.section.default = subsection_name.s_id
     form.process()
     form.name.data = subsection_name.item
-
-    ##todo here
 
     if request.method == 'POST':
 
@@ -1111,7 +1102,6 @@ def transform_view():
                     Users.last_name.like(two + "%")).first()
                 if line_manager_query:
                     line_manager_id = line_manager_query.id
-                    print "linemanage_id " + str(line_manager_id)
                     line_manager_role_id = s.query(UserRolesRef).filter_by(role="LINEMANAGER").first().id
                     count = s.query(UserRoleRelationship).filter_by(user_id=line_manager_id).filter_by(
                         userrole_id=line_manager_role_id).count()
@@ -1124,7 +1114,7 @@ def transform_view():
 
             result = UserAuthentication().get_username_from_user_detail(first.replace(" ", ""), last)
             if result == "False":
-                print first + " " + last
+                print (first + " " + last)
             else:
                 result = json.loads(result)
                 users = s.query(Users).filter_by(login=result["Username"]).count()
@@ -1168,11 +1158,8 @@ def transform_view():
                     s.refresh(ur)
 
                 band_db = s.query(Users).filter_by(id=user_id).first().band
-                print band
                 if not band_db:
                     s.query(Users).filter_by(id=user_id).update({'band': band})
-
-    print s.commit()
 
 
 @admin.route('/qpulse_details', methods=["GET","POST"])

@@ -1,7 +1,7 @@
 import datetime
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import backref
-from competence import app
+from app.competence import app
 from passlib.hash import bcrypt
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -146,6 +146,8 @@ class CompetenceDetails(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey("competence_category.id"), unique=False, nullable=False)
     intro = db.Column(db.Integer, unique=False, nullable=False, default=1)
     last = db.Column(db.Integer, unique=False, nullable=True)
+    date_expiry = db.Column(db.DATE, unique=False, nullable=True)
+    expired = db.Column(db.BOOLEAN, unique=False, default=None, nullable=True)
 
     creator_rel = db.relationship("Users", lazy='joined', foreign_keys=[creator_id])
     approve_rel = db.relationship("Users", lazy='joined', foreign_keys=[approve_id])
@@ -564,7 +566,6 @@ class Service(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(1000), unique=True, nullable=True)
     head_of_service_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=True, nullable=False)
-    #TODO make HOS ID nullable=False after testing
 
     head_of_service_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[head_of_service_id])
 

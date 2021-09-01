@@ -1,26 +1,17 @@
 from flask import flash,Flask, render_template, redirect, request, url_for, session, current_app, jsonify
-from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_required, login_user, logout_user, LoginManager, UserMixin, \
     current_user
 from activedirectory import UserAuthentication
 from forms import *
 from flask_principal import Principal, Identity, AnonymousIdentity, \
     identity_changed, Permission, RoleNeed, UserNeed, identity_loaded
-
 from app.mod_training.views import get_competence_summary_by_user
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.sql.expression import func, and_, or_, case, exists, update,distinct
-import os
-#from trello import TrelloApi
-from app.competence import app, s, db
+from app.competence import *
 from app.models import *
-from app.competence import config
 from werkzeug.security import generate_password_hash, check_password_hash
-import uuid
 
-import itertools
-
-import json
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
@@ -117,13 +108,11 @@ def register():
         return redirect(url_for('index'))
     form = RegistrationForm()
     if request.method == 'POST':
-        print form.username.data
         if form.service_id.data:
             service_id = form.service_id.data.id
         else:
             service_id = None
         user = Users(login=form.username.data, email=form.email.data, first_name=form.first_name.data, password=form.password.data, last_name=form.last_name.data , serviceid=service_id, active=True)
-        print user
         s.add(user)
 
         s.commit()
@@ -386,7 +375,6 @@ def check_margin(date,margin_days):
             result = today - margin <= date <= today + margin
     else:
         result = False
-    print result
     return result
 
 @app.context_processor
@@ -572,8 +560,6 @@ def autocomplete_linemanager():
         name = i.first_name + " " + i.last_name
         manager_list.append(name)
 
-    print manager_list
-
     return jsonify(json_list=manager_list)
 
 
@@ -626,7 +612,6 @@ def autocomplete_subsection():
     phrases = s.query(SubsectionAutocomplete.phrase).all()
     phrase_list = []
     for i in phrases:
-        print i
         phrase_list.append(i[0])
 
     return jsonify(json_list=phrase_list)
@@ -750,7 +735,7 @@ def index(message=None):
     displays the users dashboard
     :return: template index.html
     """
-
+    print (current_user.database_id)
     linereports = s.query(Users).filter_by(line_managerid=int(current_user.database_id)).filter_by(active=True).all()
     linereports_inactive = s.query(Users).filter_by(line_managerid=int(current_user.database_id)).filter_by(
         active=False).count()
@@ -831,7 +816,6 @@ def index(message=None):
 
     competences_complete = s.query(CompetenceDetails).join(Competence).filter(
         CompetenceDetails.creator_id == current_user.database_id).filter(Competence.current_version == CompetenceDetails.intro).all()
-
 
 
 
@@ -960,6 +944,7 @@ def notifications():
         alerts["Reassessment Approval"] = reassessments_query
 
 
+
     return render_template("notifications.html",alerts=alerts)
 
 # @app.route('/bug_reports', methods=['POST','GET'])
@@ -980,3 +965,36 @@ def notifications():
 #     current_bugs = trello.lists.get_card(list_id=list_id)
 #
 #     return render_template("bug_reports.html",current_bugs=current_bugs)
+
+
+from flask_mail import Mail,Message
+
+mail = Mail()
+mail.init_app(app)
+from threading import Thread
+
+def send_async_email(msg):
+    with app.test_request_context():
+        mail.send(msg)
+
+def send_mail(user_id,subject,message):
+
+    if config.get("MAIL") != False:
+        #recipient_user_name = s.query(Users).filter(Users.id == int(user_id)).first().login
+        recipient_email = s.query(Users).filter(Users.id == int(user_id)).first().email
+        msg = Message('CompetenceDB: '+subject, sender="notifications@competencedb.com", recipients=[recipient_email])
+        msg.body = 'text body'
+        msg.html = '<b>You have a notification on CompetenceDB</b><br><br>'+message+'<br><br>View all your notifications <a href="'+request.url_root+'notifications">here</a>'
+        thr = Thread(target=send_async_email, args=[msg])
+        thr.start()
+
+
+
+def send_mail_unknown(email,subject,message):
+
+    if config.get("MAIL") != False:
+        msg = Message('CompetenceDB: '+subject, sender="notifications@competencedb.com", recipients=[email])
+        msg.body = 'text body'
+        msg.html = message
+        thr = Thread(target=send_async_email, args=[msg])
+        thr.start()
