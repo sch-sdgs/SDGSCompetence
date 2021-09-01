@@ -1,8 +1,7 @@
 from sqlalchemy import exc
-from flask import flash,render_template, request, url_for, redirect, Blueprint, jsonify, make_response
+from flask import flash, render_template, request, url_for, redirect, Blueprint, jsonify, make_response
 from flask_login import login_required, current_user
 from app.views import *
-#from app.mod_admin.forms import *
 from mod_admin.forms import *
 from app.models import *
 from app.competence import *
@@ -10,23 +9,27 @@ import datetime
 import time
 import io
 import os
-import csv
 from app.activedirectory import UserAuthentication
 import codecs
 import json
 import uuid
 from app.competence import send_mail_unknown
-from passlib.hash import bcrypt
 import pytz
 from datetime import timedelta
 
+
+### Set admin blueprint
 admin = Blueprint('admin', __name__, template_folder='templates')
 
 
 def convertTimestampToSQLDateTime(value):
+    """
+    Parses date/time to an SQL-friendly format
+    """
     return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(value))
 
-# ajax methods
+
+### ajax methods
 @admin.route('/get_user_details', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def get_user_details():
@@ -49,11 +52,19 @@ def check_line_manager():
     linemanager = request.args["linemanager"]
     if " " in linemanager:
         firstname, surname = linemanager.split(" ")
-        line_manager_query = s.query(Users).filter_by(first_name=firstname, last_name=surname).first()
+        line_manager_query = s.query(Users). \
+            filter_by(first_name=firstname,
+                      last_name=surname). \
+            first()
         if line_manager_query is not None:
-            role_id = int(s.query(UserRolesRef).filter_by(role="LINEMANAGER").first().id)
-            check_if_line_manager = s.query(UserRoleRelationship).filter_by(userrole_id=role_id).filter_by(
-                user_id=line_manager_query.id).count()
+            role_id = int(s.query(UserRolesRef). \
+                          filter_by(role="LINEMANAGER"). \
+                          first(). \
+                          id)
+            check_if_line_manager = s.query(UserRoleRelationship). \
+                filter_by(userrole_id=role_id). \
+                filter_by(user_id=line_manager_query.id). \
+                count()
             if check_if_line_manager > 0:
                 return jsonify({"response":True})
             else:
@@ -78,9 +89,14 @@ def index():
     """
     return render_template("admin.html")
 
+
 @admin.route('/fix_section_sort_order')
 @admin_permission.require(http_exception=403)
 def fix_section_sort_order():
+    #TODO docstring
+    """
+
+    """
     all = s.query(Subsection).all()
     for i in all:
         if s.query(SectionSortOrder).filter(SectionSortOrder.c_id == i.c_id).filter(SectionSortOrder.section_id == i.s_id).count() == 0:
@@ -99,17 +115,28 @@ def users_view(message=None):
     """
     users = s.query(Users).all()
     data = []
-    for user in users:
 
-        jobs = s.query(UserJobRelationship).join(JobRoles).filter(UserJobRelationship.user_id == user.id).all()
-        roles = s.query(UserRoleRelationship).join(UserRolesRef).filter(UserRoleRelationship.user_id == user.id).all()
-        line_manager_result = s.query(Users.first_name, Users.last_name).filter_by(id=user.line_managerid).first()
+    for user in users:
+        jobs = s.query(UserJobRelationship). \
+            join(JobRoles). \
+            filter(UserJobRelationship.user_id == user.id). \
+            all()
+        roles = s.query(UserRoleRelationship). \
+            join(UserRolesRef). \
+            filter(UserRoleRelationship.user_id == user.id). \
+            all()
+        line_manager_result = s.query(Users.first_name, Users.last_name). \
+            filter_by(id=user.line_managerid). \
+            first()
+
         user_dict = dict(user)
         user_dict["staff_no"] = user.staff_no
+
         if user.service_rel:
             user_dict["sectionname"] = user.service_rel.name
         else:
             user_dict["sectionname"] = None
+
         user_dict["jobs"] = []
         for i in jobs:
             user_dict["jobs"].append(i.jobroles_id_rel.job)
@@ -117,6 +144,7 @@ def users_view(message=None):
         user_dict["roles"] = []
         for i in roles:
             user_dict["roles"].append(i.userrole_id_rel.role)
+
         if line_manager_result is not None:
             user_dict["line_manager_name"] = line_manager_result[0] + " " + line_manager_result[1]
         else:
@@ -136,35 +164,57 @@ def users_toggle_active(id=None):
     :param id: database user id
     :return: template users_view.html
     """
-    user = s.query(Users).filter_by(id=id).first()
+    user = s.query(Users). \
+        filter_by(id=id). \
+        first()
+
     if user.active == True:
-        s.query(Users).filter_by(id=id).update({'active': False})
+        s.query(Users). \
+            filter_by(id=id). \
+            update({'active': False})
         s.commit()
-        competences = s.query(CompetenceDetails).filter(Competence.obsolete==False).filter(CompetenceDetails.creator_id==id).all()
+        competences = s.query(CompetenceDetails). \
+            filter(Competence.obsolete==False). \
+            filter(CompetenceDetails.creator_id==id). \
+            all()
         if len(competences) > 0:
             flash("The user you made inactive owns the following competence (please change ownership!):<br>" + "<br>".join([c.title for c in competences]),"warning")
             return users_view()
         else:
             return redirect(url_for('admin.users_view'))
+
     elif user.active == False:
-        s.query(Users).filter_by(id=id).update({'active': True})
+        s.query(Users).filter_by(id=id). \
+            update({'active': True})
         s.commit()
         return redirect(url_for('admin.users_view'))
 
 @admin.route('/users/invites', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def invites():
-    data = s.query(Invites).all()
-    users = s.query(Users.email).all()
-    return render_template("user_invites.html", data=data,users=[value for value, in users])
+    """
+    Populates invites page
+    """
+    data = s.query(Invites). \
+        all()
+    users = s.query(Users.email). \
+        all()
+    return render_template("user_invites.html", data=data, users=[value for value, in users])
 
 @admin.route('/users/send_invite', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def send_invite():
+    """
+    Invite a new user via email
+    """
     form = UserForm()
     if request.method == 'POST':
         id = str(uuid.uuid4())
-        invite = Invites(first_name=form.firstname.data,last_name=form.surname.data,email=form.email.data,invite_id=id,userid=current_user.database_id)
+        invite = Invites(first_name=form.firstname.data,
+                         last_name=form.surname.data,
+                         email=form.email.data,
+                         invite_id=id,
+                         userid=current_user.database_id)
         s.add(invite)
         s.commit()
         send_mail_unknown(form.email.data, "Register for CompetenceDB",'You are invited to register for CompetenceDB. <br><br> Go to this address: <a href="'+request.url_root+'register?invite_id=' + id + '">'+request.url_root+'register?invite_id=' + id + '</a>')
@@ -175,7 +225,12 @@ def send_invite():
 @admin.route('/users/resend_invite/<id>', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def resend_invite(id):
-    invite = s.query(Invites).filter(Invites.id==id).first()
+    """
+    Resends an existing invite
+    """
+    invite = s.query(Invites). \
+        filter(Invites.id==id). \
+        first()
 
     send_mail_unknown(invite.email, "Register for CompetenceDB",
                       'You are invited to register for CompetenceDB. <br><br> Go to this address: <a href="' + request.url_root + 'register?invite_id=' + invite.invite_id + '">' + request.url_root + 'register?invite_id=' + invite.invite_id + '</a>')
@@ -188,27 +243,40 @@ def resend_invite(id):
 @admin.route('/users/delete_invite/<id>', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def delete_invite(id):
-    invite = s.query(Invites).filter(Invites.id == id).first()
+    """
+    Remove pending invite
+    """
+    invite = s.query(Invites). \
+        filter(Invites.id == id). \
+        first()
     try:
-        s.query(Invites).filter(Invites.id==id).delete()
+        s.query(Invites). \
+            filter(Invites.id==id). \
+            delete()
         s.commit()
         flash("Invite for "+invite.first_name +" "+ invite.last_name + " removed", "success")
     except:
         flash("Something went wrong", "danger")
 
-
     return redirect(url_for('admin.invites'))
 
 @admin.route('/users/change_password', methods=['GET', 'POST'])
 def change_password():
+    """
+    Allows any user to change password
+    """
     form = ChangePassword()
     if request.method == 'POST':
         if request.form["new_password"] == request.form["new_password_check"]:
-            user = s.query(Users).filter(Users.id == current_user.database_id).first()
+            user = s.query(Users). \
+                filter(Users.id == current_user.database_id). \
+                first()
             existing_password = user.password
             if check_password_hash(existing_password,request.form["old_password"]):
                 data = {"password":generate_password_hash(request.form["new_password"])}
-                s.query(Users).filter(Users.id == current_user.database_id).update(data)
+                s.query(Users). \
+                    filter(Users.id == current_user.database_id). \
+                    update(data)
                 s.commit()
                 send_mail_unknown(user.email,"CompetenceDB: Password Changed","You password on CompetenceDB has been changed successfully.")
                 flash("Password successfully changed!","success")
@@ -224,14 +292,25 @@ def change_password():
 
 @admin.route('/users/request_reset_password', methods=['GET', 'POST'])
 def request_reset_password():
+    """
+    Requests a password reset, emails user accordingly
+    """
     form = ResetPassword()
     if request.method == 'POST':
-        if s.query(Users).filter_by(email=request.form["email"]).first():
-            user = s.query(Users).filter_by(email=request.form["email"]).one()
+        if s.query(Users). \
+                filter_by(email=request.form["email"]). \
+                first():
+            user = s.query(Users). \
+                filter_by(email=request.form["email"]). \
+                one()
             # check if user already has reset their password, so they will update
             # the current key instead of generating a separate entry in the table.
-            if s.query(PWReset).filter_by(user_id=user.id).first():
-                pwalready = s.query(PWReset).filter_by(user_id=user.id).first()
+            if s.query(PWReset). \
+                    filter_by(user_id=user.id). \
+                    first():
+                pwalready = s.query(PWReset). \
+                filter_by(user_id=user.id). \
+                first()
                 # if the key hasn't been used yet, just send the same key.
                 if pwalready.has_activated == False:
                     pwalready.datetime = datetime.datetime.now()
@@ -258,17 +337,23 @@ def request_reset_password():
 
 @admin.route('/users/reset_password/<id>', methods=['GET', 'POST'])
 def reset_password(id):
+    """
+    Allows user to carry out a password reset
+    """
     if request.method == "POST":
         if request.form["new_password"] != request.form["new_password_check"]:
-            flash("Your password and password verification didn't match."
-                  , "danger")
+            flash("Your password and password verification didn't match.", "danger")
             return redirect(url_for("pwreset_get", id=id))
         if len(request.form["password"]) < 8:
             flash("Your password needs to be at least 8 characters", "danger")
             return redirect(url_for("pwreset_get", id=id))
-        user_reset = s.query(PWReset).filter_by(reset_key=id).one()
+        user_reset = s.query(PWReset). \
+            filter_by(reset_key=id). \
+            one()
         try:
-            s.query(Users).filter_by(id=user_reset.user_id).update({'password': generate_password_hash(request.form["new_password"])})
+            s.query(Users). \
+                filter_by(id=user_reset.user_id). \
+                update({'password': generate_password_hash(request.form["new_password"])})
         except exc.IntegrityError:
             flash("Something went wrong", "danger")
             s.rollback()
@@ -279,8 +364,9 @@ def reset_password(id):
         return redirect(url_for("login"))
 
     else:
-        key = id
-        pwresetkey = s.query(PWReset).filter_by(reset_key=id).first()
+        pwresetkey = s.query(PWReset). \
+            filter_by(reset_key=id). \
+            first()
         generated_by = datetime.datetime.utcnow().replace(tzinfo=pytz.utc) - timedelta(hours=24)
         if pwresetkey.has_activated is True:
             flash("You already reset your password with the URL you are using." +
@@ -288,8 +374,8 @@ def reset_password(id):
                   " new request here.", "danger")
             return redirect(url_for("admin.request_reset_password"))
         if pwresetkey.datetime.replace(tzinfo=pytz.utc) < generated_by:
-            # flash("Your password reset link expired.  Please generate a new one" +
-            #       " here.", "danger")
+            flash("Your password reset link expired.  Please generate a new one" +
+                  " here.", "danger")
             return redirect(url_for("admin.request_reset_password"))
         return render_template('reset_password.html', id=id, form=ResetPassword())
 
@@ -299,25 +385,26 @@ def reset_password(id):
 def users_add():
     """
     adds a user to the database
-
     :return: either GET: template users_add.html (or) POST: template users_view.html
     """
     form = UserForm()
     if request.method == 'POST':
-        now = datetime.datetime.now()
-
         ### checks if user already exists in database
         username = request.form["username"]
-        username_query = s.query(Users).filter_by(login=username).first()
+        username_query = s.query(Users). \
+            filter_by(login=username). \
+            first()
         if username_query:
             flash("That username is already taken!", "danger")
             render_template("users_add.html", form=form)
 
         else:
-
             if request.form["linemanager"] != "":
                 firstname, surname = request.form["linemanager"].split(" ")
-                line_manager_id = int(s.query(Users).filter_by(first_name=firstname, last_name=surname).first().id)
+                line_manager_id = int(s.query(Users). \
+                                      filter_by(first_name=firstname,
+                                                last_name=surname).first(). \
+                                      id)
             else:
                 line_manager_id = None
 
@@ -332,10 +419,10 @@ def users_add():
 
             s.add(u)
             s.commit()
+
             for role_id in request.form.getlist('userrole'):
                 urr = UserRoleRelationship(userrole_id=int(role_id), user_id=u.id)
                 s.add(urr)
-
             for job_id in request.form.getlist('jobrole'):
                 urr = UserJobRelationship(jobrole_id=int(job_id), user_id=u.id)
                 s.add(urr)
@@ -357,14 +444,18 @@ def users_edit(id=None):
     if request.method == 'GET':
         form = UserEditForm()
 
-        user = s.query(Users).filter_by(id=id).first()
+        user = s.query(Users). \
+            filter_by(id=id). \
+            first()
         form.username.data = user.login
         form.firstname.data = user.first_name
         form.surname.data = user.last_name
         form.email.data = user.email
         form.staff_no.data = user.staff_no
 
-        line_manager_result = s.query(Users.first_name, Users.last_name).filter_by(id=user.line_managerid).first()
+        line_manager_result = s.query(Users.first_name, Users.last_name). \
+            filter_by(id=user.line_managerid). \
+            first()
         if line_manager_result is not None:
             form.linemanager.data = line_manager_result[0] + " " + line_manager_result[1]
         else:
@@ -372,12 +463,14 @@ def users_edit(id=None):
 
         jobrole_ids = [name for (name,) in s.query(UserJobRelationship.jobrole_id).filter_by(user_id=id).all()]
 
-        form.jobrole.choices = s.query(JobRoles.id, JobRoles.job).all()
+        form.jobrole.choices = s.query(JobRoles.id, JobRoles.job). \
+            all()
         form.jobrole.process_data(jobrole_ids)
 
         userrole_ids = [name for (name,) in s.query(UserRoleRelationship.userrole_id).filter_by(user_id=id).all()]
 
-        form.userrole.choices = s.query(UserRolesRef.id, UserRolesRef.role).all()
+        form.userrole.choices = s.query(UserRolesRef.id, UserRolesRef.role). \
+            all()
         form.userrole.process_data(userrole_ids)
 
         form.section.data = user.service_rel
@@ -389,28 +482,39 @@ def users_edit(id=None):
 
         if request.form["linemanager"] != "":
             firstname, surname = request.form["linemanager"].split(" ")
-            line_manager_id = int(s.query(Users).filter_by(first_name=firstname, last_name=surname).first().id)
+            line_manager_id = int(s.query(Users). \
+                                  filter_by(first_name=firstname,
+                                            last_name=surname). \
+                                  first(). \
+                                  id)
         else:
             line_manager_id = None
 
-        s.query(UserJobRelationship).filter_by(user_id=id).delete()
-        s.query(UserRoleRelationship).filter_by(user_id=id).delete()
+        s.query(UserJobRelationship). \
+            filter_by(user_id=id). \
+            delete()
+        s.query(UserRoleRelationship). \
+            filter_by(user_id=id). \
+            delete()
 
         for role_id in request.form.getlist('userrole'):
-            urr = UserRoleRelationship(userrole_id=int(role_id), user_id=id)
+            urr = UserRoleRelationship(userrole_id=int(role_id),
+                                       user_id=id)
             s.add(urr)
 
         for job_id in request.form.getlist('jobrole'):
-            urr = UserJobRelationship(jobrole_id=int(job_id), user_id=id)
+            urr = UserJobRelationship(jobrole_id=int(job_id),
+                                      user_id=id)
             s.add(urr)
         s.commit()
 
         if "staff_no" in request.form:
             staff_no = request.form["staff_no"]
         else:
-            staff_no = s.query(Users).filter_by(id=id).first().staff_no
-
-        #service_id =
+            staff_no = s.query(Users). \
+                filter_by(id=id). \
+                first(). \
+                staff_no
 
         data = {
             'login': request.form["username"],
@@ -422,7 +526,9 @@ def users_edit(id=None):
             'staff_no': staff_no
         }
 
-        s.query(Users).filter_by(id=id).update(data)
+        s.query(Users). \
+            filter_by(id=id). \
+            update(data)
 
         s.commit()
 
@@ -431,40 +537,59 @@ def users_edit(id=None):
 @admin.route('/dropdownchoices',methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def dropdown_choices():
+    #TODO docstring
+    """
 
+    """
     if request.method == 'POST':
         try:
-            choices = s.query(DropDownChoices).filter(DropDownChoices.question_id == request.json['question_id'],
-                                                      DropDownChoices.choice == request.json['choice']).all()
+            choices = s.query(DropDownChoices). \
+                filter(DropDownChoices.question_id == request.json['question_id'],
+                       DropDownChoices.choice == request.json['choice']). \
+                all()
             if len(choices) == 0:
-                q = DropDownChoices(choice=request.json['choice'], question_id=request.json['question_id'])
+                q = DropDownChoices(choice=request.json['choice'],
+                                    question_id=request.json['question_id'])
                 s.add(q)
                 s.commit()
         except KeyError:
             pass
 
-    choices = s.query(DropDownChoices).filter(DropDownChoices.question_id==request.json['question_id'])
+    choices = s.query(DropDownChoices). \
+        filter(DropDownChoices.question_id==request.json['question_id'])
 
     return jsonify({"response":render_template("dropdown_choices.html",data=choices)})
 
 @admin.route('/dropdownchoices/delete', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def delete_dropdown_choice():
-    s.query(DropDownChoices).filter_by(id=request.json['option_id']).delete()
+    #TODO docstring
+    """
+
+    """
+    s.query(DropDownChoices). \
+        filter_by(id=request.json['option_id']). \
+        delete()
     s.commit()
 
-    choices = s.query(DropDownChoices).filter(DropDownChoices.question_id == request.json['question_id'])
+    choices = s.query(DropDownChoices). \
+        filter(DropDownChoices.question_id == request.json['question_id'])
     return jsonify({"response":render_template("dropdown_choices.html", data=choices)})
 
 @admin.route('/questions',methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def reassessment_questions():
+    #TODO docstring
+    """
+
+    """
     form = QuestionsForm()
     q_id = 0
     dropdown=False
     if request.method == 'POST':
         # if request.args.get('commit') == "True":
-        q =QuestionsRef(question=request.form['question'], answer_type=request.form['type'])
+        q =QuestionsRef(question=request.form['question'],
+                        answer_type=request.form['type'])
         s.add(q)
         s.commit()
         q_id = q.id
@@ -472,39 +597,49 @@ def reassessment_questions():
             dropdown = True
         else:
             return redirect(url_for('admin.reassessment_questions'))
-        # else:
-        #     print "I'm here!"
-        #     return redirect(url_for('admin.reassessment_questions'))
-    questions = s.query(QuestionsRef).all()
+    questions = s.query(QuestionsRef). \
+        all()
 
     return render_template("questions.html",form=form,data=questions, dropdown=dropdown, question_id=q_id)
 
 @admin.route('/questions/edit/<question_id>', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
-def reassessment_questions_edit(question_id=None, commit=None):
+def reassessment_questions_edit(question_id=None):
+    #TODO docstring
+    """
+
+    """
     choices_html = ""
     length=0
     if request.args.get('commit') == "True":
         return redirect(url_for('admin.reassessment_questions'))
+
     if request.method == 'GET':
         form=QuestionsForm()
-        question = s.query(QuestionsRef).filter_by(id=question_id).first()
+        question = s.query(QuestionsRef). \
+            filter_by(id=question_id). \
+            first()
         form.type.default = question.answer_type
         form.process()
         form.question.data = question.question
         dropdown=False
 
     if request.method == 'POST':
-        s.query(QuestionsRef).filter_by(id=question_id).update({'question': request.form["question"], 'answer_type': request.form['type']})
+        s.query(QuestionsRef). \
+            filter_by(id=question_id). \
+            update({'question': request.form["question"], 'answer_type': request.form['type']})
         s.commit()
         form = QuestionsForm()
-        question = s.query(QuestionsRef).filter_by(id=question_id).first()
+        question = s.query(QuestionsRef). \
+            filter_by(id=question_id). \
+            first()
         form.type.default = request.form['type']
         form.process()
         form.question.data = question.question
         if request.form['type'] == "Dropdown":
             dropdown = True
-            choices = s.query(DropDownChoices).filter(DropDownChoices.question_id == question_id)
+            choices = s.query(DropDownChoices). \
+                filter(DropDownChoices.question_id == question_id)
             length = len(choices.all())
             choices_html = render_template("dropdown_choices.html",data=choices)
         else:
@@ -516,8 +651,16 @@ def reassessment_questions_edit(question_id=None, commit=None):
 @admin.route('/questions/delete/<id>', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def delete_reassessment_question(id=None):
-    s.query(DropDownChoices).filter_by(question_id=id).delete()
-    s.query(QuestionsRef).filter_by(id=id).delete()
+    #TODO docstring
+    """
+
+    """
+    s.query(DropDownChoices). \
+        filter_by(question_id=id). \
+        delete()
+    s.query(QuestionsRef). \
+        filter_by(id=id). \
+        delete()
     s.commit()
     return redirect(url_for('admin.reassessment_questions'))
 
@@ -526,7 +669,7 @@ def delete_reassessment_question(id=None):
 def jobroles():
     """
     view and add job roles - a job role is "CLINICAL BIOINFORMATICIAN" or "IT MANAGER" etc
-    :return: temlate jobroles.html
+    :return: template jobroles.html
     """
     form = JobRoleForm()
 
@@ -549,11 +692,15 @@ def jobroles_edit(id=None):
     :return: either GET: template jobroles_edit.html (or) POST: redirct to jobroles.html
     """
     form = JobRoleForm()
-    jobrole = s.query(JobRoles).filter_by(id=id).first()
+    jobrole = s.query(JobRoles). \
+        filter_by(id=id). \
+        first()
     form.job.data = jobrole.job
 
     if request.method == 'POST':
-        s.query(JobRoles).filter_by(id=id).update({'job': request.form["job"]})
+        s.query(JobRoles). \
+            filter_by(id=id). \
+            update({'job': request.form["job"]})
         s.commit()
         return redirect(url_for('admin.jobroles'))
 
@@ -566,9 +713,11 @@ def deletejobrole(id=None):
     """
     delete a job role
     :param id: job role db id
-    :return: redirect to tempate jobroles.html
+    :return: redirect to template jobroles.html
     """
-    s.query(JobRoles).filter_by(id=id).delete()
+    s.query(JobRoles). \
+        filter_by(id=id). \
+        delete()
     s.commit()
     return redirect(url_for('admin.jobroles'))
 
@@ -617,13 +766,16 @@ def service_edit(id=None):
     """
     edit service
     :param id: service id
-    :return:
+    :return: refresh the edit service page
     """
     form = ServiceForm()
-    service = s.query(Service).filter_by(id=id).first()
+    service = s.query(Service). \
+        filter_by(id=id). \
+        first()
     form.name.data = service.name
     hos_result = s.query(Users.first_name, Users.last_name) \
-        .filter_by(id=service.head_of_service_id).first()
+        .filter_by(id=service.head_of_service_id). \
+        first()
     if hos_result is not None:
         form.head_of_service.data = hos_result[0] + " " + hos_result[1]
     else:
@@ -638,8 +790,10 @@ def service_edit(id=None):
                          .first() \
                          .id)
 
-        s.query(Service).filter_by(id=id).update({'name': request.form["name"],
-                                                  'head_of_service_id': hos_id})
+        s.query(Service). \
+            filter_by(id=id). \
+            update({'name': request.form["name"],
+                    'head_of_service_id': hos_id})
         s.commit()
         return redirect(url_for('admin.service'))
 
@@ -652,9 +806,11 @@ def deleteservice(id=None):
     """
     delete a service
     :param id: service id
-    :return:
+    :return: service template
     """
-    s.query(Service).filter_by(id=id).delete()
+    s.query(Service). \
+        filter_by(id=id). \
+        delete()
     s.commit()
     return redirect(url_for('admin.service'))
 
@@ -663,8 +819,8 @@ def deleteservice(id=None):
 @admin_permission.require(http_exception=403)
 def assessmentstatus():
     """
-    adminsiter the assessment status - e.g "Assigned" "Active" etc
-    :return:
+    administer the assessment status - e.g "Assigned" "Active" etc
+    :return: refresh assessment status template
     """
     form = AssessmentStatusForm()
 
@@ -673,7 +829,8 @@ def assessmentstatus():
         s.add(a)
         s.commit()
 
-    assessment_status = s.query(AssessmentStatusRef).all()
+    assessment_status = s.query(AssessmentStatusRef). \
+        all()
 
     return render_template("assessmentstatus.html", form=form, data=assessment_status)
 
@@ -684,14 +841,18 @@ def assessmentstatus_edit(id=None):
     """
     edit assessment statuses
     :param id: assessment status id
-    :return:
+    :return: refresh assessment status edit template
     """
     form = AssessmentStatusForm()
-    status = s.query(AssessmentStatusRef).filter_by(id=id).first()
+    status = s.query(AssessmentStatusRef). \
+        filter_by(id=id). \
+        first()
     form.status.data = status.status
 
     if request.method == 'POST':
-        s.query(AssessmentStatusRef).filter_by(id=id).update({'status': request.form["status"]})
+        s.query(AssessmentStatusRef). \
+            filter_by(id=id). \
+            update({'status': request.form["status"]})
         s.commit()
         return redirect(url_for('admin.assessmentstatus'))
 
@@ -706,7 +867,9 @@ def deleteassessmentstatus(id=None):
     :param id: assessment status id
     :return:
     """
-    s.query(AssessmentStatusRef).filter_by(id=id).delete()
+    s.query(AssessmentStatusRef). \
+        filter_by(id=id). \
+        delete()
     s.commit()
     return redirect(url_for('admin.assessmentstatus'))
 
@@ -725,7 +888,8 @@ def validityperiods():
         s.add(m)
         s.commit()
 
-    validity_periods = s.query(ValidityRef).all()
+    validity_periods = s.query(ValidityRef). \
+        all()
 
     return render_template("validityperiods.html", form=form, data=validity_periods)
 
@@ -739,11 +903,14 @@ def validityperiods_edit(id=None):
     :return:
     """
     form = ValidityPeriodForm()
-    number_months = s.query(ValidityRef).filter_by(id=id).first()
+    number_months = s.query(ValidityRef). \
+        filter_by(id=id).first()
     form.months.data = number_months.months
 
     if request.method == 'POST':
-        s.query(ValidityRef).filter_by(id=id).update({'months': request.form["months"]})
+        s.query(ValidityRef). \
+            filter_by(id=id). \
+            update({'months': request.form["months"]})
         s.commit()
         return redirect(url_for('admin.validityperiods'))
 
@@ -754,11 +921,12 @@ def validityperiods_edit(id=None):
 @admin_permission.require(http_exception=403)
 def deletevalidityperiod(id=None):
     """
-    delet validity period
+    delete validity period
     :param id: validity period id
     :return:
     """
-    s.query(ValidityRef).filter_by(id=id).delete()
+    s.query(ValidityRef).filter_by(id=id). \
+        delete()
     s.commit()
     return redirect(url_for('admin.validityperiods'))
 
@@ -779,11 +947,13 @@ def sections():
         else:
             constant = False
 
-        n = Section(name=request.form['name'], constant=constant)
+        n = Section(name=request.form['name'],
+                    constant=constant)
         s.add(n)
         s.commit()
 
-    sections = s.query(Section).all()
+    sections = s.query(Section). \
+        all()
 
     return render_template("sections.html", form=form, data=sections)
 
@@ -797,7 +967,9 @@ def sections_edit(id=None):
     :return:
     """
     form = SectionForm()
-    section_name = s.query(Section).filter_by(id=id).first()
+    section_name = s.query(Section).\
+        filter_by(id=id). \
+        first()
     form.name.data = section_name.name
     if section_name.constant:
         form.constant.data = "checked"
@@ -808,13 +980,13 @@ def sections_edit(id=None):
         else:
             answer = False
 
-        s.query(Section).filter_by(id=id).update({'name': request.form["name"], 'constant': answer})
+        s.query(Section). \
+            filter_by(id=id). \
+            update({'name': request.form["name"], 'constant': answer})
         s.commit()
         return redirect(url_for('admin.sections'))
 
     return render_template("sections_edit.html", form=form, id=id)
-
-
 
 
 @admin.route('/sections/delete/<id>', methods=['GET', 'POST'])
@@ -825,9 +997,12 @@ def deletesection(id=None):
     :param id: section id
     :return:
     """
-    s.query(Section).filter_by(id=id).delete()
+    s.query(Section). \
+        filter_by(id=id). \
+        delete()
     s.commit()
     return redirect(url_for('admin.sections'))
+
 
 @admin.route('/constant_subsections', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
@@ -841,12 +1016,13 @@ def constant_subsections():
     form.section.choices = [(a.id, a.name) for a in s.query(Section).filter(Section.constant == 1).all()]
     form.process()
     if request.method == 'POST':
-
-        n = ConstantSubsections(item=request.form['name'], s_id=int(request.form['section']))
+        n = ConstantSubsections(item=request.form['name'],
+                                s_id=int(request.form['section']))
         s.add(n)
         s.commit()
 
-    subsections = s.query(ConstantSubsections).all()
+    subsections = s.query(ConstantSubsections). \
+        all()
 
     return render_template("constant_subsections.html", form=form, data=subsections)
 
@@ -859,7 +1035,9 @@ def constant_subsections_edit(id=None):
     :param id: sections id
     :return:
     """
-    subsection_name = s.query(ConstantSubsections).filter_by(id=id).first()
+    subsection_name = s.query(ConstantSubsections). \
+        filter_by(id=id). \
+        first()
 
     form = ConstantSubSectionForm()
     form.section.choices = [(a.id, a.name) for a in s.query(Section).filter(Section.constant==1).all()]
@@ -869,12 +1047,13 @@ def constant_subsections_edit(id=None):
 
     if request.method == 'POST':
 
-        s.query(ConstantSubsections).filter_by(id=id).update({'item': request.form["name"], 's_id': request.form["section"]})
+        s.query(ConstantSubsections). \
+            filter_by(id=id). \
+            update({'item': request.form["name"], 's_id': request.form["section"]})
         s.commit()
         return redirect(url_for('admin.constant_subsections'))
 
     return render_template("constant_subsections_edit.html", form=form, id=id)
-
 
 
 @admin.route('/constant_subsections/delete/<id>', methods=['GET', 'POST'])
@@ -885,9 +1064,12 @@ def delete_constant_subsection(id=None):
     :param id: section id
     :return:
     """
-    s.query(ConstantSubsections).filter_by(id=id).delete()
+    s.query(ConstantSubsections). \
+        filter_by(id=id). \
+        delete()
     s.commit()
     return redirect(url_for('admin.constant_subsections'))
+
 
 @admin.route('/evidencetypes', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
@@ -904,7 +1086,8 @@ def evidencetypes():
         s.add(e)
         s.commit()
 
-    evidence_types = s.query(EvidenceTypeRef).all()
+    evidence_types = s.query(EvidenceTypeRef). \
+        all()
 
     return render_template("evidencetypes.html", form=form, data=evidence_types)
 
@@ -918,11 +1101,15 @@ def evidencetypes_edit(id=None):
     :return:
     """
     form = EvidenceTypeForm()
-    evidence_type = s.query(EvidenceTypeRef).filter_by(id=id).first()
+    evidence_type = s.query(EvidenceTypeRef). \
+        filter_by(id=id). \
+        first()
     form.type.data = evidence_type.type
 
     if request.method == 'POST':
-        s.query(EvidenceTypeRef).filter_by(id=id).update({'type': request.form["type"]})
+        s.query(EvidenceTypeRef). \
+            filter_by(id=id). \
+            update({'type': request.form["type"]})
         s.commit()
         return redirect(url_for('admin.evidencetypes'))
 
@@ -937,7 +1124,9 @@ def deleteevidencetype(id=None):
     :param id: evidence type id
     :return:
     """
-    s.query(EvidenceTypeRef).filter_by(id=id).delete()
+    s.query(EvidenceTypeRef). \
+        filter_by(id=id). \
+        delete()
     s.commit()
     return redirect(url_for('admin.evidencetypes'))
 
@@ -964,12 +1153,19 @@ def competencetypes():
 @admin.route('/competencetypes/edit/<id>', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def competencetypes_edit(id=None):
+    """
+    Edit competence types
+    """
     form = CompetenceCategoryForm()
-    competencetypes = s.query(CompetenceCategory).filter_by(id=id).first()
+    competencetypes = s.query(CompetenceCategory). \
+        filter_by(id=id). \
+        first()
     form.category.data = competencetypes.category
 
     if request.method == 'POST':
-        s.query(CompetenceCategory).filter_by(id=id).update({'category': request.form["category"]})
+        s.query(CompetenceCategory). \
+            filter_by(id=id). \
+            update({'category': request.form["category"]})
         s.commit()
         return redirect(url_for('admin.competencetypes'))
 
@@ -979,7 +1175,12 @@ def competencetypes_edit(id=None):
 @admin.route('/competencetypes/delete/<id>', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def deletecompetencetypes(id=None):
-    s.query(CompetenceCategory).filter_by(id=id).delete()
+    """
+    Delete competence types
+    """
+    s.query(CompetenceCategory). \
+        filter_by(id=id). \
+        delete()
     s.commit()
     return redirect(url_for('admin.competencetypes'))
 
@@ -988,7 +1189,7 @@ def deletecompetencetypes(id=None):
 @admin_permission.require(http_exception=403)
 def userroles():
     """
-    administer user roles - these are the role of the user on stardb e.g. "ADMIN", "USER" etc
+    administer user roles - these are the role of the user on CompetenceDB e.g. "ADMIN", "USER" etc
     you can only add or change these with overall code changes
     :return:
     """
@@ -999,7 +1200,8 @@ def userroles():
         s.add(u)
         s.commit()
 
-    user_roles = s.query(UserRolesRef).all()
+    user_roles = s.query(UserRolesRef). \
+        all()
 
     return render_template("userroles.html", form=form, data=user_roles)
 
@@ -1007,12 +1209,19 @@ def userroles():
 @admin.route('/userroles/edit/<id>', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def userroles_edit(id=None):
+    """
+    Edit user roles. Doing this requires overall code changes
+    """
     form = UserRoleForm()
-    user_role = s.query(UserRolesRef).filter_by(id=id).first()
+    user_role = s.query(UserRolesRef). \
+        filter_by(id=id). \
+        first()
     form.role.data = user_role.role
 
     if request.method == 'POST':
-        s.query(UserRolesRef).filter_by(id=id).update({'role': request.form["role"]})
+        s.query(UserRolesRef). \
+            filter_by(id=id). \
+            update({'role': request.form["role"]})
         s.commit()
         return redirect(url_for('admin.userroles'))
 
@@ -1022,8 +1231,12 @@ def userroles_edit(id=None):
 @admin.route('/userroles/delete/<id>', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def deleterole(id=None):
-    s.query(UserRolesRef).filter_by(id=id).delete()
-
+    """
+    Delete user roles. Doing this may require overall code changes
+    """
+    s.query(UserRolesRef). \
+        filter_by(id=id). \
+        delete()
     s.commit()
 
     return redirect(url_for('admin.userroles'))
@@ -1032,6 +1245,9 @@ def deleterole(id=None):
 @admin.route('/subsection_autocomplete', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def subsection_autocomplete():
+    """
+    Lists and updates existing stored subsection phrases
+    """
     form = SubSectionAutoComplete()
 
     if request.method == 'POST':
@@ -1041,7 +1257,8 @@ def subsection_autocomplete():
             s.add(u)
         s.commit()
 
-    subsections = s.query(SubsectionAutocomplete).all()
+    subsections = s.query(SubsectionAutocomplete). \
+        all()
 
     return render_template("subsection_autocomplete.html", form=form, data=subsections)
 
@@ -1049,8 +1266,12 @@ def subsection_autocomplete():
 @admin.route('/subsection_autocomplete/delete/<id>', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def delete_subsection_autocomplete(id=None):
-    s.query(SubsectionAutocomplete).filter_by(id=id).delete()
-
+    """
+    Deletes stored subsection phrase. Safe to delete without code changes.
+    """
+    s.query(SubsectionAutocomplete). \
+        filter_by(id=id). \
+        delete()
     s.commit()
 
     return redirect(url_for('admin.subsection_autocomplete'))
@@ -1059,10 +1280,15 @@ def delete_subsection_autocomplete(id=None):
 @admin.route('/logs', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def view_logs():
+    #TODO delete this? It doesn't do anything
     pass
 
 
 def transform(text_file_contents):
+    #TODO docstring
+    """
+
+    """
     return text_file_contents.replace("=", ",")
 
 
@@ -1082,6 +1308,7 @@ def bulk_user_upload():
 @app.route('/transform', methods=["POST"])
 @admin_permission.require(http_exception=403)
 def transform_view():
+    #TODO edit this so it doesn't need running twice?
     """
     method to bulk add users to the database, you need to run twice to 1st add users then add line managers
     to those users
@@ -1094,31 +1321,41 @@ def transform_view():
         for row in csv_input.readlines():
             clean_row = row.rstrip()
             last, first, staffno, job, linemanager, band = clean_row.split(",")
-
             line_manager_id = None
             if len(linemanager) == 2:
                 one, two = list(linemanager)
-                line_manager_query = s.query(Users).filter(Users.first_name.like(one + "%")).filter(
-                    Users.last_name.like(two + "%")).first()
+                line_manager_query = s.query(Users). \
+                    filter(Users.first_name.like(one + "%")). \
+                    filter(Users.last_name.like(two + "%")). \
+                    first()
                 if line_manager_query:
                     line_manager_id = line_manager_query.id
-                    line_manager_role_id = s.query(UserRolesRef).filter_by(role="LINEMANAGER").first().id
-                    count = s.query(UserRoleRelationship).filter_by(user_id=line_manager_id).filter_by(
-                        userrole_id=line_manager_role_id).count()
+                    line_manager_role_id = s.query(UserRolesRef). \
+                        filter_by(role="LINEMANAGER"). \
+                        first(). \
+                        id
+                    count = s.query(UserRoleRelationship). \
+                        filter_by(user_id=line_manager_id). \
+                        filter_by(userrole_id=line_manager_role_id). \
+                        count()
                     if count == 0:
-                        ur = UserRoleRelationship(user_id=line_manager_id, userrole_id=line_manager_role_id)
+                        ur = UserRoleRelationship(user_id=line_manager_id,
+                                                  userrole_id=line_manager_role_id)
                         s.add(ur)
                         s.commit()
 
-            # print s.query(User).filter_by(first)
-
-            result = UserAuthentication().get_username_from_user_detail(first.replace(" ", ""), last)
+            result = UserAuthentication(). \
+                get_username_from_user_detail(first.replace(" ", ""), last)
             if result == "False":
-                print (first + " " + last)
+                print(first + " " + last)
             else:
                 result = json.loads(result)
-                users = s.query(Users).filter_by(login=result["Username"]).count()
-                jobs = s.query(JobRoles).filter_by(job=job).count()
+                users = s.query(Users). \
+                    filter_by(login=result["Username"]). \
+                    count()
+                jobs = s.query(JobRoles). \
+                    filter_by(job=job). \
+                    count()
                 if jobs == 0:
                     j = JobRoles(job=job.upper())
                     s.add(j)
@@ -1126,7 +1363,10 @@ def transform_view():
                     s.refresh(j)
                     job_id = j.id
                 else:
-                    job_id = s.query(JobRoles).filter_by(job=job).first().id
+                    job_id = s.query(JobRoles). \
+                        filter_by(job=job). \
+                        first(). \
+                        id
 
                 if users == 0:
                     u = Users(login=result["Username"], first_name=result["Forename"], last_name=result["Surname"],
@@ -1136,30 +1376,49 @@ def transform_view():
                     s.refresh(u)
                     user_id = u.id
                 else:
-                    user_id = s.query(Users).filter_by(login=result["Username"]).first().id
+                    user_id = s.query(Users). \
+                        filter_by(login=result["Username"]). \
+                        first(). \
+                        id
                     if s.query(Users).filter_by(login=result["Username"]).first().line_managerid == None:
                         data = {'line_managerid': line_manager_id}
-                        s.query(Users).filter_by(id=user_id).update(data)
+                        s.query(Users). \
+                            filter_by(id=user_id). \
+                            update(data)
                         s.commit()
 
-                job_roles_user = s.query(UserJobRelationship).filter_by(user_id=user_id).count()
+                job_roles_user = s.query(UserJobRelationship). \
+                    filter_by(user_id=user_id). \
+                    count()
                 if job_roles_user == 0:
-                    ujr = UserJobRelationship(user_id=user_id, jobrole_id=job_id)
+                    ujr = UserJobRelationship(user_id=user_id,
+                                              jobrole_id=job_id)
                     s.add(ujr)
                     s.flush()
                     s.refresh(ujr)
 
-                db_roles = s.query(UserRoleRelationship).filter_by(user_id=user_id).count()
+                db_roles = s.query(UserRoleRelationship). \
+                    filter_by(user_id=user_id). \
+                    count()
                 if db_roles == 0:
-                    role_id = s.query(UserRolesRef).filter_by(role="USER").first().id
-                    ur = UserRoleRelationship(user_id=user_id, userrole_id=role_id)
+                    role_id = s.query(UserRolesRef). \
+                        filter_by(role="USER"). \
+                        first(). \
+                        id
+                    ur = UserRoleRelationship(user_id=user_id,
+                                              userrole_id=role_id)
                     s.add(ur)
                     s.flush()
                     s.refresh(ur)
 
-                band_db = s.query(Users).filter_by(id=user_id).first().band
+                band_db = s.query(Users). \
+                    filter_by(id=user_id). \
+                    first(). \
+                    band
                 if not band_db:
-                    s.query(Users).filter_by(id=user_id).update({'band': band})
+                    s.query(Users). \
+                        filter_by(id=user_id). \
+                        update({'band': band})
 
 
 @admin.route('/qpulse_details', methods=["GET","POST"])
@@ -1168,15 +1427,19 @@ def qpulse_details():
     form = QPulseDetailsForm()
     if request.method == 'POST':
         if request.form["password"] == request.form["password_reenter"]:
-            check = s.query(QPulseDetails).count()
+            check = s.query(QPulseDetails). \
+                count()
             if check == 0:
-                q = QPulseDetails(username=request.form["username"],password=request.form["password"])
+                q = QPulseDetails(username=request.form["username"],
+                                  password=request.form["password"])
                 s.add(q)
                 s.commit()
                 flash("Username and/or password added","success")
             else:
                 data = { "username": request.form["username"], "password": request.form["password"]}
-                s.query(QPulseDetails).filter(QPulseDetails.id==1).update(data)
+                s.query(QPulseDetails). \
+                    filter(QPulseDetails.id==1). \
+                    update(data)
                 s.commit()
                 flash("Username and/or password updated","success")
         else:
