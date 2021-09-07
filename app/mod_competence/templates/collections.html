@@ -1,98 +1,57 @@
 {% extends "base2.html" %}
 {% block content %}
 
-
-
-
-
-
-
-
-            <h1><i class="fa fa-folder-open"></i>
-                Competence Collections <small>Group competencies into "Collections" for later use.</small></h1>
-
-            {#            <ol class="breadcrumb">#}
-            {#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
-            {#                <li class="active">Here</li>#}
-            {#            </ol>#}
-            {% if message %}
-                <div class="alert alert-danger">
-                    <strong>Fail Whale!</strong> {{ message }}
-                </div>
-            {% endif %}
-
-        </section>
+    <section>
+        <h1><i class="fa fa-folder-open"></i>
+            Competence Collections <small>Group competencies into "Collections" for later use.</small></h1>
+        {% if message %}
+            <div class="alert alert-danger">
+                <strong>Fail Whale!</strong> {{ message }}
+            </div>
+        {% endif %}
+    </section>
 
         <!-- Main content -->
-        <section class="content container-fluid">
-
-
-{#        <div class="row">#}
-{#            <div class="col-md-12">#}
-{#                <div class="box box-solid">#}
-{#                    <div class="box-body">#}
-{#                        <div class="row">#}
-{#                            <div class="col-lg-10">#}
-{#                                 To create a report that you can send onto third parties to show the current level of training in the BRC/CRF simply select the competencies you wish to report on below and click "Download". To select multiple hold down ctrl or shift while clicking.#}
-{##}
-{#                            </div>#}
-{#                        <div class="col-lg-2">#}
-{#                       <div class="btn-group pull-right">#}
-{#                            <a href="#"#}
-{#                                    class="actionc btn btn-flat btn-default" id="download_trial" name="download_trial" ><i class="fa fa-mouse-pointer"></i> Select Competencies!</a>#}
-{#                        </div>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
+    <section class="content container-fluid">
          <h4><i class="fa fa-edit"></i>
                 Create New Collection</h4>
 
-<div class="box box-solid">
-                    <div class="box-body">
-                    </div>
-</div>
+        <div class="box box-solid">
+            <div class="box-body">
+            </div>
+        </div>
 
         <h4><i class="fa fa-clone"></i>
                 Available Collections</h4>
-<div class="box box-solid">
-                    <div class="box-body">
-        <table class="table table-striped table-condensed competencies dataTable dt-responsive"
-                               width="100%"
-                               id="competencies">
 
+        <div class="box box-solid">
+            <div class="box-body">
+                <table class="table table-striped table-condensed competencies dataTable dt-responsive" width="100%" id="competencies">
+                    <thead>
+                    <th>id</th>
+                    <th>version</th>
+                    <th>Category</th>
+                    <th>Title</th>
+                    <th>Fully Trained (Expired)</th>
+                    <th>Partially Trained</th>
+                    <th>In Training</th>
+                    </thead>
+                    {% for c_id in result %}
+                        <tr>
+                            <td>{{ c_id }}</td>
+                            <td>version</td>
+                            <td>{{ result[c_id]["category"] }}</td>
+                            <td>{{ result[c_id]["title"] }}</td>
+                            <td>{{ result[c_id]["trained"] }} ({{ result[c_id]["expired"] }})</td>
+                            <td>{{ result[c_id]["partial"] }}</td>
+                            <td>{{ result[c_id]["training"] }}</td>
+                        </tr>
+                    {% endfor %}
 
-                            <thead>
-                            <th>id</th>
-                            <th>version</th>
-                            <th>Category</th>
-                            <th>Title</th>
-                            <th>Fully Trained (Expired)</th>
-                            <th>Partially Trained</th>
-                            <th>In Training</th>
-                            </thead>
-                            {% for c_id in result %}
-                                <tr>
-                                    <td>{{ c_id }}</td>
-                                    <td>version</td>
-{#                                    <td>{{ competence.intro }}</td>#}
-                                    <td>{{ result[c_id]["category"] }}</td>
-                                    <td>{{ result[c_id]["title"] }}</td>
-                                    <td>{{ result[c_id]["trained"] }} ({{ result[c_id]["expired"] }})</td>
-                                    <td>{{ result[c_id]["partial"] }}</td>
-                                    <td>{{ result[c_id]["training"] }}</td>
-                                </tr>
-                            {% endfor %}
-
-
-                        </table>
-                    </div>
-
-        </section>
-    </div>
-
+                </table>
+            </div>
+        </div>
+    </section>
 
 
     <script>
@@ -100,7 +59,7 @@
         $('#download_trial').attr('disabled', 'disabled');
         $('#actions').attr('data-toggle', '');
 
-        var competencies = $('.competencies').DataTable({
+        let competencies = $('.competencies').DataTable({
             "pageLength": 25,
             "columnDefs": [
                 {
@@ -115,7 +74,7 @@
 
         $("tr").click(function () {
             setTimeout(function () {
-                var count_new = competencies.rows({selected: true}).count();
+                let count_new = competencies.rows({selected: true}).count();
                 $('#download_trial').html("<i class='fa fa-download'></i> Report on " + count_new + " Competencies")
                 if (count_new == 0) {
                     $('#download_trial').attr('disabled', 'disabled');

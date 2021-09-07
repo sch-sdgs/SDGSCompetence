@@ -1,122 +1,104 @@
 {% extends "base2.html" %}
 {% block content %}
 
+    <section>
+        <h1>Add Competency</h1>
+    </section>
 
-
-
-
-
-            <h1>
-                Add Competency
-                <small></small>
-            </h1>
-
-        </section>
-
-        <!-- Main content -->
-        <section class="content container-fluid">
-            <div class="box box-primary" id="training">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Basic Details</h3>
-
-                </div>
-                <div class="box-body">
-                    <form action="{{ url_for('competence.add_competence') }}" method="POST" class="form-horizontal">
-                        <fieldset>
-
-
-                            <div class="form-group">
-                                {{ form.title.label(class_="col-lg-2 control-label") }}
-                                <div class="col-lg-10">
-                                    {{ form.title(class_="form-control",required='required') }}
-                                </div>
-                            </div>
-
-
-                            <div class="form-group">
-                                {{ form.scope.label(class_="col-lg-2 control-label") }}
-                                <div class="col-lg-10">
-                                    {{ form.scope(class_="form-control",required='required') }}
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                {{ form.competency_type.label(class_="col-lg-2 control-label") }}
-                                <div class="col-lg-10">
-                                    {{ form.competency_type(class_="form-control") }}
-                                </div>
-                            </div>
-
-
-                            <div class="form-group">
-                                {{ form.validity_period.label(class_="col-lg-2 control-label") }}
-                                <div class="col-lg-10">
-                                    <div class="input-group">
-                                        {{ form.validity_period(class_="form-control") }}<span class="input-group-btn">
-                                 <button class="btn btn-default btn-flat" type="button" disabled>Months</button>
-
-                                 </span></div>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                {{ form.approval.label(class_="col-lg-2 control-label") }}
-                                <div class="col-lg-10">
-                                    {{ form.approval(class_="form-control",required='required',autocomplete="off") }}
-                                    <span class="help-block" id="invalid_user">Enter the person to authorise this document. This cannot be you!</span>
-                                </div>
-                            </div>
-
-                            {% if qpulse_module != False %}
-                                <div class="form-group">
-                                    {{ form.add_document.label(class_="col-lg-2 control-label") }}
-                                    <div class="col-lg-10">
-                                        <div class="input-group" id="add_document_group">
-                                            {{ form.add_document(class_="form-control") }}
-
-                                            <span class="input-group-btn"><button class="btn btn-primary btn-flat"
-                                                                                  id="submit_document"
-                                                                                  type="button">Attach</button></span>
-
-                                        </div>
-                                        <span class="help-block"
-                                              id="add_document_text">Please enter a Q-Pulse Document ID</span>
-                                        <div id="invalid_qpulse"></div>
-                                    </div>
-                                </div>
-                            {% endif %}
-
-                            <div class="alert alert-danger" role="alert" id="qpulse_error" hidden>This is not a valid
-                                QPulse Document! Please try again.
-                            </div>
-                            <div class="form-group">
-                                <div class="col-lg-2"></div>
-                                <div class="col-lg-10">
-                                    <div id="selected_docs"></div>
-                                </div>
-                            </div>
-
-                            <input type="text" id="doc_list" name="doc_list" hidden>
-
-                            <div class="form-group">
-                                <div class="col-lg-10 col-lg-offset-2">
-                                    {{ form.submit(class_="btn btn-primary btn-flat") }}
-
-                                </div>
-
-                            </div>
-
-
-                        </fieldset>
-                    </form>
-                </div>
+    <!-- Main content -->
+    <section class="content container-fluid">
+        <div class="box box-primary" id="training">
+            <div class="box-header with-border">
+                <h3 class="box-title">Basic Details</h3>
             </div>
-            <div id="document_list"></div>
 
-        </section>
-    </div>
-{% if "ADMIN" in current_user.roles %}
-    {% set admin=True%}
+            <div class="box-body">
+                <form action="{{ url_for('competence.add_competence') }}" method="POST" class="form-horizontal">
+                    <fieldset>
+                        <div class="form-group">
+                            {{ form.title.label(class_="col-lg-2 control-label") }}
+                            <div class="col-lg-10">
+                                {{ form.title(class_="form-control",required='required') }}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.scope.label(class_="col-lg-2 control-label") }}
+                            <div class="col-lg-10">
+                                {{ form.scope(class_="form-control",required='required') }}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.competency_type.label(class_="col-lg-2 control-label") }}
+                            <div class="col-lg-10">
+                                {{ form.competency_type(class_="form-control") }}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.validity_period.label(class_="col-lg-2 control-label") }}
+                            <div class="col-lg-10">
+                                <div class="input-group">
+                                    {{ form.validity_period(class_="form-control") }}
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default btn-flat" type="button" disabled>Months</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.approval.label(class_="col-lg-2 control-label") }}
+                            <div class="col-lg-10">
+                                {{ form.approval(class_="form-control",required='required',autocomplete="off") }}
+                                <span class="help-block" id="invalid_user">Enter the person to authorise this document. This cannot be you!</span>
+                            </div>
+                        </div>
+
+                        {% if qpulse_module != False %}
+                            <div class="form-group">
+                                {{ form.add_document.label(class_="col-lg-2 control-label") }}
+                                <div class="col-lg-10">
+                                    <div class="input-group" id="add_document_group">
+                                        {{ form.add_document(class_="form-control") }}
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-primary btn-flat" id="submit_document" type="button">Attach</button>
+                                        </span>
+                                    </div>
+                                    <span class="help-block" id="add_document_text">Please enter a Q-Pulse Document ID</span>
+                                    <div id="invalid_qpulse"></div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="alert alert-danger" role="alert" id="qpulse_error" hidden>
+                            This is not a valid QPulse Document! Please try again.
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-2"></div>
+                            <div class="col-lg-10">
+                                <div id="selected_docs"></div>
+                            </div>
+                        </div>
+
+                        <input type="text" id="doc_list" name="doc_list" hidden>
+
+                        <div class="form-group">
+                            <div class="col-lg-10 col-lg-offset-2">
+                                {{ form.submit(class_="btn btn-primary btn-flat") }}
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+
+        <div id="document_list"></div>
+    </section>
+
+    {% if "ADMIN" in current_user.roles %}
+        {% set admin=True%}
     {% endif %}
 
     <script>
@@ -145,8 +127,8 @@
         });
 
         $('#approval').focusout(function () {
-            var url = '{{ url_for("check_valid_user") }}';
-            var data = {"name": $('#approval').val()}
+            let url = '{{ url_for("check_valid_user") }}';
+            let data = {"name": $('#approval').val()}
             console.log(data)
             $.ajax({
                 type: "GET",
@@ -195,20 +177,20 @@
 
             $('#qpulse_error').hide();
 
-            var previous_value = $('#doc_list').val();
+            let previous_value = $('#doc_list').val();
             if (previous_value == "") {
                 sep = ''
             } else {
                 sep = ','
             }
 
-            var url = "{{ url_for('competence.get_doc_name') }}";
-            var doc_id = $('#add_document').val();
+            let url = "{{ url_for('competence.get_doc_name') }}";
+            let doc_id = $('#add_document').val();
             console.log(doc_id);
             console.log(url);
 
-            var dict = {'doc_id': doc_id};
-            var data = JSON.stringify(dict);
+            let dict = {'doc_id': doc_id};
+            let data = JSON.stringify(dict);
             console.log(data);
 
             $.ajax({
@@ -254,8 +236,7 @@
 
         //this function allows deletion of items from the document list so they can'r be added to the database
         $(document).on("click", '.remove', function () {
-            console.log("HELLO");
-            var docs = $('#doc_list').val().split(',');
+            let docs = $('#doc_list').val().split(',');
             console.log(docs);
             docs.splice($.inArray($(this).attr('doc_number'), docs), 1);
             console.log(docs);
