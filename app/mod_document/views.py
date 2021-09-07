@@ -69,12 +69,14 @@ def get_qpulsenums(c_id, version):
     #     filter(Documents.c_id == c_id).\
     #     values(Documents.qpulse_no)
 
-    qpulse_no_list = s.query(Documents.qpulse_no).join(CompetenceDetails).filter(CompetenceDetails.intro == version).filter(
-        CompetenceDetails.c_id == c_id)
+    qpulse_no_list = s.query(Documents). \
+        join(CompetenceDetails). \
+        filter(CompetenceDetails.intro == version). \
+        filter(CompetenceDetails.c_id == c_id)
 
     doc_list = []
     for i in qpulse_no_list:
-        doc_list.append(i)
+        doc_list.append(i.qpulse_no)
     return doc_list
 
 def get_latest_version(c_id):
@@ -133,6 +135,7 @@ def export_document(c_id, version):
     subsec = competence_views.get_subsections(c_id, version)
     if config.get("QPULSE_MODULE") == True:
         qpulse = get_qpulsenums(c_id, version)
+        print(f"QPulse: {qpulse}")
 
     # Competence details
     title = comp.title
@@ -179,10 +182,12 @@ def export_document(c_id, version):
     qpulse_list = {}
     if config.get("QPULSE_MODULE") == True:
         for qpulse_no in qpulse:
+            print(qpulse_no)
             d = s.query(QPulseDetails).first()
             qpulse_name = QPulseWeb().get_doc_by_id(d.username, d.password, qpulse_no)
+            print(qpulse_name)
             qpulse_list[qpulse_no]=qpulse_name
-
+    print(qpulse_list)
 
     # evidence - this will be for downloading completed competences
     evidence_list = {}
@@ -195,29 +200,6 @@ def export_document(c_id, version):
     main_doc = html.render(stylesheets=[CSS('static/css/simple_report.css')])
 
     exists_links = False
-
-    # Add headers and footers
-    # header = html.render(stylesheets=[CSS(string='div {position: fixed; top: 1cm; left: 1cm;}')])
-    # header_out = render_template('header.html', title=title, docid=c_id)
-    # header_html = HTML(string=header_out)
-    # header = header_html.render(stylesheets=[CSS('static/css/simple_report.css'), CSS(string='div {position: fixed; top: -2.7cm; left: 0cm;}')])
-    #
-    # header_page = header.pages[0]
-    # # exists_links = exists_links or header_page.links
-    # exists_header_links = header_page.links
-    # header_body = get_page_body(header_page._page_box.all_children())
-    # header_body = header_body.copy_with_children(header_body.all_children())
-    #
-    # # Template of footer
-    # print comp.approve_rel
-    # footer_out = render_template('footer.html', version_no=version_no, author=author, full_name=current_user.full_name, authoriser=comp.approve_rel.first_name + " " + comp.approve_rel.last_name, date_of_issue=date_of_issue)
-    # footer_html = HTML(string=footer_out)
-    # footer = footer_html.render(stylesheets=[CSS('static/css/simple_report.css'), CSS(string='div {position: fixed; bottom: -2.1cm; left: 0cm;}')])
-    #
-    # footer_page = footer.pages[0]
-    # exists_footer_links = footer_page.links
-    # footer_body = get_page_body(footer_page._page_box.all_children())
-    # footer_body = footer_body.copy_with_children(footer_body.all_children())
 
     # Insert header and footer in main doc
 
@@ -259,7 +241,6 @@ def export_document(c_id, version):
 
 
     outfile = str(uuid.uuid4())
-    print(f"outfile: {outfile}")
 
     out_name = main_doc.write_pdf(target=app.config["UPLOAD_FOLDER"]+"/"+ outfile)
     return outfile
