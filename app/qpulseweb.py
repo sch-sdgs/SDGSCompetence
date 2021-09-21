@@ -30,3 +30,13 @@ class QPulseWeb:
         client = self._get_client()
         response = client.service.GetDocByID(**params)
         return response
+
+    ### Looks as though the API is only querying the active register?
+    # def check_doc_active(self, username, password, docNumber):
+    #     """
+    #     Checks a document is active via bioinfoweb
+    #     """
+    #     params = {"username":username, "password":password, "docNumber":docNumber}
+    #     client = self._get_client()
+    #     response = client.service.IsDocActive(**params)
+    #     return response

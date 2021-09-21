@@ -900,15 +900,25 @@ def view_competence():
             filter(CompetenceDetails.intro == version). \
             filter_by(c_id=c_id)
         for doc in docs:
+            #print(f"doc: {doc}")
             doc_id = ','.join(x for x in doc).replace("'", "")
             d = s.query(QPulseDetails). \
                 first()
+            #print(d)
             username = d.username
             password = d.password
             q = QPulseWeb()
             doc_name = q.get_doc_by_id(username=username, password=password, docNumber=doc_id)
+            #print(f"doc name: {doc_name}")
+            if doc_name == "False":
+                doc_name = "There has been a problem locating this document in the Active register. " \
+                           "Please contact the competence owner."
+            # doc_active = q.check_doc_active(username=username, password=password, docNumber=doc_id)
+            # if not doc_active:
+            #     doc_name = "This document is no longer marked as active - please contact the competency owner."
             if doc_id is not "":
                 dict_docs[doc_id] = doc_name
+    #print(f"dict_docs: {dict_docs}")
 
     ##Get subsection details
     dict_subsecs = OrderedDict()

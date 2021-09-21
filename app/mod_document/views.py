@@ -182,12 +182,15 @@ def export_document(c_id, version):
     qpulse_list = {}
     if config.get("QPULSE_MODULE") == True:
         for qpulse_no in qpulse:
-            print(qpulse_no)
+            #print(qpulse_no)
             d = s.query(QPulseDetails).first()
             qpulse_name = QPulseWeb().get_doc_by_id(d.username, d.password, qpulse_no)
-            print(qpulse_name)
+            if qpulse_name == "False":
+                qpulse_name = "There has been a problem locating this document in the Active register. " \
+                           "Please contact the competence owner."
+            #print(qpulse_name)
             qpulse_list[qpulse_no]=qpulse_name
-    print(qpulse_list)
+    #print(qpulse_list)
 
     # evidence - this will be for downloading completed competences
     evidence_list = {}
