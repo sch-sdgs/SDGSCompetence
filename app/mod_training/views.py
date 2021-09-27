@@ -18,6 +18,7 @@ import pandas as pd
 from plotly.offline import plot
 import plotly.graph_objs as go
 import datetime
+from json import JSONDecodeError
 
 training = Blueprint('training', __name__, template_folder='templates')
 
@@ -1142,6 +1143,10 @@ def select_subsections():
                                form=form,version=version)
     else:
         ids = form.ids.data.replace('"', '').replace('[', '').replace(']', '').split(',')
+        #TODO make it so that sections must be selected
+
+        #TODO error if you select inactive subsections to upload evidence in a competency with some active subsections
+        print(f"ids: {ids}")
         if forward_action == "assign":
             pass
         elif forward_action == "activate":
@@ -1150,7 +1155,36 @@ def select_subsections():
                 return redirect(url_for('training.view_current_competence', c_id=c_id, user=u_id, version=version))
 
         elif forward_action == "evidence":
-            return upload_evidence(c_id, ids,version)
+            try:
+                return upload_evidence(c_id, ids,version)
+            except JSONDecodeError:
+                message = "You must select at least one subsection!"
+                competence_summary = get_competence_summary_by_user(c_id, int(u_id), version)
+                section_list = get_competence_by_user(c_id, int(u_id), version)
+
+                required_status = ""
+                heading = "{} Subsections"
+                if forward_action == "assign":
+                    required_status = None
+                    heading = heading.format("assign")
+                elif forward_action == "activate":
+                    heading = heading.format("Activate")
+                    required_status = ["Assigned"]
+                elif forward_action == "evidence":
+                    heading = heading.format("Assign Evidence to")
+                    required_status = ["Active", "Failed", "Complete", "Sign-Off"]
+                elif forward_action == "reassess":
+                    heading = heading.format("Reassess")
+                    required_status = ["Complete"]
+
+                return render_template('select_subsections.html', competence=c_id,
+                                       user={'name': competence_summary.user,
+                                             'id': u_id},
+                                       title=competence_summary.title, validity=competence_summary.months,
+                                       heading=heading,
+                                       section_list=section_list, required_status=required_status,
+                                       action=forward_action,
+                                       form=form, version=version, message=message)
         elif forward_action == "reassess":
             return redirect(url_for('training.reassessment')+"?c_id="+str(c_id)+"&version="+str(version)+"&assess_id_list="+",".join(ids))
 

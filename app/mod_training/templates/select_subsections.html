@@ -1,15 +1,8 @@
 {% extends "base2.html" %}
 {% block content %}
 
-
-            <h1>
-                <strong>Competence:</strong> {{ title }}
-                <small></small>
-            </h1>
-{#            <ol class="breadcrumb">#}
-{#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
-{#                <li class="active">Here</li>#}
-{#            </ol>#}
+    <section>
+        <h1><strong>Competence:</strong> {{ title }}</h1>
             {% if message %}
                 <div class="alert alert-danger">
                     <strong>Fail Whale!</strong> {{ message }}
