@@ -1143,7 +1143,6 @@ def select_subsections():
                                form=form,version=version)
     else:
         ids = form.ids.data.replace('"', '').replace('[', '').replace(']', '').split(',')
-        #TODO make it so that sections must be selected
 
         #TODO error if you select inactive subsections to upload evidence in a competency with some active subsections
         print(f"ids: {ids}")
@@ -1158,7 +1157,7 @@ def select_subsections():
             try:
                 return upload_evidence(c_id, ids,version)
             except JSONDecodeError:
-                message = "You must select at least one subsection!"
+                message = "You must select at least one active subsection!"
                 competence_summary = get_competence_summary_by_user(c_id, int(u_id), version)
                 section_list = get_competence_by_user(c_id, int(u_id), version)
 
