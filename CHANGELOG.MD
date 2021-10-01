@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file from v1.0.2.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+
+## [1.0.2] - 2021-10-01
 ### Fixed
 - Fixed bug where page errors if no subsections or inactive subsections are selected for evidence upload
 - Fixed bug where date picker wasn't rendering
