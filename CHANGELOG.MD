@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 ### Fixed
 - Fixed bug where page errors if no subsections or inactive subsections are selected for evidence upload
+- Fixed bug where date picker wasn't rendering
 
 ## [1.0.1] - 2021-09-21
 ### Added
