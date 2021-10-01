@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
-from wtforms.fields import SubmitField, HiddenField, SelectField, TextAreaField, FileField, DateField, StringField
-
+from wtforms.fields import SubmitField, HiddenField, SelectField, TextAreaField, FileField, StringField
+from wtforms.fields.html5 import DateField
 from app.competence import s
 from app.models import *
 
