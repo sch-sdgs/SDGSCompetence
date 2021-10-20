@@ -19,7 +19,7 @@ login_manager.login_view = "login"
 principals = Principal(app)
 
 # permission levels
-
+#TODO remove privilege permission
 user_permission = Permission(RoleNeed('USER'))
 linemanager_permission = Permission(RoleNeed('LINEMANAGER'))
 admin_permission = Permission(RoleNeed('ADMIN'))
@@ -44,6 +44,7 @@ def setup():
                 s.commit
 
             #create statuses
+            #TODO add not required status
             statuses = ["Abandoned","Active","Assigned","Complete","Failed","Four Year Due","Obsolete","Sign-Off"]
             for status in statuses:
                 if s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == status).count() == 0:
@@ -208,8 +209,8 @@ class User(UserMixin):
     def is_authenticated(self, id, password):
         """
         checks if user can authenticate with given user id and password. A user can authenticate if two conditions are met
-         1. user is in the stardb database
-         2. user credentils authenticate with active directory
+         1. user is in the competence database
+         2. user credentials authenticate with active directory
 
         :param id: username
         :param password: password
@@ -808,21 +809,21 @@ def index(message=None):
                         counts[i.id]["expiring"] += 1
                     expiring_count += 1
 
+    competences_incomplete = s.query(CompetenceDetails). \
+        join(Competence). \
+        filter(CompetenceDetails.creator_id == current_user.database_id). \
+        filter(Competence.current_version != CompetenceDetails.intro). \
+        filter(CompetenceDetails.date_of_approval == None). \
+        all()
 
-    competences_incomplete = s.query(CompetenceDetails).join(Competence).filter(
-        CompetenceDetails.creator_id == current_user.database_id).filter(Competence.current_version != CompetenceDetails.intro).filter(CompetenceDetails.date_of_approval == None).all()
+    competences_complete = s.query(CompetenceDetails). \
+        join(Competence). \
+        filter(CompetenceDetails.creator_id == current_user.database_id). \
+        filter(Competence.current_version == CompetenceDetails.intro). \
+        all()
 
-
-
-    competences_complete = s.query(CompetenceDetails).join(Competence).filter(
-        CompetenceDetails.creator_id == current_user.database_id).filter(Competence.current_version == CompetenceDetails.intro).all()
-
-
-
-    # assigned = s.query(Assessments).filter(Assessments.user_id == current_user.database_id).filter(
-    #     or_(Assessments.status == 2, Assessments.status == 1, Assessments.status == 7)).filter(Competence.current_version==Assessments.version).all()
-    #
-
+    #TODO add failed to this?
+    #TODO add a check to prevent subsections being assigned twice
     assigned = s.query(Assessments)\
         .join(Subsection)\
         .join(Competence)\
@@ -830,11 +831,10 @@ def index(message=None):
         .join(AssessmentStatusRef)\
         .filter(Assessments.user_id == current_user.database_id)\
         .group_by(Competence.id)\
-        .filter(or_(AssessmentStatusRef.status == "Assigned", AssessmentStatusRef.status == "Active", AssessmentStatusRef.status == "Sign-Off"))\
+        .filter(or_(AssessmentStatusRef.status == "Assigned",
+                    AssessmentStatusRef.status == "Active",
+                    AssessmentStatusRef.status == "Sign-Off"))\
         .all()
-
-
-    # assigned = s.query(Assessments).join(Subsection).join()
 
     all_assigned=[]
     for j in assigned:
@@ -873,16 +873,29 @@ def index(message=None):
         .join(CompetenceDetails) \
         .join(AssessmentStatusRef) \
         .filter(Assessments.user_id == current_user.database_id) \
-        .filter(and_(CompetenceDetails.intro <= Assessments.version,or_(CompetenceDetails.last >= Assessments.version,CompetenceDetails.last==None)))\
+        .filter(and_(CompetenceDetails.intro <= Assessments.version,
+                     or_(CompetenceDetails.last >= Assessments.version,
+                         CompetenceDetails.last==None)))\
         .group_by(Competence.id) \
         .filter(AssessmentStatusRef.status.in_(["Obsolete"])) \
         .all()
 
+    signoff = s.query(Evidence). \
+        join(EvidenceTypeRef). \
+        filter(Evidence.signoff_id == current_user.database_id). \
+        filter(Evidence.is_correct == None). \
+        all()
+    signoff_competence = s.query(CompetenceDetails). \
+        filter(and_(CompetenceDetails.approve_id == current_user.database_id,
+                    CompetenceDetails.approved != None,
+                    CompetenceDetails.approved != 1)). \
+        all()
 
-    signoff = s.query(Evidence).join(EvidenceTypeRef).filter(Evidence.signoff_id == current_user.database_id).filter(Evidence.is_correct == None).all()
-    signoff_competence = s.query(CompetenceDetails).filter(and_(CompetenceDetails.approve_id == current_user.database_id,CompetenceDetails.approved != None,CompetenceDetails.approved != 1)).all()
-
-    signoff_reassessment = s.query(Reassessments).join(AssessReassessRel).join(Assessments).filter(Reassessments.signoff_id==current_user.database_id).filter(Reassessments.is_correct == None).all()
+    signoff_reassessment = s.query(Reassessments). \
+        join(AssessReassessRel).join(Assessments). \
+        filter(Reassessments.signoff_id==current_user.database_id). \
+        filter(Reassessments.is_correct == None). \
+        all()
 
     accept_form = RateEvidence()
 
