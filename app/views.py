@@ -822,8 +822,6 @@ def index(message=None):
         filter(Competence.current_version == CompetenceDetails.intro). \
         all()
 
-    #TODO add failed to this?
-    #TODO add a check to prevent subsections being assigned twice
     assigned = s.query(Assessments)\
         .join(Subsection)\
         .join(Competence)\
@@ -833,7 +831,8 @@ def index(message=None):
         .group_by(Competence.id)\
         .filter(or_(AssessmentStatusRef.status == "Assigned",
                     AssessmentStatusRef.status == "Active",
-                    AssessmentStatusRef.status == "Sign-Off"))\
+                    AssessmentStatusRef.status == "Sign-Off",
+                    AssessmentStatusRef.status == "Failed"))\
         .all()
 
     all_assigned=[]
