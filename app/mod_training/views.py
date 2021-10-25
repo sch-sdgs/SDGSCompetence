@@ -1154,7 +1154,7 @@ def select_subsections():
             heading = heading.format("assign")
         elif forward_action == "activate":
             heading = heading.format("Activate")
-            required_status = ["Assigned"]
+            required_status = ["Assigned", "Not Required"]
         elif forward_action == "evidence":
             heading = heading.format("Assign Evidence to")
             required_status = ["Active","Failed","Complete","Sign-Off"]
