@@ -755,6 +755,7 @@ def index(message=None):
     failed_count = 0
     expiring_count = 0
     expired_count = 0
+    not_required_count = 0
 
     for i in linereports:
         counts[i.id] = {}
@@ -789,7 +790,10 @@ def index(message=None):
             s.query(Assessments).join(AssessmentStatusRef).filter(Assessments.user_id == i.id).filter(
                 AssessmentStatusRef.status == "Abandoned").all())
         abandoned_count += counts[i.id]["abandoned"]
-        #TODO add not required count
+        counts[i.id]["not_required"] = len(
+            s.query(Assessments).join(AssessmentStatusRef).filter(Assessments.user_id == i.id).filter(
+                AssessmentStatusRef.status == "Not Required").all())
+        not_required_count += counts[i.id]["not_required"]
 
     #expired = s.query(Assessments).filter(Assessments.user_id == current_user.database_id)
     alerts = {}
@@ -906,7 +910,7 @@ def index(message=None):
     accept_form = RateEvidence()
 
     return render_template("index.html", message=message, expiring_count=expiring_count, expired_count=expired_count, complete=all_complete, obsolete=obsolete, accept_form=accept_form, signoff=signoff, assigned_count=assigned_count,
-                           active_count=active_count, signoff_count=signoff_count, failed_count=failed_count, complete_count=complete_count, linereports=linereports,
+                           active_count=active_count, signoff_count=signoff_count, failed_count=failed_count, complete_count=complete_count, not_required_count=not_required_count, linereports=linereports,
                            linereports_inactive=linereports_inactive, competences_incomplete=competences_incomplete,
                            competences_complete=competences_complete, abandoned_count=abandoned_count, counts=counts, assigned=all_assigned, active=active,signoff_competence=signoff_competence,signoff_reassessment=signoff_reassessment)
 
