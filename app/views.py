@@ -44,8 +44,7 @@ def setup():
                 s.commit
 
             #create statuses
-            #TODO add not required status
-            statuses = ["Abandoned","Active","Assigned","Complete","Failed","Four Year Due","Obsolete","Sign-Off"]
+            statuses = ["Abandoned","Active","Assigned","Complete","Failed","Four Year Due", "Not Required", "Obsolete","Sign-Off"]
             for status in statuses:
                 if s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == status).count() == 0:
                     st = AssessmentStatusRef(status=status)
@@ -66,7 +65,7 @@ def setup():
                     s.add(cc)
             s.commit()
 
-            evidences = ["Case", "Completed competence panel", "Discussion", "Observation", "Upload"]
+            evidences = ["Case", "Completed competence panel", "Discussion", "Inactivation Request", "Observation", "Upload"]
             for evidence in evidences:
                 if s.query(EvidenceTypeRef).filter(EvidenceTypeRef.type == evidence).count() == 0:
                     st = EvidenceTypeRef(type=evidence)
@@ -300,7 +299,10 @@ def page_not_found(e):
 
 
 def get_competence_from_subsections(subsection_ids):
-    subsections = s.query(Competence).join(Subsection).filter(Subsection.id.in_(subsection_ids)).all()
+    subsections = s.query(Competence). \
+        join(Subsection). \
+        filter(Subsection.id.in_(subsection_ids)). \
+        all()
 
     return subsections
 
@@ -356,7 +358,7 @@ def utility_processor():
             .join(AssessmentStatusRef)\
             .filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id)) \
             .values((func.sum(
-            case([(or_(AssessmentStatusRef.status.in_(["Active", "Complete","Failed"])), 1)],
+            case([(or_(AssessmentStatusRef.status.in_(["Active", "Complete","Failed", "Not Required"])), 1)],
                  else_=0)) / func.count(Assessments.id) * 100).label('percentage'))
         for c in counts:
             return c.percentage
@@ -397,15 +399,12 @@ def utility_processor():
 @app.context_processor
 def utility_processor():
     def get_reassessment_status(reassessment):
-
-
         if reassessment.is_correct == None:
             html = '<span class ="label label-warning">Awaiting Sign-Off</span>'
         elif reassessment.is_correct == 1:
             html = '<span class ="label label-success">Approved</span>'
         elif reassessment.is_correct == 0:
             html = '<span class ="label label-danger">Failed</span>'
-
 
         return html
 
@@ -438,22 +437,6 @@ def utility_processor():
 
         return html
 
-        #return {"total_days":total_days,"days_passed":days_passed_since_assignment}
-
-
-        # if check_margin(expiry_date,0):
-        #     html = '<span class="label label-danger">Expired</span>'
-        # elif check_margin(expiry_date,5):
-        #     html = '<span class="label label-danger">Expiring Within 5 Days</span>'
-        # elif check_margin(expiry_date,30):
-        #     html = '<span class="label label-warning">Expiring Within 30 Days</span>'
-        # elif check_margin(expiry_date, 90):
-        #     html = '<span class="label label-info">Expiring Within Days</span>'
-        # else:
-        #     html = '<span class="label label-success">OK</span>'
-
-        #return html
-
     return dict(check_due_date=check_due_date)
 
 
@@ -482,7 +465,10 @@ def utility_processor():
 @app.context_processor
 def utility_processor():
     def get_status(status_id):
-        status = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.id==status_id).first().status
+        status = s.query(AssessmentStatusRef). \
+            filter(AssessmentStatusRef.id==status_id). \
+            first(). \
+            status
         html = assess_status_method(status)
 
         return html
@@ -512,15 +498,25 @@ def utility_processor():
                     else:
                         alerts["Assessments Expiring"] += 1
                         count += 1
-        signoff = s.query(Evidence).filter(Evidence.signoff_id == current_user.database_id).filter(Evidence.is_correct == None).count()
+        signoff = s.query(Evidence). \
+            filter(Evidence.signoff_id == current_user.database_id). \
+            filter(Evidence.is_correct == None). \
+            count()
         if signoff > 0:
             count+=signoff
             alerts["Evidence Approval"] = signoff
-        approval = s.query(CompetenceDetails).filter(and_(CompetenceDetails.approve_id == current_user.database_id,CompetenceDetails.approved != None,CompetenceDetails.approved != 1)).count()
+        approval = s.query(CompetenceDetails). \
+            filter(and_(CompetenceDetails.approve_id == current_user.database_id,
+                        CompetenceDetails.approved != None,
+                        CompetenceDetails.approved != 1)). \
+            count()
         if approval > 0:
             count += approval
             alerts["Competence Approval"] = approval
-        reassessments = s.query(Reassessments).filter(Reassessments.signoff_id == current_user.database_id).filter(Reassessments.is_correct==None).count()
+        reassessments = s.query(Reassessments). \
+            filter(Reassessments.signoff_id == current_user.database_id). \
+            filter(Reassessments.is_correct==None). \
+            count()
         if reassessments > 0:
             count += reassessments
             alerts["Reassessment Approval"] = reassessments
@@ -724,10 +720,12 @@ def logout():
 
     return redirect(request.args.get('next') or '/')
 
+
 @app.route('/index')
 @login_required
 def home():
     return redirect('/')
+
 
 @app.route('/')
 @login_required
@@ -736,10 +734,16 @@ def index(message=None):
     displays the users dashboard
     :return: template index.html
     """
+    #TODO edit to include not required
     print (current_user.database_id)
-    linereports = s.query(Users).filter_by(line_managerid=int(current_user.database_id)).filter_by(active=True).all()
-    linereports_inactive = s.query(Users).filter_by(line_managerid=int(current_user.database_id)).filter_by(
-        active=False).count()
+    linereports = s.query(Users). \
+        filter_by(line_managerid=int(current_user.database_id)). \
+        filter_by(active=True). \
+        all()
+    linereports_inactive = s.query(Users). \
+        filter_by(line_managerid=int(current_user.database_id)). \
+        filter_by(active=False). \
+        count()
     counts = {}
     active_count = 0
     assigned_count = 0
@@ -783,6 +787,7 @@ def index(message=None):
             s.query(Assessments).join(AssessmentStatusRef).filter(Assessments.user_id == i.id).filter(
                 AssessmentStatusRef.status == "Abandoned").all())
         abandoned_count += counts[i.id]["abandoned"]
+        #TODO add not required count
 
     #expired = s.query(Assessments).filter(Assessments.user_id == current_user.database_id)
     alerts = {}
@@ -955,29 +960,7 @@ def notifications():
             Reassessments.is_correct == None).all()
         alerts["Reassessment Approval"] = reassessments_query
 
-
-
     return render_template("notifications.html",alerts=alerts)
-
-# @app.route('/bug_reports', methods=['POST','GET'])
-# @login_required
-# def bug_reports():
-#
-#     trello = TrelloApi(config.get("TRELLO_APP_KEY"),token='1c7e2c946ba584da3e125834ebc88f41f38a3f6286ee99e9a43682902ca82ccb')
-#     token = trello.get_token_url('My App', expires='30days', write_access=True)
-#
-#     for i in trello.boards.get_list('59de4d6e5c1d9536f21019d9'):
-#         if i["name"] == "Bug Reports":
-#             list_id = i["id"]
-#
-#
-#     if request.method == 'POST':
-#         trello.cards.new(request.form["bug"] + "- " + current_user.full_name,list_id)
-#
-#     current_bugs = trello.lists.get_card(list_id=list_id)
-#
-#     return render_template("bug_reports.html",current_bugs=current_bugs)
-
 
 from flask_mail import Mail,Message
 
@@ -999,7 +982,6 @@ def send_mail(user_id,subject,message):
         msg.html = '<b>You have a notification on CompetenceDB</b><br><br>'+message+'<br><br>View all your notifications <a href="'+request.url_root+'notifications">here</a>'
         thr = Thread(target=send_async_email, args=[msg])
         thr.start()
-
 
 
 def send_mail_unknown(email,subject,message):

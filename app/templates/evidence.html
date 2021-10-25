@@ -4,88 +4,78 @@
             <h3 class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span
                         aria-hidden="true">&times;</span><span class="sr-only">Close</span>
-                </button>
+                </button></h3>
                 <h3 class="modal-title"><strong>Evidence Summary</strong></h3>
 
             <div class="modal-body">
-{#                <h4>Training Details</h4>#}
-{#                <table class="table table-striped">#}
-{#                    <tr>#}
-{##}
-{#                    <td><strong>Trainer</strong></td>#}
-{#                    <td>{{ evidence.assessments[0].assess_id_rel.trainer_id_rel.first_name }} {{ evidence.assessments[0].assess_id_rel.trainer_id_rel.last_name }}</td>#}
-{#                </tr>#}
-{#                    <tr>#}
-{##}
-{#                    <td><strong>Date Trained</strong></td>#}
-{#                    <td>{{ evidence.assessments[0].assess_id_rel.date_of_training }}</td>#}
-{#                </tr>#}
-{#                </table>#}
-
-              {% if evidence.evidence_type_id == 2 %}
-                <h4>Uploaded Evidence</h4>
-                <p>Files will either open in your browser or be downloaded</p>
-                <table class="table table-striped">
-                    <thead>
-                    <th>Filename</th>
-                    <th>Date Uploaded</th>
-                    </thead>
-
-
-                    {% for u in get_uploads(evidence.id) %}
-                        <tr>
-                            <td>
-                                <a href="{{ url_for('training.download',filename=u.uuid,alias=u.filename) }}">{{ u.filename }}</a>
-                            </td>
-                            <td>{{ u.date_uploaded }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
+                {% if evidence.evidence_type_id == 2 %}
+                    <h4>Uploaded Evidence</h4>
+                    <p>Files will either open in your browser or be downloaded</p>
+                    <table class="table table-striped">
+                        <thead>
+                        <th>Filename</th>
+                        <th>Date Uploaded</th>
+                        </thead>
+                        {% for u in get_uploads(evidence.id) %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('training.download',filename=u.uuid,alias=u.filename) }}">{{ u.filename }}</a>
+                                </td>
+                                <td>{{ u.date_uploaded }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
 
                 {% elif evidence.evidence_type_id == 5 %}
-                <h4>Completed Competence Panel</h4>
-                <p>Files will either open in your browser or be downloaded</p>
-                <table class="table table-striped">
-                    <thead>
-                    <th>Filename</th>
-                    <th>Date Uploaded</th>
-                    </thead>
-
-
-                    {% for u in get_uploads(evidence.id) %}
-                        <tr>
-                            <td>
-                                <a href="{{ url_for('training.download',filename=u.uuid,alias=u.filename) }}">{{ u.filename }}</a>
-                            </td>
-                            <td>{{ u.date_uploaded }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-
+                    <h4>Completed Competence Panel</h4>
+                    <p>Files will either open in your browser or be downloaded</p>
+                    <table class="table table-striped">
+                        <thead>
+                        <th>Filename</th>
+                        <th>Date Uploaded</th>
+                        </thead>
+                        {% for u in get_uploads(evidence.id) %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('training.download',filename=u.uuid,alias=u.filename) }}">{{ u.filename }}</a>
+                                </td>
+                                <td>{{ u.date_uploaded }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
 
                 {% elif evidence.evidence_type_id == 3 %}
-                            <h4>Case Based Evidence</h4>
-                            <table class="table table-striped">
-                            <tr><td>Case</td><td>{{ evidence.evidence }}</td></tr>
-                            <tr><td>Result</td><td>{{ evidence.result }}</td></tr>
-                            </table>
+                    <h4>Case Based Evidence</h4>
+                    <table class="table table-striped">
+                        <tr><td>Case</td><td>{{ evidence.evidence }}</td></tr>
+                        <tr><td>Result</td><td>{{ evidence.result }}</td></tr>
+                    </table>
 
                 {% elif evidence.evidence_type_id == 1 %}
-                        <h4>Observation Evidence</h4>
-                        <table class="table table-striped">
-                            <tr>
-                                <td>Evidence</td>
-                                <td>{{ evidence.evidence }}</td>
-                            </tr>
-                        </table>
+                    <h4>Observation Evidence</h4>
+                    <table class="table table-striped">
+                        <tr>
+                            <td>Evidence</td>
+                            <td>{{ evidence.evidence }}</td>
+                        </tr>
+                    </table>
 
                 {% elif evidence.evidence_type_id == 4 %}
-                        <h4>Discussion Evidence</h4>
-                        <table class="table table-striped">
-                            <tr>
-                                <td>{{ evidence.evidence }}</td>
-                            </tr>
-                        </table>
+                    <h4>Discussion Evidence</h4>
+                    <table class="table table-striped">
+                        <tr>
+                            <td>{{ evidence.evidence }}</td>
+                        </tr>
+                    </table>
+
+
+                {% elif evidence.evidence_type_id == 6 %}
+                    <h4>Subsection Inactivation Request</h4>
+                    <table class="table table-striped">
+                        <tr>
+                            <td>{{ evidence.evidence }}</td>
+                        </tr>
+                    </table>
 
             {% endif %}
 

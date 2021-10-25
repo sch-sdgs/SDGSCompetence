@@ -51,6 +51,8 @@ def utility_processor():
             html = '<span class="label label-primary">' + status + '</span>'
         elif status == "Four Year Due":
             html = '<span class="label label-danger">' + status + '</span>'
+        elif status == "Not Required":
+            html = '<span class="label label-default">' + status + '</span>'
         return html
 
     return dict(make_status_label=make_status_label)
@@ -74,8 +76,10 @@ def get_ss_id_from_assessment(assess_id_list):
 
 
 def get_competent_users(ss_id_list):
+    """
+    query all users competent in a given competency
+    """
     # todo: add competence author to this list
-
     users = s.query(Users). \
         join(Assessments, Assessments.user_id == Users.id). \
         join(AssessmentStatusRef) \
@@ -90,7 +94,7 @@ def get_competent_users(ss_id_list):
 
 def get_for_order(c_id, version):
     """
-    Gets the 'for order' fpr a competency, and updates the 'result' dictionary
+    Gets the 'for order' for a competency, and updates the 'result' dictionary
     :param c_id: ID for competence
     :param version: Version for competence
     :return result: dictionary with some information about the competency
@@ -101,7 +105,6 @@ def get_for_order(c_id, version):
         filter(SectionSortOrder.c_id == c_id). \
         order_by(asc(SectionSortOrder.sort_order)). \
         all()
-
 
     for x in for_order:
         ### Need to keep Subsection.last == None instead of is None for query to function correctly
@@ -248,110 +251,6 @@ def get_competence_by_user(c_id, u_id, version):
     competence_result = get_competence_result(c_id, u_id, version)
     result = parse_competence_result(competence_result, result)
     return result
-# def get_competence_by_user(c_id, u_id, version):
-#     """
-#     Method to get information for competence for a given user
-#
-#     :param c_id: ID for competence
-#     :param u_id: ID of user
-#     :param version: version of competence
-#
-#     :return:
-#     """
-#     # get ID for user
-#
-#     #users_alias = aliased(Users)
-#
-#     # get info for competence (assessments table)
-#
-#     competence_result = s.query(Assessments). \
-#         join(Subsection, Assessments.ss_id_rel). \
-#         join(Section, Subsection.s_id_rel). \
-#         join(SectionSortOrder, Section.sort_order_rel). \
-#         join(Competence, Subsection.c_id_rel). \
-#         join(CompetenceDetails, and_(Competence.id==CompetenceDetails.c_id,CompetenceDetails.intro==version)). \
-#         join(AssessmentStatusRef, Assessments.status_rel). \
-#         join(EvidenceTypeRef, Subsection.evidence_rel). \
-#         filter(AssessmentStatusRef.status != "Obsolete" ). \
-#         filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id, Competence.id == c_id, Assessments.version==version)). \
-#         order_by(asc(Section.name)).order_by(asc(Subsection.sort_order)).order_by(asc(SectionSortOrder.sort_order)).\
-#         values(Assessments.id.label('ass_id'), Section.name, Section.constant, Subsection.id, Assessments.trainer_id, Assessments.signoff_id,
-#                Subsection.name.label('area_of_competence'), Subsection.comments.label('notes'), EvidenceTypeRef.type,
-#                AssessmentStatusRef.status, Assessments.date_of_training,
-#                Assessments.date_completed, Assessments.date_expiry, Assessments.comments.label('training_comments'),Assessments.version,SectionSortOrder.sort_order)
-#
-#     print(competence_result)
-#
-#     result = {'constant': OrderedDict(), 'custom': OrderedDict()}
-#
-#
-#     for_order = s.query(SectionSortOrder). \
-#         filter(SectionSortOrder.c_id == c_id). \
-#         order_by(asc(SectionSortOrder.sort_order)). \
-#         all()
-#
-#     for x in for_order:
-#         check = s.query(Subsection). \
-#             filter(Subsection.s_id == x.section_id). \
-#             filter(and_(
-#             Subsection.intro <= version,
-#             or_(Subsection.last > version,
-#                 Subsection.last is None))). \
-#             count()
-#
-#         if check > 0:
-#             if x.section_id_rel.constant == 1:
-#                 result["constant"][x.section_id_rel.name] = OrderedDict()
-#                 result["constant"][x.section_id_rel.name] = {'complete': 0, 'total': 0, 'subsections': []}
-#             else:
-#                 result["custom"][x.section_id_rel.name] = OrderedDict()
-#                 result["custom"][x.section_id_rel.name] = {'complete': 0, 'total': 0, 'subsections': []}
-#
-#     for c in competence_result:
-#         evidence = s.query(AssessmentEvidenceRelationship). \
-#             filter(AssessmentEvidenceRelationship.assessment_id == c.ass_id). \
-#             all()
-#
-#         if c.constant:
-#             d = 'constant'
-#         else:
-#             d = 'custom'
-#
-#         #todo repleace this with relationship in assessments - back_populates?
-#         trainer = "-"
-#         if c.trainer_id is not None:
-#             q = s.query(Users).filter(Users.id==c.trainer_id).first()
-#             trainer = q.first_name + " " + q.last_name
-#
-#         assessor = "-"
-#         if c.signoff_id is not None:
-#             q = s.query(Users).filter(Users.id == c.signoff_id).first()
-#             assessor = q.first_name + " " + q.last_name
-#
-#
-#         if c.name not in result[d].keys():
-#             result[d][c.name] = {'complete': 0, 'total': 0, 'subsections': []}
-#
-#         #Feb 2018 - I have changed this here to be the assessment id - instead of the c.id
-#         subsection = {'id': c.ass_id,
-#                       'name': c.area_of_competence,
-#                       'status': c.status,
-#                       'evidence_type': c.type,
-#                       'assessor': assessor,
-#                       'date_of_completion': filter_for_none(c.date_completed),
-#                       'notes': filter_for_none(c.notes),
-#                       'training_comments': filter_for_none(c.training_comments),
-#                       'trainer': trainer,
-#                       'date_of_training': filter_for_none(c.date_of_training),
-#                       'evidence': filter_for_none(evidence)}
-#         if c.date_completed:
-#             result[d][c.name]['complete'] += 1
-#         result[d][c.name]['total'] += 1
-#         subsection_list = result[d][c.name]['subsections']
-#         subsection_list.append(subsection)
-#         result[d][c.name]['subsections'] = subsection_list
-#
-#     return result
 
 
 def get_competence_summary_by_user(c_id, u_id,version):
@@ -406,8 +305,6 @@ def get_competence_summary_by_user(c_id, u_id,version):
 
 def activate_assessments(ids, u_id,version):
     """
-
-
     :return:
     """
 
@@ -544,11 +441,18 @@ def reassessment():
         return redirect(
             url_for('training.view_current_competence', version= request.args.get('version'),c_id=request.args.get('c_id'), user=request.args.get('u_id')))
 
+
 @training.route('/reassessment_view/<int:reassess_id>', methods=['GET', 'POST'])
 @login_required
 def reassessment_view(reassess_id=None):
-
-    reassessment = s.query(Reassessments).join(AssessReassessRel).filter(Reassessments.id==reassess_id).group_by(AssessReassessRel.reassess_id).first()
+    """
+    Renders reassessment page for a given competency
+    """
+    reassessment = s.query(Reassessments). \
+        join(AssessReassessRel). \
+        filter(Reassessments.id==reassess_id). \
+        group_by(AssessReassessRel.reassess_id). \
+        first()
 
     return render_template('reassessment_view.html',reassessment=reassessment)
 
@@ -582,14 +486,6 @@ def view_current_competence():
             filter(Assessments.version==version). \
             all()
 
-        # detail_id = s.query(CompetenceDetails). \
-        #     join(Competence, CompetenceDetails.competence). \
-        #     filter(CompetenceDetails.c_id == c_id). \
-        #     filter(and_(CompetenceDetails.intro <= version,
-        #                 or_(CompetenceDetails.last >= version,
-        #                     CompetenceDetails.last is None))). \
-        #     first(). \
-        #     id
         print(f"c_id: {c_id}")
         print(f"version: {version}")
 
@@ -601,14 +497,17 @@ def view_current_competence():
             filter(or_(CompetenceDetails.last >= version,
                        CompetenceDetails.last == None)). \
             first()
-        print(f"detail query: {detail_query}")
-        print(f"detail_query.last: {detail_query.last}")
         detail_id = detail_query.id
-        print(f"detail query id: {detail_id}")
-
 
         videos = s.query(Videos).filter(Videos.c_id==detail_id).all()
-        four_year_check = s.query(Assessments).join(Subsection).join(Competence).join(AssessmentStatusRef).filter(Assessments.user_id==u_id).filter(AssessmentStatusRef.status=="Four Year Due").filter(Competence.id==c_id).count()
+        four_year_check = s.query(Assessments). \
+            join(Subsection). \
+            join(Competence). \
+            join(AssessmentStatusRef). \
+            filter(Assessments.user_id==u_id). \
+            filter(AssessmentStatusRef.status=="Four Year Due"). \
+            filter(Competence.id==c_id). \
+            count()
         # return template populated
         return render_template('complete_training.html', competence=c_id, u_id=u_id, user=competence_summary.user,
                                number=competence_summary.qpulsenum,
@@ -623,13 +522,60 @@ def view_current_competence():
                                reassessments=reassessments,videos=videos,four_year_check=four_year_check)
 
 
+@training.route('/make_inactive')
+@login_required
+def mark_not_required(c_id=None, s_ids=None, version=None):
+    """
+    Method to request certain subsections are marked as not required
+    """
+    #TODO finish this method
+    form = MarkNotRequired()
+    ass_ids = json.loads(request.form["ids"])
+    ss_id_list = get_ss_id_from_assessment(ass_ids)
+    competent_users = get_competent_users(ss_id_list)
+
+    # deal with authorisers
+    # Add competent staff to authorisors
+    authoriser_config = config["AUTHORISER"].split(",")
+    authoriser_choices = []
+    if "COMPETENT_STAFF" in authoriser_config:
+        for user in competent_users:
+            authoriser_choices.append((user.id, user.name))
+    if "TRAINER" in authoriser_config:
+        trainers = s.query(UserRoleRelationship).join(UserRolesRef).join(Users).filter(
+            UserRolesRef.role == "TRAINER").all()
+        for i in trainers:
+            id = i.user_id_rel.id
+            name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name + " (TRAINER)"
+            authoriser_choices.append((id, name))
+    if "ADMIN" in authoriser_config:
+        admin_users = s.query(UserRoleRelationship).join(UserRolesRef).join(Users).filter(
+            UserRolesRef.role == "ADMIN").filter(Users.active == 1).all()
+        for i in admin_users:
+            check_name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name
+            id = i.user_id_rel.id
+            if (id, check_name) not in authoriser_choices:
+                name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name + " (ADMIN)"
+                authoriser_choices.append((id, name))
+
+    form.assessor.choices = authoriser_choices
+
+    u_id = current_user.database_id
+
+    competence_summary = get_competence_summary_by_user(c_id, u_id, version)
+    names = s.query(Assessments).filter(Assessments.id.in_(s_ids)).all()
+
+    return render_template('make_inactive.html', c_id=c_id, u_id=u_id, user=competence_summary.user, version=version,
+                           number=competence_summary.qpulsenum,
+                           title=competence_summary.title, validity=competence_summary.months, form=form, s_ids=s_ids,
+                           s_names=names)
+
+
 @training.route('/upload')
 @login_required
 def upload_evidence(c_id=None, s_ids=None,version=None):
     """
-    Method to
-
-    :return:
+    Renders evidence upload page
     """
 
     ass_ids = json.loads(request.form["ids"])
@@ -852,49 +798,6 @@ def delete():
     assessments = s.query(Assessments).join(Subsection).filter(and_(Subsection.c_id == c_id,Assessments.user_id==current_user.database_id, Assessments.version==version)).all()
 
     for assessment in assessments:
-        ### actually we don't want to delete evidence, we want to just make it obsolete
-        # evidence_rels = s.query(AssessmentEvidenceRelationship).filter(AssessmentEvidenceRelationship.assessment_id == assessment.id).all()
-        # print evidence_rels
-        # if len(evidence_rels) > 0:
-        #     for evidence_rel in evidence_rels:
-                # print evidence_rel.evidence_id
-                # #remove upload
-                # print "removing upload"
-                # files = s.query(Uploads).filter_by(evidence_id = evidence_rel.evidence_id).all()
-                # if len(files) > 0:
-                #     for file in files:
-                #         try:
-                #             os.remove(config.get("UPLOADED_FILES_DEST")+"/"+file.uuid)
-                #             print "file removed"
-                #         except OSError:
-                #             print "couldn't remove file from filesystem"
-                # print "deleting upload from db"
-                # s.query(Uploads).filter_by(evidence_id = evidence_rel.evidence_id).delete()
-                # s.commit()
-
-                # #remove_evidence_rel
-                # print "removing evidence rel"
-                #
-                # s.query(AssessmentEvidenceRelationship).filter_by(id=evidence_rel.id).delete()
-                # s.commit()
-
-                # print s.query(AssessmentEvidenceRelationship).filter_by(id=evidence_rel.id).all()
-                #
-                # # remove evidence
-                # print "removing evidence record in db"
-                # s.query(Evidence).filter_by(id=evidence_rel.evidence_id).delete()
-                # s.commit()
-
-        # reassessments = s.query(AssessReassessRel).filter_by(assess_id=assessment.id).all()
-        # if len(reassessments) > 0:
-        #     for reassessment in reassessments:
-        #         print "removing reassessments"
-        #         s.query(Reassessments).filter_by(id=reassessment.reassess_id).delete()
-        #         s.commit()
-        #
-        # print "removing reassess rel"
-        # s.query(AssessReassessRel).filter_by(assess_id=assessment.id).delete()
-        # s.commit()
         obsolete_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status=="Obsolete").first().id
         data = {'status': obsolete_id, 'due_date': None, 'date_expiry': None}
 
@@ -924,13 +827,14 @@ def abandon():
         pass
 
 
-
-
-
 @training.route('/signoff_evidence/<string:action>/<int:evidence_id>', methods=['GET', 'POST'])
 @login_required
 def signoff_evidence(evidence_id,action):
+    """
+    Accept or reject evidence OR inactivation requests
+    """
 
+    #TODO edit this to handle inactivation requests
     if action == "accept":
         data = {
             'is_correct': 1,
@@ -948,9 +852,8 @@ def signoff_evidence(evidence_id,action):
         status = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Failed").first().id
         date = None
 
-    assessments_to_update = s.query(AssessmentEvidenceRelationship).filter(AssessmentEvidenceRelationship.evidence_id == evidence_id).all()
-
-
+    assessments_to_update = s.query(AssessmentEvidenceRelationship).filter(
+        AssessmentEvidenceRelationship.evidence_id == evidence_id).all()
 
     for assessment in assessments_to_update:
 
@@ -971,9 +874,8 @@ def signoff_evidence(evidence_id,action):
             'date_expiry': date_expiry
         }
 
-        s.query(Assessments).filter(Assessments.id ==assessment.assessment_id).update(data)
+        s.query(Assessments).filter(Assessments.id == assessment.assessment_id).update(data)
         s.commit()
-
 
     send_mail(query.user_id, "Evidence Reviewed",
               "Your evidence was reviewed by <b>" + current_user.full_name + "</b>")
@@ -986,7 +888,9 @@ def signoff_evidence(evidence_id,action):
 @training.route('/process_evidence', methods=['GET', 'POST'])
 @login_required
 def process_evidence():
-
+    """
+    Method which processes competency evidence
+    """
     s_ids = request.args.get('s_ids').split(",")
     c_id = request.args.get('c_id')
     version = request.args.get('version')
@@ -1076,14 +980,54 @@ def process_evidence():
     return redirect(url_for('training.view_current_competence')+"?version="+str(version)+"&c_id="+str(c_id))
 
 
-# @training.route('/uploader', methods=['GET', 'POST'])
-# @login_required
-# def file_uploader():
-#     if request.method == 'POST':
-#         f = request.files['upload']
-#         f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
-#         print(f.filename)
-#         return 'file uploaded successfully'
+@training.route('/process_inactivation_request', methods=['GET', 'POST'])
+@login_required
+def process_inactivation_request():
+    """
+    Method which handles the processing of the inactivation request
+    """
+    s_ids = request.args.get('s_ids').split(",")
+    c_id = request.args.get('c_id')
+    version = request.args.get('version')
+
+    ### Save the not required request as evidence so it can be handled for approval
+
+    # create evidence
+    evidence_type = s.query(EvidenceTypeRef). \
+        filter(EvidenceTypeRef.type == "Inactivation Request"). \
+        first()
+    evidence = request.form['inactivation_reason']
+    result = None
+    e = Evidence(is_correct=None, signoff_id=request.form['assessor'], date=datetime.date.today(),
+                 evidence=evidence, result=result, comments=None, evidence_type_id = evidence_type.id)
+    s.add(e)
+    s.commit()
+
+    #update assessment evidence relationship
+    for assess_id in s_ids:
+        er = AssessmentEvidenceRelationship(assess_id, e.id)
+        s.add(er)
+    s.commit()
+
+    #update assessment status
+    status_id = s.query(AssessmentStatusRef). \
+        filter(AssessmentStatusRef.status == "Sign-Off"). \
+        first(). \
+        id
+    data = {'signoff_id': request.form['assessor'],
+            'status': status_id}
+    for assess_id in s_ids:
+        s.query(Assessments). \
+            filter(Assessments.id == int(assess_id)). \
+            update(data)
+    s.commit()
+
+    #send email to assessor
+    send_mail(request.form['assessor'], "Inactivation request awaiting your review", "")
+
+    #Redirect to competency page
+    return redirect(url_for('training.view_current_competence') + "?version=" + str(version) + "&c_id=" + str(c_id))
+
 
 @training.route('/select_subsections', methods=['GET', 'POST'])
 @login_required
@@ -1103,11 +1047,13 @@ def select_subsections():
     * activate
     * evidence
     * reassess
+    * mark as not required
 
     This will determine the subsections available for selection and the action completed after selection.
 
     :return:
     """
+    #TODO add a mark as not required option to this form
     c_id = request.args.get('c_id')
     version = request.args.get('version')
     u_id = current_user.database_id
@@ -1135,6 +1081,9 @@ def select_subsections():
         elif forward_action == "reassess":
             heading = heading.format("Reassess")
             required_status = ["Complete"]
+        elif forward_action == "make_inactive":
+            heading = heading.format("Mark As Not Required")
+            required_status = ["Active", "Assigned", "Failed", "Sign-Off"]
 
         return render_template('select_subsections.html', competence=c_id, user={'name': competence_summary.user,
                                                                                  'id': u_id},
@@ -1143,8 +1092,6 @@ def select_subsections():
                                form=form,version=version)
     else:
         ids = form.ids.data.replace('"', '').replace('[', '').replace(']', '').split(',')
-
-        #TODO error if you select inactive subsections to upload evidence in a competency with some active subsections
         print(f"ids: {ids}")
         if forward_action == "assign":
             pass
@@ -1152,6 +1099,40 @@ def select_subsections():
             result = activate_assessments(ids, u_id,version)
             if result == False:
                 return redirect(url_for('training.view_current_competence', c_id=c_id, user=u_id, version=version))
+
+        elif forward_action == "make_inactive":
+            try:
+                return mark_not_required(c_id, ids, version)
+            except JSONDecodeError:
+                message = "You must select at least one active subsection!"
+                competence_summary = get_competence_summary_by_user(c_id, int(u_id), version)
+                section_list = get_competence_by_user(c_id, int(u_id), version)
+                required_status = ""
+                heading = "{} Subsections"
+                if forward_action == "assign":
+                    required_status = None
+                    heading = heading.format("assign")
+                elif forward_action == "activate":
+                    heading = heading.format("Activate")
+                    required_status = ["Assigned"]
+                elif forward_action == "evidence":
+                    heading = heading.format("Assign Evidence to")
+                    required_status = ["Active", "Failed", "Complete", "Sign-Off"]
+                elif forward_action == "reassess":
+                    heading = heading.format("Reassess")
+                    required_status = ["Complete"]
+                elif forward_action == "make_inactive":
+                    heading = heading.format("Mark As Not Required")
+                    required_status = ["Not Required"]
+
+                return render_template('select_subsections.html', competence=c_id,
+                                       user={'name': competence_summary.user,
+                                             'id': u_id},
+                                       title=competence_summary.title, validity=competence_summary.months,
+                                       heading=heading,
+                                       section_list=section_list, required_status=required_status,
+                                       action=forward_action,
+                                       form=form, version=version, message=message)
 
         elif forward_action == "evidence":
             try:
@@ -1175,6 +1156,9 @@ def select_subsections():
                 elif forward_action == "reassess":
                     heading = heading.format("Reassess")
                     required_status = ["Complete"]
+                elif forward_action == "make_inactive":
+                    heading = heading.format("Mark As Not Required")
+                    required_status = ["Not Required"]
 
                 return render_template('select_subsections.html', competence=c_id,
                                        user={'name': competence_summary.user,

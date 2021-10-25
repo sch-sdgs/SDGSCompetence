@@ -8,64 +8,57 @@
                     <strong>Fail Whale!</strong> {{ message }}
                 </div>
             {% endif %}
-        </section>
+    </section>
 
-        <!-- Main content -->
-        <section class="content container-fluid">
-
-            <h3> {{ heading }}</h3>
-
-
-                    {% for section in section_list['constant'] %}
-                          <div class="box box-danger" id="constant_training">
-                <div class="box-header with-border">
-                    <h3 class="box-title">{{ section }}</h3>
-
-                </div>
-                <div class="box-body">
-                                <div class="row">
-                                    <div class="col-lg-1"></div>
-                                    <div class="col-lg-10">
-                                        <table id="{{ section }}" class="table table-striped">
-                                            <thead>
-                                            <tr>
-                                                <th style="width: 85%">
-                                                    Area of Competence
-                                                </th>
-                                                <th style="width: 15%">Select All
-                                               <div class="material-switch pull-right">
+    <!-- Main content -->
+    <section class="content container-fluid">
+        <h3> {{ heading }}</h3>
+            {% for section in section_list['constant'] %}
+                <div class="box box-danger" id="constant_training">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">{{ section }}</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-lg-1"></div>
+                            <div class="col-lg-10">
+                                <table id="{{ section }}" class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th style="width: 85%">Area of Competence</th>
+                                        <th style="width: 15%">Select All
+                                            <div class="material-switch pull-right">
                                                <input type="checkbox" id="{{ section }}checkAll">
                                               <label for="{{ section }}checkAll" class="label-success label-selectall"></label>
-                                               </div>
-                                               </th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            {% for sub in section_list['constant'][section]['subsections'] %}
-                                                <tr>
-                                                    <td>{{ make_status_label(sub['status'])|safe }} {{ sub["name"] }}</td>
-                                                    <td>
-                                                        <div class="material-switch pull-right">
-                                                            {% if sub['status'] in required_status %}
-                                                                <input type="checkbox" id="{{ sub["id"] }}">
-                                                            {% endif %}
+                                            </div>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for sub in section_list['constant'][section]['subsections'] %}
+                                        <tr>
+                                            <td>{{ make_status_label(sub['status'])|safe }} {{ sub["name"] }}</td>
+                                            <td>
+                                                <div class="material-switch pull-right">
+                                                    {% if sub['status'] in required_status %}
+                                                        <input type="checkbox" id="{{ sub["id"] }}">
+                                                    {% endif %}
 
-                                                            {% if sub['status'] in required_status %}
-                                                                <label for="{{ sub["id"] }}"
-                                                                       class="label-success label-competence"></label>
-                                                            {% endif %}
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            {% endfor %}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="col-lg-1"></div>
-                                </div>
+                                                    {% if sub['status'] in required_status %}
+                                                        <label for="{{ sub["id"] }}" class="label-success label-competence"></label>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
                             </div>
+                            <div class="col-lg-1"></div>
                         </div>
-                    {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
                     {% for section in section_list['custom'] %}
                          <div class="box box-success" id="custome_training">
                 <div class="box-header with-border">
@@ -126,9 +119,7 @@
                             {{ form.submit(class_="btn btn-flat btn-success") }}
                         </form>
                     </div>
-                </div>
-        </section>
-    </div>
+    </section>
 
 
     <script>
