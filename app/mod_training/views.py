@@ -827,63 +827,143 @@ def abandon():
         pass
 
 
+
+
+
 @training.route('/signoff_evidence/<string:action>/<int:evidence_id>', methods=['GET', 'POST'])
 @login_required
 def signoff_evidence(evidence_id,action):
     """
     Accept or reject evidence OR inactivation requests
     """
+    #TODO this handles the inactivation of one subsection correctly, if multiple ones are included it changes the dates
+    # for other competencies too
+    evidence_type = int(s.query(Evidence). \
+        filter(Evidence.id == evidence_id). \
+        first(). \
+        evidence_type_id)
+    print(f"evidence type: {evidence_type}")
+    print(f"evidence type is a {type(evidence_type)}")
 
-    #TODO edit this to handle inactivation requests
-    if action == "accept":
-        data = {
-            'is_correct': 1,
-            'comments': request.form["comments"],
-        }
-        s.query(Evidence).filter(Evidence.id == evidence_id).update(data)
-        status = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Complete").first().id
-        date = datetime.date.today()
-    elif action == "reject":
-        data = {
-            'is_correct': 0,
-            'comments': request.form["comments"],
-        }
-        s.query(Evidence).filter(Evidence.id == evidence_id).update(data)
-        status = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Failed").first().id
-        date = None
+    if evidence_type == 6: #inactivation request
+        if action == "accept":
+            data = {
+                'is_correct': 1,
+                'comments': request.form['comments'],
+            }
+            s.query(Evidence). \
+                filter(Evidence.id == evidence_id). \
+                update(data)
+            status = s.query(AssessmentStatusRef). \
+                filter(AssessmentStatusRef.status == "Not Required"). \
+                first(). \
+                id
+            date = datetime.date.today()
+        elif action == "reject":
+            data = {
+                'is_correct': 0,
+                'comments': request.form["comments"]
+            }
+            s.query(Evidence). \
+                filter(Evidence.id == evidence_id). \
+                update(data)
+            status = s.query(AssessmentStatusRef). \
+                filter(AssessmentStatusRef.status == "Assigned"). \
+                first(). \
+                id
+            date = None
 
-    assessments_to_update = s.query(AssessmentEvidenceRelationship).filter(
-        AssessmentEvidenceRelationship.evidence_id == evidence_id).all()
+        assessments_to_update = s.query(AssessmentEvidenceRelationship). \
+            filter(AssessmentEvidenceRelationship.evidence_id == evidence_id). \
+            all()
 
-    for assessment in assessments_to_update:
+        for assessment in assessments_to_update:
+            print(f"assessment: {assessment}")
+            query = s.query(Assessments). \
+                filter(Assessments.id == assessment.assessment_id). \
+                first()
+            print(f"query: {query}")
+            for detail in query.ss_id_rel.c_id_rel.competence_detail:
+                if detail.intro <= query.version:
+                    months_valid = detail.validity_rel.months
+            try:
+                date_expiry = datetime.datetime.strptime(request.form["expiry_date"], '%d/%m/%Y')
+            except:
+                date_expiry = datetime.datetime.now() + relativedelta(months=months_valid)
+            data = {
+                'date_completed': date,
+                'status': status,
+                'date_expiry': date_expiry
+            }
+            s.query(Assessments). \
+                filter(Assessments.id == assessment.assessment_id). \
+                update(data)
+            s.commit()
 
-        query = s.query(Assessments).filter(Assessments.id == assessment.assessment_id).first()
+        send_mail(query.user_id, "Inactivation Request Reviewed",
+                  "Your inactivation request was reviewed by <b>" + current_user.full_name + "</b>")
 
-        for detail in query.ss_id_rel.c_id_rel.competence_detail:
-            if detail.intro <= query.version:
-                months_valid = detail.validity_rel.months
+        return redirect(url_for('index'))
 
-        try:
-            date_expiry = datetime.datetime.strptime(request.form["expiry_date"], '%d/%m/%Y')
-        except:
-            date_expiry = datetime.datetime.now() + relativedelta(months=months_valid)
+    else:
+        if action == "accept":
+            data = {
+                'is_correct': 1,
+                'comments': request.form["comments"],
+            }
+            s.query(Evidence). \
+                filter(Evidence.id == evidence_id). \
+                update(data)
+            status = s.query(AssessmentStatusRef). \
+                filter(AssessmentStatusRef.status == "Complete"). \
+                first(). \
+                id
+            date = datetime.date.today()
+        elif action == "reject":
+            data = {
+                'is_correct': 0,
+                'comments': request.form["comments"],
+            }
+            s.query(Evidence). \
+                filter(Evidence.id == evidence_id). \
+                update(data)
+            status = s.query(AssessmentStatusRef). \
+                filter(AssessmentStatusRef.status == "Failed"). \
+                first(). \
+                id
+            date = None
 
-        data = {
-            'date_completed': date,
-            'status': status,
-            'date_expiry': date_expiry
-        }
+        assessments_to_update = s.query(AssessmentEvidenceRelationship). \
+            filter(AssessmentEvidenceRelationship.evidence_id == evidence_id). \
+            all()
 
-        s.query(Assessments).filter(Assessments.id == assessment.assessment_id).update(data)
-        s.commit()
+        for assessment in assessments_to_update:
+            query = s.query(Assessments). \
+                filter(Assessments.id == assessment.assessment_id). \
+                first()
 
-    send_mail(query.user_id, "Evidence Reviewed",
+            for detail in query.ss_id_rel.c_id_rel.competence_detail:
+                if detail.intro <= query.version:
+                    months_valid = detail.validity_rel.months
+
+            try:
+                date_expiry = datetime.datetime.strptime(request.form["expiry_date"], '%d/%m/%Y')
+            except:
+                date_expiry = datetime.datetime.now() + relativedelta(months=months_valid)
+
+            data = {
+                'date_completed': date,
+                'status': status,
+                'date_expiry': date_expiry
+            }
+
+            s.query(Assessments).filter(Assessments.id ==assessment.assessment_id).update(data)
+            s.commit()
+
+        send_mail(query.user_id, "Evidence Reviewed",
               "Your evidence was reviewed by <b>" + current_user.full_name + "</b>")
 
-    # else:
-    #     print "NOT AUTHORISED"
-
-    return redirect(url_for('index'))
+        return redirect(url_for('index'))
 
 @training.route('/process_evidence', methods=['GET', 'POST'])
 @login_required
