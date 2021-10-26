@@ -88,7 +88,7 @@
                     <div class="box-body table-responsive table-striped table-condensed">
                         <table class="table table-responsive table-striped table-condensed table-hover no-padding">
                             <thead>
-                                <th class="col-md-3">Name</th>
+                                <th class="col-md-2">Name</th>
                                 <th class="col-md-1">Assigned</th>
                                 <th class="col-md-1">Active</th>
                                 <th class="col-md-1">Sign-Off</th>
@@ -98,6 +98,7 @@
                                 <th class="col-md-1">Obsolete</th>
                                 <th class="col-md-1">Expiring</th>
                                 <th class="col-md-1">Expired</th>
+                                <th class="col-md-1">Not Required</th>
                             </thead>
                             {% for report in linereports %}
                                 <tr>
@@ -111,6 +112,7 @@
                                     <td>{{ counts[report.id]["obsolete"] }}</td>
                                     <td>{% if "expiring" in counts[report.id] %}{{ counts[report.id]["expiring"] }}{% else %}0{% endif %}</td>
                                     <td>{% if "expired" in counts[report.id] %}{{ counts[report.id]["expired"] }}{% else %}0{% endif %}</td>
+                                    <td>{{ counts[report.id]["not_required"] }}</td>
                                 </tr>
                             {% endfor %}
                         </table>
@@ -131,9 +133,9 @@
              */
 
             var data = {
-                labels: ['Assigned', 'Active', 'Sign-Off', 'Complete †', 'Failed', 'Abandoned', 'Obselete', 'Expiring', 'Expired'],
+                labels: ['Assigned', 'Active', 'Sign-Off', 'Complete †', 'Failed', 'Abandoned', 'Obselete', 'Expiring', 'Expired', 'Not Required'],
                 datasets: [{
-                    data: [{{ assigned_count }}, {{ active_count }}, {{ signoff_count }}, {{ complete_count }}, {{ failed_count }}, {{ abandoned_count }}, 0, {{ expiring_count }}, {{ expired_count }}],
+                    data: [{{ assigned_count }}, {{ active_count }}, {{ signoff_count }}, {{ complete_count }}, {{ failed_count }}, {{ abandoned_count }}, 0, {{ expiring_count }}, {{ expired_count }}, {{ not_required_count }}],
                     label: 'Digital Goods',
                     fillColor: '#EA5D4E',
                     strokeColor: 'rgba(60,141,188,0.8)',

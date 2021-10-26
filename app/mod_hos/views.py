@@ -1,16 +1,16 @@
-from app.competence import s, send_mail_unknown
-from app.models import *
-from flask import flash, render_template, request, url_for, redirect, Blueprint
-from flask_login import login_required, current_user
-from dateutil.relativedelta import relativedelta
-from sqlalchemy.sql.expression import and_, or_
+from app.competence import s
 from app.mod_training.views import get_competence_summary_by_user
+from app.models import *
 from app.views import hos_permission
+from dateutil.relativedelta import relativedelta
+from flask import render_template, Blueprint
+from flask_login import login_required, current_user
+from sqlalchemy.sql.expression import and_, or_
 
-from app.views import admin_permission
-from app.activedirectory import UserAuthentication
 
+### Set up HOS Blueprint
 hos = Blueprint('hos', __name__, template_folder='templates')
+
 
 @hos.route('/service_overview')
 @login_required
@@ -26,7 +26,7 @@ def index():
         .filter(Service.head_of_service_id == int(current_user.database_id)) \
         .first()
     if service_name_query is None:
-        service_name = "I HAVE HIT A DATABASE ERROR"
+        service_name = "Service Name Not Found - please contact bioinformatics"
     else:
         service_name = service_name_query.name
 
@@ -45,9 +45,12 @@ def index():
     failed_count = 0
     expiring_count = 0
     expired_count = 0
+    obsolete_count = 0
+    not_required_count = 0
 
     for i in linereports:
         counts[i.id] = {}
+
         # Assigned competencies by staff member
         counts[i.id]["assigned"] = len(
             s.query(Assessments) \
@@ -57,6 +60,7 @@ def index():
             .all()
         )
         assigned_count += counts[i.id]["assigned"]
+
         # Active competencies by staff member
         counts[i.id]["active"] = len(
             s.query(Assessments) \
@@ -66,6 +70,7 @@ def index():
                 .all()
         )
         active_count += counts[i.id]["active"]
+
         # Signed-off competencies by staff member
         counts[i.id]["sign-off"] = len(
             s.query(Assessments) \
@@ -75,6 +80,7 @@ def index():
                 .all()
         )
         signoff_count += counts[i.id]["sign-off"]
+
         # Complete competencies by staff member
         counts[i.id]["complete"] = len(
             s.query(Assessments) \
@@ -84,6 +90,7 @@ def index():
                 .all()
         )
         complete_count += counts[i.id]["complete"]
+
         # Failed competencies by staff member
         counts[i.id]["failed"] = len(
             s.query(Assessments) \
@@ -93,6 +100,7 @@ def index():
                 .all()
         )
         failed_count += counts[i.id]["failed"]
+
         # Obsolete competencies by staff member
         counts[i.id]["obsolete"] = len(
             s.query(Assessments) \
@@ -101,6 +109,8 @@ def index():
                 .filter(AssessmentStatusRef.status == "Obsolete") \
                 .all()
         )
+        obsolete_count += counts[i.id]["obsolete"]
+
         # Abandoned competencies by staff member
         counts[i.id]["abandoned"] = len(
             s.query(Assessments) \
@@ -110,6 +120,16 @@ def index():
                 .all()
         )
         abandoned_count += counts[i.id]["abandoned"]
+
+        # Not required competencies by staff member
+        counts[i.id]["not_required"] = len(
+            s.query(Assessments). \
+            join(AssessmentStatusRef). \
+            filter(Assessments.user_id == i.id). \
+            filter(AssessmentStatusRef.status == "Not Required"). \
+            all()
+        )
+        not_required_count += counts[i.id]["not_required"]
 
     # Find expired and expiring competencies
     alerts = {}
@@ -137,6 +157,7 @@ def index():
                         counts[i.id]["expiring"] += 1
                     expiring_count += 1
 
+    #TODO is this needed?
     # Find complete and incomplete competencies
     competencies_incomplete = s.query(CompetenceDetails) \
         .join(Competence) \
@@ -218,14 +239,7 @@ def index():
         .filter(AssessmentStatusRef.status.in_(["Obsolete"])) \
         .all()
 
-    return render_template('service_overview.html', service_name=service_name, expired_count=expired_count, complete=all_complete, obsolete=obsolete, assigned_count=assigned_count,
-                           active_count=active_count, signoff_count=signoff_count, failed_count=failed_count, complete_count=complete_count, linereports=linereports,
+    return render_template('service_overview.html', service_name=service_name, expired_count=expired_count, complete=all_complete,
+                           obsolete=obsolete, assigned_count=assigned_count, active_count=active_count, signoff_count=signoff_count,
+                           failed_count=failed_count, complete_count=complete_count, linereports=linereports, not_required_count=not_required_count,
                            abandoned_count=abandoned_count, counts=counts, assigned=all_assigned, active=active, expiring_count=expiring_count)
-
-def index():
-    """
-    shows the head of service homepage
-    return: template service_overview.html
-    """
-    return render_template('service_overview.html')
-
