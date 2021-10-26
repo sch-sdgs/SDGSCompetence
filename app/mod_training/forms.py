@@ -31,7 +31,7 @@ class MarkNotRequired(FlaskForm):
     For requesting subsection(s) are made inactive
     """
     inactivation_reason = TextAreaField(label="Reason these subsections do not require completion:")
-    assessor = SelectField(label="Who will authorise this inactivation?")
+    assessor = SelectField(label="Who will authorise that this training is not required?")
     assid = HiddenField("AssessmentID")
     submit = SubmitField("Submit Request")
 

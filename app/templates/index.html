@@ -469,11 +469,6 @@
                                                         <a href="{{ url_for('training.view_current_competence') }}?c_id={{ i.c_id }}&version={{ i.version }}"
                                                            class="btn btn-sm btn-primary btn-flat "><span
                                                                 class="glyphicon glyphicon-eye-open"></span></a>
-
-                                                        {#                                                    <a data-toggle="modal" data=""#}
-                                                        {#                                                       href="{{ url_for('training.select_subsections') }}?c_id={{ i.c_id }}&version={{ i.version }}&action=reassess"#}
-                                                        {#                                                       class="btn btn-sm btn-success btn-flat"><span#}
-                                                        {#                                                            class="glyphicon glyphicon-repeat"></span></a>#}
                                                         <a data-toggle="tooltip" title="Delete"
                                                            class="btn btn-sm btn-flat btn-danger remove_training"
                                                            id="{{ i.c_id }}" version="{{ i.version }}"><i

@@ -53,13 +53,23 @@
                                href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&version={{ version }}&action=make_inactive">
                                 <i class="fa fa-ban"></i> Mark as Not Required</a>
 
-                            {% else %}
+                        {% elif not reassessments and four_year_check == 0 and activated != '-' %}
+                            <a class="btn btn-primary btn-flat pull-right" role="button"
+                               href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&version={{ version }}&action=activate">
+                                <i class="fa fa-play"></i> Activate</a>
+                            <a class="btn btn-success btn-flat pull-right" role="button"
+                               href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&version={{ version }}&action=evidence">
+                                <span class="glyphicon glyphicon-open"></span> Submit Evidence</a>
+                            <a href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&version={{ version }}&action=reassess"
+                               class="btn btn-info btn-flat pull-right">Reassess</a>
+
+                        {% else %}
                                 {% if not reassessments and four_year_check == 0 %}
                                     <a class="btn btn-primary btn-flat pull-right" role="button"
                                         href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&version={{ version }}&action=activate">
                                         <i class="fa fa-play"></i> Activate</a>
                                     <a href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&version={{ version }}&action=reassess"
-                                       class="btn btn-success btn-flat pull-right">Reassess</a>
+                                       class="btn btn-info btn-flat pull-right">Reassess</a>
                                 {% else %}
                                     {% set pending=[] %}
                                     {% for reassessment in reassessments %}
@@ -73,7 +83,7 @@
                                                 href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&version={{ version }}&action=activate">
                                                 <i class="fa fa-play"></i> Activate</a>
                                             <a href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&version={{ version }}&action=reassess"
-                                               class="btn btn-success btn-flat pull-right">Reassess</a>
+                                               class="btn btn-info btn-flat pull-right">Reassess</a>
                                         {% elif four_year_check > 0 %}
                                             <a class="btn btn-primary btn-flat pull-right" role="button"
                                                 href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&version={{ version }}&action=activate">

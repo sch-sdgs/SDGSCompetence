@@ -26,6 +26,8 @@ admin_permission = Permission(RoleNeed('ADMIN'))
 privilege_permission = Permission(RoleNeed('PRIVILEGE'))
 hos_permission = Permission(RoleNeed('HEADOFSERVICE'))
 
+#TODO: Move competencies where they were complete because some sections were not required out of complete once those sections are in training?
+
 @app.route('/setup', methods=['GET', 'POST'])
 def setup():
     form = RegistrationForm()
@@ -441,18 +443,21 @@ def utility_processor():
 
 
 def assess_status_method(status):
+    print(f"status: {status}")
     if status == "Active":
-        html = '<span class="label label-warning">Active</span>'
+        assess_status_html = '<span class="label label-warning">Active</span>'
     elif status == "Complete":
-        html = '<span class="label label-success">Complete</span>'
+        assess_status_html = '<span class="label label-success">Complete</span>'
     elif status == "Assigned":
-        html = '<span class="label label-default">Assigned</span>'
+        assess_status_html = '<span class="label label-default">Assigned</span>'
     elif status == "Four Year Due":
-        html = '<span class="label label-danger">Four Year Due</span>'
+        assess_status_html = '<span class="label label-danger">Four Year Due</span>'
     elif status == "Not Required":
-        html = '<span class="label label-info">Partially Trained</span>'
+        assess_status_html = '<span class="label label-info">Partially Trained</span>'
+    elif status == "Sign-Off":
+        assess_status_html = '<span class="label label-primary">Sign-Off</span>'
 
-    return html
+    return assess_status_html
 
 
 @app.context_processor
@@ -895,6 +900,7 @@ def index(message=None):
         filter(Evidence.signoff_id == current_user.database_id). \
         filter(Evidence.is_correct == None). \
         all()
+
     signoff_competence = s.query(CompetenceDetails). \
         filter(and_(CompetenceDetails.approve_id == current_user.database_id,
                     CompetenceDetails.approved != None,
@@ -909,10 +915,13 @@ def index(message=None):
 
     accept_form = RateEvidence()
 
-    return render_template("index.html", message=message, expiring_count=expiring_count, expired_count=expired_count, complete=all_complete, obsolete=obsolete, accept_form=accept_form, signoff=signoff, assigned_count=assigned_count,
-                           active_count=active_count, signoff_count=signoff_count, failed_count=failed_count, complete_count=complete_count, not_required_count=not_required_count, linereports=linereports,
+    return render_template("index.html", message=message, expiring_count=expiring_count, expired_count=expired_count,
+                           complete=all_complete, obsolete=obsolete, accept_form=accept_form, signoff=signoff, assigned_count=assigned_count,
+                           active_count=active_count, signoff_count=signoff_count, failed_count=failed_count, complete_count=complete_count,
+                           not_required_count=not_required_count, linereports=linereports,
                            linereports_inactive=linereports_inactive, competences_incomplete=competences_incomplete,
-                           competences_complete=competences_complete, abandoned_count=abandoned_count, counts=counts, assigned=all_assigned, active=active,signoff_competence=signoff_competence,signoff_reassessment=signoff_reassessment)
+                           competences_complete=competences_complete, abandoned_count=abandoned_count, counts=counts, assigned=all_assigned,
+                           active=active,signoff_competence=signoff_competence,signoff_reassessment=signoff_reassessment)
 
 
 @app.route('/notifications')

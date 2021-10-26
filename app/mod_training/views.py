@@ -313,14 +313,19 @@ def activate_assessments(ids, u_id,version):
     else:
         return False
 
-
     activated = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Active").first().id
     assigned = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Assigned").first().id
+    not_required = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Not Required").first().id
 
-    statement = s.query(Assessments). \
-        filter(and_(Assessments.version==version,Assessments.user_id == u_id, Assessments.status == assigned, Assessments.id.in_(ids))). \
-        update({Assessments.status: activated, Assessments.date_activated: datetime.date.today()},
-               synchronize_session='fetch')
+    s.query(Assessments). \
+        filter(and_(Assessments.version==version,
+                    Assessments.user_id == u_id,
+                    or_(Assessments.status == assigned,
+                        Assessments.status == not_required),
+                    Assessments.id.in_(ids))). \
+        update({Assessments.status: activated,
+                Assessments.date_activated: datetime.date.today()},
+                synchronize_session='fetch')
     s.commit()
     return True
 
@@ -528,7 +533,7 @@ def mark_not_required(c_id=None, s_ids=None, version=None):
     """
     Method to request certain subsections are marked as not required
     """
-    #TODO finish this method
+    #TODO finish this method - add trainer and training date (background - default to date today)
     form = MarkNotRequired()
     ass_ids = json.loads(request.form["ids"])
     ss_id_list = get_ss_id_from_assessment(ass_ids)
@@ -1157,7 +1162,7 @@ def select_subsections():
             required_status = ["Assigned", "Not Required"]
         elif forward_action == "evidence":
             heading = heading.format("Assign Evidence to")
-            required_status = ["Active","Failed","Complete","Sign-Off"]
+            required_status = ["Active","Failed","Complete","Sign-Off", "Not Required"]
         elif forward_action == "reassess":
             heading = heading.format("Reassess")
             required_status = ["Complete"]
@@ -1197,7 +1202,7 @@ def select_subsections():
                     required_status = ["Assigned"]
                 elif forward_action == "evidence":
                     heading = heading.format("Assign Evidence to")
-                    required_status = ["Active", "Failed", "Complete", "Sign-Off"]
+                    required_status = ["Active", "Failed", "Complete", "Sign-Off", "Not Required"]
                 elif forward_action == "reassess":
                     heading = heading.format("Reassess")
                     required_status = ["Complete"]
@@ -1232,7 +1237,7 @@ def select_subsections():
                     required_status = ["Assigned"]
                 elif forward_action == "evidence":
                     heading = heading.format("Assign Evidence to")
-                    required_status = ["Active", "Failed", "Complete", "Sign-Off"]
+                    required_status = ["Active", "Failed", "Complete", "Sign-Off", "Not Required"]
                 elif forward_action == "reassess":
                     heading = heading.format("Reassess")
                     required_status = ["Complete"]
@@ -1507,6 +1512,7 @@ def user_report(id=None):
         abandoned.append(abandoned_assessment_summary)
 
     ### get complete competencies and split into expiring, expired, and in-date
+    ### NC Oct 21 - edited to add competencies marked as not required
     complete = s.query(Assessments) \
         .join(Subsection)\
         .join(Competence)\
@@ -1515,7 +1521,7 @@ def user_report(id=None):
         .filter(Assessments.user_id == id) \
         .group_by(Competence.id) \
         .filter(CompetenceDetails.intro == Competence.current_version) \
-        .filter(AssessmentStatusRef.status.in_(["Complete","Four Year Due"])) \
+        .filter(AssessmentStatusRef.status.in_(["Complete","Four Year Due","Not Required"])) \
         .all()
 
     for i in complete:
