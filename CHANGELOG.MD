@@ -4,8 +4,13 @@ All notable changes to this project will be documented in this file from v1.0.2.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+### Added
+- Added the ability to mark competencies as not required. Where this applies, training is showed as "Partially trained" 
+  on dashboard and in reports
 ### Fixed
 - Fixed bug where competency disappears from dashboard if all subsections are marked as fail
+- Fixed bug where document names weren't rendering in competency edit page
+- Fixed bug where edit page wouldn't render for competencies with no associated q-pulse documents
 
 ## [1.0.2] - 2021-10-01
 ### Fixed
@@ -26,7 +31,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - User reports page now accessible by anyone
-- Training status now available for all comeptencies
+- Training status now available for all competencies
 - Admins can now sign off anyone for reassessments
 - Finished upgrade of coding language from Python 2 to Python 3
 - Updated base docker from Python 2 to Python 3
