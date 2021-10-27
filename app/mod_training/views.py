@@ -231,7 +231,8 @@ def parse_competence_result(competence_result, result):
                       "evidence": filter_for_none(evidence)}
 
         if values["date_completed"]:
-            result[d][values["name"]]["complete"] += 1
+            if subsection["status"] in ["Complete", "Not Required", "Four Year Due"]:
+                result[d][values["name"]]["complete"] += 1
         result[d][values["name"]]["total"] += 1
         subsection_list = result[d][values["name"]]["subsections"]
         subsection_list.append(subsection)
@@ -262,8 +263,11 @@ def get_competence_summary_by_user(c_id, u_id,version):
     :param u_id:
     :return:
     """
-    competence_result = s.query(Assessments).outerjoin(Users, Users.id == Assessments.user_id).outerjoin(Subsection). \
-        outerjoin(Section).outerjoin(Competence, Subsection.c_id == Competence.id). \
+    competence_result = s.query(Assessments). \
+        outerjoin(Users, Users.id == Assessments.user_id). \
+        outerjoin(Subsection). \
+        outerjoin(Section). \
+        outerjoin(Competence, Subsection.c_id == Competence.id). \
         outerjoin(CompetenceDetails,and_(Competence.id==CompetenceDetails.c_id,CompetenceDetails.intro==version)). \
         outerjoin(CompetenceCategory,(CompetenceDetails.category_id==CompetenceCategory.id)).\
         outerjoin(ValidityRef, CompetenceDetails.validity_period == ValidityRef.id). \
@@ -527,7 +531,7 @@ def mark_not_required(c_id=None, s_ids=None, version=None):
     """
     Method to request certain subsections are marked as not required
     """
-    #TODO finish this method - add trainer and training date (background - default to date today)
+    #TODO prevent users from setting every subsection as not required
     form = MarkNotRequired()
     ass_ids = json.loads(request.form["ids"])
     ss_id_list = get_ss_id_from_assessment(ass_ids)
