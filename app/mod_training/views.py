@@ -132,7 +132,7 @@ def get_for_order(c_id, version):
 
 def get_competence_result(c_id, u_id, version):
     """
-    Gets competency information and converts to dictionary for further queries
+    Gets competency information for every competency and converts to dictionary for further queries
     :param c_id: ID for competency
     :param u_id: ID for user
     :param version: Version for competency
@@ -288,18 +288,10 @@ def get_competence_summary_by_user(c_id, u_id,version):
                case([
                    (s.query(Assessments). \
                     outerjoin(Subsection, Subsection.id == Assessments.ss_id). \
-                    # filter(and_(Assessments.version==version,Assessments.user_id == u_id, Subsection.c_id == c_id)).exists(),
                      filter(and_(Assessments.version==version,Assessments.user_id == u_id, Subsection.c_id == c_id,
                                  Assessments.date_completed == None)).exists(),
                     None)],
                    else_=func.max(Assessments.date_completed)).label('completed'))
-               # case([
-               #     (s.query(Assessments). \
-               #      outerjoin(Subsection, Subsection.id == Assessments.ss_id).\
-               #      filter(and_(Assessments.version==version,Assessments.user_id == u_id, Subsection.c_id == c_id,
-               #                  Assessments.date_expiry == None)).exists(),
-               #      None)],
-               #     else_=func.min(Assessments.date_expiry)).label('expiry'))
 
     for comp in competence_result:
         return comp

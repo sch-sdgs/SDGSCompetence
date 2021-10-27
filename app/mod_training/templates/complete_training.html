@@ -22,7 +22,7 @@
         {% if four_year_check > 0 %}
             <div class="alert alert-danger">
                 <i class="fa fa-exclamation-triangle"></i> <strong>4 Year Reassessment is Due!!!</strong> Please
-                click the button below to set this training as obselete and assign yourself the latest version of
+                click the button below to set this training as obsolete and assign yourself the latest version of
                 this competence.
             </div>
         {% endif %}
@@ -87,7 +87,7 @@
                                         {% elif four_year_check > 0 %}
                                             <a class="btn btn-primary btn-flat pull-right" role="button"
                                                 href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&version={{ version }}&action=activate">
-                                            <a href="" class="btn btn-danger btn-flat pull-right">4 Year Reassessment</a>
+                                                <a href="" class="btn btn-danger btn-flat pull-right">4 Year Reassessment</a></a>
                                         {% endif %}
                                     {% endif %}
                                 {% endif %}
@@ -351,10 +351,12 @@
                                     <td>{{ sub['evidence_type'] }}</td>
 
                                     <td>{% if sub['evidence'] != '-' %}
-
-                                        {{ sub['evidence'][0].evidence_id_rel.evidence_type_rel.type }}
-
-                                    {% endif %}
+                                            {% if sub['evidence']|length == 1 %}
+                                                {{ sub['evidence'][0].evidence_id_rel.evidence_type_rel.type }}
+                                            {% else %}
+                                                {{ sub['evidence'][sub['evidence']|length - 1].evidence_id_rel.evidence_type_rel.type }}
+                                            {% endif %}
+                                        {% endif %}
                                     </td>
                                     <td>{{ sub['trainer'] }}</td>
                                     <td>{{ sub['date_of_training'] }}</td>
@@ -410,7 +412,7 @@
 
         $(function () {
             $('.check').click(function () {
-                var id = this.id.split('_')[1];
+                let id = this.id.split('_')[1];
                 console.log(id)
                 if ($(this).is(':checked')) {
                     $('#button_' + id).removeAttr('disabled');
@@ -423,14 +425,6 @@
 
             });
         });
-        {#$(function() {#}
-        {#    $('.').click(function() {#}
-        {#        if ($(this).is(':checked')) {#}
-        {#            $('#id_of_your_button').attr('disabled', 'disabled');#}
-        {#        } else {#}
-        {#            $('#id_of_your_button').removeAttr('disabled');#}
-        {#        }#}
-        {#    });#}
 
     </script>
 
