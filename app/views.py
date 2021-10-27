@@ -1,3 +1,5 @@
+#TODO clean up imports
+
 from flask import flash,Flask, render_template, redirect, request, url_for, session, current_app, jsonify
 from flask_login import login_required, login_user, logout_user, LoginManager, UserMixin, \
     current_user

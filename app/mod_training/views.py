@@ -1,3 +1,5 @@
+#TODO clean up imports
+
 from flask import Flask, render_template, redirect, request, url_for, session, current_app, Blueprint, \
     send_from_directory, jsonify, Markup
 from flask_login import login_required, login_user, logout_user, LoginManager, UserMixin, \

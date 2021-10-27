@@ -1,21 +1,22 @@
-from sqlalchemy import exc
-from flask import flash, render_template, request, url_for, redirect, Blueprint, jsonify, make_response
-from flask_login import login_required, current_user
-from app.views import *
-from mod_admin.forms import *
+#TODO clean up imports
+from app.activedirectory import UserAuthentication
+#from app.competence import *
+from app.competence import send_mail_unknown
+from app.mod_admin.forms import *
 from app.models import *
-from app.competence import *
+from app.views import *
+import codecs
 import datetime
-import time
+from datetime import timedelta
+from flask import flash, render_template, request, url_for, redirect, Blueprint, jsonify
+from flask_login import current_user
+import json
 import io
 import os
-from app.activedirectory import UserAuthentication
-import codecs
-import json
-import uuid
-from app.competence import send_mail_unknown
 import pytz
-from datetime import timedelta
+from sqlalchemy import exc
+import time
+import uuid
 
 
 ### Set admin blueprint

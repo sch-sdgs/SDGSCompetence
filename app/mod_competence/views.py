@@ -20,6 +20,9 @@ competence = Blueprint('competence', __name__, template_folder='templates')
 
 #TODO docstrings for classes
 
+#TODO render comments for inactivation requests
+#TODO put in an error for if someone tries to make every subsection inactive
+
 class DeleteCol(Col):
     def __init__(self, name, attr=None, attr_list=None, **kwargs):
         super(DeleteCol, self).__init__(
@@ -616,6 +619,7 @@ def add_constant_sections_to_db():
     else:
         name = name
 
+    #TODO this is where new constant sections have their evidence set
     sub = Subsection(name=name, c_id=c_id, s_id=s_id, evidence=4, sort_order=None, comments=None, intro=version)
     s.add(sub)
     s.commit()
@@ -686,6 +690,7 @@ def get_doc_name(doc_id=None):
     q = QPulseWeb()
     if not doc_id:
         doc_id = request.json['doc_id']
+        print(f"get_doc_name doc_id: {doc_id}")
         doc_name = q.get_doc_by_id(username=details.username, password=details.password, docNumber=doc_id)
         if doc_name == "False":
             return jsonify({"response":"This is not a valid QPulse Document"})
@@ -1456,13 +1461,21 @@ def edit_competence():
             doc_query = s.query(Documents). \
                 filter_by(c_id=comp.id). \
                 all()
-            print(doc_query)
+            print(f"doc_query: {doc_query}")
+            for doc in doc_query:
+                print(f"doc number: {doc.qpulse_no}")
+                print(type(doc.qpulse_no))
+                print(len(doc.qpulse_no))
+
             documents = []
             for i in doc_query:
-                name = get_doc_name(doc_id=i.qpulse_no)
-                print(name)
-                if name != False:
-                    documents.append([i.qpulse_no, name])
+                if len(i.qpulse_no) == 0:
+                    documents = None
+                    pass
+                else:
+                    name = get_doc_name(doc_id=i.qpulse_no)
+                    if name != False:
+                        documents.append([i.qpulse_no, name])
         else:
             documents = None
         # get subsections
