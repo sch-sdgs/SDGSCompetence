@@ -315,6 +315,7 @@ def get_competence_summary_by_user(c_id, u_id,version):
                     filter(and_(Assessments.version==version,
                                  Assessments.user_id == u_id,
                                  Subsection.c_id == c_id,
+                                 Assessments.status != 9,
                                  Assessments.date_completed == None)).exists(),
                     None)],
                     else_=func.max(Assessments.date_completed)).label('completed'))
