@@ -256,6 +256,26 @@ def get_competence_by_user(c_id, u_id, version):
     return result
 
 
+def get_completion_status_counts(c_id, u_id, version):
+    competence_result = s.query(Assessments). \
+        outerjoin(Users, Users.id == Assessments.user_id). \
+        outerjoin(Subsection). \
+        outerjoin(Section). \
+        outerjoin(Competence, Subsection.c_id == Competence.id). \
+        outerjoin(CompetenceDetails, and_(Competence.id == CompetenceDetails.c_id, CompetenceDetails.intro == version)). \
+        outerjoin(CompetenceCategory, (CompetenceDetails.category_id == CompetenceCategory.id)). \
+        outerjoin(ValidityRef, CompetenceDetails.validity_period == ValidityRef.id). \
+        filter(and_(Users.id == u_id, Competence.id == c_id)). \
+        filter(Assessments.version == version). \
+        values(Assessments.status)
+
+    total_count = 0
+    complete_count = 0
+
+    for i in competence_result:
+        total_count += 1
+
+
 def get_competence_summary_by_user(c_id, u_id,version):
     """
 
@@ -289,13 +309,15 @@ def get_competence_summary_by_user(c_id, u_id,version):
                func.max(Assessments.date_activated).label('activated'),
                func.max(Assessments.due_date).label('due_date'),
                func.min(Assessments.date_expiry).label('expiry'),
-               case([
-                   (s.query(Assessments). \
+               case(
+                    [(s.query(Assessments). \
                     outerjoin(Subsection, Subsection.id == Assessments.ss_id). \
-                     filter(and_(Assessments.version==version,Assessments.user_id == u_id, Subsection.c_id == c_id,
+                    filter(and_(Assessments.version==version,
+                                 Assessments.user_id == u_id,
+                                 Subsection.c_id == c_id,
                                  Assessments.date_completed == None)).exists(),
                     None)],
-                   else_=func.max(Assessments.date_completed)).label('completed'))
+                    else_=func.max(Assessments.date_completed)).label('completed'))
 
     for comp in competence_result:
         return comp
@@ -488,9 +510,6 @@ def view_current_competence():
             filter(Competence.id==c_id). \
             filter(Assessments.version==version). \
             all()
-
-        print(f"c_id: {c_id}")
-        print(f"version: {version}")
 
         # Note: you need to use the bad syntax 'C.f == None' for the query to work
         detail_query = s.query(CompetenceDetails). \
@@ -830,9 +849,6 @@ def abandon():
         pass
 
 
-
-
-
 @training.route('/signoff_evidence/<string:action>/<int:evidence_id>', methods=['GET', 'POST'])
 @login_required
 def signoff_evidence(evidence_id,action):
@@ -845,8 +861,6 @@ def signoff_evidence(evidence_id,action):
         filter(Evidence.id == evidence_id). \
         first(). \
         evidence_type_id)
-    print(f"evidence type: {evidence_type}")
-    print(f"evidence type is a {type(evidence_type)}")
 
     if evidence_type == 6: #inactivation request
         if action == "accept":
@@ -861,7 +875,7 @@ def signoff_evidence(evidence_id,action):
                 filter(AssessmentStatusRef.status == "Not Required"). \
                 first(). \
                 id
-            date = datetime.date.today()
+            date = None
         elif action == "reject":
             data = {
                 'is_correct': 0,
@@ -875,17 +889,16 @@ def signoff_evidence(evidence_id,action):
                 first(). \
                 id
             date = None
+            #TODO this might have broken things
 
         assessments_to_update = s.query(AssessmentEvidenceRelationship). \
             filter(AssessmentEvidenceRelationship.evidence_id == evidence_id). \
             all()
 
         for assessment in assessments_to_update:
-            print(f"assessment: {assessment}")
             query = s.query(Assessments). \
                 filter(Assessments.id == assessment.assessment_id). \
                 first()
-            print(f"query: {query}")
             for detail in query.ss_id_rel.c_id_rel.competence_detail:
                 if detail.intro <= query.version:
                     months_valid = detail.validity_rel.months
@@ -968,6 +981,7 @@ def signoff_evidence(evidence_id,action):
 
         return redirect(url_for('index'))
 
+
 @training.route('/process_evidence', methods=['GET', 'POST'])
 @login_required
 def process_evidence():
@@ -978,7 +992,6 @@ def process_evidence():
     c_id = request.args.get('c_id')
     version = request.args.get('version')
     status_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Sign-Off").first().id
-
 
     evidence_type = s.query(EvidenceTypeRef).filter(EvidenceTypeRef.id == int(request.form['evidence_type'])).first().type
 
@@ -1020,8 +1033,6 @@ def process_evidence():
             er = AssessmentEvidenceRelationship(assess_id, e.id)
             s.add(er)
 
-
-
     s.commit()
 
     status_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Sign-Off").first().id
@@ -1031,7 +1042,6 @@ def process_evidence():
             'signoff_id': request.form['assessor'],
             'status': status_id,
             }
-
 
     for assess_id in s_ids:
         s.query(Assessments).filter(Assessments.id == int(assess_id)).update(data)
@@ -1081,7 +1091,7 @@ def process_inactivation_request():
         first()
     evidence = request.form['inactivation_reason']
     result = None
-    e = Evidence(is_correct=None, signoff_id=request.form['assessor'], date=datetime.date.today(),
+    e = Evidence(is_correct=None, signoff_id=request.form['assessor'], date=None,
                  evidence=evidence, result=result, comments=None, evidence_type_id = evidence_type.id)
     s.add(e)
     s.commit()
@@ -1142,7 +1152,6 @@ def select_subsections():
     u_id = current_user.database_id
 
     forward_action = request.args.get('action')
-    print(forward_action)
 
     form = SubSectionsForm()
 
@@ -1175,7 +1184,6 @@ def select_subsections():
                                form=form,version=version)
     else:
         ids = form.ids.data.replace('"', '').replace('[', '').replace(']', '').split(',')
-        print(f"ids: {ids}")
         if forward_action == "assign":
             pass
         elif forward_action == "activate":
@@ -1184,10 +1192,16 @@ def select_subsections():
                 return redirect(url_for('training.view_current_competence', c_id=c_id, user=u_id, version=version))
 
         elif forward_action == "make_inactive":
-            try:
-                return mark_not_required(c_id, ids, version)
-            except JSONDecodeError:
-                message = "You must select at least one active subsection!"
+            #TODO HERE: add a no you can't make an entire competency inactive message
+            comp_section_ids = []
+            section_list = get_competence_by_user(c_id, int(u_id), version)
+            for i in list(section_list["custom"].items())[0][1]["subsections"]:
+                comp_section_ids.append(str(i['id']))
+
+            """Check if user has selected every subsection in the competency"""
+            id_check = all(id in ids for id in comp_section_ids)
+            if id_check is True:
+                message = "You cannot set an entire competency to not required."
                 competence_summary = get_competence_summary_by_user(c_id, int(u_id), version)
                 section_list = get_competence_by_user(c_id, int(u_id), version)
                 required_status = ""
@@ -1216,6 +1230,40 @@ def select_subsections():
                                        section_list=section_list, required_status=required_status,
                                        action=forward_action,
                                        form=form, version=version, message=message)
+
+            else:
+                try:
+                    return mark_not_required(c_id, ids, version)
+                except JSONDecodeError:
+                    message = "You must select at least one active subsection!"
+                    competence_summary = get_competence_summary_by_user(c_id, int(u_id), version)
+                    section_list = get_competence_by_user(c_id, int(u_id), version)
+                    required_status = ""
+                    heading = "{} Subsections"
+                    if forward_action == "assign":
+                        required_status = None
+                        heading = heading.format("assign")
+                    elif forward_action == "activate":
+                        heading = heading.format("Activate")
+                        required_status = ["Assigned"]
+                    elif forward_action == "evidence":
+                        heading = heading.format("Assign Evidence to")
+                        required_status = ["Active", "Failed", "Complete", "Sign-Off", "Not Required"]
+                    elif forward_action == "reassess":
+                        heading = heading.format("Reassess")
+                        required_status = ["Complete"]
+                    elif forward_action == "make_inactive":
+                        heading = heading.format("Mark As Not Required")
+                        required_status = ["Not Required"]
+
+                    return render_template('select_subsections.html', competence=c_id,
+                                           user={'name': competence_summary.user,
+                                                 'id': u_id},
+                                           title=competence_summary.title, validity=competence_summary.months,
+                                           heading=heading,
+                                           section_list=section_list, required_status=required_status,
+                                           action=forward_action,
+                                           form=form, version=version, message=message)
 
         elif forward_action == "evidence":
             try:
@@ -1600,13 +1648,11 @@ def user_report(id=None):
     approver_counts=[]
 
     creator_query = s.query(CompetenceDetails).filter(CompetenceDetails.creator_id == id).values(CompetenceDetails.date_created)
-    print(f"creator query: {creator_query}")
-    #DO NOT REMOVE THIS STATEMENT without it the page won't load
+    #DO NOT REMOVE THIS PRINT STATEMENT without it the page won't load
     #TODO work out how to fix this properly
     for creator in creator_query:
         print(creator)
     approver_query = s.query(CompetenceDetails).filter(CompetenceDetails.approve_id == id).values(CompetenceDetails.date_of_approval)
-    print(f"approver query: {approver_query}")
 
     for i in creator_query:
         if i.date_created is not None:
