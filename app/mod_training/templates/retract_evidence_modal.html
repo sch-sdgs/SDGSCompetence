@@ -18,7 +18,10 @@
                                     <div class="col-md-6">
                                     <i class="fa fa-check-square-o text-gray"></i> {{ i.evidence.evidence_type_rel.type }} Evidence</div>
                                     <div class="col-md-5">
-                                    {{ i.evidence_id_rel.date_completed.strftime('%d-%m-%Y') }}</div>
+                                        {% if i.evidence_id_rel.date_completed %}
+                                            {{ i.evidence_id_rel.date_completed.strftime('%d-%m-%Y') }}
+                                        {% endif %}
+                                    </div>
                                     <div class="col-md-1">
                                     <a role="button" href="{{ url_for('training.retract_evidence') }}?evidence_id={{ i.evidence.id }}&assessment_id={{ sub.id }}&version={{ version }}&c_id={{ competence }}" class="btn btn-sm btn-flat btn-danger pull-right"
                                             id="retract_evidence">Retract</a></div></h4>

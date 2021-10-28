@@ -575,8 +575,6 @@ def get_percentage(c_id, u_id,version):
         else_= 0)) / func.count(
         Assessments.id) * 100).label('percentage'))
 
-    print("I am the get percentage function")
-
     percentage = 0
     for i in counts:
         percentage = i.percentage
@@ -905,12 +903,6 @@ def index(message=None):
         .all()
 
     all_complete = []
-    # for i in complete:
-    #     get_percentage(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
-    #     result = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
-    #     if result.completed != None:
-    #         all_complete.append(result)
-    #TODO replace the all_complete list with anything where the % is 100?
 
     for i in complete:
         percent_complete = get_percentage(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)

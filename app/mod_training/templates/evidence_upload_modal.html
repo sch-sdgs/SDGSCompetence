@@ -173,8 +173,10 @@
                                         <i class="fa fa-check-square-o text-gray"></i>
                                     {% endif %}
                                     Inactivation Request Evidence
-                                </h3><span
-                                    class="h3 box-title pull-right">{{ i.evidence_id_rel.date_completed.strftime('%d-%m-%Y') }}</span>
+                                </h3>
+                                {% if i.evidence_id_rel.date_completed %}
+                                    <span class="h3 box-title pull-right">{{ i.evidence_id_rel.date_completed.strftime('%d-%m-%Y') }}</span>
+                                {% endif %}
                             </div>
                             <div class="box-body">
                                 <table class="table table-bordered">

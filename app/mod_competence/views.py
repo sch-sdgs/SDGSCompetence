@@ -20,9 +20,6 @@ competence = Blueprint('competence', __name__, template_folder='templates')
 
 #TODO docstrings for classes
 
-#TODO render comments for inactivation requests
-#TODO put in an error for if someone tries to make every subsection inactive
-
 class DeleteCol(Col):
     def __init__(self, name, attr=None, attr_list=None, **kwargs):
         super(DeleteCol, self).__init__(

@@ -1,12 +1,6 @@
 {% extends "base2.html" %}
 {% block content %}
 
-
-
-
-
-
-
     {% if review %}
         <h1><i class="fa fa-fw fa-file-text-o"></i> View Competency
             <small>Viewing the details of a single competency</small>
@@ -322,41 +316,6 @@
             </div>
 
 
-            {#                <script>#}
-            {##}
-            {#                    $('#activate_{{ c_id }}').click(function () {#}
-            {#                        var c_id = {{ c_id }};#}
-            {#                        console.log(c_id);#}
-            {##}
-            {#                        var url = "{{ url_for('competence.activate_competency') }}";#}
-            {#                        var dict = {'c_id': c_id};#}
-            {#                        var data = JSON.stringify(dict);#}
-            {##}
-            {#                        $.ajax({#}
-            {#                            type: "POST",#}
-            {#                            url: url,#}
-            {#                            data: data,#}
-            {#                            dataType: "json",#}
-            {#                            contentType: "application/json",#}
-            {#                            success: function (response) {#}
-            {#                                console.log(response);#}
-            {##}
-            {#                                if (response.match(/Competence has been activated!/i)) {#}
-            {#                                    $('#competence_activated').show()#}
-            {##}
-            {##}
-            {#                                }#}
-            {#                            },#}
-            {#                            error: function (xhr, status, error) {#}
-            {#                                $('#trace').append("<p>" + error + "</p>");#}
-            {#                                $('#ajaxModal').modal('show');#}
-            {#                                return false;#}
-            {#                            }#}
-            {#                        });#}
-            {#                    });#}
-            {##}
-            {##}
-            {#                </script>#}
 
         {% endif %}
     </section>

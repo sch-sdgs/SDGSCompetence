@@ -505,7 +505,6 @@ class Evidence(db.Model):
     signoff_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=False)
     comments = db.Column(db.String(1000), unique=False, nullable=True)
     date_completed = db.Column(db.DATE, unique=False, nullable=True)
-
     signoff_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[signoff_id])
     evidence_type_rel = db.relationship("EvidenceTypeRef", lazy='joined', foreign_keys=[evidence_type_id])
 
