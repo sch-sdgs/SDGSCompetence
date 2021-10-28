@@ -1,4 +1,4 @@
-from app.mod_cpd.forms import *
+from mod_cpd.forms import *
 from flask import render_template, redirect, request, url_for, Blueprint
 from flask_login import current_user
 
