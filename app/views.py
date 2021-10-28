@@ -555,6 +555,35 @@ def utility_processor():
 # views #
 #########
 
+
+def get_percentage(c_id, u_id,version):
+    """
+    gets the percentage complete of any competence
+    27/10/21 edited to reflect that competencies can now be marked as not required
+    :param c_id: competence id
+    :param u_id: user id
+    :return: percentage complete
+    """
+    counts = s.query(Assessments) \
+        .join(Subsection) \
+        .join(AssessmentStatusRef) \
+        .filter(Assessments.version == version) \
+        .filter(AssessmentStatusRef.status != "Obsolete") \
+        .filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id)) \
+        .values((func.sum(case(
+        [(Assessments.status.in_([3, 9]), 1)],
+        else_= 0)) / func.count(
+        Assessments.id) * 100).label('percentage'))
+
+    print("I am the get percentage function")
+
+    percentage = 0
+    for i in counts:
+        percentage = i.percentage
+
+    return(percentage)
+
+
 @app.route('/autocomplete_linemanager', methods=['GET'])
 def autocomplete_linemanager():
     """
@@ -876,9 +905,17 @@ def index(message=None):
         .all()
 
     all_complete = []
+    # for i in complete:
+    #     get_percentage(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
+    #     result = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
+    #     if result.completed != None:
+    #         all_complete.append(result)
+    #TODO replace the all_complete list with anything where the % is 100?
+
     for i in complete:
-        result = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
-        if result.completed != None:
+        percent_complete = get_percentage(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
+        if percent_complete == 100:
+            result = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
             all_complete.append(result)
 
     obsolete = s.query(Assessments) \
