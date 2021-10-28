@@ -7,7 +7,7 @@ from activedirectory import UserAuthentication
 from forms import *
 from flask_principal import Principal, Identity, AnonymousIdentity, \
     identity_changed, Permission, RoleNeed, UserNeed, identity_loaded
-from app.mod_training.views import get_competence_summary_by_user
+from app.mod_training.views import get_competence_summary_by_user, get_completion_status_counts
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.sql.expression import func, and_, or_, case, exists, update,distinct
 from app.competence import *
@@ -319,18 +319,23 @@ def utility_processor():
     def get_percent(c_id, u_id,version):
         """
         gets the percentage complete of any competence
+        27/10/21 edited to reflect that competencies can now be marked as not required
         :param c_id: competence id
         :param u_id: user id
         :return: percentage complete
         """
-        counts = s.query(Assessments)\
+
+        counts = s.query(Assessments) \
             .join(Subsection) \
             .join(AssessmentStatusRef) \
-            .filter(Assessments.version==version) \
-            .filter(AssessmentStatusRef.status != "Obsolete")\
+            .filter(Assessments.version == version) \
+            .filter(AssessmentStatusRef.status != "Obsolete") \
             .filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id)) \
-            .values((func.sum(case([(Assessments.date_completed == None, 0)], else_=1)) / func.count(
+            .values((func.sum(case(
+            [(Assessments.status.in_([3, 9]), 1)],
+            else_= 0)) / func.count(
             Assessments.id) * 100).label('percentage'))
+
         for c in counts:
             return c.percentage
 
@@ -445,7 +450,6 @@ def utility_processor():
 
 
 def assess_status_method(status):
-    print(f"status: {status}")
     if status == "Active":
         assess_status_html = '<span class="label label-warning">Active</span>'
     elif status == "Complete":
@@ -586,8 +590,6 @@ def autocomplete_hos():
         name = i.first_name + " " + i.last_name
         hos_list.append(name)
 
-    print(hos_list)
-
     return jsonify(json_list=hos_list)
 
 @app.route('/autocomplete_user', methods=['GET'])
@@ -668,8 +670,6 @@ def login():
     elif request.method == 'POST':
         user = User(form.data["username"], password=form.data["password"])
         result = user.is_authenticated(id=form.data["username"], password=form.data["password"])
-        print("RESULT")
-        print(result)
         if result:
             login_user(user)
             identity_changed.send(current_app._get_current_object(),
@@ -743,7 +743,6 @@ def index(message=None):
     displays the users dashboard
     :return: template index.html
     """
-    print (current_user.database_id)
     linereports = s.query(Users). \
         filter_by(line_managerid=int(current_user.database_id)). \
         filter_by(active=True). \
@@ -875,7 +874,6 @@ def index(message=None):
         .group_by(Subsection.c_id,Assessments.version) \
         .filter(AssessmentStatusRef.status.in_(["Complete","Four Year Due"])) \
         .all()
-
 
     all_complete = []
     for i in complete:
