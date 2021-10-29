@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Added the ability to mark competencies as not required. Where this applies, training is showed as "Partially trained" 
   on dashboard and in reports
+### Changed
+- Lists of trainers and authorisers are now alphabetical
 ### Fixed
 - Fixed bug where competency disappears from dashboard if all subsections are marked as fail
 - Fixed bug where document names weren't rendering in competency edit page
@@ -20,7 +22,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [1.0.1] - 2021-09-21
 ### Added
 - Informative error message when obsolete documents are linked to a competency.
-
 ### Fixed
 - Fixed bug where document names weren't rendering in competency downloads
 
@@ -28,13 +29,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Service reports page to monitor trends over time
 - Service overview page for Head of Service to monitor overall training
-
 ### Changed
 - User reports page now accessible by anyone
 - Training status now available for all competencies
 - Admins can now sign off anyone for reassessments
 - Finished upgrade of coding language from Python 2 to Python 3
 - Updated base docker from Python 2 to Python 3
-
 ### Fixed
 - Multiple files can now be uploaded as evidence at one time

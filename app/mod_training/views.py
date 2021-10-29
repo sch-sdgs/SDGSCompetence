@@ -431,7 +431,7 @@ def reassessment():
                     if id != current_user.database_id:
                         choices.append((id, name))
 
-
+        choices.sort(key=lambda a: a[1])
         form.signoff_id.choices = choices
         return render_template('reassessment.html', data=data, c_id=c_id, user_id=u_id,
                                competence_name=competence_summary.title, form=form,
@@ -581,6 +581,7 @@ def mark_not_required(c_id=None, s_ids=None, version=None):
                 name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name + " (ADMIN)"
                 authoriser_choices.append((id, name))
 
+    authoriser_choices.sort(key=lambda a: a[1])
     form.assessor.choices = authoriser_choices
 
     u_id = current_user.database_id
@@ -669,9 +670,10 @@ def upload_evidence(c_id=None, s_ids=None,version=None):
 
 
     #sub_section_name = ass.ss_id_rel.name
-
+    authoriser_choices.sort(key=lambda a: a[1])
     form.assessor.choices = authoriser_choices
 
+    trainer_choices.sort(key=lambda a: a[1])
     form.trainer.choices = trainer_choices
 
 
@@ -710,8 +712,6 @@ def accept_reassessment(id=None):
         s.query(Reassessments).filter(Reassessments.id == id).update(data)
         s.commit()
 
-
-
         for i in s.query(Reassessments).join(AssessReassessRel).join(Assessments).filter(Reassessments.id == id).all():
             for j in i.assessments_rel:
                 current_version = j.assess_rel.ss_id_rel.c_id_rel.current_version
@@ -724,9 +724,7 @@ def accept_reassessment(id=None):
                 }
                 s.query(Assessments).filter(Assessments.id == j.assess_id).update(data)
 
-
         s.commit()
-
 
     return redirect('/index')
 
