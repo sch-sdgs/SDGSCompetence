@@ -13,12 +13,12 @@
 <br>
 <br>
 <br>
-<h3>Introduction</h3>
 <p>This report is a count of the number of staff trained, partially trained or in training for each of the listed competencies.</p>
 <ul>
     <li><strong>Trained</strong> <br> The staff member is fully trained in all aspects of the competence and has been signed-off.</li>
-    <li><strong>Partial</strong> <br> The staff member is trained and signed-off for some aspects of the competence.</li>
-    <li><strong>Training</strong> <br> The staff member has had this competence assigned and has activtated training but has not yet completed any aspects.</li>
+    <li><strong>Expired</strong> <br> The staff member was fully trained but has since expired in at least one part of the competency</li>
+    <li><strong>Partial</strong> <br> The staff member is trained and signed-off for some aspects of the competence and training is not active for the remainder.</li>
+    <li><strong>In Training</strong> <br> The staff member has activated training for at least part of this competence.</li>
 </ul>
 <br>
 
@@ -29,7 +29,7 @@
                             <th>Title</th>
                             <th>Trained (Expired)</th>
                             <th>Partial</th>
-                            <th>Iraining</th>
+                            <th>In Training</th>
                             </thead>
                             {% for c_id in result %}
                                 <tr>
