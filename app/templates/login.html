@@ -2,18 +2,19 @@
 
 {% block content %}
 
-    <div class="row rowspecial">
+    <div class="row rowspecial" >
 
         <div class="col-md-2"></div>
 
-        <div class="col-md-4 login-box-new">
+        <div class="col-md-4 login-box-new" style="padding-top:10rem">
+{#    <div class="col-md-4 login-box-new">#}
             <div class="row rowspecial">
 
                 <div class="col-md-10 center-middle">
 
 {#                  {% if config.ORGANISATION == "Sheffield Biomedical Research Centre" %}#}
 
-                        <img src="/static/images/Sheffield Biomedical Research Centre_logo_outlined_RGB_COL.png">
+{#                        <img src="/static/images/Sheffield Biomedical Research Centre_logo_outlined_RGB_COL.png">#}
 {#                        <img src="/static/images/logo-monochrome.png">#}
 {#                    {% endif %}#}
 
@@ -51,8 +52,10 @@
                             {{ form.password.label }}
                             {{ form.password(class_="form-control") }}
                             <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                            {#                {% if session['activedirectory'] %}#}
 {#                            <span class="help-block pull-right">Click <a#}
 {#                                    href="{{ url_for('admin.request_reset_password') }}">here</a> to reset your password</span>#}
+                            {#            {% endif %}#}
                         </div>
                         <div class="row">
                             {#<div class="g-recaptcha" data-sitekey="6LdbkXsUAAAAAD0tspBrFRUctY_DfrQUZ6jht67S"></div>#}
