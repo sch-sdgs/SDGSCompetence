@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-## [1.1.0] - 2021-11-DD
+## [1.1.0] - 2021-11-05
 ### Added
 - Added the ability to mark competencies as not required. Where this applies, training is showed as "Partially trained" 
   on dashboard and in reports
@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Fixed bug where competency disappears from dashboard if all subsections are marked as fail
 - Fixed bug where document names weren't rendering in competency edit page
 - Fixed bug where edit page wouldn't render for competencies with no associated q-pulse documents
+- Competency reports webpage and download now show the same numbers
 
 ## [1.0.2] - 2021-10-01
 ### Fixed
