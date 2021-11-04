@@ -1441,11 +1441,59 @@ def assign_competence_to_user(user_id, competence_id, due_date):
                 delete()
 
     for sub_section in sub_sections:
-        a = Assessments(status=status_id, ss_id=sub_section.id, user_id=int(user_id),
-                        assign_id=current_user.database_id, version=current_version,
-                        due_date=datetime.datetime.strptime(due_date, '%d/%m/%Y'))
-        s.add(a)
-        s.commit()
+        ### check if subsection has already been signed off in previous version
+
+        already_complete = s.query(Assessments).join(AssessmentStatusRef).\
+            filter(Assessments.ss_id == sub_section.id).\
+            filter(Assessments.user_id == user_id).\
+            filter(or_(AssessmentStatusRef.status == "Complete",
+                       AssessmentStatusRef.status == "Sign-Off")).\
+            filter(Assessments.version == int(current_version) - 1).all()
+
+        print("already complete:")
+        print(already_complete)
+
+        if len(already_complete) > 0:
+            print ("in if")
+            a = Assessments(status=already_complete.status, ss_id=sub_section.id, user_id=int(user_id),
+                            version=current_version,
+                            due_date=already_complete.due_date, date_of_training=already_complete.date_of_training,
+                            trainer_id=already_complete.trainer_id, date_completed=already_complete.date_completed,
+                            date_expiry=already_complete.date_expiry, date_assigned=already_complete.date_assigned,
+                            assign_id=already_complete.assign_id, date_activated = already_complete.activated)
+            print("adding assessment")
+            print(a)
+            s.add(a)
+            s.commit()
+
+            new_assessment_id = s.query(Assessments).filter(Assessments.ss_id == sub_section.id). \
+                filter(Assessments.user_id == user_id).\
+                filter(Assessments.version == current_version).id
+            print("New assessment ID:")
+            print(new_assessment_id)
+
+            ### get all previous assessment evidence relationships
+
+            previous_evidence_rel = s.query(AssessmentEvidenceRelationship).\
+                filter(AssessmentEvidenceRelationship.assessment_id == already_complete.id).all()
+
+            print("previous evidence")
+            print(previous_evidence_rel)
+
+            for evidence_rel in previous_evidence_rel:
+                evidence_id = evidence_rel.evidence_id  ### get previous ID for evidence
+                e = AssessmentEvidenceRelationship(assessment_id=new_assessment_id, evidence_id=evidence_id)
+                s.add(e)
+                s.commit()
+
+        else:
+            ### just add blank new assessment entry
+            a = Assessments(status=status_id, ss_id=sub_section.id, user_id=int(user_id),
+                            assign_id=current_user.database_id, version=current_version,
+                            due_date=datetime.datetime.strptime(due_date, '%d/%m/%Y'))
+            s.add(a)
+            s.commit()
+
         assessment_ids.append(a.id)
 
     assigner = s.query(Users). \
