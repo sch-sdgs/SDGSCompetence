@@ -1925,6 +1925,7 @@ def collections():
     """
     return render_template('collections.html')
 
+
 @competence.route('/trial_viewer', methods=['GET', 'POST'])
 @login_required
 def trial_viewer():
@@ -2009,7 +2010,7 @@ def trial_viewer():
                         "category":comp.category_rel.category}
 
 
-    return render_template('trial_viewer.html', current_data=current_data,result=result)
+    return render_template('trial_viewer.html', result=result)
 
 
 @competence.route('/history', methods=['GET', 'POST'])
