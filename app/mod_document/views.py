@@ -276,41 +276,82 @@ def export_trial_report():
 
     result = {}
     for i in current_data:
+        print(i.title)
         #find out how many are trained and partially and in training
         #count how many subsections are in the competence
-        number_of_subsections = s.query(Subsection).join(Competence).filter(and_(Subsection.intro <= Competence.current_version,or_(Subsection.last >= Competence.current_version,Subsection.last == None))).filter(Subsection.c_id == i.c_id).count()
+        number_of_subsections = s.query(Subsection).\
+            join(Competence).\
+            filter(and_(Subsection.intro <= Competence.current_version,or_(Subsection.last >= Competence.current_version,Subsection.last == None))).\
+            filter(Subsection.c_id == i.c_id).count()
         #get all assessments by user?
-        counts = s.query(func.count(Assessments.id).label("count"),Assessments.user_id.label("user_id"),Assessments.status.label("status_id"),AssessmentStatusRef.status.label("status")).join(AssessmentStatusRef).join(Subsection).join(Competence).join(CompetenceDetails).filter(and_(CompetenceDetails.intro <= Competence.current_version,or_(CompetenceDetails.last >= Competence.current_version,CompetenceDetails.last == None))).filter(Subsection.c_id == i.c_id).filter(Assessments.ss_id == Subsection.id).group_by(Assessments.user_id,Assessments.status).all()
+        counts = s.query(func.count(Assessments.id).label("count"),
+                         Assessments.user_id.label("user_id"),
+                         Assessments.status.label("status_id"),
+                         AssessmentStatusRef.status.label("status")).\
+            join(AssessmentStatusRef).\
+            join(Subsection).\
+            join(Competence).\
+            join(CompetenceDetails).\
+            filter(and_(CompetenceDetails.intro <= Competence.current_version,
+                        or_(CompetenceDetails.last >= Competence.current_version,
+                            CompetenceDetails.last == None))).\
+            filter(Subsection.c_id == i.c_id).\
+            filter(Assessments.ss_id == Subsection.id).\
+            group_by(Assessments.user_id).all()
 
         trained=0
         partial=0
         in_training=0
-        for j in counts:
-            users_done = []
-            if j.status == "Complete":
-                if j.count == number_of_subsections:
-                    #user is fully trained - now check for expiry
+        expired=0
+        for user_entry in counts: ### loop through users that are on this competence
+            if (s.query(Users). \
+                    filter(Users.id == user_entry.user_id). \
+                    first()). \
+                    active == 1: ### check if user is actually active
+                print("User "+str(user_entry.user_id))
+                statuses = []
 
-                    trained+=1
-                    users_done.append(j.user_id)
-                elif j.count < number_of_subsections:
-                    #user is partially trained
-                    partial+=1
-                    users_done.append(j.user_id)
-            if j.status == "Active":
-                if j.user_id not in users_done:
-                    in_training+=1
-                    users_done.append(j.user_id)
+                ### get all assessments for this user for this competence, put statuses in list
+                users_assessments = s.query(Assessments). \
+                    join(Subsection). \
+                    filter(Assessments.user_id == user_entry.user_id). \
+                    filter(Subsection.c_id == i.c_id). \
+                    all()
+                for entry in users_assessments:
+                    if entry.status == 3: ### assessment is complete, check for expiry
+                        if datetime.date.today() > entry.date_expiry:
+                            statuses.append('Expired')
+                        else:
+                            statuses.append('Complete')
+                    elif entry.status == 1 or entry.status == 7: ### assessment is active or waiting for sign-off
+                        statuses.append('In training')
+
+                ### from statuses list, decide on overall training status for this user for this competence, and add to counts
+                if "In training" in statuses:
+                    in_training += 1
+                elif "Expired" in statuses:
+                    expired+=1
+                elif "Complete" in statuses:
+                    if len(statuses) == int(number_of_subsections):
+                        trained+=1
+                    elif len(statuses) < int(number_of_subsections):
+                        partial+=1
 
         #NEED TO TAKE INTO ACCOUNT EXPIRY
         #Counter(z)
-
+        print(i.title)
+        print(trained)
+        print(expired)
+        print(partial)
+        print(in_training)
         result[i.c_id]={"title":i.title,
                         "trained":trained,
-                        "expired":0,
+                        "expired":expired,
                         "partial":partial,
                         "training":in_training,
                         "category":i.category_rel.category}
+
+
 
 
     html_out = render_template('trial_view.html',result=result)
@@ -357,4 +398,4 @@ def export_trial_report():
 
     out_name = main_doc.write_pdf(target=app.config["UPLOAD_FOLDER"] + "/" + outfile)
 
-    return send_from_directory(directory=uploads, path=outfile, as_attachment=True, attachment_filename="trial_report.pdf")
+    return send_from_directory(directory=uploads, path=outfile, as_attachment=True, attachment_filename="training_report.pdf")
