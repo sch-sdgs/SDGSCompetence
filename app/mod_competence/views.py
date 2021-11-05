@@ -1,24 +1,24 @@
+from app.competence import s,send_mail, config
+from app.mod_competence.forms import *
+from app.models import *
+from app.qpulseweb import *
+from app.views import admin_permission, index
 from collections import OrderedDict
-from flask_table import Table, Col
-from sqlalchemy import and_, or_, func, asc, desc
+import datetime
+from dateutil.relativedelta import relativedelta
 from flask import render_template, request, url_for, redirect, Blueprint, jsonify, flash, Markup
 from flask_login import login_required, current_user
-from app.views import admin_permission
-from app.models import *
-from app.competence import s,send_mail
-from app.competence import config
-from mod_competence.forms import *
+from flask_table import Table, Col
 import json
-from app.qpulseweb import *
-from datetime import datetime as dt
-from dateutil.relativedelta import relativedelta
-from app.views import index
 import plotly.graph_objects as go
 from plotly.offline import plot
+from sqlalchemy import and_, or_, func, asc, desc
 
+
+### Register Blueprint
 competence = Blueprint('competence', __name__, template_folder='templates')
 
-#TODO docstrings fo classes
+#TODO docstrings for classes
 
 class DeleteCol(Col):
     def __init__(self, name, attr=None, attr_list=None, **kwargs):
@@ -343,65 +343,6 @@ def add_sections():
         CompetenceDetails.intro.desc()).first().intro
     return redirect(url_for('competence.view_competence') + "?c_id=" + str(c_id) + "&version=" + str(version))
 
-    ##Comptetence Details
-
-    # get_comp_title = s.query(CompetenceDetails.title).filter_by(c_id=c_id).first()
-    # comp_title = ','.join(repr(x.encode('utf-8')) for x in get_comp_title).replace("'", "")
-    #
-    # get_comp_scope = s.query(CompetenceDetails.scope).filter_by(c_id=c_id).first()
-    # comp_scope = ','.join(repr(x.encode('utf-8')) for x in get_comp_scope).replace("'", "")
-    #
-    # get_comp_category = s.query(CompetenceCategory.category).join(CompetenceDetails).filter_by(c_id=c_id).first()
-    # comp_category = ','.join(repr(x.encode('utf-8')) for x in get_comp_category).replace("'", "")
-    #
-    # get_comp_val_period = s.query(ValidityRef.months).join(CompetenceDetails).filter_by(c_id=c_id).first()
-    # comp_val_period = int(get_comp_val_period[0])
-    #
-    # ##Creates a dictionary of the docs associated with a created competence
-    # dict_docs = {}
-    # docs = s.query(Documents.qpulse_no).join(CompetenceDetails).filter_by(c_id=c_id)
-    # for doc in docs:
-    #     doc_id = ','.join(repr(x.encode('utf-8')) for x in doc).replace("'", "")
-    #     d = QpulseDetails()
-    #     details = d.Details()
-    #     username = str(details[1])
-    #     password = str(details[0])
-    #     q = QPulseWeb()
-    #     doc_name = q.get_doc_by_id(username=username, password=password, docNumber=doc)
-    #
-    #     print doc_id
-    #     dict_docs[doc_id] = doc_name
-    #
-    # ##Get subsection details
-    # dict_subsecs = {}
-    # subsections = get_subsections(c_id,version=0)
-    # for item in subsections:
-    #     sec_name = item.sec_name
-    #     subsection_name = item.subsec_name
-    #     comment = item.comments
-    #     evidence_type = item.type
-    #     subsection_data = [subsection_name, comment, evidence_type]
-    #     print subsection_data
-    #     dict_subsecs.setdefault(sec_name, []).append(subsection_data)
-    # print dict_subsecs
-    #
-    # dict_constants = {}
-    # constants = get_constant_subsections(c_id,version=0)
-    # for item in constants:
-    #     constant_sec_name = item.sec_name
-    #     constant_subsection_name = item.subsec_name
-    #     constant_comment = item.comments
-    #     constant_evidence_type = item.type
-    #     constant_subsection_data = [constant_subsection_name, constant_comment, constant_evidence_type]
-    #     print constant_subsection_data
-    #     dict_constants.setdefault(constant_sec_name, []).append(constant_subsection_data)
-    # print "###CONSTANTS###"
-    # print dict_constants
-    #
-    # return render_template('competence_view.html', c_id=c_id, title=comp_title, scope=comp_scope,
-    #                        category=comp_category, val_period=comp_val_period, docs=dict_docs, constants=dict_constants,
-    #                        subsections=dict_subsecs, version=version)
-
 
 #todo - competence lifecycle:
 #create a competence - and approve - everything is at v1
@@ -675,6 +616,7 @@ def add_constant_sections_to_db():
     else:
         name = name
 
+    #TODO this is where new constant sections have their evidence set
     sub = Subsection(name=name, c_id=c_id, s_id=s_id, evidence=4, sort_order=None, comments=None, intro=version)
     s.add(sub)
     s.commit()
@@ -745,7 +687,7 @@ def get_doc_name(doc_id=None):
     q = QPulseWeb()
     if not doc_id:
         doc_id = request.json['doc_id']
-
+        print(f"get_doc_name doc_id: {doc_id}")
         doc_name = q.get_doc_by_id(username=details.username, password=details.password, docNumber=doc_id)
         if doc_name == "False":
             return jsonify({"response":"This is not a valid QPulse Document"})
@@ -1273,6 +1215,7 @@ def change_subsection_order():
             filter(Subsection.id == id). \
             update(new_order)
     s.commit()
+    #TODO this, but for constant subsections?
 
 
 @competence.route('/change_section_order', methods=['GET', 'POST'])
@@ -1441,50 +1384,53 @@ def assign_competence_to_user(user_id, competence_id, due_date):
                 delete()
 
     for sub_section in sub_sections:
+        print(sub_section.name)
         ### check if subsection has already been signed off in previous version
 
         already_complete = s.query(Assessments).join(AssessmentStatusRef).\
             filter(Assessments.ss_id == sub_section.id).\
             filter(Assessments.user_id == user_id).\
             filter(or_(AssessmentStatusRef.status == "Complete",
-                       AssessmentStatusRef.status == "Sign-Off")).\
+                       AssessmentStatusRef.status == "Sign-Off",
+                       AssessmentStatusRef.status == "Not Required")).\
             filter(Assessments.version == int(current_version) - 1).all()
 
         print("already complete:")
         print(already_complete)
 
         if len(already_complete) > 0:
-            print ("in if")
-            a = Assessments(status=already_complete.status, ss_id=sub_section.id, user_id=int(user_id),
-                            version=current_version,
-                            due_date=already_complete.due_date, date_of_training=already_complete.date_of_training,
-                            trainer_id=already_complete.trainer_id, date_completed=already_complete.date_completed,
-                            date_expiry=already_complete.date_expiry, date_assigned=already_complete.date_assigned,
-                            assign_id=already_complete.assign_id, date_activated = already_complete.activated)
-            print("adding assessment")
-            print(a)
-            s.add(a)
-            s.commit()
-
-            new_assessment_id = s.query(Assessments).filter(Assessments.ss_id == sub_section.id). \
-                filter(Assessments.user_id == user_id).\
-                filter(Assessments.version == current_version).id
-            print("New assessment ID:")
-            print(new_assessment_id)
-
-            ### get all previous assessment evidence relationships
-
-            previous_evidence_rel = s.query(AssessmentEvidenceRelationship).\
-                filter(AssessmentEvidenceRelationship.assessment_id == already_complete.id).all()
-
-            print("previous evidence")
-            print(previous_evidence_rel)
-
-            for evidence_rel in previous_evidence_rel:
-                evidence_id = evidence_rel.evidence_id  ### get previous ID for evidence
-                e = AssessmentEvidenceRelationship(assessment_id=new_assessment_id, evidence_id=evidence_id)
-                s.add(e)
+            for previous_assessment in already_complete:
+                print ("in if")
+                a = Assessments(status=previous_assessment.status, ss_id=sub_section.id, user_id=int(user_id),
+                                version=current_version,signoff_id=previous_assessment.signoff_id,
+                                due_date=previous_assessment.due_date, date_of_training=previous_assessment.date_of_training,
+                                trainer_id=previous_assessment.trainer_id, date_completed=previous_assessment.date_completed,
+                                date_expiry=previous_assessment.date_expiry, date_assigned=previous_assessment.date_assigned,
+                                assign_id=previous_assessment.assign_id, date_activated = previous_assessment.date_activated)
+                print("adding assessment")
+                print(a)
+                s.add(a)
                 s.commit()
+
+                new_assessment_id = s.query(Assessments).filter(Assessments.ss_id == sub_section.id). \
+                    filter(Assessments.user_id == user_id).\
+                    filter(Assessments.version == current_version).first().id
+                print("New assessment ID:")
+                print(new_assessment_id)
+
+                ### get all previous assessment evidence relationships
+
+                previous_evidence_rel = s.query(AssessmentEvidenceRelationship).\
+                    filter(AssessmentEvidenceRelationship.assessment_id == previous_assessment.id).all()
+
+                print("previous evidence")
+                print(previous_evidence_rel)
+
+                for evidence_rel in previous_evidence_rel:
+                    evidence_id = evidence_rel.evidence_id  ### get previous ID for evidence
+                    e = AssessmentEvidenceRelationship(assessment_id=new_assessment_id, evidence_id=evidence_id)
+                    s.add(e)
+                    s.commit()
 
         else:
             ### just add blank new assessment entry
@@ -1560,14 +1506,24 @@ def edit_competence():
 
         form.approval.data = comp.approve_rel.first_name + " " + comp.approve_rel.last_name
         if config.get("QPULSE_MODULE"):
-            doc_query = s.query(Documents.qpulse_no). \
+            doc_query = s.query(Documents). \
                 filter_by(c_id=comp.id). \
                 all()
+            print(f"doc_query: {doc_query}")
+            for doc in doc_query:
+                print(f"doc number: {doc.qpulse_no}")
+                print(type(doc.qpulse_no))
+                print(len(doc.qpulse_no))
+
             documents = []
             for i in doc_query:
-                name = get_doc_name(doc_id=i)
-                if name != False:
-                    documents.append([i.qpulse_no, name])
+                if len(i.qpulse_no) == 0:
+                    documents = None
+                    pass
+                else:
+                    name = get_doc_name(doc_id=i.qpulse_no)
+                    if name != False:
+                        documents.append([i.qpulse_no, name])
         else:
             documents = None
         # get subsections
