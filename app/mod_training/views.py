@@ -498,7 +498,17 @@ def view_current_competence():
 
         competence_summary = get_competence_summary_by_user(c_id, u_id,version)
 
+
         section_list = get_competence_by_user(c_id, u_id,version)
+        statuses = []
+
+        for section_heading in section_list['custom']:
+            for subsection in section_list['custom'][section_heading]['subsections']:
+                if subsection['status'] not in statuses:
+                    statuses.append(subsection['status'])
+
+        print("statuses")
+        print(statuses)
 
         reassessments = s.query(Reassessments). \
             join(AssessReassessRel). \
@@ -531,6 +541,9 @@ def view_current_competence():
             filter(AssessmentStatusRef.status=="Four Year Due"). \
             filter(Competence.id==c_id). \
             count()
+
+
+
         # return template populated
         return render_template('complete_training.html', competence=c_id, u_id=u_id, user=competence_summary.user,
                                number=competence_summary.qpulsenum,
@@ -541,7 +554,7 @@ def view_current_competence():
                                activated=filter_for_none(competence_summary.activated),
                                completed=filter_for_none(competence_summary.completed),
                                expires=filter_for_none(competence_summary.expiry),
-                               version=competence_summary.version,
+                               version=competence_summary.version, statuses=statuses,
                                reassessments=reassessments,videos=videos,four_year_check=four_year_check)
 
 

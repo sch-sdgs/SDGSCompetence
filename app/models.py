@@ -409,7 +409,8 @@ class Assessments(db.Model):
     evidence = db.relationship("AssessmentEvidenceRelationship", backref="assessments")
 
     def __init__(self, status, ss_id, user_id, assign_id, version, is_reassessment=0, date_completed=None, date_expiry=None,
-                 comments=None, due_date=None):
+                 comments=None, due_date=None, date_of_training=None, trainer_id=None, date_activated=None, date_assigned = str(datetime.datetime.now().strftime("%Y%m%d")),
+                 signoff_id=None):
         self.status = status
         self.ss_id = ss_id
         self.user_id = user_id
@@ -418,9 +419,13 @@ class Assessments(db.Model):
         self.comments = comments
         self.due_date = due_date
         self.is_reassessment = is_reassessment
-        self.date_assigned = str(datetime.datetime.now().strftime("%Y%m%d"))
+        self.date_assigned = date_assigned
         self.assign_id = assign_id
         self.version=version
+        self.date_of_training=date_of_training
+        self.trainer_id = trainer_id
+        self.date_activated=date_activated
+        self.signoff_id=signoff_id
 
     def __repr__(self):
         return '<Assessment %r>' % self.status
