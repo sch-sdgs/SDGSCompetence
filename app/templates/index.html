@@ -1,17 +1,11 @@
 {% extends "base2.html" %}
 {% block content %}
-
-
-            <h1>
-                <i class="fa fa-dashboard"></i> Dashboard
-                <small>All your training information in one place.</small>
-            </h1>
-            {#            <ol class="breadcrumb">#}
-            {#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
-            {#                <li class="active">Here</li>#}
-            {#            </ol>#}
-
-        </section>
+    <section>
+        <h1>
+            <i class="fa fa-dashboard"></i> Dashboard
+            <small>All your training information in one place.</small>
+        </h1>
+    </section>
 
         <!-- Main content -->
         <section class="content container-fluid">
@@ -86,7 +80,7 @@
                                                     {% if evidence.assessments[0].assess_id_rel.date_of_training  %}
                                                     {{ evidence.assessments[0].assess_id_rel.date_of_training.strftime('%d-%m-%Y') }}
                                                     {% else %}
-                                                        Missing
+                                                        -
                                                     {% endif %}
                                                 </td>
                                                 <td>
@@ -327,12 +321,6 @@
                 <div class="col-lg-12">
 
                     <div class="box" id="training">
-{#                        <div class="box-header with-border">#}
-{##}
-{#                            <div class="box-tools pull-right">#}
-{#                                <span class="badge bg-gray">{{ assigned|length }}</span>#}
-{#                            </div>#}
-{#                        </div>#}
                         <div class="box-body table-responsive">
 
 
@@ -426,8 +414,6 @@
             <h2 class="page-header"><i class="fa fa-thumbs-o-up"></i> Complete Training</h2>
             <div class="row">
                 <div class="col-lg-12">
-
-
                     <div class="nav-tabs-custom">
                         <ul class="nav nav-tabs">
                             <li class="active"><a href="#tab_1_complete" data-toggle="tab" aria-expanded="true">Complete
@@ -435,8 +421,6 @@
                             </a></li>
                             <li class=""><a href="#tab_2_complete" data-toggle="tab" aria-expanded="false">Obsolete
                                 <span class="badge bg-gray">{{ obsolete|length }}</span></a></li>
-
-
                         </ul>
 
                         <div class="tab-content table-responsive">
@@ -481,11 +465,6 @@
                                                         <a href="{{ url_for('training.view_current_competence') }}?c_id={{ i.c_id }}&version={{ i.version }}"
                                                            class="btn btn-sm btn-primary btn-flat "><span
                                                                 class="glyphicon glyphicon-eye-open"></span></a>
-
-                                                        {#                                                    <a data-toggle="modal" data=""#}
-                                                        {#                                                       href="{{ url_for('training.select_subsections') }}?c_id={{ i.c_id }}&version={{ i.version }}&action=reassess"#}
-                                                        {#                                                       class="btn btn-sm btn-success btn-flat"><span#}
-                                                        {#                                                            class="glyphicon glyphicon-repeat"></span></a>#}
                                                         <a data-toggle="tooltip" title="Delete"
                                                            class="btn btn-sm btn-flat btn-danger remove_training"
                                                            id="{{ i.c_id }}" version="{{ i.version }}"><i
@@ -694,7 +673,7 @@
 
                         </table>
                         <br>
-                        <small>* Please note, if your competence has transferred ownsership or has been edited by
+                        <small>* Please note, if your competence has transferred ownership or has been edited by
                             another user it will no longer display here.
                         </small>
 
@@ -819,7 +798,7 @@
 
                                 <table class="table table-responsive table-striped table-condensed table-hover no-padding">
                                     <thead>
-                                    <th class="col-md-3">Name</th>
+                                    <th class="col-md-2">Name</th>
                                     <th class="col-md-1">Assigned</th>
                                     <th class="col-md-1">Active</th>
                                     <th class="col-md-1">Sign-Off</th>
@@ -829,6 +808,7 @@
                                     <th class="col-md-1">Obsolete</th>
                                     <th class="col-md-1">Expiring</th>
                                     <th class="col-md-1">Expired</th>
+                                    <th class="col-md-1">Not Required</th>
                                     </thead>
                                     {% for report in linereports %}
                                         <tr>
@@ -842,6 +822,7 @@
                                             <td>{{ counts[report.id]["obsolete"] }}</td>
                                             <td>{% if "expiring" in counts[report.id] %}{{ counts[report.id]["expiring"] }}{% else %}0{% endif %}</td>
                                             <td>{% if "expired" in counts[report.id] %}{{ counts[report.id]["expired"] }}{% else %}0{% endif %}</td>
+                                            <td>{{ counts[report.id]["not_required"] }}</td>
 
                                         </tr>
                                     {% endfor %}
@@ -871,28 +852,6 @@
 
         </section>
     </div>
-
-
-    {#    <div class="modal modal-danger fade ui-front" id="notifications_modal" style="display: none;">#}
-    {#        <div class="modal-dialog">#}
-    {#            <div class="modal-content">#}
-    {#                <div class="modal-header">#}
-    {#                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">#}
-    {#                        <span aria-hidden="true">×</span></button>#}
-    {#                    <h4 class="modal-title">You Have {{ notes[0] }} Notifications!</h4>#}
-    {#                </div>#}
-    {#                <div class="modal-body">#}
-    {#                    Click here to see them!#}
-    {#                </div>#}
-    {#                <div class="modal-footer">#}
-    {#                    <button type="button" class="btn btn-default btn-flat pull-right" data-dismiss="modal">Close#}
-    {#                    </button>#}
-    {#                </div>#}
-    {#            </div>#}
-    {#            <!-- /.modal-content -->#}
-    {#        </div>#}
-    {#        <!-- /.modal-dialog -->#}
-    {#    </div>#}
 
     <div class="modal modal-default" id="make_obsolete" style="display: none;">
         <div class="modal-dialog">
@@ -1207,9 +1166,9 @@
              */
 
             var data = {
-                labels: ['Assigned', 'Active', 'Sign-Off', 'Complete †', 'Failed', 'Abandoned', 'Obselete', 'Expiring', 'Expired'],
+                labels: ['Assigned', 'Active', 'Sign-Off', 'Complete †', 'Failed', 'Abandoned', 'Obselete', 'Expiring', 'Expired', 'Not Required'],
                 datasets: [{
-                    data: [{{ assigned_count }}, {{ active_count }}, {{ signoff_count }}, {{ complete_count }}, {{ failed_count }}, {{ abandoned_count }}, 0, {{ expiring_count }}, {{ expired_count }}],
+                    data: [{{ assigned_count }}, {{ active_count }}, {{ signoff_count }}, {{ complete_count }}, {{ failed_count }}, {{ abandoned_count }}, 0, {{ expiring_count }}, {{ expired_count }}, {{ not_required_count }}],
                     label: 'Digital Goods',
                     fillColor: '#EA5D4E',
                     strokeColor: 'rgba(60,141,188,0.8)',
