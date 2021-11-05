@@ -9,9 +9,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Added the ability to mark competencies as not required. Where this applies, training is showed as "Partially trained" 
   on dashboard and in reports
+- New versions of a competence now inherit evidence from previous versions
 ### Changed
 - Lists of trainers and authorisers are now alphabetical
 - Reset password links removed from login page and dashboard (Note: code is commented out and can be reinstated)
+- Changed logic for deciding buttons on view competence page, improved button appearance
 ### Fixed
 - Fixed bug where competency disappears from dashboard if all subsections are marked as fail
 - Fixed bug where document names weren't rendering in competency edit page
