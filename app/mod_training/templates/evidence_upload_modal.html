@@ -161,7 +161,42 @@
                                 </table>
                             </div>
                         </div>
-
+                    {% elif i.evidence_id_rel.evidence_type_rel.type == "Inactivation Request" %}
+                        <div class="box">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">
+                                    {% if i.evidence_id_rel.is_correct == 1 %}
+                                        <i class="fa fa-thumbs-up text-green"></i>
+                                    {% elif i.evidence_id_rel.is_correct == 0 %}
+                                        <i class="fa fa-thumbs-down text-red"></i>
+                                    {% else %}
+                                        <i class="fa fa-check-square-o text-gray"></i>
+                                    {% endif %}
+                                    Inactivation Request Evidence
+                                </h3>
+                                {% if i.evidence_id_rel.date_completed %}
+                                    <span class="h3 box-title pull-right">{{ i.evidence_id_rel.date_completed.strftime('%d-%m-%Y') }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="box-body">
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <td colspan="2"><b>Evidence Submitted by User:</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">{{ i.evidence_id_rel.evidence }}</td>
+                                    </tr>
+                                    {% if i.evidence_id_rel.comments %}
+                                        <tr>
+                                            <td colspan="2"><b>Comments from : {{ sub["assessor"] }}</b></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">{{ i.evidence_id_rel.comments }}</td>
+                                        </tr>
+                                    {% endif %}
+                                </table>
+                            </div>
+                        </div>
                     {% endif %}
                 {% endfor %}
             </div>

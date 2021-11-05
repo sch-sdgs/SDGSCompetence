@@ -1,3 +1,5 @@
+#TODO clean up imports
+
 from flask import flash,Flask, render_template, redirect, request, url_for, session, current_app, jsonify
 from flask_login import login_required, login_user, logout_user, LoginManager, UserMixin, \
     current_user
@@ -5,7 +7,7 @@ from activedirectory import UserAuthentication
 from forms import *
 from flask_principal import Principal, Identity, AnonymousIdentity, \
     identity_changed, Permission, RoleNeed, UserNeed, identity_loaded
-from app.mod_training.views import get_competence_summary_by_user
+from app.mod_training.views import get_competence_summary_by_user, get_completion_status_counts
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.sql.expression import func, and_, or_, case, exists, update,distinct
 from app.competence import *
@@ -19,12 +21,14 @@ login_manager.login_view = "login"
 principals = Principal(app)
 
 # permission levels
-
+#TODO remove privilege permission
 user_permission = Permission(RoleNeed('USER'))
 linemanager_permission = Permission(RoleNeed('LINEMANAGER'))
 admin_permission = Permission(RoleNeed('ADMIN'))
 privilege_permission = Permission(RoleNeed('PRIVILEGE'))
 hos_permission = Permission(RoleNeed('HEADOFSERVICE'))
+
+#TODO: Move competencies where they were complete because some sections were not required out of complete once those sections are in training?
 
 @app.route('/setup', methods=['GET', 'POST'])
 def setup():
@@ -44,7 +48,7 @@ def setup():
                 s.commit
 
             #create statuses
-            statuses = ["Abandoned","Active","Assigned","Complete","Failed","Four Year Due","Obsolete","Sign-Off"]
+            statuses = ["Abandoned","Active","Assigned","Complete","Failed","Four Year Due", "Not Required", "Obsolete","Sign-Off"]
             for status in statuses:
                 if s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == status).count() == 0:
                     st = AssessmentStatusRef(status=status)
@@ -65,7 +69,7 @@ def setup():
                     s.add(cc)
             s.commit()
 
-            evidences = ["Case", "Completed competence panel", "Discussion", "Observation", "Upload"]
+            evidences = ["Case", "Completed competence panel", "Discussion", "Inactivation Request", "Observation", "Upload"]
             for evidence in evidences:
                 if s.query(EvidenceTypeRef).filter(EvidenceTypeRef.type == evidence).count() == 0:
                     st = EvidenceTypeRef(type=evidence)
@@ -208,8 +212,8 @@ class User(UserMixin):
     def is_authenticated(self, id, password):
         """
         checks if user can authenticate with given user id and password. A user can authenticate if two conditions are met
-         1. user is in the stardb database
-         2. user credentils authenticate with active directory
+         1. user is in the competence database
+         2. user credentials authenticate with active directory
 
         :param id: username
         :param password: password
@@ -299,7 +303,10 @@ def page_not_found(e):
 
 
 def get_competence_from_subsections(subsection_ids):
-    subsections = s.query(Competence).join(Subsection).filter(Subsection.id.in_(subsection_ids)).all()
+    subsections = s.query(Competence). \
+        join(Subsection). \
+        filter(Subsection.id.in_(subsection_ids)). \
+        all()
 
     return subsections
 
@@ -312,18 +319,23 @@ def utility_processor():
     def get_percent(c_id, u_id,version):
         """
         gets the percentage complete of any competence
+        27/10/21 edited to reflect that competencies can now be marked as not required
         :param c_id: competence id
         :param u_id: user id
         :return: percentage complete
         """
-        counts = s.query(Assessments)\
+
+        counts = s.query(Assessments) \
             .join(Subsection) \
             .join(AssessmentStatusRef) \
-            .filter(Assessments.version==version) \
-            .filter(AssessmentStatusRef.status != "Obsolete")\
+            .filter(Assessments.version == version) \
+            .filter(AssessmentStatusRef.status != "Obsolete") \
             .filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id)) \
-            .values((func.sum(case([(Assessments.date_completed == None, 0)], else_=1)) / func.count(
+            .values((func.sum(case(
+            [(Assessments.status.in_([3, 9]), 1)],
+            else_= 0)) / func.count(
             Assessments.id) * 100).label('percentage'))
+
         for c in counts:
             return c.percentage
 
@@ -355,7 +367,7 @@ def utility_processor():
             .join(AssessmentStatusRef)\
             .filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id)) \
             .values((func.sum(
-            case([(or_(AssessmentStatusRef.status.in_(["Active", "Complete","Failed"])), 1)],
+            case([(or_(AssessmentStatusRef.status.in_(["Active", "Complete","Failed", "Not Required"])), 1)],
                  else_=0)) / func.count(Assessments.id) * 100).label('percentage'))
         for c in counts:
             return c.percentage
@@ -396,15 +408,12 @@ def utility_processor():
 @app.context_processor
 def utility_processor():
     def get_reassessment_status(reassessment):
-
-
         if reassessment.is_correct == None:
             html = '<span class ="label label-warning">Awaiting Sign-Off</span>'
         elif reassessment.is_correct == 1:
             html = '<span class ="label label-success">Approved</span>'
         elif reassessment.is_correct == 0:
             html = '<span class ="label label-danger">Failed</span>'
-
 
         return html
 
@@ -437,36 +446,24 @@ def utility_processor():
 
         return html
 
-        #return {"total_days":total_days,"days_passed":days_passed_since_assignment}
-
-
-        # if check_margin(expiry_date,0):
-        #     html = '<span class="label label-danger">Expired</span>'
-        # elif check_margin(expiry_date,5):
-        #     html = '<span class="label label-danger">Expiring Within 5 Days</span>'
-        # elif check_margin(expiry_date,30):
-        #     html = '<span class="label label-warning">Expiring Within 30 Days</span>'
-        # elif check_margin(expiry_date, 90):
-        #     html = '<span class="label label-info">Expiring Within Days</span>'
-        # else:
-        #     html = '<span class="label label-success">OK</span>'
-
-        #return html
-
     return dict(check_due_date=check_due_date)
 
 
 def assess_status_method(status):
     if status == "Active":
-        html = '<span class="label label-warning">Active</span>'
+        assess_status_html = '<span class="label label-warning">Active</span>'
     elif status == "Complete":
-        html = '<span class="label label-success">Complete</span>'
+        assess_status_html = '<span class="label label-success">Complete</span>'
     elif status == "Assigned":
-        html = '<span class="label label-default">Assigned</span>'
+        assess_status_html = '<span class="label label-default">Assigned</span>'
     elif status == "Four Year Due":
-        html = '<span class="label label-danger">Four Year Due</span>'
+        assess_status_html = '<span class="label label-danger">Four Year Due</span>'
+    elif status == "Not Required":
+        assess_status_html = '<span class="label label-info">Partially Trained</span>'
+    elif status == "Sign-Off":
+        assess_status_html = '<span class="label label-primary">Sign-Off</span>'
 
-    return html
+    return assess_status_html
 
 
 @app.context_processor
@@ -481,7 +478,10 @@ def utility_processor():
 @app.context_processor
 def utility_processor():
     def get_status(status_id):
-        status = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.id==status_id).first().status
+        status = s.query(AssessmentStatusRef). \
+            filter(AssessmentStatusRef.id==status_id). \
+            first(). \
+            status
         html = assess_status_method(status)
 
         return html
@@ -511,15 +511,25 @@ def utility_processor():
                     else:
                         alerts["Assessments Expiring"] += 1
                         count += 1
-        signoff = s.query(Evidence).filter(Evidence.signoff_id == current_user.database_id).filter(Evidence.is_correct == None).count()
+        signoff = s.query(Evidence). \
+            filter(Evidence.signoff_id == current_user.database_id). \
+            filter(Evidence.is_correct == None). \
+            count()
         if signoff > 0:
             count+=signoff
             alerts["Evidence Approval"] = signoff
-        approval = s.query(CompetenceDetails).filter(and_(CompetenceDetails.approve_id == current_user.database_id,CompetenceDetails.approved != None,CompetenceDetails.approved != 1)).count()
+        approval = s.query(CompetenceDetails). \
+            filter(and_(CompetenceDetails.approve_id == current_user.database_id,
+                        CompetenceDetails.approved != None,
+                        CompetenceDetails.approved != 1)). \
+            count()
         if approval > 0:
             count += approval
             alerts["Competence Approval"] = approval
-        reassessments = s.query(Reassessments).filter(Reassessments.signoff_id == current_user.database_id).filter(Reassessments.is_correct==None).count()
+        reassessments = s.query(Reassessments). \
+            filter(Reassessments.signoff_id == current_user.database_id). \
+            filter(Reassessments.is_correct==None). \
+            count()
         if reassessments > 0:
             count += reassessments
             alerts["Reassessment Approval"] = reassessments
@@ -544,6 +554,33 @@ def utility_processor():
 #########
 # views #
 #########
+
+
+def get_percentage(c_id, u_id,version):
+    """
+    gets the percentage complete of any competence
+    27/10/21 edited to reflect that competencies can now be marked as not required
+    :param c_id: competence id
+    :param u_id: user id
+    :return: percentage complete
+    """
+    counts = s.query(Assessments) \
+        .join(Subsection) \
+        .join(AssessmentStatusRef) \
+        .filter(Assessments.version == version) \
+        .filter(AssessmentStatusRef.status != "Obsolete") \
+        .filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id)) \
+        .values((func.sum(case(
+        [(Assessments.status.in_([3, 9]), 1)],
+        else_= 0)) / func.count(
+        Assessments.id) * 100).label('percentage'))
+
+    percentage = 0
+    for i in counts:
+        percentage = i.percentage
+
+    return(percentage)
+
 
 @app.route('/autocomplete_linemanager', methods=['GET'])
 def autocomplete_linemanager():
@@ -579,8 +616,6 @@ def autocomplete_hos():
     for i in hos:
         name = i.first_name + " " + i.last_name
         hos_list.append(name)
-
-    print(hos_list)
 
     return jsonify(json_list=hos_list)
 
@@ -662,8 +697,6 @@ def login():
     elif request.method == 'POST':
         user = User(form.data["username"], password=form.data["password"])
         result = user.is_authenticated(id=form.data["username"], password=form.data["password"])
-        print("RESULT")
-        print(result)
         if result:
             login_user(user)
             identity_changed.send(current_app._get_current_object(),
@@ -723,10 +756,12 @@ def logout():
 
     return redirect(request.args.get('next') or '/')
 
+
 @app.route('/index')
 @login_required
 def home():
     return redirect('/')
+
 
 @app.route('/')
 @login_required
@@ -735,10 +770,14 @@ def index(message=None):
     displays the users dashboard
     :return: template index.html
     """
-    print (current_user.database_id)
-    linereports = s.query(Users).filter_by(line_managerid=int(current_user.database_id)).filter_by(active=True).all()
-    linereports_inactive = s.query(Users).filter_by(line_managerid=int(current_user.database_id)).filter_by(
-        active=False).count()
+    linereports = s.query(Users). \
+        filter_by(line_managerid=int(current_user.database_id)). \
+        filter_by(active=True). \
+        all()
+    linereports_inactive = s.query(Users). \
+        filter_by(line_managerid=int(current_user.database_id)). \
+        filter_by(active=False). \
+        count()
     counts = {}
     active_count = 0
     assigned_count = 0
@@ -748,6 +787,7 @@ def index(message=None):
     failed_count = 0
     expiring_count = 0
     expired_count = 0
+    not_required_count = 0
 
     for i in linereports:
         counts[i.id] = {}
@@ -782,6 +822,10 @@ def index(message=None):
             s.query(Assessments).join(AssessmentStatusRef).filter(Assessments.user_id == i.id).filter(
                 AssessmentStatusRef.status == "Abandoned").all())
         abandoned_count += counts[i.id]["abandoned"]
+        counts[i.id]["not_required"] = len(
+            s.query(Assessments).join(AssessmentStatusRef).filter(Assessments.user_id == i.id).filter(
+                AssessmentStatusRef.status == "Not Required").all())
+        not_required_count += counts[i.id]["not_required"]
 
     #expired = s.query(Assessments).filter(Assessments.user_id == current_user.database_id)
     alerts = {}
@@ -808,20 +852,18 @@ def index(message=None):
                         counts[i.id]["expiring"] += 1
                     expiring_count += 1
 
+    competences_incomplete = s.query(CompetenceDetails). \
+        join(Competence). \
+        filter(CompetenceDetails.creator_id == current_user.database_id). \
+        filter(Competence.current_version != CompetenceDetails.intro). \
+        filter(CompetenceDetails.date_of_approval == None). \
+        all()
 
-    competences_incomplete = s.query(CompetenceDetails).join(Competence).filter(
-        CompetenceDetails.creator_id == current_user.database_id).filter(Competence.current_version != CompetenceDetails.intro).filter(CompetenceDetails.date_of_approval == None).all()
-
-
-
-    competences_complete = s.query(CompetenceDetails).join(Competence).filter(
-        CompetenceDetails.creator_id == current_user.database_id).filter(Competence.current_version == CompetenceDetails.intro).all()
-
-
-
-    # assigned = s.query(Assessments).filter(Assessments.user_id == current_user.database_id).filter(
-    #     or_(Assessments.status == 2, Assessments.status == 1, Assessments.status == 7)).filter(Competence.current_version==Assessments.version).all()
-    #
+    competences_complete = s.query(CompetenceDetails). \
+        join(Competence). \
+        filter(CompetenceDetails.creator_id == current_user.database_id). \
+        filter(Competence.current_version == CompetenceDetails.intro). \
+        all()
 
     assigned = s.query(Assessments)\
         .join(Subsection)\
@@ -830,11 +872,11 @@ def index(message=None):
         .join(AssessmentStatusRef)\
         .filter(Assessments.user_id == current_user.database_id)\
         .group_by(Competence.id)\
-        .filter(or_(AssessmentStatusRef.status == "Assigned", AssessmentStatusRef.status == "Active", AssessmentStatusRef.status == "Sign-Off"))\
+        .filter(or_(AssessmentStatusRef.status == "Assigned",
+                    AssessmentStatusRef.status == "Active",
+                    AssessmentStatusRef.status == "Sign-Off",
+                    AssessmentStatusRef.status == "Failed"))\
         .all()
-
-
-    # assigned = s.query(Assessments).join(Subsection).join()
 
     all_assigned=[]
     for j in assigned:
@@ -860,11 +902,12 @@ def index(message=None):
         .filter(AssessmentStatusRef.status.in_(["Complete","Four Year Due"])) \
         .all()
 
-
     all_complete = []
+
     for i in complete:
-        result = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
-        if result.completed != None:
+        percent_complete = get_percentage(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
+        if percent_complete == 100:
+            result = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
             all_complete.append(result)
 
     obsolete = s.query(Assessments) \
@@ -873,23 +916,40 @@ def index(message=None):
         .join(CompetenceDetails) \
         .join(AssessmentStatusRef) \
         .filter(Assessments.user_id == current_user.database_id) \
-        .filter(and_(CompetenceDetails.intro <= Assessments.version,or_(CompetenceDetails.last >= Assessments.version,CompetenceDetails.last==None)))\
+        .filter(and_(CompetenceDetails.intro <= Assessments.version,
+                     or_(CompetenceDetails.last >= Assessments.version,
+                         CompetenceDetails.last==None)))\
         .group_by(Competence.id) \
         .filter(AssessmentStatusRef.status.in_(["Obsolete"])) \
         .all()
 
+    signoff = s.query(Evidence). \
+        join(EvidenceTypeRef). \
+        filter(Evidence.signoff_id == current_user.database_id). \
+        filter(Evidence.is_correct == None). \
+        all()
 
-    signoff = s.query(Evidence).join(EvidenceTypeRef).filter(Evidence.signoff_id == current_user.database_id).filter(Evidence.is_correct == None).all()
-    signoff_competence = s.query(CompetenceDetails).filter(and_(CompetenceDetails.approve_id == current_user.database_id,CompetenceDetails.approved != None,CompetenceDetails.approved != 1)).all()
+    signoff_competence = s.query(CompetenceDetails). \
+        filter(and_(CompetenceDetails.approve_id == current_user.database_id,
+                    CompetenceDetails.approved != None,
+                    CompetenceDetails.approved != 1)). \
+        all()
 
-    signoff_reassessment = s.query(Reassessments).join(AssessReassessRel).join(Assessments).filter(Reassessments.signoff_id==current_user.database_id).filter(Reassessments.is_correct == None).all()
+    signoff_reassessment = s.query(Reassessments). \
+        join(AssessReassessRel).join(Assessments). \
+        filter(Reassessments.signoff_id==current_user.database_id). \
+        filter(Reassessments.is_correct == None). \
+        all()
 
     accept_form = RateEvidence()
 
-    return render_template("index.html", message=message, expiring_count=expiring_count, expired_count=expired_count, complete=all_complete, obsolete=obsolete, accept_form=accept_form, signoff=signoff, assigned_count=assigned_count,
-                           active_count=active_count, signoff_count=signoff_count, failed_count=failed_count, complete_count=complete_count, linereports=linereports,
+    return render_template("index.html", message=message, expiring_count=expiring_count, expired_count=expired_count,
+                           complete=all_complete, obsolete=obsolete, accept_form=accept_form, signoff=signoff, assigned_count=assigned_count,
+                           active_count=active_count, signoff_count=signoff_count, failed_count=failed_count, complete_count=complete_count,
+                           not_required_count=not_required_count, linereports=linereports,
                            linereports_inactive=linereports_inactive, competences_incomplete=competences_incomplete,
-                           competences_complete=competences_complete, abandoned_count=abandoned_count, counts=counts, assigned=all_assigned, active=active,signoff_competence=signoff_competence,signoff_reassessment=signoff_reassessment)
+                           competences_complete=competences_complete, abandoned_count=abandoned_count, counts=counts, assigned=all_assigned,
+                           active=active,signoff_competence=signoff_competence,signoff_reassessment=signoff_reassessment)
 
 
 @app.route('/notifications')
@@ -943,29 +1003,7 @@ def notifications():
             Reassessments.is_correct == None).all()
         alerts["Reassessment Approval"] = reassessments_query
 
-
-
     return render_template("notifications.html",alerts=alerts)
-
-# @app.route('/bug_reports', methods=['POST','GET'])
-# @login_required
-# def bug_reports():
-#
-#     trello = TrelloApi(config.get("TRELLO_APP_KEY"),token='1c7e2c946ba584da3e125834ebc88f41f38a3f6286ee99e9a43682902ca82ccb')
-#     token = trello.get_token_url('My App', expires='30days', write_access=True)
-#
-#     for i in trello.boards.get_list('59de4d6e5c1d9536f21019d9'):
-#         if i["name"] == "Bug Reports":
-#             list_id = i["id"]
-#
-#
-#     if request.method == 'POST':
-#         trello.cards.new(request.form["bug"] + "- " + current_user.full_name,list_id)
-#
-#     current_bugs = trello.lists.get_card(list_id=list_id)
-#
-#     return render_template("bug_reports.html",current_bugs=current_bugs)
-
 
 from flask_mail import Mail,Message
 
@@ -987,7 +1025,6 @@ def send_mail(user_id,subject,message):
         msg.html = '<b>You have a notification on CompetenceDB</b><br><br>'+message+'<br><br>View all your notifications <a href="'+request.url_root+'notifications">here</a>'
         thr = Thread(target=send_async_email, args=[msg])
         thr.start()
-
 
 
 def send_mail_unknown(email,subject,message):

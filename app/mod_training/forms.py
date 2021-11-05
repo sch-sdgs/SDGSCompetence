@@ -26,6 +26,15 @@ class UploadEvidence(FlaskForm):
     assid = HiddenField("AssesmentID")
     submit = SubmitField('Submit Evidence')
 
+class MarkNotRequired(FlaskForm):
+    """
+    For requesting subsection(s) are made inactive
+    """
+    inactivation_reason = TextAreaField(label="Reason these subsections do not require completion:")
+    assessor = SelectField(label="Who will authorise that this training is not required?")
+    assid = HiddenField("AssessmentID")
+    submit = SubmitField("Submit Request")
+
 class Reassessment(FlaskForm):
     signoff_id=SelectField(label="Authoriser")
 

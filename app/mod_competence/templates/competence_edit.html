@@ -1,166 +1,134 @@
 {% extends "base2.html" %}
 {% block content %}
 
-
-
-
-
-
-
-
-            <h1><i class="fa fa-edit"></i> Edit Competency</h1>
-
-            <small></small>
-            </h1>
-            {#            <ol class="breadcrumb">#}
-            {#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
-            {#                <li class="active">Here</li>#}
-            {#            </ol>#}
-            {% if message %}
-                <div class="alert alert-danger">
-                    <strong>Fail Whale!</strong> {{ message }}
-                </div>
-            {% endif %}
-
-
-        </section>
-
-
-        <!-- Main content -->
-        <section class="content container-fluid">
-
-            <!-- If competence is live warn that it will create a new version -->
-            <div class="row">
-                <div class="col-md-12">
-                    {% if live %}
-                        <div class="callout callout-danger">
-                            <h4>This competence is live!</h4>
-
-                            <p>This is OK, but editing this page will create a new version of the competence. It won't
-                                be made
-                                live until you send for approval and it is approved and users who are competent on the
-                                old version will still be
-                                so.</p>
-                        </div>
-                    {% else %}
-                        <div class="callout callout-success">
-                            <h4>This competence is not live!</h4>
-
-                            <p>This competence has never been made live so you can edit freely.</p>
-                        </div>
-                    {% endif %}
-                </div>
+    <section>
+        <h1><i class="fa fa-edit"></i> Edit Competency</h1><small></small>
+        {% if message %}
+            <div class="alert alert-danger">
+                <strong>Fail Whale!</strong> {{ message }}
             </div>
+        {% endif %}
+    </section>
 
+    <!-- Main content -->
+    <section class="content container-fluid">
 
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="box box-solid">
-                        <div class="box-body">
-                            <button class="pull-right btn btn-warning btn-flat approval" id="approval_{{ detail_id }}">
-                                <i class="fa fa-thumbs-up"></i> Send
-                                For
-                                Approval
-                            </button>
-                        </div>
+        <!-- If competence is live warn that it will create a new version -->
+        <div class="row">
+            <div class="col-md-12">
+                {% if live %}
+                    <div class="callout callout-danger">
+                        <h4>This competence is live!</h4>
+                        <p>This is OK, but editing this page will create a new version of the competence. It won't
+                            be made live until you send for approval and it is approved and users who are competent on the
+                            old version will still be so.</p>
+                    </div>
+                {% else %}
+                    <div class="callout callout-success">
+                        <h4>This competence is not live!</h4>
+                        <p>This competence has never been made live so you can edit freely.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Render send for approval button -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-solid">
+                    <div class="box-body">
+                        <button class="pull-right btn btn-warning btn-flat approval" id="approval_{{ detail_id }}">
+                            <i class="fa fa-thumbs-up"></i> Send For Approval
+                        </button>
                     </div>
                 </div>
             </div>
+        </div>
 
-
-            <div class="row">
-
-                <div class="col-md-12">
-                    <div class="box box-primary" id="training">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">Edit Basic Details</h3>
-
-                        </div>
-                        <div class="box-body">
-
-                            <form id="details" class="form-horizontal">
-                                <fieldset>
-
-
-                                    <div class="form-group">
-                                        {{ form.edit_title.label(class_="col-lg-2 control-label") }}
-                                        <div class="col-lg-10">
-                                            {{ form.edit_title(required="required",class_="form-control change") }}
-
-                                        </div>
-                                    </div>
-
-
-                                    <div class="form-group">
-                                        {{ form.edit_scope.label(class_="col-lg-2 control-label") }}
-                                        <div class="col-lg-10">
-                                            {{ form.edit_scope(required="required",class_="form-control change") }}
-                                        </div>
-                                    </div>
-
-
-                                    <div class="form-group">
-                                        {{ form.edit_competency_type.label(class_="col-lg-2 control-label") }}
-                                        <div class="col-lg-10">
-                                            {{ form.edit_competency_type(required="required",class_="form-control change") }}
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        {{ form.approval.label(class_="col-lg-2 control-label") }}
-                                        <div class="col-lg-10">
-                                            {{ form.approval(required="required",class_="form-control change") }}
-                                        </div>
-                                    </div>
-
-
-                                    <div class="form-group">
-                                        {{ form.edit_validity_period.label(class_="col-lg-2 control-label") }}
-                                        <div class="col-lg-10">
-
-                                            {{ form.edit_validity_period(required="required",class_="form-control change") }}
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <div class="col-lg-2"></div>
-                                        <div class="col-lg-10">
-
-                                            <a href="#" class="btn btn-flat btn-primary" id="save_details"><i
-                                                    class="fa fa-save"></i> <span id="save_details_text">Save These Details</span></a>
-                                        </div>
-                                    </div>
-                                </fieldset>
-                            </form>
-                        </div>
+        <!-- Box for editing basic competency details -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-primary" id="training">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Edit Basic Details</h3>
                     </div>
 
-                    {% if config.QPULSE_MODULE == True %}
+                    <div class="box-body">
+                        <form id="details" class="form-horizontal">
+                            <fieldset>
+                                <div class="form-group">
+                                    {{ form.edit_title.label(class_="col-lg-2 control-label") }}
+                                    <div class="col-lg-10">
+                                        {{ form.edit_title(required="required",class_="form-control change") }}
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    {{ form.edit_scope.label(class_="col-lg-2 control-label") }}
+                                    <div class="col-lg-10">
+                                        {{ form.edit_scope(required="required",class_="form-control change") }}
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    {{ form.edit_competency_type.label(class_="col-lg-2 control-label") }}
+                                    <div class="col-lg-10">
+                                        {{ form.edit_competency_type(required="required",class_="form-control change") }}
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    {{ form.approval.label(class_="col-lg-2 control-label") }}
+                                    <div class="col-lg-10">
+                                        {{ form.approval(required="required",class_="form-control change") }}
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    {{ form.edit_validity_period.label(class_="col-lg-2 control-label") }}
+                                    <div class="col-lg-10">
+                                        {{ form.edit_validity_period(required="required",class_="form-control change") }}
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="col-lg-2"></div>
+                                    <div class="col-lg-10">
+                                        <a href="#" class="btn btn-flat btn-primary" id="save_details">
+                                            <i class="fa fa-save"></i>
+                                            <span id="save_details_text">Save These Details</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Render Associated Documents Module if Q-Pulse module is configured -->
+                {% if config.QPULSE_MODULE == True %}
                     <div class="box box-primary" id="training">
                         <div class="box-header with-border">
                             <h3 class="box-title">Edit Associated Documents</h3>
-
                         </div>
+
                         <div class="box-body">
                             <div class="form-group">
                                 {{ form.add_document.label(class_="col-lg-2 control-label") }}
                                 <div class="col-lg-10">
                                     <div class="input-group" id="add_document_group">
                                         {{ form.add_document(class_="form-control") }}
-
-                                        <span class="input-group-btn"><button class="btn btn-primary btn-flat"
-                                                                              id="submit_document"
-                                                                              type="button">Attach</button></span>
-
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-primary btn-flat" id="submit_document" type="button">Attach</button>
+                                        </span>
                                     </div>
-                                    <span class="help-block"
-                                          id="add_document_text">Please enter a Q-Pulse Document ID</span>
+                                    <span class="help-block" id="add_document_text">Please enter a Q-Pulse Document ID</span>
                                     <div id="invalid_qpulse"></div>
                                 </div>
                             </div>
 
-                            <div class="alert alert-danger" role="alert" id="qpulse_error" hidden>This is not a valid
-                                QPulse Document! Please try again.
+                            <div class="alert alert-danger" role="alert" id="qpulse_error" hidden>
+                                This is not a valid QPulse Document! Please try again.
                             </div>
                             <div class="form-group">
                                 <div class="col-lg-2"></div>
@@ -174,198 +142,155 @@
                     </div>
                 {% endif %}
 
-                    <div class="box box-primary" id="training">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">Edit Constant Sections</h3>
-
-                        </div>
-                        <div class="box-body">
-
-                            <div class="form-group">
-                                <div class="input-group">
-                                    {{ section_form.choose_constant_section(class_="form-control name") }}
-                                    <span class="input-group-btn"><button class="btn btn-flat btn-primary "
-                                                                          id="add_new_constant_section">Add
-                                        Constant Section
-                                    </button></span>
-                                </div>
-                            </div>
-
-                            <form action="{{ url_for('competence.edit_competence') }}?c_id={{ c_id }}"
-                                  method="POST">
-                                <div id="constant_sections">
-                                    <fieldset>
-                                        {% for section in subsections["constant"] %}
-                                            <h4 class="text-blue"><i
-                                                    class="fa fa-fw fa-check-square-o"></i>{{ section[0] }}
-
-                                                <button type="button" data-id="{{ section[1] }}"
-                                                        data-title="{{ section[0] }}"
-                                                        class="btn btn-xs btn-flat btn-primary pull-right constant_form_show">
-                                                    Add
-                                                    Constant Subsection
-                                                </button>
-
-                                            </h4>
-                                            <div id="constant_subsections_list_{{ section[1] }}">
-                                                {% for subsection in subsections["constant"][section] %}
-                                                    <div class="form-group">
-                                                        <div class="input-group">
-                                                            <input type="text" name="{{ subsection.id }}"
-                                                                   id="{{ subsection.id }}"
-                                                                   value="{{ subsection.name }}" class="form-control"
-                                                                   disabled>
-                                                            <span class="input-group-btn">
-                                                  <button type="button" data-toggle="tooltip" title="Remove Subsection"
-                                                          id="subsection_{{ subsection.id }}"
-                                                          class="btn btn-flat btn-danger remove"><i
-                                                          class="fa fa-remove"></i> </button>
-                                                </span>
-                                                        </div>
-                                                    </div>
-
-                                                {% endfor %}
-                                            </div>
-
-                                        {% endfor %}
-                                    </fieldset>
-                                </div>
-                            </form>
-                        </div>
+                <!-- Box for handling constant subsections-->
+                <div class="box box-primary" id="training">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Edit Constant Sections</h3>
                     </div>
 
-
-                    <div class="box box-primary" id="training">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">Edit Custom Sections</h3><br>
-                            <small>The sections and subsections can be re-ordered by clicking and dragging.</small>
-
-                        </div>
-                        <div class="box-body">
-
-                            <div class="form-group">
-                                <div class="input-group">
-                                    {{ section_form.choose_section(class_="form-control name") }}
-                                    <span class="input-group-btn"><button class="btn btn-flat btn-primary "
-                                                                          id="add_new_section">Add
-                                        Section
-                                    </button></span>
-                                </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <div class="input-group">
+                                {{ section_form.choose_constant_section(class_="form-control name") }}
+                                <span class="input-group-btn">
+                                    <button class="btn btn-flat btn-primary " id="add_new_constant_section">Add Constant Section</button>
+                                </span>
                             </div>
-                            <form action="{{ url_for('competence.edit_competence') }}?c_id={{ c_id }}"
-                                  method="POST">
-                                <div id="custom_sections">
+                        </div>
 
-                                    <table width="100%" id="sortable_section_table" cellspacing="5px"
-                                           style="border-collapse:separate; border-spacing:0 20px;">
-                                        {% for section in subsections["custom"] %}
+                        <form action="{{ url_for('competence.edit_competence') }}?c_id={{ c_id }}" method="POST">
+                            <div id="constant_sections">
+                                <fieldset>
+                                    {% for section in subsections["constant"] %}
+                                        <h4 class="text-blue"><i class="fa fa-fw fa-check-square-o">
+                                            </i>{{ section[0] }}
+                                            <button type="button" data-id="{{ section[1] }}" data-title="{{ section[0] }}" class="btn btn-xs btn-flat btn-primary pull-right constant_form_show">
+                                                Add Constant Subsection
+                                            </button>
+                                        </h4>
 
-                                            <tr class="sort_table" id="{{ section[0] }}">
-                                            <td style="padding: 5px; margin: 5px; border: 1pt dashed darkgrey;">
-                                            <h4 class="text-blue"><i
-                                                    class="fa fa-fw fa-check-square-o"></i>{{ section[0] }}
-
-                                                <button type="button" data-id="{{ section[1] }}"
-                                                        data-title="{{ section[0] }}"
-                                                        class="btn btn-xs btn-flat btn-primary pull-right subsection_form_show">
-                                                    Add
-                                                    Subsection
-                                                </button>
-
-                                            </h4>
-                                            <div id="subsections_list_{{ section[1] }}">
-                                                <table width="100%" id="sortable_table_{{ section[1] }}"
-                                                       cellspacing="1px">
-                                                    {% for subsection in subsections["custom"][section] %}
-                                                        <tr class="sort" id="{{ subsection.id }}">
-                                                            <td style="display:inline; padding: 0px; margin: px; ">
-                                                                <div class="form-group ">
-                                                                    <div class="input-group">
+                                        <div id="constant_subsections_list_{{ section[1] }}">
+                                            {% for subsection in subsections["constant"][section] %}
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <input type="text" name="{{ subsection.id }}" id="{{ subsection.id }}" value="{{ subsection.name }}" class="form-control" disabled>
                                                             <span class="input-group-btn">
-                                                             <button type="button"
-                                                                     id="subsection_move_{{ subsection.id }}"
-                                                                     class="btn btn-flat btn-success"><i
-                                                                     class="fa fa-arrows-v"></i> </button>
+                                                            <button type="button" data-toggle="tooltip" title="Remove Subsection" id="subsection_{{ subsection.id }}" class="btn btn-flat btn-danger remove"><i class="fa fa-remove"></i> </button>
                                                             </span>
-                                                                        <input type="text" name="{{ subsection.id }}"
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+
+                                    {% endfor %}
+                                </fieldset>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Box for handling custom subsections -->
+                <div class="box box-primary" id="training">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Edit Custom Sections</h3><br>
+                        <small>The sections and subsections can be re-ordered by clicking and dragging.</small>
+                    </div>
+
+                    <div class="box-body">
+                        <div class="form-group">
+                            <div class="input-group">
+                                {{ section_form.choose_section(class_="form-control name") }}
+                                <span class="input-group-btn">
+                                    <button class="btn btn-flat btn-primary " id="add_new_section">Add Section</button>
+                                </span>
+                            </div>
+                        </div>
+                        <form action="{{ url_for('competence.edit_competence') }}?c_id={{ c_id }}" method="POST">
+                            <div id="custom_sections">
+                                <table width="100%" id="sortable_section_table" cellspacing="5px" style="border-collapse:separate; border-spacing:0 20px;">
+                                    {% for section in subsections["custom"] %}
+                                        <tr class="sort_table" id="{{ section[0] }}">
+                                        <td style="padding: 5px; margin: 5px; border: 1pt dashed darkgrey;">
+                                        <h4 class="text-blue">
+                                            <i class="fa fa-fw fa-check-square-o"></i>{{ section[0] }}
+                                            <button type="button" data-id="{{ section[1] }}" data-title="{{ section[0] }}" class="btn btn-xs btn-flat btn-primary pull-right subsection_form_show">Add Subsection</button>
+                                        </h4>
+                                        <div id="subsections_list_{{ section[1] }}">
+                                            <table width="100%" id="sortable_table_{{ section[1] }}" cellspacing="1px">
+                                                {% for subsection in subsections["custom"][section] %}
+                                                    <tr class="sort" id="{{ subsection.id }}">
+                                                        <td style="display:inline; padding: 0px; margin: 0px; ">
+                                                            <div class="form-group ">
+                                                                <div class="input-group">
+                                                                    <span class="input-group-btn">
+                                                                    <button type="button"
+                                                                     id="subsection_move_{{ subsection.id }}"
+                                                                     class="btn btn-flat btn-success">
+                                                                        <i class="fa fa-arrows-v"></i> </button>
+                                                                    </span>
+                                                                    <input type="text" name="{{ subsection.id }}"
                                                                                id="{{ subsection.id }}"
                                                                                value="{{ subsection.name }}"
                                                                                class="form-control"
                                                                                disabled>
-
-                                                                        <span class="input-group-btn">
-                                                  <button type="button" data-toggle="tooltip" title="Remove Subsection"
-                                                          id="subsection_{{ subsection.id }}"
-                                                          class="btn btn-flat btn-danger remove"><i
-                                                          class="fa fa-remove"></i> </button>
-                                                </span>
-
-                                                                    </div>
+                                                                    <span class="input-group-btn">
+                                                                    <button type="button" data-toggle="tooltip" title="Remove Subsection"
+                                                                    id="subsection_{{ subsection.id }}"
+                                                                    class="btn btn-flat btn-danger remove"><i
+                                                                    class="fa fa-remove"></i> </button>
+                                                                    </span>
                                                                 </div>
-                                                                <script>
+                                                            </div>
 
+                                                            <script>
+                                                                $(function () {
+                                                                    $('#sortable_table_{{ section[1] }}').sortable({
+                                                                        start: function (event, ui) {
+                                                                            ui.item.startPos = ui.item.index();
+                                                                            ui.placeholder.height(ui.item.height());
+                                                                        },
+                                                                        stop: function (event, ui) {
+                                                                            console.log("Start position: " + ui.item.startPos);
+                                                                            console.log("New position: " + ui.item.index());
+                                                                            data = get_order('#sortable_table_{{ section[1] }}')
 
-                                                                    $(function () {
-                                                                        $('#sortable_table_{{ section[1] }}').sortable({
-
-                                                                            start: function (event, ui) {
-                                                                                ui.item.startPos = ui.item.index();
-                                                                                ui.placeholder.height(ui.item.height());
-                                                                            },
-                                                                            stop: function (event, ui) {
-                                                                                console.log("Start position: " + ui.item.startPos);
-                                                                                console.log("New position: " + ui.item.index());
-                                                                                data = get_order('#sortable_table_{{ section[1] }}')
-
-                                                                                $.ajax({
-                                                                                    type: "POST",
-                                                                                    url: "{{ url_for('competence.change_subsection_order') }}",
-                                                                                    data: JSON.stringify(data, null, '\t'),
-                                                                                    contentType: 'application/json;charset=UTF-8',
-                                                                                    success: function (result) {
-                                                                                        console.log(result);
-                                                                                    }
-                                                                                })
-
-                                                                                {#var children = $('#sortable_table_{{ section[1] }}').sortable('refreshPositions').children();#}
-                                                                                {##}
-                                                                                {#console.log('Positions: ');#}
-                                                                                {#//Loopp through each item in the children array and print out the text.#}
-                                                                                {#$.each(children, function () {#}
-                                                                                {#    console.log($(this).id);#}
-
-                                                                            },
-
-                                                                            items:
-                                                                                ".sort",
-                                                                            handle:
-                                                                                'button',
-                                                                            cursor:
-                                                                                'move',
-                                                                            cancel:
-                                                                                '',
-                                                                            placeholder:
-                                                                                'ui-state-highlight',
-                                                                            over:
-
-                                                                                function (event, ui) {
-                                                                                    var cl = ui.item.attr('class');
-                                                                                    console.log(cl)
-                                                                                    $('.ui-state-highlight').addClass(cl);
+                                                                            $.ajax({
+                                                                                type: "POST",
+                                                                                url: "{{ url_for('competence.change_subsection_order') }}",
+                                                                                data: JSON.stringify(data, null, '\t'),
+                                                                                contentType: 'application/json;charset=UTF-8',
+                                                                                success: function (result) {
+                                                                                    console.log(result);
                                                                                 }
-                                                                        });
-                                                                    });</script>
+                                                                            })
+                                                                        },
+
+                                                                        items:
+                                                                            ".sort",
+                                                                        handle:
+                                                                            'button',
+                                                                        cursor:
+                                                                            'move',
+                                                                        cancel:
+                                                                            '',
+                                                                        placeholder:
+                                                                            'ui-state-highlight',
+                                                                        over:
+
+                                                                            function (event, ui) {
+                                                                                let cl = ui.item.attr('class');
+                                                                                console.log(cl)
+                                                                                $('.ui-state-highlight').addClass(cl);
+                                                                            }
+                                                                    });
+                                                                });
+                                                            </script>
                                                             </td>
                                                         </tr>
 
-
                                                     {% endfor %}
                                                 </table>
-
-
                                             </div>
-
-
 
                                             <script>
 
@@ -424,21 +349,6 @@
 
 
                                                 $("#sortable_section_table").sortable({});
-
-                                                {#var $sortableList = $("#sortable_section_table");#}
-                                                {##}
-                                                {#var sortEventHandler = function (event, ui) {#}
-                                                {#    console.log("New sort order!");#}
-                                                {##}
-                                                {#    $sortableList.on("sortchange", sortEventHandler);#}
-                                                {#    var arr = [];#}
-                                                {#    $("#sortable_section_table > tbody > tr").each(function () {#}
-                                                {#        arr.push(this.id);#}
-                                                {#    });#}
-                                                {##}
-                                                {#    console.log(arr);#}
-                                                {##}
-                                                {##}
 
                                                 // You can also set the event handler on an already existing Sortable widget this way:
 

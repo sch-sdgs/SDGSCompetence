@@ -1,11 +1,11 @@
-from flask import Flask, render_template, redirect, request, url_for, session, current_app, Blueprint, \
-    send_from_directory, jsonify, Markup
-from flask_login import login_required, login_user, logout_user, LoginManager, UserMixin, \
-    current_user
-#from app.mod_cpd.forms import *
 from mod_cpd.forms import *
+from flask import render_template, redirect, request, url_for, Blueprint
+from flask_login import current_user
 
+
+### Set up cpd blueprint
 cpd = Blueprint('cpd', __name__, template_folder='templates')
+
 
 def get_cpd_by_user(user_id):
     """
@@ -13,7 +13,12 @@ def get_cpd_by_user(user_id):
     :param user_id: ID of user in DB
     :return: event query
     """
-    events = s.query(CPDEvents).join(EventRoleRef).join(EventTypeRef).filter(CPDEvents.user_id == user_id).order_by(CPDEvents.date.desc()).all()
+    events = s.query(CPDEvents). \
+        join(EventRoleRef). \
+        join(EventTypeRef). \
+        filter(CPDEvents.user_id == user_id). \
+        order_by(CPDEvents.date.desc()). \
+        all()
     return events
 
 
@@ -23,7 +28,9 @@ def get_name_by_user_id(user_id):
     :param user_id: ID of user in DB
     :return: String of first name + last name
     """
-    user = s.query(Users).filter(Users.id == user_id).first()
+    user = s.query(Users). \
+        filter(Users.id == user_id). \
+        first()
     return user.first_name+' '+user.last_name
 
 
@@ -39,6 +46,7 @@ def view_cpd():
     cpd_events = get_cpd_by_user(user_id)
 
     return render_template('cpd_view.html', cpd=cpd_events, user=username)
+
 
 @cpd.route('/add_cpd', methods=['GET', 'POST'])
 def add_cpd():
@@ -74,6 +82,7 @@ def add_cpd():
 
         return redirect(url_for('cpd.view_cpd'))
 
+
 @cpd.route('/delete_cpd', methods=['GET', 'POST'])
 def delete_cpd():
     """
@@ -84,7 +93,9 @@ def delete_cpd():
     id = request.args.get('id')
     user_id = current_user.database_id
 
-    event = s.query(CPDEvents).filter(CPDEvents.id == id).first()
+    event = s.query(CPDEvents). \
+        filter(CPDEvents.id == id). \
+        first()
     if event.user_id == user_id:
         s.delete(event)
         s.commit()
