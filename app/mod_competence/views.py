@@ -1153,6 +1153,7 @@ def assign_competences_to_user():
     ids = request.args["ids"].split(",")
 
     if request.method == 'POST':
+        print("hello in post")
         users = request.form["user_list"].split(",")
         due_date = request.form["due_date"]
         result = {}
@@ -1435,7 +1436,7 @@ def assign_competence_to_user(user_id, competence_id, due_date):
         else:
             ### just add blank new assessment entry
             a = Assessments(status=status_id, ss_id=sub_section.id, user_id=int(user_id),
-                            assign_id=current_user.database_id, version=current_version,
+                            assign_id=current_user.database_id, version=current_version, date_assigned = str(datetime.datetime.now().strftime("%Y%m%d")),
                             due_date=datetime.datetime.strptime(due_date, '%d/%m/%Y'))
             s.add(a)
             s.commit()
