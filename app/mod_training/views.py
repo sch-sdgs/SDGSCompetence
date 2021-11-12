@@ -564,7 +564,6 @@ def mark_not_required(c_id=None, s_ids=None, version=None):
     """
     Method to request certain subsections are marked as not required
     """
-    #TODO prevent users from setting every subsection as not required
     form = MarkNotRequired()
     ass_ids = json.loads(request.form["ids"])
     ss_id_list = get_ss_id_from_assessment(ass_ids)
@@ -1158,7 +1157,6 @@ def select_subsections():
 
     :return:
     """
-    #TODO add a mark as not required option to this form
     c_id = request.args.get('c_id')
     version = request.args.get('version')
     u_id = current_user.database_id
@@ -1204,7 +1202,6 @@ def select_subsections():
                 return redirect(url_for('training.view_current_competence', c_id=c_id, user=u_id, version=version))
 
         elif forward_action == "make_inactive":
-            #TODO HERE: add a no you can't make an entire competency inactive message
             comp_section_ids = []
             section_list = get_competence_by_user(c_id, int(u_id), version)
             for i in list(section_list["custom"].items())[0][1]["subsections"]:
@@ -1445,10 +1442,11 @@ def bulk_distribute():
 @login_required
 def four_year_activate(c_id = None):
     """
-    set all assessments in current competency to obselete and assign the latest version of
+    set all assessments in current competency to obsolete and assign the latest version of
     the competency to the user - probably need to check if competence exists anymore?
     :return:
     """
+    #TODO is THIS implemented anywhere?
     #get assessment ids for user and competence
 
     assessments = s.query(Assessments).\
@@ -1459,7 +1457,7 @@ def four_year_activate(c_id = None):
         filter(Competence.id==c_id).\
         filter(Assessments.user_id == current_user.database_id).all()
 
-    # set current assessments in this competency to obselete
+    # set current assessments in this competency to obsolete
     status_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Obsolete").first().id
     data = { 'status': status_id }
     for assessment in assessments:
@@ -1480,6 +1478,7 @@ def four_year_activate(c_id = None):
 
 @training.route('/test', methods=['GET', 'POST'])
 def test():
+    #TODO is this implemented anywhere?
     four_years_ago = datetime.date.today() - relativedelta(months=48)
 
     assessments = s.query(Assessments).join(AssessmentStatusRef).filter(

@@ -28,7 +28,6 @@ admin_permission = Permission(RoleNeed('ADMIN'))
 privilege_permission = Permission(RoleNeed('PRIVILEGE'))
 hos_permission = Permission(RoleNeed('HEADOFSERVICE'))
 
-#TODO: Move competencies where they were complete because some sections were not required out of complete once those sections are in training?
 
 @app.route('/setup', methods=['GET', 'POST'])
 def setup():
