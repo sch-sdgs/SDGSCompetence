@@ -908,6 +908,10 @@ def index(message=None):
         if percent_complete == 100:
             result = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
             all_complete.append(result)
+        elif i.status_rel.status == "Four Year Due":
+            result = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id,
+                                                    version=i.version)
+            all_complete.append(result)
 
     obsolete = s.query(Assessments) \
         .join(Subsection) \
