@@ -1399,7 +1399,7 @@ def assign_competence_to_user(user_id, competence_id, due_date):
         print("already complete:")
         print(already_complete)
 
-        if len(already_complete) > 0:
+        if len(already_complete) > 0:       ### this subsection has already been completed, so we'll add a new row with evidence from previous version
             for previous_assessment in already_complete:
                 print ("in if")
                 a = Assessments(status=previous_assessment.status, ss_id=sub_section.id, user_id=int(user_id),
@@ -1434,7 +1434,7 @@ def assign_competence_to_user(user_id, competence_id, due_date):
                     s.commit()
 
         else:
-            ### just add blank new assessment entry
+            ### hasn't been done before, just add blank new assessment entry
             a = Assessments(status=status_id, ss_id=sub_section.id, user_id=int(user_id),
                             assign_id=current_user.database_id, version=current_version, date_assigned = str(datetime.datetime.now().strftime("%Y%m%d")),
                             due_date=datetime.datetime.strptime(due_date, '%d/%m/%Y'))
