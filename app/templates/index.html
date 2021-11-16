@@ -44,7 +44,7 @@
                                         {% for evidence in signoff %}
                                             <tr>
                                                 <td>
-                                                    <strong>{{ evidence.assessments[0].assess_id_rel.ss_id_rel.c_id_rel.competence_detail[0].title }}:</strong>
+                                                    <strong>{{ evidence.assessments[0].assess_id_rel.ss_id_rel.c_id_rel.competence_detail[-1].title }}:</strong>
                                                     <ul>
                                                         {% if evidence.assessments|length < 4  %}
                                                             {% for i in evidence.assessments %}
