@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file from v1.0.0.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+### Fixed
+- Four year due competencies now show in 'complete' section on dashboard
+
+
 ## [1.1.1] - 
 ### Fixed
 - Assigned date no longer stuck on day of app deployment

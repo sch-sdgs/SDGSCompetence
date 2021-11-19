@@ -28,7 +28,6 @@ admin_permission = Permission(RoleNeed('ADMIN'))
 privilege_permission = Permission(RoleNeed('PRIVILEGE'))
 hos_permission = Permission(RoleNeed('HEADOFSERVICE'))
 
-#TODO: Move competencies where they were complete because some sections were not required out of complete once those sections are in training?
 
 @app.route('/setup', methods=['GET', 'POST'])
 def setup():
@@ -908,6 +907,10 @@ def index(message=None):
         percent_complete = get_percentage(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
         if percent_complete == 100:
             result = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
+            all_complete.append(result)
+        elif i.status_rel.status == "Four Year Due":
+            result = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id,
+                                                    version=i.version)
             all_complete.append(result)
 
     obsolete = s.query(Assessments) \
