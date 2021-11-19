@@ -38,9 +38,9 @@
                         {% if 'Not Required' in statuses or 'Assigned' in statuses%}
                             <a class="btn btn-primary btn-flat pull-right" style="margin-left: 1rem" role="button"
                                href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&version={{ version }}&action=activate">
-                                <i class="fa fa-play"></i> Activate</a>
+                                <i class="fa fa-play"></i> Activate Training</a>
                         {% endif %}
-                        {% if 'Active' in statuses or 'Sign-Off' in statuses %}
+                        {% if 'Active' in statuses or 'Sign-Off' in statuses or 'Failed' in statuses %}
                             <a class="btn btn-success btn-flat pull-right" style="margin-left: 1rem" role="button"
                                href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&version={{ version }}&action=evidence">
                                 <span class="glyphicon glyphicon-open"></span> Submit Evidence</a>

@@ -7,6 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - Four year due competencies now show in 'complete' section on dashboard
 
+## [1.1.1] - 2021-11-14
+### Fixed
+- Assigned date no longer stuck on day of app deployment
+### Changed
+- Activate button now "Activate Training"
+- Submit Evidence button now shows if competence is Failed
+
 ## [1.1.0] - 2021-11-05
 ### Added
 - Added the ability to mark competencies as not required. Where this applies, training is showed as "Partially trained" 

@@ -408,8 +408,8 @@ class Assessments(db.Model):
 
     evidence = db.relationship("AssessmentEvidenceRelationship", backref="assessments")
 
-    def __init__(self, status, ss_id, user_id, assign_id, version, is_reassessment=0, date_completed=None, date_expiry=None,
-                 comments=None, due_date=None, date_of_training=None, trainer_id=None, date_activated=None, date_assigned = str(datetime.datetime.now().strftime("%Y%m%d")),
+    def __init__(self, status, ss_id, user_id, assign_id, version, date_assigned, is_reassessment=0, date_completed=None, date_expiry=None,
+                 comments=None, due_date=None, date_of_training=None, trainer_id=None, date_activated=None,
                  signoff_id=None):
         self.status = status
         self.ss_id = ss_id
