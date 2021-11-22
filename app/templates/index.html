@@ -334,8 +334,9 @@
                                     <th class="col-md-3">Competence</th>
                                     <th class="col-md-1">Version</th>
                                     <th class="col-md-2">Assigned By</th>
-                                    <th class="col-md-2">Date Assigned</th>
-                                    <th class="col-md-2">Date Due</th>
+                                    <th class="col-md-1">Date Assigned</th>
+                                    <th class="col-md-1">Date Due</th>
+                                    <th class="col-md-2">Action Required By</th>
                                     <th class="col-md-1">Progress</th>
                                     <th class="col-md-2">Actions</th>
                                     </thead>
@@ -354,6 +355,7 @@
                                             <td>{{ assessment.user }}</td>
                                             <td>{{ assessment.assigned.strftime('%d-%m-%Y') }}</td>
                                             <td>{{ check_due_date(assessment.assigned,assessment.due_date)|safe }}</td>
+                                            <td>{{ get_next_actioner(assessment.c_id,current_user.database_id,assessment.version) }}</td>
                                             <td>
 
                                                 <div class="progress progress-sm">

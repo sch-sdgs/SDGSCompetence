@@ -7,7 +7,7 @@ from activedirectory import UserAuthentication
 from forms import *
 from flask_principal import Principal, Identity, AnonymousIdentity, \
     identity_changed, Permission, RoleNeed, UserNeed, identity_loaded
-from app.mod_training.views import get_competence_summary_by_user, get_completion_status_counts
+from app.mod_training.views import get_competence_summary_by_user, get_competence_by_user, get_completion_status_counts
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.sql.expression import func, and_, or_, case, exists, update,distinct
 from app.competence import *
@@ -339,6 +339,42 @@ def utility_processor():
             return c.percentage
 
     return dict(get_percent=get_percent)
+
+
+@app.context_processor
+def utility_processor():
+    def get_next_actioner(c_id, u_id, version):
+        """
+        Looks at assessment statuses and works out if action is required by the trainee, assessor or both
+        """
+        #TODO make this query work
+        section_list = get_competence_by_user(c_id, u_id, version)
+        statuses = []
+
+        for section_heading in section_list['custom']:
+            for subsection in section_list['custom'][section_heading]['subsections']:
+                if subsection['status'] not in statuses:
+                    statuses.append(subsection['status'])
+
+        #Check if assessor needs to do something
+        assessor_action_check = 'Sign-Off' in statuses
+
+        #Check if trainee needs to do something
+        trainee_action_list = ['Assigned', 'Active', 'Failed', 'Four Year Due']
+        trainee_action_check = any(status in statuses for status in trainee_action_list)
+
+        if assessor_action_check is True and trainee_action_check is True:
+            next_actioner = "You and Assessor"
+        elif assessor_action_check is True and trainee_action_check is False:
+            next_actioner = "Assessor"
+        elif assessor_action_check is False and trainee_action_check is True:
+            next_actioner = "You"
+        else:
+            next_actioner = "Please check your competency record"
+
+        return next_actioner
+
+    return dict(get_next_actioner=get_next_actioner)
 
 
 @app.context_processor
@@ -877,8 +913,10 @@ def index(message=None):
                     AssessmentStatusRef.status == "Failed"))\
         .all()
 
+
     all_assigned=[]
     for j in assigned:
+        print(j.status)
         all_assigned.append(get_competence_summary_by_user(c_id=j.ss_id_rel.c_id,u_id=current_user.database_id,version=j.version))
 
     active = s.query(Assessments)\
