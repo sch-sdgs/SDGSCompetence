@@ -10,6 +10,7 @@ class UploadEvidence(FlaskForm):
     For to submit evidence for a competence
     """
     file = FileField('Upload Evidence')
+    #TODO edit this so 'Inactivation Request' doesn't show up as an evidence upload type
     evidence_type = QuerySelectField("What type of evidence do you want to send?",allow_blank=True, blank_text=u'-- please choose --',
                                       query_factory=lambda: s.query(EvidenceTypeRef).all(),
                                       get_label="type")  # All sections in database
