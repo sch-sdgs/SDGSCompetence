@@ -6,8 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 ### Added
 - 'Action Required By' column to Assigned and In Progress competencies table on homepage
+- Character counters for discussion and observation fields in evidence upload page
 ### Fixed
 - Four year due competencies now show in 'complete' section on dashboard
+### Changed
+- Reassessments now require all complete subsections to be reassessed simultaneously
 
 ## [1.1.1] - 2021-11-14
 ### Fixed

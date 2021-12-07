@@ -444,7 +444,7 @@ def reassessment():
 
         assess_id_list = request.args.get('assess_id_list').split(',')
 
-        reassessment = Reassessments(signoff_id)
+        reassessment = Reassessments(signoff_id, 0)
         s.add(reassessment)
         s.commit()
         for assess in assess_id_list:
@@ -533,12 +533,23 @@ def view_current_competence():
         detail_id = detail_query.id
 
         videos = s.query(Videos).filter(Videos.c_id==detail_id).all()
+
         four_year_check = s.query(Assessments). \
             join(Subsection). \
             join(Competence). \
             join(AssessmentStatusRef). \
             filter(Assessments.user_id==u_id). \
             filter(AssessmentStatusRef.status=="Four Year Due"). \
+            filter(Competence.id==c_id). \
+            count()
+
+        ### Add a check for competencies which will reach 4 year due within a month
+        todays_date = datetime.date.today()
+        four_year_check += s.query(Assessments). \
+            join(Subsection). \
+            join(Competence). \
+            filter(Assessments.user_id==u_id). \
+            filter(Assessments.date_completed < todays_date + relativedelta(months=-48)). \
             filter(Competence.id==c_id). \
             count()
 
@@ -1005,6 +1016,7 @@ def process_evidence():
     status_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Sign-Off").first().id
 
     evidence_type = s.query(EvidenceTypeRef).filter(EvidenceTypeRef.id == int(request.form['evidence_type'])).first().type
+    four_year_status = request.form('four_year_status')
 
     if evidence_type == "Case":
         evidence = request.form.getlist('case')
@@ -1043,6 +1055,12 @@ def process_evidence():
         for assess_id in s_ids:
             er = AssessmentEvidenceRelationship(assess_id, e.id)
             s.add(er)
+
+        if four_year_status == 1:
+            # Create a new reassessment
+            # Update assess reassess rel
+            # Update assess evidence rel
+            pass
 
     s.commit()
 
@@ -1152,6 +1170,7 @@ def select_subsections():
     * evidence
     * reassess
     * mark as not required
+    * four year reassess
 
     This will determine the subsections available for selection and the action completed after selection.
 
@@ -1186,6 +1205,9 @@ def select_subsections():
         elif forward_action == "make_inactive":
             heading = heading.format("Mark As Not Required")
             required_status = ["Active", "Assigned", "Failed", "Sign-Off"]
+        elif forward_action == "four_year_reassess":
+            heading = heading.format("Four Year Reassess")
+            required_status = ["Complete", "Four Year Due"]
 
         return render_template('select_subsections.html', competence=c_id, user={'name': competence_summary.user,
                                                                                  'id': u_id},
@@ -1193,6 +1215,7 @@ def select_subsections():
                                section_list=section_list, required_status=required_status, action=forward_action,
                                form=form,version=version)
     else:
+
         ids = form.ids.data.replace('"', '').replace('[', '').replace(']', '').split(',')
         if forward_action == "assign":
             pass
@@ -1274,7 +1297,7 @@ def select_subsections():
                                            action=forward_action,
                                            form=form, version=version, message=message)
 
-        elif forward_action == "evidence":
+        elif forward_action == "evidence" or forward_action == "four_year_reassess":
             try:
                 return upload_evidence(c_id, ids,version)
             except JSONDecodeError:
@@ -1308,9 +1331,48 @@ def select_subsections():
                                        section_list=section_list, required_status=required_status,
                                        action=forward_action,
                                        form=form, version=version, message=message)
-        elif forward_action == "reassess":
-            return redirect(url_for('training.reassessment')+"?c_id="+str(c_id)+"&version="+str(version)+"&assess_id_list="+",".join(ids))
 
+        elif forward_action == "reassess":
+            comp_section_ids = []
+            section_list = get_competence_by_user(c_id, int(u_id), version)
+            for i in list(section_list["custom"].items())[0][1]["subsections"]:
+                if i['status'] == "Complete":
+                    comp_section_ids.append(str(i['id']))
+            print(comp_section_ids)
+            """Check if user has selected every complete subsection in the competency"""
+            id_check = all(id in ids for id in comp_section_ids)
+            if id_check is True:
+                return redirect(url_for('training.reassessment')+"?c_id="+str(c_id)+"&version="+str(version)+"&assess_id_list="+",".join(ids))
+            else:
+                message = "You must reassess the entire competency."
+                competence_summary = get_competence_summary_by_user(c_id, int(u_id), version)
+                section_list = get_competence_by_user(c_id, int(u_id), version)
+                required_status = ""
+                heading = "{} Subsections"
+                if forward_action == "assign":
+                    required_status = None
+                    heading = heading.format("assign")
+                elif forward_action == "activate":
+                    heading = heading.format("Activate")
+                    required_status = ["Assigned"]
+                elif forward_action == "evidence":
+                    heading = heading.format("Assign Evidence to")
+                    required_status = ["Active", "Failed", "Complete", "Sign-Off", "Not Required"]
+                elif forward_action == "reassess":
+                    heading = heading.format("Reassess")
+                    required_status = ["Complete"]
+                elif forward_action == "make_inactive":
+                    heading = heading.format("Mark As Not Required")
+                    required_status = ["Not Required"]
+
+                return render_template('select_subsections.html', competence=c_id,
+                                       user={'name': competence_summary.user,
+                                             'id': u_id},
+                                       title=competence_summary.title, validity=competence_summary.months,
+                                       heading=heading,
+                                       section_list=section_list, required_status=required_status,
+                                       action=forward_action,
+                                       form=form, version=version, message=message)
         return redirect(url_for('training.view_current_competence', c_id=c_id, user=u_id,version=version))
 
 
