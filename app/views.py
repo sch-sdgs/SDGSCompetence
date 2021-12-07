@@ -606,7 +606,7 @@ def get_percentage(c_id, u_id,version):
         .filter(AssessmentStatusRef.status != "Obsolete") \
         .filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id)) \
         .values((func.sum(case(
-        [(Assessments.status.in_([3, 9]), 1)],
+        [(Assessments.status.in_([3, 8, 9]), 1)],
         else_= 0)) / func.count(
         Assessments.id) * 100).label('percentage'))
 
@@ -942,6 +942,9 @@ def index(message=None):
     all_complete = []
 
     for i in complete:
+        print(i.ss_id_rel)
+        print(i.status_rel)
+        #TODO if one subsection only is on four year due, it still disappears from the dashboard (status is complete but percentage is not 0)
         percent_complete = get_percentage(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
         if percent_complete == 100:
             result = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
@@ -950,6 +953,7 @@ def index(message=None):
             result = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id,
                                                     version=i.version)
             all_complete.append(result)
+
 
     obsolete = s.query(Assessments) \
         .join(Subsection) \
