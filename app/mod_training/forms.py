@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
-from wtforms.fields import SubmitField, HiddenField, SelectField, TextAreaField, FileField, StringField
+from wtforms.fields import SubmitField, HiddenField, SelectField, TextAreaField, FileField, StringField, RadioField
 from wtforms.fields.html5 import DateField
+from wtforms.validators import DataRequired
 from app.competence import s
 from app.models import *
 
@@ -24,6 +25,10 @@ class UploadEvidence(FlaskForm):
     evidence_discussion = TextAreaField(label="Evidence")
     case = StringField(label="Case")
     result = StringField(label="Result")
+    fouryearstatus = RadioField("Is this evidence being submitted for a four year reassessment?",
+                                choices=[(1, 'Yes'), (0, 'No')],
+                                validators=[DataRequired()]
+                                 )
     assid = HiddenField("AssesmentID")
     submit = SubmitField('Submit Evidence')
 

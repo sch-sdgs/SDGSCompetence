@@ -8,7 +8,6 @@ from app.competence import s,send_mail
 from app.models import *
 from sqlalchemy.sql.expression import func, and_, or_, case, exists, update, asc
 from sqlalchemy.orm import aliased
-import datetime
 from dateutil.relativedelta import relativedelta
 import os
 from app.mod_training.forms import *
@@ -877,8 +876,6 @@ def signoff_evidence(evidence_id,action):
     """
     Accept or reject evidence OR inactivation requests
     """
-    #TODO this handles the inactivation of one subsection correctly, if multiple ones are included it changes the dates
-    # for other competencies too
     evidence_type = int(s.query(Evidence). \
         filter(Evidence.id == evidence_id). \
         first(). \
@@ -911,7 +908,6 @@ def signoff_evidence(evidence_id,action):
                 first(). \
                 id
             date = None
-            #TODO this might have broken things
 
         assessments_to_update = s.query(AssessmentEvidenceRelationship). \
             filter(AssessmentEvidenceRelationship.evidence_id == evidence_id). \
@@ -925,13 +921,14 @@ def signoff_evidence(evidence_id,action):
                 if detail.intro <= query.version:
                     months_valid = detail.validity_rel.months
             try:
-                date_expiry = datetime.datetime.strptime(request.form["expiry_date"], '%d/%m/%Y')
+                date_completed_info = request.form["completed_date"]
+                date_completed = datetime.datetime.strptime(date_completed_info, "%Y-%m-%d")
             except:
-                date_expiry = datetime.datetime.now() + relativedelta(months=months_valid)
+                date_completed = datetime.datetime.now()
             data = {
-                'date_completed': date,
+                'date_completed': date_completed,
                 'status': status,
-                'date_expiry': date_expiry
+                'date_expiry': date_completed + relativedelta(months=months_valid)
             }
             s.query(Assessments). \
                 filter(Assessments.id == assessment.assessment_id). \
@@ -985,14 +982,14 @@ def signoff_evidence(evidence_id,action):
                     months_valid = detail.validity_rel.months
 
             try:
-                date_expiry = datetime.datetime.strptime(request.form["expiry_date"], '%d/%m/%Y')
+                date_completed_info = request.form["completed_date"]
+                date_completed = datetime.datetime.strptime(date_completed_info, "%Y-%m-%d")
             except:
-                date_expiry = datetime.datetime.now() + relativedelta(months=months_valid)
-
+                date_completed = datetime.datetime.now()
             data = {
-                'date_completed': date,
+                'date_completed': date_completed,
                 'status': status,
-                'date_expiry': date_expiry
+                'date_expiry': date_completed + relativedelta(months=months_valid)
             }
 
             s.query(Assessments).filter(Assessments.id ==assessment.assessment_id).update(data)
@@ -1016,7 +1013,7 @@ def process_evidence():
     status_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Sign-Off").first().id
 
     evidence_type = s.query(EvidenceTypeRef).filter(EvidenceTypeRef.id == int(request.form['evidence_type'])).first().type
-    four_year_status = request.form('four_year_status')
+    four_year_status = request.form.getlist('four_year_status')
 
     if evidence_type == "Case":
         evidence = request.form.getlist('case')
