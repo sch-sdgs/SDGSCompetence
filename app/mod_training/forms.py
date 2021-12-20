@@ -12,6 +12,7 @@ class UploadEvidence(FlaskForm):
     """
     file = FileField('Upload Evidence')
     #TODO edit this so 'Inactivation Request' doesn't show up as an evidence upload type
+    #TODO make radio buttons not render as a list
     evidence_type = QuerySelectField("What type of evidence do you want to send?",allow_blank=True, blank_text=u'-- please choose --',
                                       query_factory=lambda: s.query(EvidenceTypeRef).all(),
                                       get_label="type")  # All sections in database
@@ -25,7 +26,7 @@ class UploadEvidence(FlaskForm):
     evidence_discussion = TextAreaField(label="Evidence")
     case = StringField(label="Case")
     result = StringField(label="Result")
-    fouryearstatus = RadioField("Is this evidence being submitted for a four year reassessment?",
+    four_year_status = RadioField(label="Is this evidence being submitted for a four year reassessment?",
                                 choices=[(1, 'Yes'), (0, 'No')],
                                 validators=[DataRequired()]
                                  )

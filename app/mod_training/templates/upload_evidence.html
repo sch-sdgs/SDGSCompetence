@@ -118,11 +118,16 @@
 
                             <div class="form-group">
                                 {{ form.assessor.label(class_="col-lg-3 control-label") }}
-
                                 <div class="col-lg-9">
                                     {{ form.assessor(required="required",class_="form-control") }}
                                     <span class="help-block"><strong>Your administrator decides who can be listed here.</strong></span>
+                                </div>
+                            </div>
 
+                            <div class="form-group">
+                                {{ form.four_year_status.label(class_="col-lg-3 control-label") }}
+                                <div class="col-lg-9">
+                                    {{ form.four_year_status }}
                                 </div>
                             </div>
 

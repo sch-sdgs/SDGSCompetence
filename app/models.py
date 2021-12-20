@@ -487,15 +487,15 @@ class Reassessments(db.Model):
     date_completed = db.Column(db.DATE, unique=False, nullable=True)
     is_correct = db.Column(db.BOOLEAN, unique=False, nullable=True)
     comments = db.Column(db.String(1000), unique=False, nullable=True)
+    is_four_year = db.Column(db.Boolean, unique=False, nullable=True)
 
     signoff_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[signoff_id])
     assessments_rel = db.relationship("AssessReassessRel", lazy='joined')
     reassessment_questions = db.relationship("ReassessmentQuestions", back_populates="reassessment_id_rel")
 
-
-
-    def __init__(self, signoff_id):
+    def __init__(self, signoff_id, is_four_year=0):
         self.signoff_id = signoff_id
+        self.is_four_year = is_four_year
 
     def __repr__(self):
         return '<Reassessments %r>' % self.id

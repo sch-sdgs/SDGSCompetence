@@ -1009,10 +1009,10 @@ def process_evidence():
     s_ids = request.args.get('s_ids').split(",")
     c_id = request.args.get('c_id')
     version = request.args.get('version')
+    forward_action = request.args.get('action')
     status_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Sign-Off").first().id
 
     evidence_type = s.query(EvidenceTypeRef).filter(EvidenceTypeRef.id == int(request.form['evidence_type'])).first().type
-    four_year_status = request.form.getlist('four_year_status')
 
     if evidence_type == "Case":
         evidence = request.form.getlist('case')
@@ -1051,14 +1051,25 @@ def process_evidence():
         for assess_id in s_ids:
             er = AssessmentEvidenceRelationship(assess_id, e.id)
             s.add(er)
+        s.commit()
 
-        if four_year_status == 1:
+        if forward_action == "four_year_reassess":
+            assessor = request.form['assessor']
             # Create a new reassessment
             # Update assess reassess rel
             # Update assess evidence rel
-            pass
+            four_year_reassessment = Reassessments(assessor, 1)
+            s.add(four_year_reassessment)
+            s.commit()
 
-    s.commit()
+            for id in s_ids:
+                assess_rel = AssessReassessRel(id, four_year_reassessment.id)
+                s.add(assess_rel)
+            s.commit()
+
+            s.query(Reassessments).filter(Reassessments.id == reassessment.id).update(
+                {"date_completed": datetime.date.today()})
+            s.commit()
 
     status_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Sign-Off").first().id
 
@@ -1351,6 +1362,7 @@ def select_subsections():
                 print(ids)
                 """Check if user has selected every complete subsection in the competency"""
                 id_check = all(id in ids for id in comp_section_ids)
+                print(id_check)
                 if id_check is True:
                     return upload_evidence(c_id, ids,version)
                 else:
