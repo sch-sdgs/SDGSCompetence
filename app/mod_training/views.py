@@ -1408,6 +1408,9 @@ def select_subsections():
             for i in list(section_list["custom"].items())[0][1]["subsections"]:
                 if i['status'] == "Complete":
                     comp_section_ids.append(str(i['id']))
+            for i in list(section_list["constant"].items())[0][1]["subsections"]:
+                if i['status'] == "Complete":
+                    comp_section_ids.append(str(i['id']))
             print(comp_section_ids)
             """Check if user has selected every complete subsection in the competency"""
             id_check = all(id in ids for id in comp_section_ids)
