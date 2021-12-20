@@ -1203,6 +1203,7 @@ def select_subsections():
             required_status = ["Active", "Assigned", "Failed", "Sign-Off"]
         elif forward_action == "four_year_reassess":
             heading = heading.format("Four Year Reassess")
+            required_status = ["Complete", "Four Year Due"]
 
         return render_template('select_subsections.html', competence=c_id, user={'name': competence_summary.user,
                                                                                  'id': u_id},
@@ -1248,6 +1249,9 @@ def select_subsections():
                 elif forward_action == "make_inactive":
                     heading = heading.format("Mark As Not Required")
                     required_status = ["Not Required"]
+                elif forward_action == "four_year_reassess":
+                    heading = heading.format("Four Year Reassess")
+                    required_status = ["Complete", "Four Year Due"]
 
                 return render_template('select_subsections.html', competence=c_id,
                                        user={'name': competence_summary.user,
@@ -1282,6 +1286,9 @@ def select_subsections():
                     elif forward_action == "make_inactive":
                         heading = heading.format("Mark As Not Required")
                         required_status = ["Not Required"]
+                    elif forward_action == "four_year_reassess":
+                        heading = heading.format("Four Year Reassess")
+                        required_status = ["Complete", "Four Year Due"]
 
                     return render_template('select_subsections.html', competence=c_id,
                                            user={'name': competence_summary.user,
@@ -1317,6 +1324,9 @@ def select_subsections():
                 elif forward_action == "make_inactive":
                     heading = heading.format("Mark As Not Required")
                     required_status = ["Not Required"]
+                elif forward_action == "four_year_reassess":
+                    heading = heading.format("Four Year Reassess")
+                    required_status = ["Complete", "Four Year Due"]
 
                 return render_template('select_subsections.html', competence=c_id,
                                        user={'name': competence_summary.user,
@@ -1332,7 +1342,10 @@ def select_subsections():
                 comp_section_ids = []
                 section_list = get_competence_by_user(c_id, int(u_id), version)
                 for i in list(section_list["custom"].items())[0][1]["subsections"]:
-                    if i['status'] == "Four Year Due":
+                    if i['status'] == "Complete" or i['status'] == "Four Year Due":
+                        comp_section_ids.append(str(i['id']))
+                for i in list(section_list["constant"].items())[0][1]["subsections"]:
+                    if i['status'] == "Complete" or i['status'] == "Four Year Due":
                         comp_section_ids.append(str(i['id']))
                 print(comp_section_ids)
                 print(ids)
@@ -1361,6 +1374,9 @@ def select_subsections():
                     elif forward_action == "make_inactive":
                         heading = heading.format("Mark As Not Required")
                         required_status = ["Not Required"]
+                    elif forward_action == "four_year_reassess":
+                        heading = heading.format("Four Year Reassess")
+                        required_status = ["Complete", "Four Year Due"]
 
                     return render_template('select_subsections.html', competence=c_id,
                                            user={'name': competence_summary.user,
@@ -1392,6 +1408,9 @@ def select_subsections():
                 elif forward_action == "make_inactive":
                     heading = heading.format("Mark As Not Required")
                     required_status = ["Not Required"]
+                elif forward_action == "four_year_reassess":
+                    heading = heading.format("Four Year Reassess")
+                    required_status = ["Complete", "Four Year Due"]
 
                 return render_template('select_subsections.html', competence=c_id,
                                        user={'name': competence_summary.user,
@@ -1437,6 +1456,9 @@ def select_subsections():
                 elif forward_action == "make_inactive":
                     heading = heading.format("Mark As Not Required")
                     required_status = ["Not Required"]
+                elif forward_action == "four_year_reassess":
+                    heading = heading.format("Four Year Reassess")
+                    required_status = ["Complete", "Four Year Due"]
 
                 return render_template('select_subsections.html', competence=c_id,
                                        user={'name': competence_summary.user,
