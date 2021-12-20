@@ -1,4 +1,5 @@
-from wtforms.fields import HiddenField, TextAreaField, DateField, StringField, PasswordField, BooleanField, SubmitField
+from wtforms.fields import HiddenField, TextAreaField, StringField, PasswordField, BooleanField, SubmitField
+from wtforms.fields.html5 import DateField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
 from app.competence import *
 from app.models import *
@@ -15,8 +16,8 @@ class Login(FlaskForm):
 class RateEvidence(FlaskForm):
     comments = TextAreaField("Comments")
     assid = HiddenField("id")
+    completed_date = DateField('Override Automated Completed Date? (optional)', format='%Y-%m-%d')
     submit = SubmitField("Submit")
-    expiry_date = DateField('Override Automated Expiry Date? (optional)', format='%Y-%m-%d')
 
 
 class RegistrationForm(FlaskForm):
