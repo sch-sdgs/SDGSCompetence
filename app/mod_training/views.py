@@ -543,6 +543,7 @@ def view_current_competence():
             count()
 
         ### Add a check for competencies which will reach 4 year due within a month
+        #TODO update this to take all multiples of 4 years
         todays_date = datetime.date.today()
         four_year_check += s.query(Assessments). \
             join(Subsection). \
@@ -551,8 +552,6 @@ def view_current_competence():
             filter(Assessments.date_completed < todays_date + relativedelta(months=-48)). \
             filter(Competence.id==c_id). \
             count()
-
-
 
         # return template populated
         return render_template('complete_training.html', competence=c_id, u_id=u_id, user=competence_summary.user,
@@ -1204,7 +1203,6 @@ def select_subsections():
             required_status = ["Active", "Assigned", "Failed", "Sign-Off"]
         elif forward_action == "four_year_reassess":
             heading = heading.format("Four Year Reassess")
-            required_status = ["Complete", "Four Year Due"]
 
         return render_template('select_subsections.html', competence=c_id, user={'name': competence_summary.user,
                                                                                  'id': u_id},
@@ -1234,7 +1232,7 @@ def select_subsections():
                 competence_summary = get_competence_summary_by_user(c_id, int(u_id), version)
                 section_list = get_competence_by_user(c_id, int(u_id), version)
                 required_status = ""
-                heading = "{} Subsections"
+                heading = "Select Subsections"
                 if forward_action == "assign":
                     required_status = None
                     heading = heading.format("assign")
@@ -1268,7 +1266,7 @@ def select_subsections():
                     competence_summary = get_competence_summary_by_user(c_id, int(u_id), version)
                     section_list = get_competence_by_user(c_id, int(u_id), version)
                     required_status = ""
-                    heading = "{} Subsections"
+                    heading = "Select Subsections"
                     if forward_action == "assign":
                         required_status = None
                         heading = heading.format("assign")
@@ -1294,7 +1292,7 @@ def select_subsections():
                                            action=forward_action,
                                            form=form, version=version, message=message)
 
-        elif forward_action == "evidence" or forward_action == "four_year_reassess":
+        elif forward_action == "evidence":
             try:
                 return upload_evidence(c_id, ids,version)
             except JSONDecodeError:
@@ -1303,7 +1301,82 @@ def select_subsections():
                 section_list = get_competence_by_user(c_id, int(u_id), version)
 
                 required_status = ""
-                heading = "{} Subsections"
+                heading = "Select Subsections"
+                if forward_action == "assign":
+                    required_status = None
+                    heading = heading.format("assign")
+                elif forward_action == "activate":
+                    heading = heading.format("Activate")
+                    required_status = ["Assigned"]
+                elif forward_action == "evidence":
+                    heading = heading.format("Assign Evidence to")
+                    required_status = ["Active", "Failed", "Complete", "Sign-Off", "Not Required"]
+                elif forward_action == "reassess":
+                    heading = heading.format("Reassess")
+                    required_status = ["Complete"]
+                elif forward_action == "make_inactive":
+                    heading = heading.format("Mark As Not Required")
+                    required_status = ["Not Required"]
+
+                return render_template('select_subsections.html', competence=c_id,
+                                       user={'name': competence_summary.user,
+                                             'id': u_id},
+                                       title=competence_summary.title, validity=competence_summary.months,
+                                       heading=heading,
+                                       section_list=section_list, required_status=required_status,
+                                       action=forward_action,
+                                       form=form, version=version, message=message)
+
+        elif forward_action == "four_year_reassess":
+            try:
+                comp_section_ids = []
+                section_list = get_competence_by_user(c_id, int(u_id), version)
+                for i in list(section_list["custom"].items())[0][1]["subsections"]:
+                    if i['status'] == "Four Year Due":
+                        comp_section_ids.append(str(i['id']))
+                print(comp_section_ids)
+                print(ids)
+                """Check if user has selected every complete subsection in the competency"""
+                id_check = all(id in ids for id in comp_section_ids)
+                if id_check is True:
+                    return upload_evidence(c_id, ids,version)
+                else:
+                    message = "You must reassess the entire competency."
+                    competence_summary = get_competence_summary_by_user(c_id, int(u_id), version)
+                    section_list = get_competence_by_user(c_id, int(u_id), version)
+                    required_status = ""
+                    heading = "Select Subsections"
+                    if forward_action == "assign":
+                        required_status = None
+                        heading = heading.format("assign")
+                    elif forward_action == "activate":
+                        heading = heading.format("Activate")
+                        required_status = ["Assigned"]
+                    elif forward_action == "evidence":
+                        heading = heading.format("Assign Evidence to")
+                        required_status = ["Active", "Failed", "Complete", "Sign-Off", "Not Required"]
+                    elif forward_action == "reassess":
+                        heading = heading.format("Reassess")
+                        required_status = ["Complete"]
+                    elif forward_action == "make_inactive":
+                        heading = heading.format("Mark As Not Required")
+                        required_status = ["Not Required"]
+
+                    return render_template('select_subsections.html', competence=c_id,
+                                           user={'name': competence_summary.user,
+                                                 'id': u_id},
+                                           title=competence_summary.title, validity=competence_summary.months,
+                                           heading=heading,
+                                           section_list=section_list, required_status=required_status,
+                                           action=forward_action,
+                                           form=form, version=version, message=message)
+            except JSONDecodeError:
+                message = "You must select at least one active subsection!"
+                competence_summary = get_competence_summary_by_user(c_id, int(u_id), version)
+                section_list = get_competence_by_user(c_id, int(u_id), version)
+
+                required_status = ""
+                heading = "Select Subsections"
                 if forward_action == "assign":
                     required_status = None
                     heading = heading.format("assign")
@@ -1345,7 +1418,7 @@ def select_subsections():
                 competence_summary = get_competence_summary_by_user(c_id, int(u_id), version)
                 section_list = get_competence_by_user(c_id, int(u_id), version)
                 required_status = ""
-                heading = "{} Subsections"
+                heading = "Select Subsections"
                 if forward_action == "assign":
                     required_status = None
                     heading = heading.format("assign")
@@ -1370,6 +1443,7 @@ def select_subsections():
                                        section_list=section_list, required_status=required_status,
                                        action=forward_action,
                                        form=form, version=version, message=message)
+
         return redirect(url_for('training.view_current_competence', c_id=c_id, user=u_id,version=version))
 
 
