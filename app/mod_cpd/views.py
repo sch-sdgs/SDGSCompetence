@@ -101,3 +101,42 @@ def delete_cpd():
         s.commit()
 
     return redirect(url_for('cpd.view_cpd'))
+
+
+@cpd.route('/edit_cpd/<id>', methods=['GET', 'POST'])
+def edit_cpd(id=None):
+    """
+    This method edits a specific CPD event, then returns to the main page
+    """
+
+    if request.method == 'GET':
+        form = EditEvent()
+        event = s.query(CPDEvents). \
+            filter(CPDEvents.id == id). \
+            first()
+        form.event_name.data = event.event_name
+        form.event_type.data = event.event_type_rel
+        form.event_type.process_data(event.event_type)
+        form.date.data = event.date
+        form.role.data = event.event_role
+        form.location.data = event.location
+        form.cpd_points.data = event.cpd_points
+        form.comments.data = event.comments
+
+        return render_template('cpd_edit.html', id=id, form=form)
+
+    elif request.method == 'POST':
+        form_data = {'event_name': request.form['event_name'],
+                    'event_type': request.form['event_type'],
+                    'date': request.form['date'],
+                    'event_role': request.form['role'],
+                    'location': request.form['location'],
+                    'cpd_points': request.form['cpd_points'],
+                    'comments': request.form['comments']}
+        s.query(CPDEvents). \
+            filter_by(id=id). \
+            update(form_data)
+        s.commit()
+        return redirect(url_for('cpd.view_cpd'))
+
+

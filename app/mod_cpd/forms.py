@@ -20,3 +20,18 @@ class AddEvent(FlaskForm):
     cpd_points = StringField("CPD points (if known)")
     comments = TextAreaField("Description/Comments")
     submit = SubmitField()
+
+class EditEvent(FlaskForm):
+    #TODO less tenous workaround to pre-populate the forms while editing
+    """
+    Form to add CPD event
+    """
+    event_name = StringField("Name")
+    event_type = QuerySelectField("Type", query_factory=lambda: s.query(EventTypeRef).all(), get_label="type")
+    date = DateField('Date',
+                     format='%Y-%m-%d', default=datetime.date.today)
+    role = QuerySelectField("Participation", query_factory=lambda: s.query(EventRoleRef).all(), get_label="role")
+    location = StringField("Location")
+    cpd_points = StringField("CPD points (if known)")
+    comments = TextAreaField("Description/Comments")
+    submit = SubmitField()

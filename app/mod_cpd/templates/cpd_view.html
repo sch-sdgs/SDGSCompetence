@@ -50,7 +50,7 @@
                                             href="{{ url_for('cpd.delete_cpd') }}?id={{ i.id }}" id="deletebutton">
                                                 <span class="fa fa-remove"></span></a>
                                             <a class="btn btn-sm btn-info btn-flat pull-right" style="height:20px; width:20px; display:none; font-size: 10px; align-items: center; justify-content: center" role="button"
-                                            href="{{ url_for('cpd.edit_cpd') }}?id={{ i.id }}" id="editbutton">
+                                            href="{{ url_for('cpd.edit_cpd', id=id) }}{{ i.id }}" id="editbutton">
                                                 <span class="fa fa-edit"></span></a>
                                         </td>
                                     </tr>
