@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - New 'Action Required By' column for Assigned and In Progress competencies table on homepage
 - Character counters added to discussion and observation fields in evidence upload page
+- CPD module: events can now be edited
+- CPD module: CPD log can now be downloaded as a csv
 ### Fixed
 - Four year due competencies now show in 'complete' section on dashboard
 ### Changed
