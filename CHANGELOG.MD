@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - CPD module: CPD log can now be downloaded as a csv
 ### Fixed
 - Four year due competencies now show in 'complete' section on dashboard
+- Fixed bug where competencies could not be edited if originally created with no linked documents and then had documents added
 ### Changed
 - Reassessments now require all complete subsections to be reassessed simultaneously
 - Assessment date override now overrides completed date instead of expiry date
