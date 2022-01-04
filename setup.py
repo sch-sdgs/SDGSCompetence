@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='CompetenceDB',
-    version='1.1.1',
+    version='1.2.0',
     packages=['app','app.mod_admin','app.mod_competence','app.mod_document','app.mod_training', 'app.mod_hos', 'app.mod_cpd'],
     url='',
     license='',

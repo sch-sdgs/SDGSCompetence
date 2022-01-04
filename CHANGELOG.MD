@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file from v1.0.0.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+
+## [v1.2.0] - 2022-01-04
 ### Added
 - New 'Action Required By' column for Assigned and In Progress competencies table on homepage
 - Character counters added to discussion and observation fields in evidence upload page
