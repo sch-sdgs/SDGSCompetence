@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [v1.2.1] - 2022-01-05
+### Fixed
+- CPD module: download now works in docker
+- Homepage: correct version competence title now displays
+
 ## [v1.2.0] - 2022-01-04
 ### Added
 - New 'Action Required By' column for Assigned and In Progress competencies table on homepage
