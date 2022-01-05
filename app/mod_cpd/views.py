@@ -1,9 +1,10 @@
 from app.mod_cpd.forms import *
 import csv
 import datetime
-from flask import render_template, redirect, request, url_for, Blueprint, send_file
+from flask import render_template, redirect, request, url_for, Blueprint, send_file, Response
 from flask_login import current_user
 from io import BytesIO, StringIO
+from werkzeug.wsgi import FileWrapper
 
 ### Set up cpd blueprint
 cpd = Blueprint('cpd', __name__, template_folder='templates')
@@ -177,4 +178,18 @@ def download_cpd_log():
     b.write(temp.getvalue().encode())
     b.seek(0)
 
-    return send_file(b, attachment_filename=f"{username} CPD Log {today}.csv", as_attachment=True)
+    ### Create filename
+    filename = f"{username} CPD Log {today}.csv"
+
+    ### Add wrapper
+    file_wrapper = FileWrapper(b)
+    headers = {
+        "Content-Disposition": f"attachment; filename={filename}"
+    }
+    response = Response(file_wrapper,
+                        mimetype='text/csv',
+                        direct_passthrough=True,
+                        headers=headers)
+
+    #return send_file(b, attachment_filename=f"{username} CPD Log {today}.csv", as_attachment=True)
+    return response
