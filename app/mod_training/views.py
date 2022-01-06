@@ -443,7 +443,7 @@ def reassessment():
 
         assess_id_list = request.args.get('assess_id_list').split(',')
 
-        reassessment = Reassessments(signoff_id, 0)
+        reassessment = Reassessments(signoff_id)
         s.add(reassessment)
         s.commit()
         for assess in assess_id_list:
