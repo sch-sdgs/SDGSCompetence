@@ -282,8 +282,11 @@ def get_competence_summary_by_user(c_id, u_id,version):
     :param u_id:
     :return:
     """
+    assigned_users = aliased(Users)
+
     competence_result = s.query(Assessments). \
         outerjoin(Users, Users.id == Assessments.user_id). \
+        outerjoin(assigned_users, assigned_users.id == Assessments.assign_id). \
         outerjoin(Subsection). \
         outerjoin(Section). \
         outerjoin(Competence, Subsection.c_id == Competence.id). \
@@ -294,6 +297,7 @@ def get_competence_summary_by_user(c_id, u_id,version):
         filter(Assessments.version == version).\
         group_by(CompetenceDetails.id). \
         values((Users.first_name + ' ' + Users.last_name).label('user'),
+               (assigned_users.first_name + ' ' + assigned_users.last_name).label('assigner'),
                CompetenceDetails.title,
                Assessments.version,
                func.max(Assessments.status).label('max_status'),

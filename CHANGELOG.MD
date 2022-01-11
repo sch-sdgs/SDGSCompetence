@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file from v1.0.0.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+### Fixed
+- Homepage: 'assigned by' now shows assigner, not user
 
 ## [v1.2.2] - 2022-01-06
 ### Fixed

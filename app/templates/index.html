@@ -352,7 +352,7 @@
                                             <td>
                                                 <small class="label bg-gray">v{{ assessment.version }}</small>
                                             </td>
-                                            <td>{{ assessment.user }}</td>
+                                            <td>{{ assessment.assigner }}</td>
                                             <td>{{ assessment.assigned.strftime('%d-%m-%Y') }}</td>
                                             <td>{{ check_due_date(assessment.assigned,assessment.due_date)|safe }}</td>
                                             <td>{{ get_next_actioner(assessment.c_id,current_user.database_id,assessment.version) }}</td>
