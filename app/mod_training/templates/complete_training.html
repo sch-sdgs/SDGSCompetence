@@ -78,6 +78,7 @@
                             <th>Activated</th>
                             <th>Completed</th>
                             <th>Earliest Expiry Date</th>
+                            <th>Four Year Expiry Date</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -89,7 +90,13 @@
                             <td>{{ validity }} months</td>
                             <td>{{ friendly_date(activated) }}</td>
                             <td>{{ friendly_date(completed) }}</td>
-                            <td>{{ friendly_date(expires) }}</td>
+{#                            <td>{{ friendly_date(expires) }}</td>#}
+                            {% if four_year_expires < expires %}
+                                <td>{{ friendly_date(four_year_expires) }}</td>
+                            {% else %}
+                                <td>{{ friendly_date(expires) }}</td>
+                            {% endif %}
+                            <td>{{ friendly_date(four_year_expires) }}</td>
                         </tr>
                         </tbody>
                     </table>
