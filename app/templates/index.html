@@ -448,7 +448,7 @@
                                                     <small class="label bg-gray">v{{ i.version }}</small>
                                                 </td>
                                                 {% if i != None %}
-                                                    <td>{{ check_expiry(i.expiry)|safe }}</td>
+                                                    <td>{{ check_expiry(i.expiry, i.four_year_expiry)|safe }}</td>
                                                 {% endif %}
 
                                                 <td>

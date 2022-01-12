@@ -297,7 +297,6 @@ def get_competence_summary_by_user(c_id, u_id,version):
                CompetenceDetails.title,
                Assessments.version,
                func.max(Assessments.status).label('max_status'),
-               func.max(Assessments.is_reassessment).label('is_reassessment_max'),
                CompetenceDetails.qpulsenum,
                CompetenceDetails.category_rel,
                CompetenceDetails.scope,
@@ -308,6 +307,7 @@ def get_competence_summary_by_user(c_id, u_id,version):
                func.max(Assessments.date_activated).label('activated'),
                func.max(Assessments.due_date).label('due_date'),
                func.min(Assessments.date_expiry).label('expiry'),
+               func.min(Assessments.date_four_year_expiry).label('four_year_expiry'),
                case(
                     [(s.query(Assessments). \
                     outerjoin(Subsection, Subsection.id == Assessments.ss_id). \
@@ -985,10 +985,14 @@ def signoff_evidence(evidence_id,action):
                 date_completed = datetime.datetime.strptime(date_completed_info, "%Y-%m-%d")
             except:
                 date_completed = datetime.datetime.now()
+
+            four_year_expiry_date = date_completed + relativedelta(years=4)
+
             data = {
                 'date_completed': date_completed,
                 'status': status,
-                'date_expiry': date_completed + relativedelta(months=months_valid)
+                'date_expiry': date_completed + relativedelta(months=months_valid),
+                'date_four_year_expiry': four_year_expiry_date
             }
 
             s.query(Assessments).filter(Assessments.id ==assessment.assessment_id).update(data)

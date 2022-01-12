@@ -426,16 +426,21 @@ def check_margin(date,margin_days):
 
 @app.context_processor
 def utility_processor():
-    def check_expiry(expiry_date):
-        if check_margin(expiry_date,0):
+    def check_expiry(expiry_date, four_year_expiry_date):
+        if check_margin(four_year_expiry_date,0):
+            html = '<span class="label label-danger">Four Year Expired</span>'
+        elif check_margin(expiry_date,0):
             html = '<span class="label label-danger">Expired</span>'
+        elif check_margin(four_year_expiry_date,5):
+            html = '<span class="label label-danger">Four Year Expiring Within 5 Days</span>'
+        elif check_margin(four_year_expiry_date,30):
+            html = '<span class="label label-warning">Four Year Expiring Within 30 Days</span>'
         elif check_margin(expiry_date,5):
             html = '<span class="label label-danger">Expiring Within 5 Days</span>'
         elif check_margin(expiry_date,30):
             html = '<span class="label label-warning">Expiring Within 30 Days</span>'
         else:
             html = '<span class="label label-success">OK</span>'
-
         return html
 
     return dict(check_expiry=check_expiry)
