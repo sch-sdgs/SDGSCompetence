@@ -506,9 +506,6 @@ def view_current_competence():
                 if subsection['status'] not in statuses:
                     statuses.append(subsection['status'])
 
-        print("statuses")
-        print(statuses)
-
         reassessments = s.query(Reassessments). \
             join(AssessReassessRel). \
             join(Assessments). \
@@ -546,10 +543,10 @@ def view_current_competence():
         #TODO update this to take all multiples of 4 years
         todays_date = datetime.date.today()
         four_year_check += s.query(Assessments). \
-            join(Subsection). \
-            join(Competence). \
+            join(Subsection) .\
+            join(Competence) .\
             filter(Assessments.user_id==u_id). \
-            filter(Assessments.date_completed < todays_date + relativedelta(months=-48)). \
+            filter(Assessments.date_four_year_expiry <= todays_date + relativedelta(months=1)). \
             filter(Competence.id==c_id). \
             count()
 
