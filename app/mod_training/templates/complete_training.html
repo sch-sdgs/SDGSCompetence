@@ -125,6 +125,7 @@
                             <tr>
                                 <th>Status</th>
                                 <th>Date Completed</th>
+                                <th>Assessment Type</th>
                                 <th>Authoriser</th>
                                 <th>Comments</th>
                                 <th>View</th>
@@ -139,6 +140,11 @@
 
                                     </td>
                                     <td>{{ reassessment.date_completed }}</td>
+                                    {% if reassessment.is_four_year == 1 %}
+                                        <td>Four Year Reassessment</td>
+                                    {% else %}
+                                        <td>Standard Reassessment</td>
+                                    {% endif %}
                                     <td>{{ reassessment.signoff_id_rel.first_name }} {{ reassessment.signoff_id_rel.last_name }}</td>
                                     <td>{{ reassessment.comments }}</td>
                                     <td>

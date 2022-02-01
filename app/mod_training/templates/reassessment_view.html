@@ -1,36 +1,23 @@
 {% extends "base2.html" %}
 {% block content %}
 
+    <h1>
+        <i class="fa  fa-refresh"></i> View Reassessment
+    </h1>
 
+    {% if message %}
+        <div class="alert alert-danger">
+            <strong>Fail Whale!</strong> {{ message }}
+        </div>
+    {% endif %}
 
+    <!-- Main content -->
+    <section class="content container-fluid">
 
-
-
-            <h1>
-                <i class="fa  fa-refresh"></i> View Reassessment
-                <small></small>
-            </h1>
-            {#            <ol class="breadcrumb">#}
-            {#                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
-            {#                <li class="active">Here</li>#}
-            {#            </ol>#}
-            {% if message %}
-                <div class="alert alert-danger">
-                    <strong>Fail Whale!</strong> {{ message }}
-                </div>
-            {% endif %}
-        </section>
-
-        <!-- Main content -->
-        <section class="content container-fluid">
-
-            <h3>
-                <strong>Competence:</strong> {% set current_version = reassessment.assessments_rel[0].assess_rel.ss_id_rel.c_id_rel.current_version %}
-
+        <h3>
+            <strong>Competence:</strong> {% set current_version = reassessment.assessments_rel[0].assess_rel.ss_id_rel.c_id_rel.current_version %}
                 {% for competence in reassessment.assessments_rel[0].assess_rel.ss_id_rel.c_id_rel.competence_detail %}
-
                     {% if competence.intro <= current_version %}
-
                         {{ competence.title }}
                         {% if reassessment.is_correct == None %}
                             <p class="label label-warning">Awaiting
@@ -41,85 +28,129 @@
                             <p class="label label-success">Passed</p>
                         {% endif %}
                     {% endif %}
-
-                {% endfor %}</h3>
-            <h3>
-                <strong>Trainee:</strong> {{ reassessment.assessments_rel[0].assess_rel.user_id_rel.first_name }} {{ reassessment.assessments_rel[0].assess_rel.user_id_rel.last_name }}
-
-            </h3>
+                {% endfor %}
+        </h3>
 
         <h3>
-                <strong>Date:</strong> {{ reassessment.date_completed }}
+            <strong>Trainee:</strong> {{ reassessment.assessments_rel[0].assess_rel.user_id_rel.first_name }} {{ reassessment.assessments_rel[0].assess_rel.user_id_rel.last_name }}
+        </h3>
 
-            </h3>
+        <h3>
+            <strong>Date:</strong> {{ reassessment.date_completed }}
+        </h3>
 
+        {%  if reassessment.is_four_year == 1 %}
+        <h3>
+            <strong>This is a four year reassessment - please ensure the evidence submitted is suitable.</strong>
+        </h3>
+        {% endif %}
 
-            <div class="box box-primary" id="training">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Competence Subsections Covered</h3>
-
-                </div>
-                <div class="box-body">
-
-                    <ul>
-
-
-                        {% set questions = [] %}
-
-
+        <div class="box box-primary" id="training">
+            <div class="box-header with-border">
+                <h3 class="box-title">Competence Subsections Covered</h3>
+            </div>
+            <div class="box-body">
+                <ul>
+                    {% set questions = [] %}
                         {% for reassessment in reassessment.assessments_rel %}
                             <li><strong>{{ reassessment.assess_rel.ss_id_rel.name }}</strong> <br></li>
-
-
                             {% do questions.append(reassessment.reassess_rel.reassessment_questions) %}
-
                         {% endfor %}
-                    </ul>
-                </div>
+                </ul>
             </div>
-            <div class="box box-primary" id="training">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Questions</h3>
-
-                </div>
-                <div class="box-body">
-
-                    {% for question in questions[0] %}
-
-                        <div class="box box-default" id="training">
-                            <div class="box-header ">
-                                <h3 class="box-title"><i
-                                        class="fa fa-question-circle"></i> {{ question.question_id_rel.question }}</h3>
-
-                            </div>
-                            <div class="box-body">
-                                {{ question.answer }}
-                            </div>
+        </div>
+        <div class="box box-primary" id="training">
+            <div class="box-header with-border">
+                <h3 class="box-title">Questions</h3>
+            </div>
+            <div class="box-body">
+                {% for question in questions[0] %}
+                    <div class="box box-default" id="training">
+                        <div class="box-header ">
+                                <h3 class="box-title"><i class="fa fa-question-circle"></i> {{ question.question_id_rel.question }}</h3>
                         </div>
+                        <div class="box-body">
+                            {{ question.answer }}
+                        </div>
+                    </div>
+                {% endfor %}
+
+                <!---- display the other evidence here!--->
+                {%  if reassessment.is_four_year == 1 %}
+                    <div class="box-header">
+                        <h3 class="box-title">Competency Evidence</h3>
+                    </div>
+                    <div class="box-body">
+                        <p><strong> Ensure this evidence is sufficient to sign off the competency as if it were being completed for the first time. </strong></p>
+                        {% for evidence in reassessment.evidence_rel %}
+                            {% if evidence.reassess_rel.evidence_type_rel.type == "Upload" or evidence.reassess_rel.evidence_type_rel.type == "Completed competence panel" %}
+                                <p>Files will either open in your browser or be downloaded </p>
+                                <table class="table table-striped">
+                                    <thead>
+                                    <th>Filename</th>
+                                    <th>Date Uploaded</th>
+                                    </thead>
+                                    {% for u in get_uploads(evidence.evidence_id) %}
+                                        <tr>
+                                            <td>
+                                                <a href="{{ url_for('training.download',filename=u.uuid,alias=u.filename) }}">{{ u.filename }}</a>
+                                            </td>
+                                            <td>{{ u.date_uploaded }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                            {% endif %}
+                            {% if evidence.reassess_rel.evidence_type_rel.type == "Case" %}
+                                <h3>I am a case</h3>
+                                <table class="table table-striped">
+                                    <tr>
+                                        <td>Case</td>
+                                        <td>{{ evidence.reassess_rel.evidence }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Result</td>
+                                        <td>{{ evidence.reassess_rel.result }}</td>
+                                    </tr>
+                                </table>
+                            {% endif %}
+                            {% if evidence.reassess_rel.evidence_type_rel.type == "Observation" %}
+                                <h3>I am an observation</h3>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <td colspan="2"><b>Evidence Submitted by User:</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">{{ evidence.reassess_rel.evidence }}</td>
+                                    </tr>
+                                </table>
+                            {% endif %}
+                            {% if evidence.reassess_rel.evidence_type_rel.type == "Discussion" %}
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <td colspan="2"><b>Evidence Submitted by User:</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">{{ evidence.reassess_rel.evidence }}</td>
+                                    </tr>
+                                </table>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
 
 
-                    {% endfor %}
-
-                    {% if reassessment.is_correct == None and reassessment.signoff_id == current_user.database_id %}
-                        <button
-                                class="btn btn btn-flat btn-danger reject_button pull-right"
-                                data-button='{"id":}'><span
-                                class="glyphicon glyphicon-thumbs-down"></span> Reject
-                        </button>
-                        <a href="{{ url_for('training.accept_reassessment',id=reassessment.id) }}"
+                {% if reassessment.is_correct == None and reassessment.signoff_id == current_user.database_id %}
+                    <button class="btn btn btn-flat btn-danger reject_button pull-right"
+                            data-button='{"id":}'>
+                        <span class="glyphicon glyphicon-thumbs-down"></span> Reject
+                    </button>
+                    <a href="{{ url_for('training.accept_reassessment',id=reassessment.id) }}"
                            class="btn btn btn-flat btn-success pull-right"><span
-                                class="glyphicon glyphicon-thumbs-up"></span> Approve </a>
-
-
-
-                    {% endif %}
-
-                </div>
+                            class="glyphicon glyphicon-thumbs-up"></span> Approve </a>
+                {% endif %}
             </div>
-
-        </section>
-    </div>
-
+        </div>
+    </section>
 
     <div class="modal modal-default reject_comment"
          id="reject_comment"

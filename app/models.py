@@ -492,6 +492,7 @@ class Reassessments(db.Model):
     signoff_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[signoff_id])
     assessments_rel = db.relationship("AssessReassessRel", lazy='joined')
     reassessment_questions = db.relationship("ReassessmentQuestions", back_populates="reassessment_id_rel")
+    evidence_rel = db.relationship("ReassessmentEvidenceRelationship", backref="evidence_rel")
 
     def __init__(self, signoff_id, is_four_year=0):
         self.signoff_id = signoff_id
@@ -514,6 +515,7 @@ class Evidence(db.Model):
     evidence_type_rel = db.relationship("EvidenceTypeRef", lazy='joined', foreign_keys=[evidence_type_id])
 
     assessments = db.relationship("AssessmentEvidenceRelationship", backref="evidence")
+    reassess_rel = db.relationship("ReassessmentEvidenceRelationship", backref="reassess_rel")
 
     def __init__(self, is_correct, signoff_id, date, evidence_type_id, evidence=None, result=None, comments=None):
         self.is_correct = is_correct
@@ -564,6 +566,19 @@ class AssessmentEvidenceRelationship(db.Model):
 
     def __repr__(self):
         return '<AssessmentEvidenceRelationship %r>' % self.id
+
+
+class ReassessmentEvidenceRelationship(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    reassessment_id = db.Column(db.Integer, db.ForeignKey("reassessments.id"), unique=False, nullable=False)
+    evidence_id = db.Column(db.Integer, db.ForeignKey("evidence.id"), unique=False, nullable=False)
+
+    def __init__(self, reassessment_id, evidence_id):
+        self.reassessment_id = reassessment_id
+        self.evidence_id = evidence_id
+
+    def __repr__(self):
+        return f"ReassessmentEvidenceRelationship id: {self.id}"
 
 
 class Service(db.Model):

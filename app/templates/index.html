@@ -121,11 +121,12 @@
                                 <div class="col-lg-12">
                                     <table class="table table-striped">
                                         <thead>
-                                        <th class="col-md-2">Competence</th>
-                                        <th class="col-md-3">Date Completed</th>
+                                        <th class="col-md-3">Competence</th>
+                                        <th class="col-md-1">Date Completed</th>
+                                        <th class="col-md-2">Reassessment Type</th>
                                         <th class="col-md-2">Trainee</th>
                                         <th class="col-md-1">Version</th>
-                                        <th class="col-md-2">Actions</th>
+                                        <th class="col-md-1">Actions</th>
                                         </thead>
 
                                         {% for reassessment in signoff_reassessment %}
@@ -134,18 +135,21 @@
                                                 <td>
                                                     {% set current_version = reassessment.assessments_rel[0].assess_rel.ss_id_rel.c_id_rel.current_version %}
                                                     {% for competence in reassessment.assessments_rel[0].assess_rel.ss_id_rel.c_id_rel.competence_detail %}
-
                                                         {% if competence.intro <= current_version %}
                                                             {% if competence.last == None or competence.last >= current_version %}
                                                                 {{ competence.title }}
                                                             {% endif %}
-
                                                         {% endif %}
                                                     {% endfor %}
-
-
                                                 </td>
                                                 <td>{{ reassessment.date_completed }}</td>
+                                                <td>
+                                                    {% if reassessment.is_four_year == 1 %}
+                                                        Four Year Reassessment
+                                                    {% else %}
+                                                        Standard Reassessment
+                                                    {% endif %}
+                                                </td>
                                                 <td>{{ reassessment.assessments_rel[0].assess_rel.user_id_rel.first_name }} {{ reassessment.assessments_rel[0].assess_rel.user_id_rel.last_name }}</td>
                                                 <td>{{ reassessment.assessments_rel[0].assess_rel.version }}</td>
                                                 <td>

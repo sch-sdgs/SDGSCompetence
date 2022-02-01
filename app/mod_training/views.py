@@ -27,7 +27,10 @@ training = Blueprint('training', __name__, template_folder='templates')
 @app.context_processor
 def utility_processor():
     def get_uploads(evidence_id):
-        uploads = s.query(Uploads).filter(Uploads.evidence_id == evidence_id).all()
+        uploads = s.query(Uploads). \
+            filter(Uploads.evidence_id == evidence_id). \
+            all()
+        print(uploads)
         return uploads
 
     return dict(get_uploads=get_uploads)
@@ -479,8 +482,203 @@ def reassessment_view(reassess_id=None):
         group_by(AssessReassessRel.reassess_id). \
         first()
 
+    print("I am reassessment view")
+    print(reassessment)
+    print(reassessment.evidence_rel)
+    for evidence in reassessment.evidence_rel:
+        print(evidence.evidence_id)
+    print("I have printed the evidence")
+
     return render_template('reassessment_view.html',reassessment=reassessment)
 
+
+
+@training.route('/four_year_reassessment', methods=['GET', 'POST'])
+@login_required
+def four_year_reassessment():
+    #TODO do new versions of competencies inherit reassessment records? if not, need to inherit 4 year expiry date
+    if request.method == 'GET':
+        c_id = request.args.get('c_id')
+        version = request.args.get('version')
+        ### Check if competence has new version
+        current_version = s.query(Competence).filter(Competence.id == c_id).first().current_version
+        if int(version) < int(current_version):
+            from app.views import index
+            return index(message="There is a new version of this competence so it cannot be re-assessed!")
+
+        ### Get competency information
+        assess_id_list = request.args.get('assess_id_list').split(',')
+        u_id = current_user.database_id
+        competence_summary = get_competence_summary_by_user(c_id, u_id, version)
+        ss_id_list = get_ss_id_from_assessment(assess_id_list)
+
+        ### Set the form
+        form = FourYearReassessment()
+
+        ### Populate the questions part of the form
+        #TODO why is it doing it like this?????
+        questions = s.query(QuestionsRef). \
+            filter(QuestionsRef.active == True)
+        question_data = []
+        for question in questions:
+            row = {}
+            row['id'] = question.id
+            row['question'] = question.question
+            if question.answer_type == 'Dropdown':
+                options = s.query(DropDownChoices).filter(DropDownChoices.question_id == question.id).all()
+                row['DropDown'] = []
+                for option in options:
+                    row['DropDown'].append(option.choice)
+            elif question.answer_type == 'Free text':
+                row['FreeText'] = True
+            elif question.answer_type == 'Date':
+                row['Date'] = True
+            elif question.answer_type == 'Yes/no':
+                row['yesno'] = True
+            question_data.append(row)
+
+        ### Set assessor choices
+        assessor_choices = []
+        # competent users
+        competent_users = get_competent_users(ss_id_list)
+        for user in competent_users:
+            if user.id != current_user.database_id:
+                assessor_choices.append((user.id, user.name))
+        # admins
+        authoriser_config = config["AUTHORISER"].split(",")
+        if "ADMIN" in authoriser_config:
+            admin_users = s.query(UserRoleRelationship).join(UserRolesRef).join(Users).filter(
+                UserRolesRef.role == "ADMIN").filter(Users.active == 1).all()
+            for i in admin_users:
+                check_name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name
+                id = i.user_id_rel.id
+                if (id, check_name) not in assessor_choices:
+                    name = i.user_id_rel.first_name + " " + i.user_id_rel.last_name + " (ADMIN)"
+                    if id != current_user.database_id:
+                        assessor_choices.append((id, name))
+        # sort choices
+        assessor_choices.sort(key=lambda a: a[1])
+        form.signoff_id.choices = assessor_choices
+
+        return render_template('four_year_reassessment.html',
+                               data=question_data, c_id=c_id, user_id=u_id,
+                               competence_name=competence_summary.title, form=form,
+                               assess_id_list=','.join(assess_id_list), version=version)
+
+    elif request.method == 'POST':
+        print(f"I am the four year reassessment function!")
+        # get reassessment information
+        questions = s.query(QuestionsRef). \
+            filter(QuestionsRef.active == True). \
+            all()
+        signoff_id = request.form['signoff_id']
+        assess_id_list = request.args.get('assess_id_list').split(',')
+
+        ### create new reassessment
+        four_year_reassessment = Reassessments(signoff_id, is_four_year=1)
+        s.add(four_year_reassessment)
+        s.commit()
+        print(f"New reassessment: {four_year_reassessment}")
+
+        ### link the reassessment to the assessments
+        print("Creating reassessment/assessment relationships...")
+        for assess in assess_id_list:
+            assess_rel = AssessReassessRel(assess, four_year_reassessment.id)
+            s.add(assess_rel)
+        s.commit()
+
+        ### save reassessment question answers
+        print("Saving reassessment question responses...")
+        for question in questions:
+            id = "answer" + str(question.id)
+            answer = request.form.get(id)
+            reassessment_questions = ReassessmentQuestions(question_id=question.id, answer=answer, reassessment_id=four_year_reassessment.id)
+            s.add(reassessment_questions)
+            s.commit()
+
+        ### update reassessment complete date
+        s.query(Reassessments). \
+            filter(Reassessments.id == four_year_reassessment.id). \
+            update({'date_completed': datetime.date.today()})
+        s.commit()
+
+        ### get evidence type
+        evidence_type = s.query(EvidenceTypeRef). \
+            filter(EvidenceTypeRef.id == int(request.form['evidence_type'])). \
+            first(). \
+            type
+
+        ### process the evidence
+        print("I am processing evidence...")
+        if evidence_type == "Case":
+            evidence = request.form.getlist('case')
+            result = request.form.getlist('result')
+            for i in zip(evidence, result):
+                e = Evidence(is_correct=None, signoff_id=request.form['assessor'], date=datetime.date.today(),
+                             evidence=i[0], result=i[1],
+                             comments=None, evidence_type_id=request.form["evidence_type"])
+                s.add(e)
+                s.commit()
+                rer = ReassessmentEvidenceRelationship(four_year_reassessment.id, e.id)
+                s.add(rer)
+                s.commit()
+        else:
+            if evidence_type == "Upload":
+                evidence = "Upload"
+                result = None
+
+            if evidence_type == "Discussion":
+                evidence = request.form['evidence_discussion']
+                result = None
+
+            if evidence_type == "Observation":
+                evidence = request.form['evidence_observation']
+                result = None
+
+            if evidence_type == "Completed competence panel":
+                evidence = "Upload"
+                result = None
+
+            e = Evidence(is_correct=None, signoff_id=request.form['signoff_id'], date=datetime.date.today(),
+                         evidence=evidence, result=result,
+                         comments=None, evidence_type_id=request.form["evidence_type"])
+            s.add(e)
+            s.commit()
+            rer = ReassessmentEvidenceRelationship(four_year_reassessment.id, e.id)
+            s.add(rer)
+            s.commit()
+
+            ### process uploaded files
+            uploaded_files = request.files.getlist("file")
+            print(len(uploaded_files))
+
+            if len(uploaded_files) > 0:
+                print("I see there are files!")
+
+                for f in uploaded_files:
+                    # this prevents an additional blank file being uploaded
+                    if f.content_type == 'application/octet-stream':
+                        continue
+
+                    # generate uuid in case someone uploads file of same name and it's actually different - store real name in db
+                    upload_filename = str(uuid.uuid4())
+                    f.stream.seek(0)
+                    f.save(os.path.join(app.config['UPLOAD_FOLDER'], upload_filename))
+                    u = Uploads(upload_filename, f.filename, current_user.database_id, e.id)
+                    s.add(u)
+                s.commit()
+
+            else:
+                print("No files uploaded!")
+
+        ### return to competency page
+        return redirect(
+            url_for('training.view_current_competence', version=request.args.get('version'),
+                    c_id=request.args.get('c_id'), user=request.args.get('u_id')))
+
+        #TODO new form (DONE)
+        #TODO remember to update the four_year_expiry date - in accept (DONE)
+        #TODO remember to update the regular expiry date - in accept (eeerm)
 
 @training.route('/view', methods=['GET', 'POST'])
 @login_required
@@ -560,6 +758,7 @@ def view_current_competence():
                                activated=filter_for_none(competence_summary.activated),
                                completed=filter_for_none(competence_summary.completed),
                                expires=filter_for_none(competence_summary.expiry),
+                               four_year_expires=filter_for_none(competence_summary.four_year_expiry),
                                version=competence_summary.version, statuses=statuses,
                                reassessments=reassessments,videos=videos,four_year_check=four_year_check)
 
@@ -718,31 +917,73 @@ def reject_reassessment(id=None):
 
 @training.route('/reassessment_accept/<int:id>', methods=['GET', 'POST'])
 def accept_reassessment(id=None):
-    ###this method needs to do all the updating to the assessemenst to give a new expiry date
-    authoriser = s.query(Reassessments).filter(Reassessments.signoff_id==current_user.database_id).filter(Reassessments.id==id).count()
-    if authoriser == 1:
+    ###this method needs to do all the updating to the assessment to give a new expiry date
+    #TODO this needs altering to update the expiry date and four year expiry date for four year reassessments
+    ### Check authoriser
+    authoriser = s.query(Reassessments). \
+        filter(Reassessments.signoff_id==current_user.database_id). \
+        filter(Reassessments.id==id). \
+        count()
 
+    if authoriser == 1:
+        ### Set reassessment as accepted
         data = {
             'is_correct':1,
             'comments':'Accepted'
         }
-
-        s.query(Reassessments).filter(Reassessments.id == id).update(data)
+        s.query(Reassessments). \
+            filter(Reassessments.id == id). \
+            update(data)
         s.commit()
 
-        for i in s.query(Reassessments).join(AssessReassessRel).join(Assessments).filter(Reassessments.id == id).all():
+        ### Update assessment completion date
+        for i in s.query(Reassessments). \
+                join(AssessReassessRel). \
+                join(Assessments). \
+                filter(Reassessments.id == id). \
+                all():
             for j in i.assessments_rel:
                 current_version = j.assess_rel.ss_id_rel.c_id_rel.current_version
                 for detail in j.assess_rel.ss_id_rel.c_id_rel.competence_detail:
                     if detail.intro <= current_version:
                         new_expiry = i.date_completed + relativedelta(months=detail.validity_rel.months)
+                        #TODO this should be from today?
+                        print("I am making a new expiry date")
+                        print(new_expiry)
 
-                data = {
-                    'date_expiry':new_expiry
-                }
-                s.query(Assessments).filter(Assessments.id == j.assess_id).update(data)
-
+                        data = {
+                            'date_expiry':new_expiry
+                        }
+                        s.query(Assessments). \
+                            filter(Assessments.id == j.assess_id). \
+                            update(data)
         s.commit()
+
+        #TODO the info on the homepage is not the same as the info on the comeptency page...
+
+        # For four year reassessments, update four year due date
+        four_year_check = s.query(Reassessments). \
+            filter(Reassessments.id == id). \
+            first()
+
+        print("I am doing a four year check!")
+        print(four_year_check.is_four_year)
+
+        if four_year_check.is_four_year == 1:
+            new_four_year_expiry = datetime.date.today() + relativedelta(years=4)
+            for i in s.query(Reassessments). \
+                    join(AssessReassessRel). \
+                    join(Assessments). \
+                    filter(Reassessments.id == id). \
+                    all():
+                for j in i.assessments_rel:
+                    data = {
+                        'date_four_year_expiry': new_four_year_expiry
+                    }
+                    s.query(Assessments). \
+                        filter(Assessments.id == j.assess_id). \
+                        update(data)
+            s.commit()
 
     return redirect('/index')
 
@@ -1054,24 +1295,6 @@ def process_evidence():
             s.add(er)
         s.commit()
 
-        if forward_action == "four_year_reassess":
-            assessor = request.form['assessor']
-            # Create a new reassessment
-            # Update assess reassess rel
-            # Update assess evidence rel
-            four_year_reassessment = Reassessments(assessor, 1)
-            s.add(four_year_reassessment)
-            s.commit()
-
-            for id in s_ids:
-                assess_rel = AssessReassessRel(id, four_year_reassessment.id)
-                s.add(assess_rel)
-            s.commit()
-
-            s.query(Reassessments).filter(Reassessments.id == reassessment.id).update(
-                {"date_completed": datetime.date.today()})
-            s.commit()
-
     status_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Sign-Off").first().id
 
     data = {'trainer_id': request.form['trainer'],
@@ -1365,7 +1588,8 @@ def select_subsections():
                 id_check = all(id in ids for id in comp_section_ids)
                 print(id_check)
                 if id_check is True:
-                    return upload_evidence(c_id, ids,version)
+                    return redirect(url_for('training.four_year_reassessment') + "?c_id=" + str(c_id) + "&version=" + str(
+                        version) + "&assess_id_list=" + ",".join(ids))
                 else:
                     message = "You must reassess the entire competency."
                     competence_summary = get_competence_summary_by_user(c_id, int(u_id), version)
@@ -1440,10 +1664,13 @@ def select_subsections():
             for i in list(section_list["custom"].items())[0][1]["subsections"]:
                 if i['status'] == "Complete":
                     comp_section_ids.append(str(i['id']))
-            for i in list(section_list["constant"].items())[0][1]["subsections"]:
-                if i['status'] == "Complete":
-                    comp_section_ids.append(str(i['id']))
-            print(comp_section_ids)
+            try:
+                for i in list(section_list["constant"].items())[0][1]["subsections"]:
+                    if i['status'] == "Complete":
+                        comp_section_ids.append(str(i['id']))
+            except IndexError:
+                ### some competencies have no constant subsections
+                pass
             """Check if user has selected every complete subsection in the competency"""
             id_check = all(id in ids for id in comp_section_ids)
             if id_check is True:
@@ -1768,7 +1995,10 @@ def user_report(id=None):
 
     # get assessments signed off  and trained by user and date of sign-off
 
-    signed_off_query = s.query(Assessments).filter(Assessments.signoff_id == id).filter(Assessments.user_id != id).values(Assessments.date_completed)
+    signed_off_query = s.query(Assessments). \
+        filter(Assessments.signoff_id == id). \
+        filter(Assessments.user_id != id). \
+        values(Assessments.date_completed)
     signed_off_dates_dict={}
     trained_dates_dict={}
     signed_off_dates=[]

@@ -10,6 +10,7 @@ from flask_principal import Principal, Identity, AnonymousIdentity, \
 from app.mod_training.views import get_competence_summary_by_user, get_competence_by_user, get_completion_status_counts
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.sql.expression import func, and_, or_, case, exists, update,distinct
+from sqlalchemy.orm import aliased
 from app.competence import *
 from app.models import *
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -949,7 +950,6 @@ def index(message=None):
     for i in complete:
         print(i.ss_id_rel)
         print(i.status_rel)
-        #TODO if one subsection only is on four year due, it still disappears from the dashboard (status is complete but percentage is not 0)
         percent_complete = get_percentage(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
         if percent_complete == 100:
             result = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
@@ -973,8 +973,11 @@ def index(message=None):
         .filter(AssessmentStatusRef.status.in_(["Obsolete"])) \
         .all()
 
+    evidence_alias1 = aliased(Evidence)
     signoff = s.query(Evidence). \
         join(EvidenceTypeRef). \
+        join(AssessmentEvidenceRelationship). \
+        filter(exists().where(evidence_alias1.id == AssessmentEvidenceRelationship.evidence_id)). \
         filter(Evidence.signoff_id == current_user.database_id). \
         filter(Evidence.is_correct == None). \
         all()
@@ -986,7 +989,8 @@ def index(message=None):
         all()
 
     signoff_reassessment = s.query(Reassessments). \
-        join(AssessReassessRel).join(Assessments). \
+        join(AssessReassessRel). \
+        join(Assessments). \
         filter(Reassessments.signoff_id==current_user.database_id). \
         filter(Reassessments.is_correct == None). \
         all()
