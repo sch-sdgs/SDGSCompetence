@@ -42,6 +42,7 @@ def main():
 
     assessments = get_assessments(c)
 
+    print("I am checking for four year expiries!")
     for id, date_four_year_expiry, status in assessments:
         if date_four_year_expiry is None:
             continue
@@ -51,6 +52,7 @@ def main():
             WHERE id = %s'''
 
             c.execute(sql, id)
+            print("Found a four year expired competency! Flagging...")
 
 if __name__ == '__main__':
     main()
