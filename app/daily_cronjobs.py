@@ -44,8 +44,8 @@ def main():
 
     for id, date_four_year_expiry, status in assessments:
         if date_four_year_expiry is None:
-            pass
-        if date_four_year_expiry < todays_date:
+            continue
+        if date_four_year_expiry >= todays_date:
             sql = '''UPDATE assessments
             SET status = '8'
             WHERE id = %s'''
