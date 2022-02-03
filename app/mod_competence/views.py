@@ -278,8 +278,9 @@ def add_competence():
         if config.get("QPULSE_MODULE") != False:
             doclist = request.form['doc_list'].split(',')
             for doc in doclist:
-                add_doc = Documents(c_id=c_id, qpulse_no=doc)
-                s.add(add_doc)
+                if doc != "":
+                    add_doc = Documents(c_id=c_id, qpulse_no=doc)
+                    s.add(add_doc)
 
         s.commit()
 

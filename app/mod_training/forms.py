@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
-from wtforms.fields import SubmitField, HiddenField, SelectField, TextAreaField, FileField, StringField
+from wtforms.fields import SubmitField, HiddenField, SelectField, TextAreaField, FileField, StringField, RadioField
 from wtforms.fields.html5 import DateField
+from wtforms.validators import DataRequired
 from app.competence import s
 from app.models import *
 
@@ -10,6 +11,7 @@ class UploadEvidence(FlaskForm):
     For to submit evidence for a competence
     """
     file = FileField('Upload Evidence')
+    #TODO edit this so 'Inactivation Request' doesn't show up as an evidence upload type
     evidence_type = QuerySelectField("What type of evidence do you want to send?",allow_blank=True, blank_text=u'-- please choose --',
                                       query_factory=lambda: s.query(EvidenceTypeRef).all(),
                                       get_label="type")  # All sections in database
@@ -37,6 +39,20 @@ class MarkNotRequired(FlaskForm):
 
 class Reassessment(FlaskForm):
     signoff_id=SelectField(label="Authoriser")
+
+class FourYearReassessment(FlaskForm):
+    evidence_type = QuerySelectField("What type of evidence do you want to send?", allow_blank=True,
+                                     blank_text=u'-- please choose --',
+                                     query_factory=lambda: s.query(EvidenceTypeRef).all(),
+                                     get_label="type")  # All sections in database
+    file = FileField('Upload Evidence')
+    evidence_observation = TextAreaField(label="Evidence")
+    evidence_discussion = TextAreaField(label="Evidence")
+    case = StringField(label="Case")
+    result = StringField(label="Result")
+    signoff_id = SelectField(label="Authoriser")
+    assid = HiddenField("AssessmentID")
+    submit = SubmitField("Submit Request")
 
 class SubSectionsForm(FlaskForm):
     ids=HiddenField()

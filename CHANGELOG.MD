@@ -4,16 +4,40 @@ All notable changes to this project will be documented in this file from v1.0.0.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+
+## [v1.2.2] - 2022-01-06
+### Fixed
+- Reassessments: submission error fixed
+
+## [v1.2.1] - 2022-01-05
+### Fixed
+- CPD module: download now works in docker
+- Homepage: correct version competence title now displays
+
+## [v1.2.0] - 2022-01-04
+### Added
+- New 'Action Required By' column for Assigned and In Progress competencies table on homepage
+- Character counters added to discussion and observation fields in evidence upload page
+- CPD module: events can now be edited
+- CPD module: CPD log can now be downloaded as a csv
 ### Fixed
 - Four year due competencies now show in 'complete' section on dashboard
+- Fixed bug where competencies could not be edited if originally created with no linked documents and then had documents added
+### Changed
+- Reassessments now require all complete subsections to be reassessed simultaneously
+- Assessment date override now overrides completed date instead of expiry date
 
-
-## [1.1.1] - 
+## [1.1.1] - 2021-11-14
 ### Fixed
 - Assigned date no longer stuck on day of app deployment
 ### Changed
 - Activate button now "Activate Training"
 - Submit Evidence button now shows if competence is Failed
+=========
+## [Unreleased]
+### Fixed
+- Four year due competencies now show in 'complete' section on dashboard
+>>>>>>>>> Temporary merge branch 2
 
 ## [1.1.0] - 2021-11-05
 ### Added

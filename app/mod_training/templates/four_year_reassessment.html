@@ -1,0 +1,180 @@
+{% extends "base2.html" %}
+{% block content %}
+
+    <h1>
+        <span class="glyphicon glyphicon-repeat"></span> Competencey Four Year Reassessment
+    </h1>
+
+    {% if message %}
+        <div class="alert alert-danger">
+            <strong>Fail Whale!</strong> {{ message }}
+        </div>
+    {% endif %}
+
+    <!-- Main content -->
+    <section class="content container-fluid">
+
+        <div class="row">
+            <div class="col-lg-12">
+                <h3>
+                    <b>Competence:</b> {{ competence_name }}
+                    <small>This is a four year reassessment - you are required to provide evidence as if you were
+                        completing this competency for the first time.</small>
+                </h3>
+            </div>
+        </div>
+
+        <div class="box box-primary" id="training">
+            <div class="box-header with-border">
+                <h3 class="box-title">Reassessment Questions </h3>
+            </div>
+
+            <div class="box-body">
+                <form action="{{ url_for('training.four_year_reassessment') }}?assess_id_list={{ assess_id_list }}&c_id={{ c_id }}&u_id={{ user_id }}&version={{ version }}"
+                      method="POST"
+                      enctype="multipart/form-data"
+                      class="form-horizontal">
+                    <fieldset>
+                        {% for object in data %}
+                            <div class="form-group">
+                                <label for="answer{{ object.id }}"
+                                       class="col-lg-4 control-label">{{ object.question }}</label>
+                                <div class="col-lg-8">
+                                    {% if object.FreeText %}
+                                        <input required="required" type="text" id="answer{{ object.id }}"
+                                               name="answer{{ object.id }}" class=form-control width="500"/>
+                                    {% endif %}
+                                    {% if object.yesno %}
+                                        <label class="radio-inline">
+                                            <input type="radio" value="Yes" name="answer{{ object.id }}">Yes
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="No" name="answer{{ object.id }}"> No
+                                        </label>
+                                    {% endif %}
+                                    {% if object.Date %}
+                                        <input required="required" type="date" id="answer{{ object.id }}"
+                                               name="answer{{ object.id }}" class="form-control">
+                                    {% endif %}
+                                    {% if object.DropDown %}
+                                        <select required="required" class=form-control id="answer{{ object.id }}"
+                                                name="answer{{ object.id }}">
+                                            <option disabled selected value> -- select an option --</option>
+                                            {% for choice in object.DropDown %}
+                                                <option value="{{ choice }}">{{ choice }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <br>
+                        {% endfor %}
+
+                        <!-- Evidence upload here!!!--->
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Provide your evidence below: </h3>
+                        </div>
+
+                        <div class="form-group">
+                                {{ form.evidence_type.label(class_="col-lg-4 control-label") }}
+                                <div class="col-lg-8">{{ form.evidence_type(class_="form-control ") }}</div>
+                            </div>
+
+                            <div class="form-group type" id="Upload" hidden="hidden">
+                                {{ form.file.label(class_="col-lg-4 control-label") }}
+                                <div class="col-lg-8">{{ form.file(class_="form-control",multiple="") }}</div>
+                            </div>
+
+                            <div class="form-group type" id="CompetencePanel" hidden="hidden">
+                                {{ form.file.label(class_="col-lg-4 control-label") }}
+                                <div class="col-lg-8">{{ form.file(class_="form-control",multiple="") }}</div>
+                            </div>
+
+                            <div id="Case" class="type" hidden="hidden">
+                                <div id="dup">
+                                    <div class="form-group">
+                                        {{ form.case.label(class_="col-lg-4 control-label") }}
+                                        <div class="col-lg-8">{{ form.case(class_="form-control") }}</div>
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.result.label(class_="col-lg-4 control-label") }}
+                                        <div class="col-lg-8">{{ form.result(class_="form-control") }}</div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-lg-8 col-lg-offset-4">
+                                        <a href="#" id="add" class="btn btn-primary"><span
+                                                class="glyphicon glyphicon-plus-sign"></span> Add Case</a><span
+                                            class="help-block"><strong>Add as many as required.</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group type" id="Discussion" hidden="hidden">
+                                {{ form.evidence_discussion.label(class_="col-lg-4 control-label") }}
+                                <div class="col-lg-8">{{ form.evidence_discussion(class_="form-control",multiple="", onInput="TextCounter(this,1000)") }}
+                                    <span id="text" style="color: grey">0 / 1000</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group type" id="Observation" hidden="hidden">
+                                {{ form.evidence_observation.label(class_="col-lg-4 control-label") }}
+                                <div class="col-lg-8">{{ form.evidence_observation(class_="form-control",multiple="", onInput="TextCounter2(this,1000)") }}
+                                    <span id="text2" style="color: grey">0 / 1000</span>
+                                </div>
+                            </div>
+
+                        <div class="form-group">
+                            {{ form.signoff_id.label(class_="col-lg-4 control-label") }}
+                            <div class="col-lg-8">
+                                {{ form.signoff_id(class_="form-control") }}
+                            </div>
+                        </div>
+                        <div class="col-lg-8 col-lg-offset-4">
+                            <input type="submit" class="btn btn-flat btn-primary" value="Submit"/>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        $(function () {
+            $('#evidence_type').change(function () {
+                $('.type').hide();
+                var option = $("option:selected", this).text();
+                if (option.includes("Completed competence panel")) {
+                    console.log('#CompetencePanel');
+                    $('#CompetencePanel').show();
+                } else {
+                    console.log('#' + option);
+                    $('#' + option).show();
+                }
+            });
+        });
+        $(function () {
+            $('#add').click(function () {
+                var content = $('#dup').html();
+                $('#Case').append(content);
+            });
+        });
+
+        function TextCounter(field, limit) {
+        console.log("in textcounter function");
+        var typedChars = $(field).val().length;
+        console.log(typedChars);
+        var text = document.getElementById('text');
+        $(text).text(typedChars=0?'0 / '+limit:typedChars+' / '+limit);
+    }
+
+    function TextCounter2(field, limit) {
+        console.log("in textcounter function");
+        var typedChars = $(field).val().length;
+        console.log(typedChars);
+        var text2 = document.getElementById('text2');
+        $(text2).text(typedChars=0?'0 / '+limit:typedChars+' / '+limit);
+    }
+    </script>
+
+{% endblock %}

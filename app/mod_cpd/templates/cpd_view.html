@@ -1,77 +1,83 @@
 {% extends "base2.html" %}
 {% block content %}
-<h1><i class="fa fa-calendar"></i> Continued Professional Development Events<small></small></h1>
 
+    <h1><i class="fa fa-calendar"></i> Continued Professional Development Events<small></small></h1>
 
-<section class="content container-fluid">
-    <div class="row">
-        <div class="col-md-8">
-            <h3>CPD Events: {{ user }}</h3>
+    <section class="content container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <h3>CPD Events: {{ user }}</h3>
+            </div>
+            <div class="col-md-6">
+                <a class="btn btn-warning btn-flat pull-right pull-down" style="margin-left: 1rem"
+                   role="button" href="{{ url_for('cpd.download_cpd_log') }}">
+                    <span class="fa fa-download"></span> Download CPD Log</a>
+                <a class="btn btn-default btn-flat pull-right pull-down" style="margin-left: 1rem"
+                   onclick="showdeletebuttons()" id="delete" role="button">
+                    <span class="fa fa-calendar-times-o"></span> Delete Event</a>
+                <a class="btn btn-info btn-flat pull-right pull-down" style="margin-left: 1rem"
+                   onclick="showeditbuttons()" id="edit" role="button">
+                    <span class="fa fa-calendar"></span> Edit Event</a>
+                <a class="btn btn-success btn-flat pull-right pull-down" style="margin-left: 1rem"
+                   role="button" href="{{ url_for('cpd.add_cpd') }}">
+                    <span class="fa fa-calendar-plus-o"></span> Add Event</a>
+            </div>
         </div>
-    <div class="col-md-4">
-                <a class="btn btn-default btn-flat pull-right pull-down" onclick="showdeletebuttons()" id="delete" role="button"><span
-                            class="fa fa-calendar-times-o"></span> Delete Event</a>
-        <a class="btn btn-success btn-flat pull-right pull-down" role="button"
-                                   href="{{ url_for('cpd.add_cpd') }}"><span
-                                        class="fa fa-calendar-plus-o"></span> Add Event</a>
-
-    </div>
-    </div>
-    <div class="row">
-                <div class="col-md-12">
-                    <div class="box box-solid">
-                        <div class="box-body table-responsive no-padding">
-                            <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>Event</th>
-                            <th>Type</th>
-                            <th>Date</th>
-                            <th>Role</th>
-                            <th>Location</th>
-                            <th>CPD points</th>
-                            <th style="word-wrap: break-word; width:800px">Description/Comments</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for i in cpd %}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-solid">
+                    <div class="box-body table-responsive no-padding">
+                        <table class="table table-striped">
+                            <thead>
                             <tr>
-                                <td>{{ i.event_name }}</td>
-                                <td>{{ i.event_type_rel.type }}</td>
-                                <td>{{ i.date }}</td>
-                                <td>{{ i.event_role_rel.role }}</td>
-                                <td>{{ i.location }}</td>
-                                <td>{{ i.cpd_points }}</td>
-                                <td>{{ i.comments }}
-                                        <a class="btn btn-sm btn-danger btn-flat pull-right" style="height:20px; width:20px; display:none; font-size: 10px; align-items: center; justify-content: center" role="button"
-                                   href="{{ url_for('cpd.delete_cpd') }}?id={{ i.id }}" id="deletebutton"><span
-                                        class="fa fa-remove"></span></a>
-
-                                </td>
+                                <th>Event</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th>Role</th>
+                                <th>Location</th>
+                                <th>CPD points</th>
+                                <th style="word-wrap: break-word; width:800px">Description/Comments</th>
                             </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                        </div>
+                            </thead>
+                            <tbody>
+                                {% for i in cpd %}
+                                    <tr>
+                                        <td>{{ i.event_name }}</td>
+                                        <td>{{ i.event_type_rel.type }}</td>
+                                        <td>{{ i.date }}</td>
+                                        <td>{{ i.event_role_rel.role }}</td>
+                                        <td>{{ i.location }}</td>
+                                        <td>{{ i.cpd_points }}</td>
+                                        <td>{{ i.comments }}
+                                            <a class="btn btn-sm btn-danger btn-flat pull-right" style="height:20px; width:20px; display:none; font-size: 10px; align-items: center; justify-content: center" role="button"
+                                            href="{{ url_for('cpd.delete_cpd') }}?id={{ i.id }}" id="deletebutton">
+                                                <span class="fa fa-remove"></span></a>
+                                            <a class="btn btn-sm btn-info btn-flat pull-right" style="height:20px; width:20px; display:none; font-size: 10px; align-items: center; justify-content: center" role="button"
+                                            href="{{ url_for('cpd.edit_cpd', id=id) }}{{ i.id }}" id="editbutton">
+                                                <span class="fa fa-edit"></span></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-    </div>
-
-</section>
+            </div>
+        </div>
+    </section>
 
 <script>
 
     function showdeletebuttons(){
         console.log("in delete buttons method");
-        // var buttons = document.getElementsByClassName("btn-sm");
-        // // // console.log(buttons);
-        // // // buttons.style.display='flex';
-        // for (i in buttons) {
-        //     buttons[i].style.display='flex';
-        // }
-        $('.btn-sm').css('display','flex');
-
+        $('.btn-danger').css('display','flex');
     }
+
+    function showeditbuttons(){
+        console.log("in edit buttons method");
+        $('.btn-info').css('display', 'flex');
+    }
+
 </script>
 
 

@@ -7,9 +7,10 @@ from activedirectory import UserAuthentication
 from forms import *
 from flask_principal import Principal, Identity, AnonymousIdentity, \
     identity_changed, Permission, RoleNeed, UserNeed, identity_loaded
-from app.mod_training.views import get_competence_summary_by_user, get_completion_status_counts
+from app.mod_training.views import get_competence_summary_by_user, get_competence_by_user, get_completion_status_counts
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.sql.expression import func, and_, or_, case, exists, update,distinct
+from sqlalchemy.orm import aliased
 from app.competence import *
 from app.models import *
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -343,6 +344,42 @@ def utility_processor():
 
 @app.context_processor
 def utility_processor():
+    def get_next_actioner(c_id, u_id, version):
+        """
+        Looks at assessment statuses and works out if action is required by the trainee, assessor or both
+        """
+        #TODO make this query work
+        section_list = get_competence_by_user(c_id, u_id, version)
+        statuses = []
+
+        for section_heading in section_list['custom']:
+            for subsection in section_list['custom'][section_heading]['subsections']:
+                if subsection['status'] not in statuses:
+                    statuses.append(subsection['status'])
+
+        #Check if assessor needs to do something
+        assessor_action_check = 'Sign-Off' in statuses
+
+        #Check if trainee needs to do something
+        trainee_action_list = ['Assigned', 'Active', 'Failed', 'Four Year Due']
+        trainee_action_check = any(status in statuses for status in trainee_action_list)
+
+        if assessor_action_check is True and trainee_action_check is True:
+            next_actioner = "You and Assessor"
+        elif assessor_action_check is True and trainee_action_check is False:
+            next_actioner = "Assessor"
+        elif assessor_action_check is False and trainee_action_check is True:
+            next_actioner = "You"
+        else:
+            next_actioner = "Please check your competency record"
+
+        return next_actioner
+
+    return dict(get_next_actioner=get_next_actioner)
+
+
+@app.context_processor
+def utility_processor():
     def friendly_date(date):
       if type(date) == str:
           result=date
@@ -390,16 +427,21 @@ def check_margin(date,margin_days):
 
 @app.context_processor
 def utility_processor():
-    def check_expiry(expiry_date):
-        if check_margin(expiry_date,0):
+    def check_expiry(expiry_date, four_year_expiry_date):
+        if check_margin(four_year_expiry_date,0):
+            html = '<span class="label label-danger">Four Year Expired</span>'
+        elif check_margin(expiry_date,0):
             html = '<span class="label label-danger">Expired</span>'
+        elif check_margin(four_year_expiry_date,5):
+            html = '<span class="label label-danger">Four Year Expiring Within 5 Days</span>'
+        elif check_margin(four_year_expiry_date,30):
+            html = '<span class="label label-warning">Four Year Expiring Within 30 Days</span>'
         elif check_margin(expiry_date,5):
             html = '<span class="label label-danger">Expiring Within 5 Days</span>'
         elif check_margin(expiry_date,30):
             html = '<span class="label label-warning">Expiring Within 30 Days</span>'
         else:
             html = '<span class="label label-success">OK</span>'
-
         return html
 
     return dict(check_expiry=check_expiry)
@@ -570,7 +612,7 @@ def get_percentage(c_id, u_id,version):
         .filter(AssessmentStatusRef.status != "Obsolete") \
         .filter(and_(Assessments.user_id == u_id, Subsection.c_id == c_id)) \
         .values((func.sum(case(
-        [(Assessments.status.in_([3, 9]), 1)],
+        [(Assessments.status.in_([3, 8, 9]), 1)],
         else_= 0)) / func.count(
         Assessments.id) * 100).label('percentage'))
 
@@ -877,8 +919,10 @@ def index(message=None):
                     AssessmentStatusRef.status == "Failed"))\
         .all()
 
+
     all_assigned=[]
     for j in assigned:
+        print(j.status)
         all_assigned.append(get_competence_summary_by_user(c_id=j.ss_id_rel.c_id,u_id=current_user.database_id,version=j.version))
 
     active = s.query(Assessments)\
@@ -904,6 +948,8 @@ def index(message=None):
     all_complete = []
 
     for i in complete:
+        print(i.ss_id_rel)
+        print(i.status_rel)
         percent_complete = get_percentage(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
         if percent_complete == 100:
             result = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
@@ -912,6 +958,7 @@ def index(message=None):
             result = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id,
                                                     version=i.version)
             all_complete.append(result)
+
 
     obsolete = s.query(Assessments) \
         .join(Subsection) \
@@ -926,8 +973,11 @@ def index(message=None):
         .filter(AssessmentStatusRef.status.in_(["Obsolete"])) \
         .all()
 
+    evidence_alias1 = aliased(Evidence)
     signoff = s.query(Evidence). \
         join(EvidenceTypeRef). \
+        join(AssessmentEvidenceRelationship). \
+        filter(exists().where(evidence_alias1.id == AssessmentEvidenceRelationship.evidence_id)). \
         filter(Evidence.signoff_id == current_user.database_id). \
         filter(Evidence.is_correct == None). \
         all()
@@ -939,7 +989,8 @@ def index(message=None):
         all()
 
     signoff_reassessment = s.query(Reassessments). \
-        join(AssessReassessRel).join(Assessments). \
+        join(AssessReassessRel). \
+        join(Assessments). \
         filter(Reassessments.signoff_id==current_user.database_id). \
         filter(Reassessments.is_correct == None). \
         all()
