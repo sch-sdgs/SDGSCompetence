@@ -460,8 +460,13 @@
                                                         {{ i.completed.strftime('%d-%m-%Y') }}
                                                     {% endif %}
                                                 </td>
-                                                <td>   {% if i.expiry != None %}
-                                                    {{ i.expiry.strftime('%d-%m-%Y') }}
+                                                <td>
+                                                    {% if i.expiry != None %}
+                                                        {% if i.expiry < i.four_year_expiry %}
+                                                            {{ i.expiry.strftime('%d-%m-%Y') }}
+                                                        {% else %}
+                                                            {{ i.four_year_expiry.strftime('%d-%m-%Y') }}
+                                                        {% endif %}
                                                 {% endif %}</td>
                                                 <td>
                                                     {{ get_status(i.max_status)|safe }}
