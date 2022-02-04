@@ -923,6 +923,15 @@ def reject_reassessment(id=None):
     s.query(Reassessments).filter(Reassessments.id == id).update(data)
     s.commit()
 
+    ### Send email
+    user_id = s.query(Assessments.user_id). \
+        join(AssessReassessRel). \
+        join(Reassessments). \
+        filter(Reassessments.id == id). \
+        first()
+
+    send_mail(user_id.user_id, "Your Reassessment has been Rejected", "You have had a reassessment rejected.")
+
     return redirect('/index')
 
 @training.route('/reassessment_accept/<int:id>', methods=['GET', 'POST'])
@@ -962,7 +971,8 @@ def accept_reassessment(id=None):
                         print(new_expiry)
 
                         data = {
-                            'date_expiry':new_expiry
+                            'date_expiry':new_expiry,
+                            'status': 3
                         }
                         s.query(Assessments). \
                             filter(Assessments.id == j.assess_id). \
@@ -981,6 +991,7 @@ def accept_reassessment(id=None):
 
         if four_year_check.is_four_year == 1:
             new_four_year_expiry = datetime.date.today() + relativedelta(years=4)
+            new_expiry = datetime.date.today() + relativedelta(months=detail.validity_rel.months)
             for i in s.query(Reassessments). \
                     join(AssessReassessRel). \
                     join(Assessments). \
@@ -988,12 +999,22 @@ def accept_reassessment(id=None):
                     all():
                 for j in i.assessments_rel:
                     data = {
+                        'date_expiry': new_expiry,
                         'date_four_year_expiry': new_four_year_expiry
                     }
                     s.query(Assessments). \
                         filter(Assessments.id == j.assess_id). \
                         update(data)
             s.commit()
+
+        ### Send email
+        user_id = s.query(Assessments.user_id). \
+                    join(AssessReassessRel). \
+                    join(Reassessments). \
+                    filter(Reassessments.id == id). \
+                    first()
+
+        send_mail(user_id.user_id, "Your Reassessment has been Accepted", "You have had a reassessment accepted.")
 
     return redirect('/index')
 
