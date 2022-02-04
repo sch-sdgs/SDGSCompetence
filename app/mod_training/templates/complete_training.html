@@ -30,7 +30,11 @@
             <div class="col-md-12">
                 <div class="box box-solid">
                     <div class="box-body">
-                        {% if 'Complete' in statuses %}
+                        {% if  four_year_check > 0 %}
+                            <a href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&version={{ version }}&action=four_year_reassess"
+                               class="btn btn-info btn-flat pull-right" style="margin-left: 1rem"><i class="fa fa-refresh " ></i> Four Year Reassess</a>
+                        {% endif %}
+                        {% if 'Complete' in statuses and four_year_check == 0 %}
                             <a href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&version={{ version }}&action=reassess"
                                class="btn btn-info btn-flat pull-right" style="margin-left: 1rem"><i class="fa fa-refresh " ></i> Reassess</a>
                         {% endif %}
@@ -49,69 +53,6 @@
                                    href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&version={{ version }}&action=make_inactive">
                                     <i class="fa fa-ban"></i> Mark as Not Required</a>
                         {% endif %}
-
-{##}
-{#                        {% if completed == '-' and activated != '-' %}  <!-- Nothing has been completed but something has been activated, Show submit evidence, Activate and Not Required -->#}
-{#                            <a class="btn btn-success btn-flat pull-right" role="button"#}
-{#                               href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&version={{ version }}&action=evidence">#}
-{#                                <span class="glyphicon glyphicon-open"></span> Submit Evidence</a>#}
-{##}
-{#                            <a class="btn btn-primary btn-flat pull-right" role="button"#}
-{#                               href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&version={{ version }}&action=activate">#}
-{#                                <i class="fa fa-play"></i> Activate</a>#}
-{##}
-{#                            <a class="btn btn-info btn-flat pull-right" role="button"#}
-{#                               href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&version={{ version }}&action=make_inactive">#}
-{#                                <i class="fa fa-ban"></i> Mark as Not Required</a>#}
-{##}
-{#                        {% elif activated == '-' %}                     <!-- Something has been completed but nothing activated, -->#}
-{#                            <a class="btn btn-primary btn-flat pull-right" role="button"#}
-{#                               href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&version={{ version }}&action=activate">#}
-{#                                <i class="fa fa-play"></i> Activate</a>#}
-{##}
-{#                            <a class="btn btn-info btn-flat pull-right" role="button"#}
-{#                               href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&version={{ version }}&action=make_inactive">#}
-{#                                <i class="fa fa-ban"></i> Mark as Not Required</a>#}
-{##}
-{#                        {% elif not reassessments and four_year_check == 0 and activated != '-' %}#}
-{#                            <a class="btn btn-primary btn-flat pull-right" role="button"#}
-{#                               href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&version={{ version }}&action=activate">#}
-{#                                <i class="fa fa-play"></i> Activate</a>#}
-{#                            <a class="btn btn-success btn-flat pull-right" role="button"#}
-{#                               href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&version={{ version }}&action=evidence">#}
-{#                                <span class="glyphicon glyphicon-open"></span> Submit Evidence</a>#}
-{#                            <a href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&version={{ version }}&action=reassess"#}
-{#                               class="btn btn-info btn-flat pull-right">Reassess</a>#}
-{##}
-{#                        {% else %}#}
-{#                                {% if not reassessments and four_year_check == 0 %}#}
-{#                                    <a class="btn btn-primary btn-flat pull-right" role="button"#}
-{#                                        href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&version={{ version }}&action=activate">#}
-{#                                        <i class="fa fa-play"></i> Activate</a>#}
-{#                                    <a href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&version={{ version }}&action=reassess"#}
-{#                                       class="btn btn-info btn-flat pull-right">Reassess</a>#}
-{#                                {% else %}#}
-{#                                    {% set pending=[] %}#}
-{#                                    {% for reassessment in reassessments %}#}
-{#                                        {% if reassessment.assessments_rel[0].assess_rel.ss_id_rel.c_id|int == competence|int %}#}
-{#                                            {% do pending.append(reassessment.is_correct) %}#}
-{#                                        {% endif %}#}
-{#                                    {% endfor %}#}
-{#                                    {% if None not in pending %}#}
-{#                                        {% if four_year_check == 0 %}#}
-{#                                            <a class="btn btn-primary btn-flat pull-right" role="button"#}
-{#                                                href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&version={{ version }}&action=activate">#}
-{#                                                <i class="fa fa-play"></i> Activate</a>#}
-{#                                            <a href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&version={{ version }}&action=reassess"#}
-{#                                               class="btn btn-info btn-flat pull-right">Reassess</a>#}
-{#                                        {% elif four_year_check > 0 %}#}
-{#                                            <a class="btn btn-primary btn-flat pull-right" role="button"#}
-{#                                                href="{{ url_for('training.select_subsections') }}?c_id={{ competence }}&u_id={{ u_id }}&version={{ version }}&action=activate">#}
-{#                                                <a href="" class="btn btn-danger btn-flat pull-right">4 Year Reassessment</a></a>#}
-{#                                        {% endif %}#}
-{#                                    {% endif %}#}
-{#                                {% endif %}#}
-{#                            {% endif %}#}
                     </div>
                 </div>
             </div>
@@ -137,6 +78,7 @@
                             <th>Activated</th>
                             <th>Completed</th>
                             <th>Earliest Expiry Date</th>
+                            <th>Four Year Expiry Date</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -148,7 +90,13 @@
                             <td>{{ validity }} months</td>
                             <td>{{ friendly_date(activated) }}</td>
                             <td>{{ friendly_date(completed) }}</td>
-                            <td>{{ friendly_date(expires) }}</td>
+{#                            <td>{{ friendly_date(expires) }}</td>#}
+                            {% if four_year_expires < expires %}
+                                <td>{{ friendly_date(four_year_expires) }}</td>
+                            {% else %}
+                                <td>{{ friendly_date(expires) }}</td>
+                            {% endif %}
+                            <td>{{ friendly_date(four_year_expires) }}</td>
                         </tr>
                         </tbody>
                     </table>
@@ -177,6 +125,7 @@
                             <tr>
                                 <th>Status</th>
                                 <th>Date Completed</th>
+                                <th>Assessment Type</th>
                                 <th>Authoriser</th>
                                 <th>Comments</th>
                                 <th>View</th>
@@ -191,6 +140,11 @@
 
                                     </td>
                                     <td>{{ reassessment.date_completed }}</td>
+                                    {% if reassessment.is_four_year == 1 %}
+                                        <td>Four Year Reassessment</td>
+                                    {% else %}
+                                        <td>Standard Reassessment</td>
+                                    {% endif %}
                                     <td>{{ reassessment.signoff_id_rel.first_name }} {{ reassessment.signoff_id_rel.last_name }}</td>
                                     <td>{{ reassessment.comments }}</td>
                                     <td>

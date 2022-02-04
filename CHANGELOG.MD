@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 ### Fixed
 - Homepage: 'assigned by' now shows assigner, not user
+### Added
+- Reassessments: added capacity for four year reassessments including new evidence submission
+- Daily cron job to flag competencies that have reached their four year expiry
+
+### Changed
+- CPD: Updated CPD event name to 200 characters
 
 ## [v1.2.2] - 2022-01-06
 ### Fixed
