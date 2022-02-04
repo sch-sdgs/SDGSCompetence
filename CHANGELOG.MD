@@ -4,12 +4,13 @@ All notable changes to this project will be documented in this file from v1.0.0.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
-### Fixed
-- Homepage: 'assigned by' now shows assigner, not user
+
 ### Added
 - Reassessments: added capacity for four year reassessments including new evidence submission
 - Daily cron job to flag competencies that have reached their four year expiry
-
+- Added error handling for 502 errors
+### Fixed
+- Homepage: 'assigned by' now shows assigner, not user
 ### Changed
 - CPD: Updated CPD event name to 200 characters
 

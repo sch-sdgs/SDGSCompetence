@@ -1,0 +1,24 @@
+{% extends "base2.html" %}
+{% block content %}
+
+    <h1>502 Error Page</h1>
+
+        <section class="content">
+            <div class="error-page">
+                <h2 class="headline text-yellow"> 502</h2>
+                <div class="error-content">
+                    <h3><i class="fa fa-warning text-yellow"></i> There has been a database error!</h3>
+                    <p>
+                        There has been an error submitting this information to the database! Please check the information
+                        you are trying to send (eg. have you missed a field or gone over the character limits?) and try
+                        again. If this error persists, please contact bioinformatics.
+
+                        Meanwhile, you may <a href="../../index.html">return to dashboard</a>.
+                    </p>
+                </div>
+                <!-- /.error-content -->
+            </div>
+            <!-- /.error-page -->
+        </section>
+
+{% endblock %}

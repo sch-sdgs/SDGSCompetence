@@ -302,6 +302,14 @@ def page_not_found(e):
     return render_template('403.html'), 403
 
 
+@app.errorhandler(502)
+def internal_server_error(e):
+    """
+    Returns a graceful error when a 502 is encountered
+    """
+    return render_template('502.html'), 502
+
+
 def get_competence_from_subsections(subsection_ids):
     subsections = s.query(Competence). \
         join(Subsection). \
