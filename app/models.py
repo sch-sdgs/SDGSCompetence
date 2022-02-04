@@ -653,11 +653,12 @@ class MonthlyReportNumbers(db.Model):
     activated_assessments = db.Column(db.Integer, unique=False, nullable=False)
     activated_three_month_assessments = db.Column(db.Integer, unique=False, nullable=False)
     four_year_expiry_assessments = db.Column(db.Integer, unique=False, nullable=False)
+    expiring_assessments = db.Column(db.Integer, unique=False, nullable=True)
 
     service_id_rel = db.relationship("Service", lazy='joined', foreign_keys=[service_id])
 
     def __init__(self, service_id, expired_assessments, completed_assessments, completed_reassessments, overdue_training,
-                 activated_assessments, activated_three_month_assessments, four_year_expiry_assessments):
+                 activated_assessments, activated_three_month_assessments, four_year_expiry_assessments, expiring_assessments):
         self.date = datetime.date.today()
         self.service_id = service_id
         self.expired_assessments = expired_assessments
@@ -667,6 +668,7 @@ class MonthlyReportNumbers(db.Model):
         self.activated_assessments = activated_assessments
         self.activated_three_month_assessments = activated_three_month_assessments
         self.four_year_expiry_assessments = four_year_expiry_assessments
+        self.expiring_assessments = expiring_assessments
 
     def __repr__(self):
         return '<MonthlyReportNumbers %r>' % self.date
