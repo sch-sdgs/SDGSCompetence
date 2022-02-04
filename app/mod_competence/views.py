@@ -1770,6 +1770,7 @@ def nearest(items, pivot):
 
 def reporting():
     #TODO do we still need this now there's a new reports page?
+    # YES this goes and gets the specific people in each category to fill the tables on the page
     """
 
     """
@@ -1845,6 +1846,7 @@ def report_by_section():
     monthly_numbers = s.query(MonthlyReportNumbers).join(Service).order_by(desc(MonthlyReportNumbers.date))
     dates = []
     expired_dict = {}
+    expiring_dict = {}
     overdue_dict = {}
     completed_assessments_dict = {}
     completed_reassessments_dict = {}
@@ -1864,6 +1866,7 @@ def report_by_section():
         service = str(entry.service_id_rel.name)
         if service not in expired_dict:
             expired_dict[service] = [int(entry.expired_assessments)]
+            expiring_dict[service] = [int(entry.expiring_assessments)]
             overdue_dict[service] = [int(entry.overdue_training)]
             completed_assessments_dict[service] = [int(entry.completed_assessments)]
             completed_reassessments_dict[service] = [int(entry.completed_reassessments)]
@@ -1872,6 +1875,7 @@ def report_by_section():
             four_year_expiry_dict[service] = [int(entry.four_year_expiry_assessments)]
         else:
             expired_dict[service].append(int(entry.expired_assessments))
+            expiring_dict[service].append(int(entry.expiring_assessments))
             overdue_dict[service].append(int(entry.overdue_training))
             completed_assessments_dict[service].append(int(entry.completed_assessments))
             completed_reassessments_dict[service].append(int(entry.completed_reassessments))
@@ -1880,6 +1884,7 @@ def report_by_section():
             four_year_expiry_dict[service].append(int(entry.four_year_expiry_assessments))
 
     expired_fig = go.Figure()
+    expiring_fig = go.Figure()
     overdue_fig = go.Figure()
     completed_assessments_fig = go.Figure()
     completed_reassessments_fig = go.Figure()
@@ -1894,12 +1899,12 @@ def report_by_section():
     expired_fig.update_layout(height=300, width=650, margin=dict(t=0, l=10, b=10, r=30), showlegend=False)
     expired_plot = plot(expired_fig, output_type="div")
 
-    ### training overdue graph, right-side ###
-    for service in overdue_dict:
-        overdue_fig.add_trace(go.Scatter(x=dates, y=overdue_dict[service], mode='lines+markers', name=service, line_color=colour_dict[service]))
-    overdue_fig.update_xaxes(dtick="M1", tickformat="%e %b\n%Y")
-    overdue_fig.update_layout(height=300, width=800, margin=dict(t=0, l=50, b=10, r=0), showlegend=True)
-    overdue_plot = plot(overdue_fig, output_type="div")
+    ### expiring assessments, right-side ###
+    for service in expiring_dict:
+        expiring_fig.add_trace(go.Scatter(x=dates, y=expiring_dict[service], mode='lines+markers', name=service, line_color=colour_dict[service]))
+    expiring_fig.update_xaxes(dtick="M1", tickformat="%e %b\n%Y")
+    expiring_fig.update_layout(height=300, width=800, margin=dict(t=0, l=50, b=10, r=0), showlegend=True)
+    expiring_plot = plot(expiring_fig, output_type="div")
 
     ### completed assessments graph, left-side ###
     for service in completed_assessments_dict:
@@ -1933,8 +1938,16 @@ def report_by_section():
     for service in four_year_expiry_dict:
         four_year_expiry_fig.add_trace(go.Scatter(x=dates, y=four_year_expiry_dict[service], mode='lines+markers', name=service, line_color=colour_dict[service]))
     four_year_expiry_fig.update_xaxes(dtick="M1", tickformat="%e %b\n%Y")
-    four_year_expiry_fig.update_layout(height=300, width=800, margin=dict(t=0, l=10, b=10, r=30), showlegend=True)
+    four_year_expiry_fig.update_layout(height=300, width=650, margin=dict(t=0, l=10, b=10, r=30), showlegend=False)
     four_year_expiry_plot = plot(four_year_expiry_fig, output_type="div")
+
+    ### training overdue graph, right-side ###
+    for service in overdue_dict:
+        overdue_fig.add_trace(go.Scatter(x=dates, y=overdue_dict[service], mode='lines+markers', name=service, line_color=colour_dict[service]))
+    overdue_fig.update_xaxes(dtick="M1", tickformat="%e %b\n%Y")
+    overdue_fig.update_layout(height=300, width=800, margin=dict(t=0, l=50, b=10, r=0), showlegend=True)
+    overdue_plot = plot(overdue_fig, output_type="div")
+
 
     return render_template('competence_report_by_section.html', expired=expired,
                            expiring=expiring, overdue=overdue, activated_three_month=activated_three_month,
@@ -1943,7 +1956,7 @@ def report_by_section():
                            completed_reassessments_plot=Markup(completed_reassessments_plot),
                            activated_assessments_plot=Markup(activated_assessments_plot),
                            activated_assessments_three_month_plot=Markup(activated_assessments_three_month_plot),
-                           four_year_expiry_plot=Markup(four_year_expiry_plot))
+                           four_year_expiry_plot=Markup(four_year_expiry_plot), expiring_plot=Markup(expiring_plot))
 
 
 @competence.route('/report_by_competence', methods=['GET', 'POST'])
