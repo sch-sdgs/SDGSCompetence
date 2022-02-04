@@ -244,7 +244,6 @@ class User(UserMixin):
             return False
 
 
-
     def is_active(self):
         return True
 
@@ -356,7 +355,6 @@ def utility_processor():
         """
         Looks at assessment statuses and works out if action is required by the trainee, assessor or both
         """
-        #TODO make this query work
         section_list = get_competence_by_user(c_id, u_id, version)
         statuses = []
 
@@ -956,8 +954,6 @@ def index(message=None):
     all_complete = []
 
     for i in complete:
-        print(i.ss_id_rel)
-        print(i.status_rel)
         percent_complete = get_percentage(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)
         if percent_complete == 100:
             result = get_competence_summary_by_user(c_id=i.ss_id_rel.c_id, u_id=current_user.database_id, version=i.version)

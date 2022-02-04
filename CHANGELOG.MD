@@ -7,9 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Reassessments: added capacity for four year reassessments including new evidence submission
-- Daily cron job to flag competencies that have reached their four year expiry
 - Added error handling for 502 errors
+- Daily cron job to flag competencies that have reached their four year expiry
 - Emails are now sent when reassessments are submitted, accepted or rejected
+- Emails are now sent when expiry and four year expiry dates are at 30 days before, 7 days before and expired
 ### Fixed
 - Homepage: 'assigned by' now shows assigner, not user
 ### Changed
