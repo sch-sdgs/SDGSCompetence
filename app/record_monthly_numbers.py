@@ -64,6 +64,7 @@ def main():
         'complete_assessments': {},
         'complete_reassessments': {},
         'expired_assessments': {},
+        'expiring_assessments': {},
         'overdue_training': {},
         'activated_assessments': {},
         'activated_three_months_ago': {},
@@ -88,6 +89,8 @@ def main():
                 counts['expired_assessments'][service_id] +=1
             if todays_date + relativedelta(months=-49) < date_completed < todays_date + relativedelta(months=-48):
                 counts['four_year_expiry_assessments'][service_id]+=1
+            if todays_date < date_expiry < todays_date + relativedelta(months=+1):
+                counts['expiring_assessments'][service_id] += 1
 
         elif status == "Active":
             if todays_date + relativedelta(months=-1) < date_activated: ### assessment has been activated in the past month
@@ -108,11 +111,11 @@ def main():
     for service in services:
         for service_id in service:
             sql = '''INSERT INTO monthly_report_numbers (date, expired_assessments, service_id, completed_assessments, completed_reassessments,
-            overdue_training, activated_assessments, activated_three_month_assessments, four_year_expiry_assessments) VALUES (%s, %s, %s, %s, %s,%s, %s, %s, %s)'''
+            overdue_training, activated_assessments, activated_three_month_assessments, four_year_expiry_assessments, expiring_assessments) VALUES (%s, %s, %s, %s, %s,%s, %s, %s, %s, %s)'''
 
             c.execute(sql, [(todays_date, counts['expired_assessments'][service_id], service_id, counts['complete_assessments'][service_id],
                             counts['complete_reassessments'][service_id], counts['overdue_training'][service_id], counts['activated_assessments'][service_id],
-                            counts['activated_three_months_ago'][service_id], counts['four_year_expiry_assessments'][service_id])])
+                            counts['activated_three_months_ago'][service_id], counts['four_year_expiry_assessments'][service_id], counts['expiring_assessments'][service_id])])
 
 
     # for service in services:

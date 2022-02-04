@@ -43,6 +43,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Activate button now "Activate Training"
 - Submit Evidence button now shows if competence is Failed
+=========
+## [Unreleased]
+### Fixed
+- Four year due competencies now show in 'complete' section on dashboard
+>>>>>>>>> Temporary merge branch 2
 
 ## [1.1.0] - 2021-11-05
 ### Added

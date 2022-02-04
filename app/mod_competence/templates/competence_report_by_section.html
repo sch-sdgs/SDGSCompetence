@@ -43,8 +43,8 @@
             <h5> Total number of expired assessments at the time of recording</h5>
         </div>
         <div class="col-md-7">
-            <h3>Trends: Overdue Training</h3>
-            <h5>Total number of overdue training assessments at the time of recording</h5>
+            <h3>Trends: Expiring assessments</h3>
+            <h5>Total number of assessments due to expire in the next month</h5>
         </div>
         <div class="row" style="padding-top:8rem">
             <div class="box-body" style="height:32rem; width:95%; background-color: white">
@@ -52,7 +52,7 @@
                     {{ expired_plot }}
                 </div>
                 <div class="col-md-7">
-                    {{ overdue_plot }}
+                    {{ expiring_plot }}
                 </div>
             </div>
         </div>
@@ -83,11 +83,18 @@
             <h3>Trends: Four Year Expiry</h3>
             <h5> Number of assessments that reached their four year expiry within the past month</h5>
         </div>
+        <div class="col-md-7">
+            <h3>Trends: Overdue Training</h3>
+            <h5>Total number of overdue training assessments at the time of recording</h5>
+        </div>
 
         <div class="row" style="padding-top:8rem">
-            <div class="box-body" style="height:32rem; width:55%; background-color: white">
+            <div class="box-body" style="height:32rem; width:95%; background-color: white">
                 <div class="col-md-5">
                     {{ four_year_expiry_plot }}
+                </div>
+                <div class="col-md-7">
+                    {{ overdue_plot }}
                 </div>
 
             </div>
