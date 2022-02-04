@@ -40,6 +40,7 @@ def send_async_email(msg):
     with app.test_request_context():
         mail.send(msg)
 
+
 def send_mail(user_id,subject,message):
 
     if config.get("MAIL") != False:
@@ -52,7 +53,6 @@ def send_mail(user_id,subject,message):
         thr.start()
 
 
-
 def send_mail_unknown(email,subject,message):
 
     if config.get("MAIL") != False:
@@ -61,7 +61,6 @@ def send_mail_unknown(email,subject,message):
         msg.html = message
         thr = Thread(target=send_async_email, args=[msg])
         thr.start()
-
 
 
 ##################################################

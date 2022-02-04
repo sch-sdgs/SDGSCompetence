@@ -470,6 +470,12 @@ def reassessment():
 
             s.commit()
 
+        try:
+            send_mail(signoff_id, "You have a reassessment to sign off",
+                      f"You have been send a reassessment to sign off")
+        except:
+            s.rollback()
+
         return redirect(
             url_for('training.view_current_competence', version= request.args.get('version'),c_id=request.args.get('c_id'), user=request.args.get('u_id')))
 
