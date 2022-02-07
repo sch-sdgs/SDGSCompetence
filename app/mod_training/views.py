@@ -1082,6 +1082,7 @@ def self_complete(assess_id):
             'date_expiry': datetime.date.today() + relativedelta(months=months_valid),
             'signoff_id': current_user.database_id,
             'status': status_id,
+            'date_four_year_expiry': datetime.date.today() + relativedelta(years=4)
             }
 
     s.query(Assessments).filter(Assessments.id == assess_id).update(data)
