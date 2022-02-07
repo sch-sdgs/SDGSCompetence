@@ -91,12 +91,20 @@
                             <td>{{ friendly_date(activated) }}</td>
                             <td>{{ friendly_date(completed) }}</td>
 {#                            <td>{{ friendly_date(expires) }}</td>#}
-                            {% if four_year_expires < expires %}
+                            {% if four_year_expires != '-' and expires != '-' %}
+                                {% if four_year_expires < expires %}
+                                    <td>{{ friendly_date(four_year_expires) }}</td>
+                                {% else %}
+                                    <td>{{ friendly_date(expires) }}</td>
+                                {% endif %}
+                                <td>{{ friendly_date(four_year_expires) }}</td>
+                            {% elif expires != '-' %}
+                                <td>{{ friendly_date(expires) }}</td>
                                 <td>{{ friendly_date(four_year_expires) }}</td>
                             {% else %}
                                 <td>{{ friendly_date(expires) }}</td>
+                                <td>{{ friendly_date(four_year_expires) }}</td>
                             {% endif %}
-                            <td>{{ friendly_date(four_year_expires) }}</td>
                         </tr>
                         </tbody>
                     </table>
