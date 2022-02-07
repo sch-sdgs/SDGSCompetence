@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Daily cron job to flag competencies that have reached their four year expiry
 - Emails are now sent when reassessments are submitted, accepted or rejected
 - Emails are now sent when expiry and four year expiry dates are at 30 days before, 7 days before and expired
+- Reports: added additional graph to show competencies expiring within 30 days
 ### Fixed
 - Homepage: 'assigned by' now shows assigner, not user
 ### Changed
@@ -44,11 +45,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Activate button now "Activate Training"
 - Submit Evidence button now shows if competence is Failed
-=========
-## [Unreleased]
-### Fixed
-- Four year due competencies now show in 'complete' section on dashboard
->>>>>>>>> Temporary merge branch 2
 
 ## [1.1.0] - 2021-11-05
 ### Added
