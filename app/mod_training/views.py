@@ -1853,42 +1853,42 @@ def bulk_distribute():
         for i in zip(request.form.getlist('assid'), request.form.getlist('trainer'), request.form.getlist('assessor')):
             print (i)
 
-@training.route('/four_year_activate/<c_id>', methods=['GET', 'POST'])
-@login_required
-def four_year_activate(c_id = None):
-    """
-    set all assessments in current competency to obsolete and assign the latest version of
-    the competency to the user - probably need to check if competence exists anymore?
-    :return:
-    """
-    #TODO is THIS implemented anywhere?
-    #get assessment ids for user and competence
-
-    assessments = s.query(Assessments).\
-        join(Subsection).\
-        join(Competence).\
-        join(AssessmentStatusRef).\
-        filter(or_(AssessmentStatusRef.status == "Complete",AssessmentStatusRef.status == "Four Year Due")).\
-        filter(Competence.id==c_id).\
-        filter(Assessments.user_id == current_user.database_id).all()
-
-    # set current assessments in this competency to obsolete
-    status_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Obsolete").first().id
-    data = { 'status': status_id }
-    for assessment in assessments:
-        s.query(Assessments).filter(Assessments.id == assessment.id).update(data)
-    s.commit()
-
-    # assign user new assessments in the latest version of the competency and set them to active
-    from app.mod_competence.views import assign_competence_to_user
-    due_date = datetime.date.today() + relativedelta(months=1)
-    assessment_ids = assign_competence_to_user(current_user.database_id,c_id,due_date.strftime("%d/%m/%Y"))
-
-    data = {'is_reassessment':True}
-
-    for i in assessment_ids:
-        s.query(Assessments).filter(Assessments.id == i).update(data)
-    s.commit()
+# @training.route('/four_year_activate/<c_id>', methods=['GET', 'POST'])
+# @login_required
+# def four_year_activate(c_id = None):
+#     """
+#     set all assessments in current competency to obsolete and assign the latest version of
+#     the competency to the user - probably need to check if competence exists anymore?
+#     :return:
+#     """
+#     #TODO is THIS implemented anywhere?
+#     #get assessment ids for user and competence
+#
+#     assessments = s.query(Assessments).\
+#         join(Subsection).\
+#         join(Competence).\
+#         join(AssessmentStatusRef).\
+#         filter(or_(AssessmentStatusRef.status == "Complete",AssessmentStatusRef.status == "Four Year Due")).\
+#         filter(Competence.id==c_id).\
+#         filter(Assessments.user_id == current_user.database_id).all()
+#
+#     # set current assessments in this competency to obsolete
+#     status_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Obsolete").first().id
+#     data = { 'status': status_id }
+#     for assessment in assessments:
+#         s.query(Assessments).filter(Assessments.id == assessment.id).update(data)
+#     s.commit()
+#
+#     # assign user new assessments in the latest version of the competency and set them to active
+#     from app.mod_competence.views import assign_competence_to_user
+#     due_date = datetime.date.today() + relativedelta(months=1)
+#     assessment_ids = assign_competence_to_user(current_user.database_id,c_id,due_date.strftime("%d/%m/%Y"))
+#
+#     data = {'is_reassessment':True}
+#
+#     for i in assessment_ids:
+#         s.query(Assessments).filter(Assessments.id == i).update(data)
+#     s.commit()
 
 
 @training.route('/test', methods=['GET', 'POST'])
