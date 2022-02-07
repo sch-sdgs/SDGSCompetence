@@ -645,8 +645,6 @@ def reassessment_questions_edit(question_id=None):
             choices_html = render_template("dropdown_choices.html",data=choices)
         else:
             return redirect(url_for('admin.reassessment_questions'))
-    print('dropdown')
-    print(dropdown)
     return render_template("questions_edit.html", form=form, question_id=question_id, dropdown=dropdown, choices=choices_html, length=length)
 
 @admin.route('/questions/delete/<id>', methods=['GET', 'POST'])

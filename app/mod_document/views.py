@@ -137,16 +137,9 @@ def export_document(c_id, version):
     subsec = competence_views.get_subsections(c_id, version)
     if config.get("QPULSE_MODULE") == True:
         qpulse = get_qpulsenums(c_id, version)
-        print(f"QPulse: {qpulse}")
 
     # Competence details
     title = comp.title
-    # print "Qpulse number:"
-    # print comp.qpulsenum
-    # if config.get("QPULSE_MODULE") == True:
-    #     docid = comp.qpulsenum
-    # else:
-    #     docid = None
 
     version_no = version
 
@@ -184,15 +177,12 @@ def export_document(c_id, version):
     qpulse_list = {}
     if config.get("QPULSE_MODULE") == True:
         for qpulse_no in qpulse:
-            #print(qpulse_no)
             d = s.query(QPulseDetails).first()
             qpulse_name = QPulseWeb().get_doc_by_id(d.username, d.password, qpulse_no)
             if qpulse_name == "False":
                 qpulse_name = "There has been a problem locating this document in the Active register. " \
                            "Please contact the competence owner."
-            #print(qpulse_name)
             qpulse_list[qpulse_no]=qpulse_name
-    #print(qpulse_list)
 
     # evidence - this will be for downloading completed competences
     evidence_list = {}
@@ -278,7 +268,6 @@ def export_trial_report():
 
     result = {}
     for i in current_data:
-        print(i.title)
         #find out how many are trained and partially and in training
         #count how many subsections are in the competence
         number_of_subsections = s.query(Subsection).\
@@ -310,7 +299,6 @@ def export_trial_report():
                     filter(Users.id == user_entry.user_id). \
                     first()). \
                     active == 1: ### check if user is actually active
-                print("User "+str(user_entry.user_id))
                 statuses = []
 
                 ### get all assessments for this user for this competence, put statuses in list
@@ -341,11 +329,6 @@ def export_trial_report():
 
         #NEED TO TAKE INTO ACCOUNT EXPIRY
         #Counter(z)
-        print(i.title)
-        print(trained)
-        print(expired)
-        print(partial)
-        print(in_training)
         result[i.c_id]={"title":i.title,
                         "trained":trained,
                         "expired":expired,

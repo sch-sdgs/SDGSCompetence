@@ -318,8 +318,6 @@ def add_sections():
     ss_sort_order=0
     for key in f.keys():
         if "subsections" in key:
-            print(key)
-            print(len(f.getlist(key)))
             for value in f.getlist(key):
                 s_id = key.split("_")[0]
                 item_add = s.query(ConstantSubsections.item).filter_by(id=value).first().item
@@ -553,7 +551,6 @@ def add_sections_to_db():
     current_subsections = s.query(Subsection). \
         filter(Subsection.c_id == c_id). \
         all()
-    print(f"current subsections: {current_subsections}")
 
     max=0
     for i in current_subsections:
@@ -688,7 +685,6 @@ def get_doc_name(doc_id=None):
     q = QPulseWeb()
     if not doc_id:
         doc_id = request.json['doc_id']
-        print(f"get_doc_name doc_id: {doc_id}")
         doc_name = q.get_doc_by_id(username=details.username, password=details.password, docNumber=doc_id)
         if doc_name == "False":
             return jsonify({"response":"This is not a valid QPulse Document"})
@@ -843,25 +839,18 @@ def view_competence():
             filter(CompetenceDetails.intro == version). \
             filter_by(c_id=c_id)
         for doc in docs:
-            #print(f"doc: {doc}")
             doc_id = ','.join(x for x in doc).replace("'", "")
             d = s.query(QPulseDetails). \
                 first()
-            #print(d)
             username = d.username
             password = d.password
             q = QPulseWeb()
             doc_name = q.get_doc_by_id(username=username, password=password, docNumber=doc_id)
-            #print(f"doc name: {doc_name}")
             if doc_name == "False":
                 doc_name = "There has been a problem locating this document in the Active register. " \
                            "Please contact the competence owner."
-            # doc_active = q.check_doc_active(username=username, password=password, docNumber=doc_id)
-            # if not doc_active:
-            #     doc_name = "This document is no longer marked as active - please contact the competency owner."
             if doc_id is not "":
                 dict_docs[doc_id] = doc_name
-    #print(f"dict_docs: {dict_docs}")
 
     ##Get subsection details
     dict_subsecs = OrderedDict()
@@ -1029,7 +1018,6 @@ def approve(id=None, version=None, u_id=None):
 
     else:
         print("User is not allowed to approve this competence")
-        #TODO how does this render?
 
     competence = s.query(CompetenceDetails). \
         filter(CompetenceDetails.c_id == id). \
@@ -1154,7 +1142,6 @@ def assign_competences_to_user():
     ids = request.args["ids"].split(",")
 
     if request.method == 'POST':
-        print("hello in post")
         users = request.form["user_list"].split(",")
         due_date = request.form["due_date"]
         result = {}
@@ -1386,7 +1373,6 @@ def assign_competence_to_user(user_id, competence_id, due_date):
                 delete()
 
     for sub_section in sub_sections:
-        print(sub_section.name)
         ### check if subsection has already been signed off in previous version
 
         already_complete = s.query(Assessments).join(AssessmentStatusRef).\
@@ -1397,36 +1383,25 @@ def assign_competence_to_user(user_id, competence_id, due_date):
                        AssessmentStatusRef.status == "Not Required")).\
             filter(Assessments.version == int(current_version) - 1).all()
 
-        print("already complete:")
-        print(already_complete)
-
         if len(already_complete) > 0:       ### this subsection has already been completed, so we'll add a new row with evidence from previous version
             for previous_assessment in already_complete:
-                print ("in if")
                 a = Assessments(status=previous_assessment.status, ss_id=sub_section.id, user_id=int(user_id),
                                 version=current_version,signoff_id=previous_assessment.signoff_id,
                                 due_date=previous_assessment.due_date, date_of_training=previous_assessment.date_of_training,
                                 trainer_id=previous_assessment.trainer_id, date_completed=previous_assessment.date_completed,
                                 date_expiry=previous_assessment.date_expiry, date_assigned=previous_assessment.date_assigned,
                                 assign_id=previous_assessment.assign_id, date_activated = previous_assessment.date_activated)
-                print("adding assessment")
-                print(a)
                 s.add(a)
                 s.commit()
 
                 new_assessment_id = s.query(Assessments).filter(Assessments.ss_id == sub_section.id). \
                     filter(Assessments.user_id == user_id).\
                     filter(Assessments.version == current_version).first().id
-                print("New assessment ID:")
-                print(new_assessment_id)
 
                 ### get all previous assessment evidence relationships
 
                 previous_evidence_rel = s.query(AssessmentEvidenceRelationship).\
                     filter(AssessmentEvidenceRelationship.assessment_id == previous_assessment.id).all()
-
-                print("previous evidence")
-                print(previous_evidence_rel)
 
                 for evidence_rel in previous_evidence_rel:
                     evidence_id = evidence_rel.evidence_id  ### get previous ID for evidence
@@ -1511,11 +1486,6 @@ def edit_competence():
             doc_query = s.query(Documents). \
                 filter_by(c_id=comp.id). \
                 all()
-            print(f"doc_query: {doc_query}")
-            for doc in doc_query:
-                print(f"doc number: {doc.qpulse_no}")
-                print(type(doc.qpulse_no))
-                print(len(doc.qpulse_no))
 
             documents = []
             for i in doc_query:

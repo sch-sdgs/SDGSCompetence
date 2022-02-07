@@ -30,7 +30,6 @@ def utility_processor():
         uploads = s.query(Uploads). \
             filter(Uploads.evidence_id == evidence_id). \
             all()
-        print(uploads)
         return uploads
 
     return dict(get_uploads=get_uploads)
@@ -492,13 +491,6 @@ def reassessment_view(reassess_id=None):
         group_by(AssessReassessRel.reassess_id). \
         first()
 
-    print("I am reassessment view")
-    print(reassessment)
-    print(reassessment.evidence_rel)
-    for evidence in reassessment.evidence_rel:
-        print(evidence.evidence_id)
-    print("I have printed the evidence")
-
     return render_template('reassessment_view.html',reassessment=reassessment)
 
 
@@ -660,7 +652,6 @@ def four_year_reassessment():
 
             ### process uploaded files
             uploaded_files = request.files.getlist("file")
-            print(len(uploaded_files))
 
             if len(uploaded_files) > 0:
                 print("I see there are files!")
@@ -968,7 +959,6 @@ def accept_reassessment(id=None):
                         new_expiry = i.date_completed + relativedelta(months=detail.validity_rel.months)
                         #TODO this should be from today?
                         print("I am making a new expiry date")
-                        print(new_expiry)
 
                         data = {
                             'date_expiry':new_expiry,
@@ -987,7 +977,6 @@ def accept_reassessment(id=None):
             first()
 
         print("I am doing a four year check!")
-        print(four_year_check.is_four_year)
 
         if four_year_check.is_four_year == 1:
             new_four_year_expiry = datetime.date.today() + relativedelta(years=4)
@@ -1613,11 +1602,8 @@ def select_subsections():
                 for i in list(section_list["constant"].items())[0][1]["subsections"]:
                     if i['status'] == "Complete" or i['status'] == "Four Year Due":
                         comp_section_ids.append(str(i['id']))
-                print(comp_section_ids)
-                print(ids)
                 """Check if user has selected every complete subsection in the competency"""
                 id_check = all(id in ids for id in comp_section_ids)
-                print(id_check)
                 if id_check is True:
                     return redirect(url_for('training.four_year_reassessment') + "?c_id=" + str(c_id) + "&version=" + str(
                         version) + "&assess_id_list=" + ",".join(ids))
@@ -2090,12 +2076,16 @@ def user_report(id=None):
     approver_dates=[]
     approver_counts=[]
 
-    creator_query = s.query(CompetenceDetails).filter(CompetenceDetails.creator_id == id).values(CompetenceDetails.date_created)
+    creator_query = s.query(CompetenceDetails). \
+        filter(CompetenceDetails.creator_id == id). \
+        values(CompetenceDetails.date_created)
     #DO NOT REMOVE THIS PRINT STATEMENT without it the page won't load
     #TODO work out how to fix this properly
     for creator in creator_query:
         print(creator)
-    approver_query = s.query(CompetenceDetails).filter(CompetenceDetails.approve_id == id).values(CompetenceDetails.date_of_approval)
+    approver_query = s.query(CompetenceDetails). \
+        filter(CompetenceDetails.approve_id == id). \
+        values(CompetenceDetails.date_of_approval)
 
     for i in creator_query:
         if i.date_created is not None:

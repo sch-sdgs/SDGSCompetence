@@ -817,6 +817,8 @@ def index(message=None):
     displays the users dashboard
     :return: template index.html
     """
+    #TODO add four year expired information to dashboard
+    #TODO change the inactive line reports message
     linereports = s.query(Users). \
         filter_by(line_managerid=int(current_user.database_id)). \
         filter_by(active=True). \
@@ -928,7 +930,6 @@ def index(message=None):
 
     all_assigned=[]
     for j in assigned:
-        print(j.status)
         all_assigned.append(get_competence_summary_by_user(c_id=j.ss_id_rel.c_id,u_id=current_user.database_id,version=j.version))
 
     active = s.query(Assessments)\

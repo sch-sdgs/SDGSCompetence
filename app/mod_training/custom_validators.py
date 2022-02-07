@@ -20,6 +20,5 @@ class RequiredIf(InputRequired):
         if other_field_name is None:
             raise Exception(f"No field named {other_field_name} in form!")
         other_field_data = other_field_name.data
-        print(f"Other field data: {other_field_data}")
         if other_field_data == self.other_field_value:
             super(RequiredIf, self).__call__(form, field)

@@ -20,6 +20,9 @@ def index():
     populates the head of service page
     return: index template for head of service
     """
+    #TODO add four year expired competencies
+
+
     """Get the service name"""
     service_name_query = s.query(Service) \
         .join(Users, Users.id == Service.head_of_service_id) \
