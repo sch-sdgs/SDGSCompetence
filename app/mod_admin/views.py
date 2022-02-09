@@ -179,7 +179,7 @@ def users_toggle_active(id=None):
             filter(CompetenceDetails.creator_id==id). \
             all()
         if len(competences) > 0:
-            flash("The user you made inactive owns the following competence (please change ownership!):<br>" + "<br>".join([c.title for c in competences]),"warning")
+            flash("The user you made inactive owns the following competence (please change ownership!):" + ", ".join([c.title for c in competences]),"warning")
             return users_view()
         else:
             return redirect(url_for('admin.users_view'))
