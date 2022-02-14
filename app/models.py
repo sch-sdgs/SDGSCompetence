@@ -21,6 +21,11 @@ else:
 ####################
 
 class Assessments(db.Model):
+    """
+    Each assessment refers to a subsection of a competency assigned to a specific user.
+    Example: if a user was assigned the Python competency, they would have 2 assessments: one for DSE assessment
+    and one for displaying Python skills.
+    """
     id = db.Column(db.Integer, primary_key=True)
     status = db.Column(db.Integer, db.ForeignKey("assessment_status_ref.id"), unique=False, nullable=False)
     ss_id = db.Column(db.Integer, db.ForeignKey("subsection.id"), unique=False, nullable=False)
@@ -67,10 +72,13 @@ class Assessments(db.Model):
         self.date_four_year_expiry = date_four_year_expiry
 
     def __repr__(self):
-        return '<Assessment %r>' % self.status
+        return f"Assessment ID {self.id} for subsection {self.ss_id} - {self.status}"
 
 
 class AssessmentEvidenceRelationship(db.Model):
+    """
+    Relationship table: links Assessment and Evidence models
+    """
     id = db.Column(db.Integer, primary_key=True)
     assessment_id = db.Column(db.Integer, db.ForeignKey("assessments.id"), unique=False, nullable=False)
     evidence_id = db.Column(db.Integer, db.ForeignKey("evidence.id"), unique=False, nullable=False)
@@ -83,10 +91,13 @@ class AssessmentEvidenceRelationship(db.Model):
         self.evidence_id = evidence_id
 
     def __repr__(self):
-        return '<AssessmentEvidenceRelationship %r>' % self.id
+        return f"Assessment Evidence Relationship {self.id}: links Assessment {self.assessment_id} and Evidence {self.evidence_id}"
 
 
 class AssessReassessRel(db.Model):
+    """
+    Relationship table: links Assessments and Reassessments models
+    """
     id = db.Column(db.Integer, primary_key=True)
     assess_id = db.Column(db.Integer, db.ForeignKey("assessments.id"), unique=False, nullable=False)
     reassess_id = db.Column(db.Integer, db.ForeignKey("reassessments.id"), unique=False, nullable=False)
@@ -99,10 +110,14 @@ class AssessReassessRel(db.Model):
         self.reassess_id = reassess_id
 
     def __repr__(self):
-        return '<AssessReassessRel %r>' % self.id
+        return f"AssessReassessRel {self.id}: links Assessments {self.assess_id} and Reassessments {self.reassess_id}"
 
 
 class AssessmentStatusRef(db.Model):
+    """
+    Reference table for assessment statuses (e.g. Assigned, Complete, Sign-Off)
+    New statuses must be added to this table for use in the main code
+    """
     id = db.Column(db.Integer, primary_key=True)
     status = db.Column(db.String(1000), unique=True, nullable=False)
 
@@ -113,30 +128,16 @@ class AssessmentStatusRef(db.Model):
         return '<AssessmentStatusRef %r>' % self.status
 
 
-class Config(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    key = db.Column(db.String(1000), unique=True, nullable=False)
-    value = db.Column(db.String(1000), unique=True, nullable=False)
-
-    def __init__(self, key, value):
-        self.key = key
-        self.value = value
-
-    def __repr__(self):
-        return '<Config %r>' % self.organisation
-
-
 class Competence(db.Model):
+    """
+    Overall summary tracking the state of competencies - stores the latest version and whether is is obsolete
+    """
     id = db.Column(db.Integer, primary_key=True)
     current_version = db.Column(db.Integer, unique=False, default=0, nullable=False)
     obsolete = db.Column(db.BOOLEAN, unique=False, default=False, nullable=False)
     date_version = db.Column(db.DATE, unique=False, nullable=True)
 
-    # competence_detail = db.relationship("CompetenceDetails", back_populates="competence")
     competence_detail = db.relationship("CompetenceDetails", lazy='joined', back_populates="competence")
-    # competence_detail_current = db.relationship("CompetenceDetails",
-    #                                     primaryjoin="and_(Competence.id== CompetenceDetails.c_id, Competence.current_version==CompetenceDetails.intro)",
-    #                                     lazy='joined', back_populates="competence")
 
     def __init__(self, current_version=0, obsolete=False, date_version=None):
         self.current_version = current_version
@@ -144,10 +145,15 @@ class Competence(db.Model):
         self.date_version = date_version
 
     def __repr__(self):
-        return '<Competence %r>' % self.id
+        return f"Competence {self.id}: v{self.version}. Obsolete: {self.obsolete}"
 
 
 class CompetenceCategory(db.Model):
+    """
+    Reference table for the types of competencies
+    Example: Bioinformatics, Scientist, IT
+    New competence types need adding to this table for use in the application
+    """
     id = db.Column(db.Integer, primary_key=True)
     category = db.Column(db.String(1000), unique=False, nullable=False)
 
@@ -155,10 +161,13 @@ class CompetenceCategory(db.Model):
         self.category = category
 
     def __repr__(self):
-        return '<CompetenceCategory %r>' % self.category
+        return f"CompetenceCategory {self.id}: {self.category}"
 
 
 class CompetenceDetails(db.Model):
+    """
+    Contains the bulk of the information about competencies
+    """
     id = db.Column(db.Integer, primary_key=True)
     c_id = db.Column(db.Integer, db.ForeignKey("competence.id"), unique=False, nullable=False)
     title = db.Column(db.String(1000), unique=False, nullable=False)
@@ -180,7 +189,6 @@ class CompetenceDetails(db.Model):
     approve_rel = db.relationship("Users", lazy='joined', foreign_keys=[approve_id])
     validity_rel = db.relationship("ValidityRef", lazy='joined', foreign_keys=[validity_period])
     category_rel = db.relationship("CompetenceCategory", lazy='joined', foreign_keys=[category_id])
-    # c_id_rel = db.relationship("Competence", lazy='joined', foreign_keys=[c_id])
     competence = db.relationship("Competence",  back_populates="competence_detail", lazy='joined')
     rejection_rel = db.relationship("CompetenceRejectionReasons", lazy='joined')
 
@@ -198,9 +206,10 @@ class CompetenceDetails(db.Model):
         self.approved = approved
 
     def __repr__(self):
-        return '<CompetenceDetails %r>' % self.title
+        return f"CompetenceDetails {self.id} - {self.title} (for Competence id {self.c_id}"
 
 
+#TODO is this needed? Empty table (22-02-14)
 class CompetenceJobRelationship(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     competence_id = db.Column(db.Integer, db.ForeignKey("competence.id"), unique=False, nullable=False)
@@ -217,6 +226,9 @@ class CompetenceJobRelationship(db.Model):
 
 
 class CompetenceRejectionReasons(db.Model):
+    """
+    Stores reasons that new competences were rejected
+    """
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DATETIME, unique=False, nullable=False)
     c_detail_id = db.Column(db.Integer, db.ForeignKey("competence_details.id"), unique=False, nullable=False)
@@ -225,7 +237,25 @@ class CompetenceRejectionReasons(db.Model):
     competence_details = db.relationship("CompetenceDetails", lazy='joined', foreign_keys=[c_detail_id])
 
 
+#TODO work out what this model is actually doing. (22-02-14)
+class Config(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String(1000), unique=True, nullable=False)
+    value = db.Column(db.String(1000), unique=True, nullable=False)
+
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
+
+    def __repr__(self):
+        return '<Config %r>' % self.organisation
+
+
 class ConstantSubsections(db.Model):
+    """
+    Reference table for constant subsections (eg. DSE Assessment, COSSH.
+    New subsections can be added
+    """
     id = db.Column(db.Integer, primary_key=True)
     s_id = db.Column(db.Integer, db.ForeignKey("section.id"), unique=False, nullable=False)
     item = db.Column(db.String(1000), unique=False, nullable=False)
@@ -237,10 +267,16 @@ class ConstantSubsections(db.Model):
         self.item = item
 
     def __repr__(self):
-        return '<ConstantSubsections %r>' % self.item
+        return f"ConstantSubsections {self.id}: {self.item}"
+
+
+#TODO empty table in database called coshh_ref - what's this for? (22-02-14)
 
 
 class CPDEvents(db.Model):
+    """
+    Stores all information about CPD events
+    """
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=False)
     event_type = db.Column(db.Integer, db.ForeignKey("event_type_ref.id"), unique=False, nullable=False)
@@ -270,6 +306,9 @@ class CPDEvents(db.Model):
 
 
 class Documents(db.Model):
+    """
+    Lists the documents (in Q Pulse) associated with each competency
+    """
     id = db.Column(db.Integer, primary_key=True)
     c_id = db.Column(db.Integer, db.ForeignKey("competence_details.id"), unique=False, nullable=False)
     qpulse_no = db.Column(db.String(20), unique=False, nullable=False)
@@ -281,10 +320,13 @@ class Documents(db.Model):
         self.qpulse_no = qpulse_no
 
     def __repr__(self):
-        return '<Documents %r>' % self.qpulse_no
+        return f"Documents {self.id}: Competency {self.c_id} is associated with {self.qpulse_no}"
 
 
 class DropDownChoices(db.Model):
+    """
+    Contains the options for dropdowns question in the Reassessment form
+    """
     id = db.Column(db.Integer, primary_key=True)
     question_id = db.Column(db.Integer, db.ForeignKey("questions_ref.id"), unique=False, nullable=False)
     choice = db.Column(db.String(1000), unique=False, nullable=False)
@@ -296,10 +338,30 @@ class DropDownChoices(db.Model):
         self.choice = choice
 
     def __repr__(self):
-        return '<Dropdown Choices %r>' % self.id
+        return f"DropDownChoices {self.id} for Question {self.question_id}: {self.choice}"
+
+
+#TODO empty table in database called documents_ref - what's this for? (22-02-14)
+
+
+class EventRoleRef(db.Model):
+    """
+    Reference table storing event roles for CPD events
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    role = db.Column(db.String(50), nullable=False, unique=True)
+
+    def __init__(self, role):
+        self.role = role
+
+    def __repr__(self):
+        return f"EventRolesRef {self.id}: {self.role}"
 
 
 class EventTypeRef(db.Model):
+    """
+    Reference table storing event types for CPD events
+    """
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.String(50), nullable=False, unique=True)
 
@@ -308,9 +370,13 @@ class EventTypeRef(db.Model):
 
     def __repr__(self):
         return '<EventTypeRef %r>' % self.type
+        return f"EventTypeRef {self.id}: {self.type}"
 
 
 class Evidence(db.Model):
+    """
+    Stores information about evidence provided to support assessment(s)
+    """
     id = db.Column(db.Integer, primary_key=True)
     evidence = db.Column(db.String(1000), unique=False, nullable=True)
     evidence_type_id = db.Column(db.Integer, db.ForeignKey("evidence_type_ref.id"), unique=False, nullable=True)
@@ -335,18 +401,7 @@ class Evidence(db.Model):
         self.evidence_type_id = evidence_type_id
 
     def __repr__(self):
-        return '<Evidence %r>' % self.id
-
-
-class EventRoleRef(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    role = db.Column(db.String(50), nullable=False, unique=True)
-
-    def __init__(self, role):
-        self.role = role
-
-    def __repr__(self):
-        return '<EventRoleRef %r>' % self.role
+        return f"Evidence {self.id}"
 
 
 class EvidenceTypeRef(db.Model):

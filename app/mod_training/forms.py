@@ -11,7 +11,7 @@ class UploadEvidence(FlaskForm):
     For to submit evidence for a competence
     """
     file = FileField('Upload Evidence')
-    #TODO edit this so 'Inactivation Request' doesn't show up as an evidence upload type
+    #TODO edit this so 'Inactivation Request' doesn't show up as an evidence upload type (22-02-14)
     evidence_type = QuerySelectField("What type of evidence do you want to send?",allow_blank=True, blank_text=u'-- please choose --',
                                       query_factory=lambda: s.query(EvidenceTypeRef).all(),
                                       get_label="type")  # All sections in database
@@ -69,5 +69,5 @@ class SignOffForm(FlaskForm):
     date = DateField('Date Trained',
                    format='%Y-%m-%d', default=datetime.date.today)
     assessor = SelectField(label="Assessor")
-    #TODO you can click submit multiple times which causes asignee to receive multiple emails
+    #TODO you can click submit multiple times which causes asignee to receive multiple emails (22-02-14)
     submit = SubmitField()

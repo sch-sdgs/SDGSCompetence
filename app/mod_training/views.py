@@ -1,4 +1,4 @@
-#TODO clean up imports
+#TODO clean up imports (22-02-14)
 
 from flask import Flask, render_template, redirect, request, url_for, session, current_app, Blueprint, \
     send_from_directory, jsonify, Markup
@@ -82,7 +82,7 @@ def get_competent_users(ss_id_list):
     """
     query all users competent in a given competency
     """
-    # todo: add competence author to this list
+    # todo: add competence author to this list (22-02-14)
     users = s.query(Users). \
         join(Assessments, Assessments.user_id == Users.id). \
         join(AssessmentStatusRef) \
@@ -139,7 +139,7 @@ def get_competence_result(c_id, u_id, version):
     :param version: Version for competency
     :return competence_result_dictionary: Result of the competency query converted to a dictionary for further processing
     """
-    #TODO specify the relationships better (see error) (note: works, just could be formatted better)
+    #TODO specify the relationships better (see error) (note: works, just could be formatted better) (22-02-14)
     competence_result = s.query(Assessments). \
         join(Subsection, Assessments.ss_id_rel). \
         join(Section, Subsection.s_id_rel). \
@@ -422,7 +422,7 @@ def reassessment():
         for user in competent_users:
             if user.id != current_user.database_id:
                 choices.append((user.id, user.name))
-        # todo append competence author
+        # todo append competence author (22-02-14)
         # add admins to reassessment authorisers
         authoriser_config = config["AUTHORISER"].split(",")
         if "ADMIN" in authoriser_config:
@@ -498,7 +498,6 @@ def reassessment_view(reassess_id=None):
 @training.route('/four_year_reassessment', methods=['GET', 'POST'])
 @login_required
 def four_year_reassessment():
-    #TODO do new versions of competencies inherit reassessment records? if not, need to inherit 4 year expiry date
     if request.method == 'GET':
         c_id = request.args.get('c_id')
         version = request.args.get('version')
@@ -518,7 +517,6 @@ def four_year_reassessment():
         form = FourYearReassessment()
 
         ### Populate the questions part of the form
-        #TODO why is it doing it like this?????
         questions = s.query(QuestionsRef). \
             filter(QuestionsRef.active == True)
         question_data = []
@@ -677,9 +675,6 @@ def four_year_reassessment():
             url_for('training.view_current_competence', version=request.args.get('version'),
                     c_id=request.args.get('c_id'), user=request.args.get('u_id')))
 
-        #TODO new form (DONE)
-        #TODO remember to update the four_year_expiry date - in accept (DONE)
-        #TODO remember to update the regular expiry date - in accept (eeerm)
 
 @training.route('/view', methods=['GET', 'POST'])
 @login_required
@@ -739,7 +734,6 @@ def view_current_competence():
             count()
 
         ### Add a check for competencies which will reach 4 year due within a month
-        #TODO update this to take all multiples of 4 years
         todays_date = datetime.date.today()
         four_year_check += s.query(Assessments). \
             join(Subsection) .\
@@ -927,8 +921,10 @@ def reject_reassessment(id=None):
 
 @training.route('/reassessment_accept/<int:id>', methods=['GET', 'POST'])
 def accept_reassessment(id=None):
+    """
+    Accept a reassessment and update the competency dates
+    """
     ###this method needs to do all the updating to the assessment to give a new expiry date
-    #TODO this needs altering to update the expiry date and four year expiry date for four year reassessments
     ### Check authoriser
     authoriser = s.query(Reassessments). \
         filter(Reassessments.signoff_id==current_user.database_id). \
@@ -957,7 +953,6 @@ def accept_reassessment(id=None):
                 for detail in j.assess_rel.ss_id_rel.c_id_rel.competence_detail:
                     if detail.intro <= current_version:
                         new_expiry = i.date_completed + relativedelta(months=detail.validity_rel.months)
-                        #TODO this should be from today?
                         print("I am making a new expiry date")
 
                         data = {
@@ -968,8 +963,6 @@ def accept_reassessment(id=None):
                             filter(Assessments.id == j.assess_id). \
                             update(data)
         s.commit()
-
-        #TODO the info on the homepage is not the same as the info on the comeptency page...
 
         # For four year reassessments, update four year due date
         four_year_check = s.query(Reassessments). \
@@ -1854,47 +1847,10 @@ def bulk_distribute():
         for i in zip(request.form.getlist('assid'), request.form.getlist('trainer'), request.form.getlist('assessor')):
             print (i)
 
-# @training.route('/four_year_activate/<c_id>', methods=['GET', 'POST'])
-# @login_required
-# def four_year_activate(c_id = None):
-#     """
-#     set all assessments in current competency to obsolete and assign the latest version of
-#     the competency to the user - probably need to check if competence exists anymore?
-#     :return:
-#     """
-#     #TODO is THIS implemented anywhere?
-#     #get assessment ids for user and competence
-#
-#     assessments = s.query(Assessments).\
-#         join(Subsection).\
-#         join(Competence).\
-#         join(AssessmentStatusRef).\
-#         filter(or_(AssessmentStatusRef.status == "Complete",AssessmentStatusRef.status == "Four Year Due")).\
-#         filter(Competence.id==c_id).\
-#         filter(Assessments.user_id == current_user.database_id).all()
-#
-#     # set current assessments in this competency to obsolete
-#     status_id = s.query(AssessmentStatusRef).filter(AssessmentStatusRef.status == "Obsolete").first().id
-#     data = { 'status': status_id }
-#     for assessment in assessments:
-#         s.query(Assessments).filter(Assessments.id == assessment.id).update(data)
-#     s.commit()
-#
-#     # assign user new assessments in the latest version of the competency and set them to active
-#     from app.mod_competence.views import assign_competence_to_user
-#     due_date = datetime.date.today() + relativedelta(months=1)
-#     assessment_ids = assign_competence_to_user(current_user.database_id,c_id,due_date.strftime("%d/%m/%Y"))
-#
-#     data = {'is_reassessment':True}
-#
-#     for i in assessment_ids:
-#         s.query(Assessments).filter(Assessments.id == i).update(data)
-#     s.commit()
-
 
 @training.route('/test', methods=['GET', 'POST'])
 def test():
-    #TODO is this implemented anywhere?
+    #TODO is this implemented anywhere? check and delete {22-02-14)
     four_years_ago = datetime.date.today() - relativedelta(months=48)
 
     assessments = s.query(Assessments).join(AssessmentStatusRef).filter(
@@ -2081,7 +2037,7 @@ def user_report(id=None):
         filter(CompetenceDetails.creator_id == id). \
         values(CompetenceDetails.date_created)
     #DO NOT REMOVE THIS PRINT STATEMENT without it the page won't load
-    #TODO work out how to fix this properly
+    #TODO work out how to fix this properly (22-02-14)
     for creator in creator_query:
         print(creator)
     approver_query = s.query(CompetenceDetails). \

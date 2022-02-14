@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Homepage: 'assigned by' now shows assigner, not user
 ### Changed
 - CPD: Updated CPD event name to 200 characters
+- Competence List: Changed "Creator" column to "Owner"
+- Improved error message for deactivating a user
 
 ## [v1.2.2] - 2022-01-06
 ### Fixed

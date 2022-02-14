@@ -1,6 +1,4 @@
-#TODO clean up imports
 from app.activedirectory import UserAuthentication
-#from app.competence import *
 from app.competence import send_mail_unknown
 from app.mod_admin.forms import *
 from app.models import *
@@ -78,9 +76,6 @@ def check_line_manager():
         return jsonify({"response":False})
 
 
-#TODO: add check for head of service?
-
-
 @admin.route('/')
 @admin_permission.require(http_exception=403)
 def index():
@@ -94,13 +89,16 @@ def index():
 @admin.route('/fix_section_sort_order')
 @admin_permission.require(http_exception=403)
 def fix_section_sort_order():
-    #TODO docstring
+    #TODO find useages, docstring (22-02-14)
     """
 
     """
     all = s.query(Subsection).all()
     for i in all:
-        if s.query(SectionSortOrder).filter(SectionSortOrder.c_id == i.c_id).filter(SectionSortOrder.section_id == i.s_id).count() == 0:
+        if s.query(SectionSortOrder). \
+                filter(SectionSortOrder.c_id == i.c_id). \
+                filter(SectionSortOrder.section_id == i.s_id). \
+                count() == 0:
             add = SectionSortOrder(c_id=i.c_id,section_id=i.s_id,sort_order=0)
             s.add(add)
             s.commit()
@@ -538,7 +536,7 @@ def users_edit(id=None):
 @admin.route('/dropdownchoices',methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def dropdown_choices():
-    #TODO docstring
+    #TODO find usages, docstring (22-02-14)
     """
 
     """
@@ -564,7 +562,7 @@ def dropdown_choices():
 @admin.route('/dropdownchoices/delete', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def delete_dropdown_choice():
-    #TODO docstring
+    #TODO find usages, docstring (22-02-14)
     """
 
     """
@@ -580,9 +578,8 @@ def delete_dropdown_choice():
 @admin.route('/questions',methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def reassessment_questions():
-    #TODO docstring
     """
-
+    Allows for adding new reassessment questions
     """
     form = QuestionsForm()
     q_id = 0
@@ -606,9 +603,8 @@ def reassessment_questions():
 @admin.route('/questions/edit/<question_id>', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def reassessment_questions_edit(question_id=None):
-    #TODO docstring
     """
-
+    Allows for editing reassessment questions
     """
     choices_html = ""
     length=0
@@ -650,9 +646,8 @@ def reassessment_questions_edit(question_id=None):
 @admin.route('/questions/delete/<id>', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def delete_reassessment_question(id=None):
-    #TODO docstring
     """
-
+    Allows for deleting reassessment questions
     """
     s.query(DropDownChoices). \
         filter_by(question_id=id). \
@@ -1276,15 +1271,14 @@ def delete_subsection_autocomplete(id=None):
     return redirect(url_for('admin.subsection_autocomplete'))
 
 
-@admin.route('/logs', methods=['GET', 'POST'])
-@admin_permission.require(http_exception=403)
-def view_logs():
-    #TODO delete this? It doesn't do anything
-    pass
+# @admin.route('/logs', methods=['GET', 'POST'])
+# @admin_permission.require(http_exception=403)
+# def view_logs():
+#     pass
 
 
 def transform(text_file_contents):
-    #TODO docstring
+    #TODO find usages, dosctring (22-02-14)
     """
 
     """
@@ -1307,7 +1301,7 @@ def bulk_user_upload():
 @app.route('/transform', methods=["POST"])
 @admin_permission.require(http_exception=403)
 def transform_view():
-    #TODO edit this so it doesn't need running twice?
+    #TODO see if this function can be edited so it doesn't need running twice.
     """
     method to bulk add users to the database, you need to run twice to 1st add users then add line managers
     to those users

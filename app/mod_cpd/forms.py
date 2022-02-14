@@ -21,8 +21,9 @@ class AddEvent(FlaskForm):
     comments = TextAreaField("Description/Comments")
     submit = SubmitField()
 
+
 class EditEvent(FlaskForm):
-    #TODO less tenous workaround to pre-populate the forms while editing
+    #TODO less tenuous workaround to pre-populate the forms while editing (22-02-14)
     """
     Form to add CPD event
     """

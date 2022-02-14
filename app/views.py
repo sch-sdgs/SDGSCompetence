@@ -1,4 +1,4 @@
-#TODO clean up imports
+#TODO clean up imports (22-02-14)
 
 from flask import flash,Flask, render_template, redirect, request, url_for, session, current_app, jsonify
 from flask_login import login_required, login_user, logout_user, LoginManager, UserMixin, \
@@ -22,7 +22,7 @@ login_manager.login_view = "login"
 principals = Principal(app)
 
 # permission levels
-#TODO remove privilege permission
+#TODO remove privilege permission (22-02-14)
 user_permission = Permission(RoleNeed('USER'))
 linemanager_permission = Permission(RoleNeed('LINEMANAGER'))
 admin_permission = Permission(RoleNeed('ADMIN'))
@@ -700,7 +700,7 @@ def autocomplete_subsection():
 
 @app.route('/autocomplete_competent_user/<int:ss_id>', methods=['GET'])
 def autocomplete_competent_user(ss_id):
-    # todo: add competence author to this list
+    # todo: add competence author to this list (22-02-14)
     users = s.query(Users). \
         join(Assessments, Assessments.user_id == Users.id). \
         join(AssessmentStatusRef). \
@@ -817,8 +817,8 @@ def index(message=None):
     displays the users dashboard
     :return: template index.html
     """
-    #TODO add four year expired information to dashboard
-    #TODO change the inactive line reports message
+    #TODO add four year expired information to dashboard (22-02-14)
+    #TODO change the inactive line reports message (22-02-14)
     linereports = s.query(Users). \
         filter_by(line_managerid=int(current_user.database_id)). \
         filter_by(active=True). \
@@ -840,9 +840,9 @@ def index(message=None):
 
     for i in linereports:
         counts[i.id] = {}
-        # TODO get competence because assessments is all subsections
+        # TODO get competence because assessments is all subsections (22-02-14)
 
-        #TODO using IDs instead of name here
+        #TODO using IDs instead of name here (22-02-14)
 
         counts[i.id]["assigned"] = len(
             s.query(Assessments).join(AssessmentStatusRef).filter(Assessments.user_id == i.id).filter(

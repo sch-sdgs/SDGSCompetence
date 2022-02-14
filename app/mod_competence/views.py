@@ -343,12 +343,7 @@ def add_sections():
     return redirect(url_for('competence.view_competence') + "?c_id=" + str(c_id) + "&version=" + str(version))
 
 
-#todo - competence lifecycle:
-#create a competence - and approve - everything is at v1
-#edit the competence - everything gets copied and is at v2 - if you then delete last is v2 - but this is an issue.
-
 def get_subsections(c_id, version):
-    #TODO does this just get custom subsections?
     """
     Fetches a list of subsections for a given competence
     :param c_id: id for the competence
@@ -450,7 +445,6 @@ def activate_competency():
 @competence.route('/section', methods=['GET', 'POST'])
 @login_required
 def get_section():
-    #TODO check what this actually does
     """
     Gets subsections for a given section
     """
@@ -531,7 +525,6 @@ def delete_subsection():
 @competence.route('/add_subsection_to_db', methods=['GET', 'POST'])
 @login_required
 def add_sections_to_db():
-    #TODO check if this is just for custom subsections
     """
     Adds new custom subsection to the database
     """
@@ -565,7 +558,6 @@ def add_sections_to_db():
     s.commit()
     sub_id = int(sub.id)
 
-    #TODO what is this doing
     check = s.query(SectionSortOrder). \
         filter(SectionSortOrder.c_id == c_id). \
         filter(SectionSortOrder.section_id == s_id). \
@@ -582,7 +574,6 @@ def add_sections_to_db():
         s.add(sort_order)
         s.commit()
 
-    #TODO what is this doing
     result = s.query(Subsection). \
         join(Competence, Subsection.c_id_rel). \
         join(Section, Subsection.s_id_rel). \
@@ -614,7 +605,6 @@ def add_constant_sections_to_db():
     else:
         name = name
 
-    #TODO this is where new constant sections have their evidence set
     sub = Subsection(name=name, c_id=c_id, s_id=s_id, evidence=4, sort_order=None, comments=None, intro=version)
     s.add(sub)
     s.commit()
@@ -661,11 +651,11 @@ def competence_name_autocomplete():
 @competence.route('/get_docs', methods=['GET'])
 @login_required
 def get_documents(c_id):
-    #TODO check what this is doing
+    #TODO find usages, docstring (22-02-14)
     """
 
     """
-    c_id = 1 #todo why is this set to 1??
+    c_id = 1 #todo why is this set to 1?? (22-02-14)
     docid = request.json['add_document']
     documents = s.query(Documents). \
         join(Competence). \
@@ -736,7 +726,6 @@ def add_doc():
 @competence.route('/add_constant', methods=['GET', 'POST'])
 @login_required
 def add_constant_subsection():
-    #TODO work out exactly what this is doing
     """
     Add a new constant subsection
     """
@@ -900,7 +889,6 @@ def send_for_approval():
 @competence.route('/force_approve')
 @login_required
 def force_authorise():
-    #TODO should this be an admin thing?
     """
     Force authorisation of a competency
     """
@@ -919,7 +907,7 @@ def force_authorise():
 @competence.route('/expiry_dates')
 @login_required
 def expiry_dates():
-    #TODO check exactly what this is doing
+    #TODO find usages, docstring (22-02-14)
     """
 
     """
@@ -930,7 +918,7 @@ def expiry_dates():
 @competence.route('/matrix', methods=['GET'])
 @login_required
 def matrix():
-    #TODO what is this doing??
+    #TODO find usages, docstring (22-02-14)
     """
 
     """
@@ -996,7 +984,6 @@ def approve(id=None, version=None, u_id=None):
             update(data)
         s.commit()
 
-        # todo: should editing the details do this?
         # update competence details for last version
         data = {
             "last": int(version) - 1
@@ -1204,7 +1191,6 @@ def change_subsection_order():
             filter(Subsection.id == id). \
             update(new_order)
     s.commit()
-    #TODO this, but for constant subsections?
 
 
 @competence.route('/change_section_order', methods=['GET', 'POST'])
@@ -1318,8 +1304,6 @@ def make_user_competent(ids=None,users=None):
 
 
 def assign_competence_to_user(user_id, competence_id, due_date):
-    #TODO check function
-    #TODO does this need decorators?
     """
     Assign single competence to user
     """
@@ -1341,8 +1325,8 @@ def assign_competence_to_user(user_id, competence_id, due_date):
 
     sub_list = []
 
-    # TODO Check if competence is already assigned, if it is skip user and display warning
-    # TODO Need to add competence constant subsections
+    # TODO Check if competence is already assigned, if it is skip user and display warning (22-02-14)
+    # TODO Need to add competence constant subsections (22-02-14)
 
     for sub_section in sub_sections:
         sub_list.append(sub_section.id)
@@ -1438,7 +1422,7 @@ def edit_competence():
     Edit a competency
     """
     ids = request.args.get('ids').split(",")
-    # todo: CHECK HERE IF COMPETENCE IS IN APPROVAL???
+    # todo: CHECK HERE IF COMPETENCE IS IN APPROVAL??? (22-02-14)
     c_id = ids[0]
 
     if current_user.database_id == s.query(CompetenceDetails). \
@@ -1581,7 +1565,7 @@ def create_copy_of_competence(c_id, current_version, title, scope, valid, type, 
 @competence.route('/change_ownership', methods=['GET', 'POST'])
 @login_required
 def change_ownership():
-    #TODO: should this only change ownership of the most recent version
+    #TODO: should this only change ownership of the most recent version (22-02-14)
     form = UserAssignForm()
     ids = request.args['ids']
     if request.method == 'POST':
@@ -1731,7 +1715,7 @@ def delete():
 
 
 def nearest(items, pivot):
-    #TODO what does this do
+    #TODO find usages, docstring (22-02-14)
     """
 
     """
@@ -1739,10 +1723,8 @@ def nearest(items, pivot):
 
 
 def reporting():
-    #TODO do we still need this now there's a new reports page?
-    # YES this goes and gets the specific people in each category to fill the tables on the page
     """
-
+    Get information that populates the reports page
     """
     expired = {}
     expiring = {}

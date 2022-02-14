@@ -20,7 +20,7 @@ def index():
     populates the head of service page
     return: index template for head of service
     """
-    #TODO add four year expired competencies
+    #TODO add four year expired competencies (22-02-14)
 
 
     """Get the service name"""
@@ -160,8 +160,6 @@ def index():
                         counts[i.id]["expiring"] += 1
                     expiring_count += 1
 
-    #TODO is this needed?
-    # Find complete and incomplete competencies
     competencies_incomplete = s.query(CompetenceDetails) \
         .join(Competence) \
         .filter(CompetenceDetails.creator_id == current_user.database_id) \
