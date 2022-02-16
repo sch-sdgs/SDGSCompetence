@@ -81,27 +81,27 @@ def main():
     for user_id, min_date_expiry, min_date_four_year_expiry in expiry_dates:
         if min_date_four_year_expiry is None:
             continue
-        elif min_date_four_year_expiry <= todays_date:
+        elif min_date_four_year_expiry == todays_date:
             send_mail(user_id, "You have an expired competency",
                       "A competency has expired. This is a four year expiry - you will need to resubmit evidence as if "
                       "you were completing this competency for the first time.")
-        elif min_date_four_year_expiry <= todays_date + relativedelta(days=7):
+        elif min_date_four_year_expiry == todays_date + relativedelta(days=7):
             send_mail(user_id, "You have a competency expiring in 7 days",
                       "A competency will expire in the next 7 days. This is a four year expiry - you will need to "
                       "resubmit evidence as if you were completing this competency for the first time.")
-        elif min_date_four_year_expiry <= todays_date + relativedelta(days=30):
+        elif min_date_four_year_expiry == todays_date + relativedelta(days=30):
             send_mail(user_id, "You have a competency expiring in 30 days",
                       "A competency will expire in the next 30 days. This is a four year expiry - you will need to "
                       "resubmit evidence as if you were completing this competency for the first time.")
         elif min_date_expiry is None:
             continue
-        elif min_date_expiry <= todays_date:
+        elif min_date_expiry == todays_date:
             send_mail(user_id, "You have an expired competency",
                       "A competency has expired - please complete a reassessment.")
-        elif min_date_expiry <= todays_date + relativedelta(days=7):
+        elif min_date_expiry == todays_date + relativedelta(days=7):
             send_mail(user_id, "You have a competency expiring in 7 days",
                       "A competency will expire in the next 7 days - please complete a reassessment.")
-        elif min_date_expiry <= todays_date + relativedelta(days=30):
+        elif min_date_expiry == todays_date + relativedelta(days=30):
             send_mail(user_id, "You have a competency expiring in 30 days",
                       "A competency will expire in the next 30 days - please complete a reassessment.")
         else:
