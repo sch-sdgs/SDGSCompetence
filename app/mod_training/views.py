@@ -387,7 +387,7 @@ def reassessment():
         current_version = s.query(Competence).filter(Competence.id == c_id).first().current_version
         if int(version) < int(current_version):
             from app.views import index
-            return index(message="There is a new version of this competence so it cannot be re-assessed! Please assign yourself the newest version.")
+            return index(message="There is a new version of this competence so it cannot be re-assessed! Please assign yourself the newest version of the competence.")
 
 
         assess_id_list = request.args.get('assess_id_list').split(',')
@@ -505,7 +505,7 @@ def four_year_reassessment():
         current_version = s.query(Competence).filter(Competence.id == c_id).first().current_version
         if int(version) < int(current_version):
             from app.views import index
-            return index(message="There is a new version of this competence so it cannot be re-assessed!")
+            return index(message="There is a new version of this competence so it cannot be re-assessed! Please assign yourself the newest version of the competence.")
 
         ### Get competency information
         assess_id_list = request.args.get('assess_id_list').split(',')
