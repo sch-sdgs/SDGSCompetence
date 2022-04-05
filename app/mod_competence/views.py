@@ -1375,7 +1375,8 @@ def assign_competence_to_user(user_id, competence_id, due_date):
                                 due_date=previous_assessment.due_date, date_of_training=previous_assessment.date_of_training,
                                 trainer_id=previous_assessment.trainer_id, date_completed=previous_assessment.date_completed,
                                 date_expiry=previous_assessment.date_expiry, date_assigned=previous_assessment.date_assigned,
-                                assign_id=previous_assessment.assign_id, date_activated = previous_assessment.date_activated)
+                                assign_id=previous_assessment.assign_id, date_activated = previous_assessment.date_activated,
+                                date_four_year_expiry = previous_assessment.date_four_year_expiry)
                 s.add(a)
                 s.commit()
 
