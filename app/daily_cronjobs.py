@@ -31,7 +31,8 @@ def get_expiry_dates(conn):
     """Gets the closest expiry dates for each competency in the database"""
     sql = '''SELECT assessments.user_id,  
     MIN(assessments.date_expiry) AS 'min_date_expiry', 
-    MIN(assessments.date_four_year_expiry) AS 'min_date_four_year_expiry' 
+    MIN(assessments.date_four_year_expiry) AS 'min_date_four_year_expiry',
+    competence_details.title 
     FROM assessments 
     INNER JOIN users ON assessments.user_id = users.id 
     INNER JOIN subsection ON assessments.ss_id= subsection.id 
@@ -78,32 +79,32 @@ def main():
     expiry_dates = get_expiry_dates()
 
     print("I am checking for expired and expiring competencies!")
-    for user_id, min_date_expiry, min_date_four_year_expiry in expiry_dates:
+    for user_id, min_date_expiry, min_date_four_year_expiry, title in expiry_dates:
         if min_date_four_year_expiry is None:
             continue
         elif min_date_four_year_expiry == todays_date:
-            send_mail(user_id, "You have an expired competency",
-                      "A competency has expired. This is a four year expiry - you will need to resubmit evidence as if "
-                      "you were completing this competency for the first time.")
+            send_mail(user_id, f"You have an expired competency",
+                      f"A competency: {title} has expired. This is a four year expiry - you will need to resubmit evidence as if "
+                      f"you were completing this competency for the first time.")
         elif min_date_four_year_expiry == todays_date + relativedelta(days=7):
-            send_mail(user_id, "You have a competency expiring in 7 days",
-                      "A competency will expire in the next 7 days. This is a four year expiry - you will need to "
-                      "resubmit evidence as if you were completing this competency for the first time.")
+            send_mail(user_id, f"You have a competency expiring in 7 days",
+                      f"A competency: {title} will expire in the next 7 days. This is a four year expiry - you will need to "
+                      f"resubmit evidence as if you were completing this competency for the first time.")
         elif min_date_four_year_expiry == todays_date + relativedelta(days=30):
-            send_mail(user_id, "You have a competency expiring in 30 days",
-                      "A competency will expire in the next 30 days. This is a four year expiry - you will need to "
-                      "resubmit evidence as if you were completing this competency for the first time.")
+            send_mail(user_id, f"You have a competency expiring in 30 days",
+                      f"A competency: {title} will expire in the next 30 days. This is a four year expiry - you will need to "
+                      f"resubmit evidence as if you were completing this competency for the first time.")
         elif min_date_expiry is None:
             continue
         elif min_date_expiry == todays_date:
-            send_mail(user_id, "You have an expired competency",
-                      "A competency has expired - please complete a reassessment.")
+            send_mail(user_id, f"You have an expired competency",
+                      f"A competency: {title} has expired - please complete a reassessment.")
         elif min_date_expiry == todays_date + relativedelta(days=7):
-            send_mail(user_id, "You have a competency expiring in 7 days",
-                      "A competency will expire in the next 7 days - please complete a reassessment.")
+            send_mail(user_id, f"You have a competency expiring in 7 days",
+                      f"A competency {title} will expire in the next 7 days - please complete a reassessment.")
         elif min_date_expiry == todays_date + relativedelta(days=30):
-            send_mail(user_id, "You have a competency expiring in 30 days",
-                      "A competency will expire in the next 30 days - please complete a reassessment.")
+            send_mail(user_id, f"You have a competency expiring in 30 days",
+                      f"A competency {title} will expire in the next 30 days - please complete a reassessment.")
         else:
             print(f"Something weird is happening with competencies for {user_id} - please check")
 
