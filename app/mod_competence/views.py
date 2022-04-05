@@ -1364,7 +1364,8 @@ def assign_competence_to_user(user_id, competence_id, due_date):
             filter(Assessments.user_id == user_id).\
             filter(or_(AssessmentStatusRef.status == "Complete",
                        AssessmentStatusRef.status == "Sign-Off",
-                       AssessmentStatusRef.status == "Not Required")).\
+                       AssessmentStatusRef.status == "Not Required",
+                       AssessmentStatusRef.status == "Four Year Due")).\
             filter(Assessments.version == int(current_version) - 1).all()
 
         if len(already_complete) > 0:       ### this subsection has already been completed, so we'll add a new row with evidence from previous version
