@@ -1386,13 +1386,26 @@ def assign_competence_to_user(user_id, competence_id, due_date):
 
                 ### get all previous assessment evidence relationships
 
-                previous_evidence_rel = s.query(AssessmentEvidenceRelationship).\
-                    filter(AssessmentEvidenceRelationship.assessment_id == previous_assessment.id).all()
+                previous_evidence_rel = s.query(AssessmentEvidenceRelationship). \
+                    filter(AssessmentEvidenceRelationship.assessment_id == previous_assessment.id). \
+                    all()
 
                 for evidence_rel in previous_evidence_rel:
                     evidence_id = evidence_rel.evidence_id  ### get previous ID for evidence
                     e = AssessmentEvidenceRelationship(assessment_id=new_assessment_id, evidence_id=evidence_id)
                     s.add(e)
+                    s.commit()
+
+                ### get all previous assessment reassessment relationships
+
+                previous_reassessment_rel = s.query(AssessReassessRel). \
+                    filter(AssessReassessRel.assess_id == previous_assessment.id). \
+                    all()
+
+                for reassess_rel in previous_reassessment_rel:
+                    reassess_id = reassess_rel.reassess_id
+                    r = AssessReassessRel(assess_id=new_assessment_id, reassess_id=reassess_id)
+                    s.add(r)
                     s.commit()
 
         else:
