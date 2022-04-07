@@ -729,8 +729,9 @@ def view_current_competence():
             join(Competence). \
             join(AssessmentStatusRef). \
             filter(Assessments.user_id==u_id). \
+            filter(Competence.id == c_id). \
+            filter(Assessments.version == version). \
             filter(AssessmentStatusRef.status=="Four Year Due"). \
-            filter(Competence.id==c_id). \
             count()
 
         ### Add a check for competencies which will reach 4 year due within a month
@@ -739,6 +740,7 @@ def view_current_competence():
             join(Subsection) .\
             join(Competence) .\
             filter(Assessments.user_id==u_id). \
+            filter(Assessments.version == version). \
             filter(Assessments.date_four_year_expiry <= todays_date + relativedelta(months=1)). \
             filter(Competence.id==c_id). \
             count()
