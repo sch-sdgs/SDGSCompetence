@@ -81,7 +81,7 @@
                                                             <td>{{ assessment.user_id_rel.linemanager_rel.first_name }} {{ assessment.user_id_rel.linemanager_rel.last_name }}</td>
                                                             <td>
                                                                 {% if assessment.date_expiry != None %}
-                                                                {{ assessment.date_expiry }} {{ check_expiry(assessment.date_expiry)|safe }}
+                                                                {{ assessment.date_expiry }} {{ check_expiry(assessment.date_expiry, assessment.date_four_year_expiry)|safe }}
                                                                     {% else %}
                                                                     None
                                                                 {% endif %}
