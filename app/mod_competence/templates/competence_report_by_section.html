@@ -131,10 +131,12 @@
                             <div class="tab-pane" id="{{ service }}_expired">
                         {% endif %}
                     <table class="table table-striped table-condensed  dataTable dt-responsive expired"
-                           width="70%">
+                           width="100%">
                         <thead>
                         <th>User</th>
                         <th>Competence</th>
+                        <th>Scope</th>
+                        <th>Competence Category</th>
                         <th>Earliest Expiry Date</th>
                         </thead>
                         {% for user in expired[service] %}
@@ -142,7 +144,9 @@
                             <tr>
                                 <td>{{ user }}</td>
                                 <td>{{ competence }}</td>
-                                <td>{{ expired[service][user][competence] }}</td>
+                                <td>{{ expired[service][user][competence]["scope"] }}</td>
+                                <td>{{ expired[service][user][competence]["comp_category"] }}</td>
+                                <td>{{ expired[service][user][competence]["date_expiry"] }}</td>
                             </tr>
                             {% endfor %}
                         {% endfor %}
@@ -186,10 +190,12 @@
                                 <div class="tab-pane" id="{{ service }}_expiring">
                             {% endif %}
                         <table class="table table-striped table-condensed  dataTable dt-responsive expiring"
-                               width="70%">
+                               width="100%">
                             <thead>
                             <th>User</th>
                             <th>Competence</th>
+                            <th>Scope</th>
+                            <th>Competence Category</th>
                             <th>Earliest Expiry Date</th>
                             </thead>
                             {% for user in expiring[service] %}
@@ -197,7 +203,9 @@
                                 <tr>
                                     <td>{{ user }}</td>
                                     <td>{{ competence }}</td>
-                                    <td>{{ expiring[service][user][competence] }}</td>
+                                    <td>{{ expiring[service][user][competence]["scope"] }}</td>
+                                    <td>{{ expiring[service][user][competence]["comp_category"] }}</td>
+                                    <td>{{ expiring[service][user][competence]["date_expiry"] }}</td>
                                 </tr>
                                 {% endfor %}
                             {% endfor %}
@@ -239,10 +247,12 @@
                             <div class="tab-pane" id="{{ service }}_overdue">
                         {% endif %}
                     <table class="table table-striped table-condensed  dataTable dt-responsive expired"
-                           width="70%">
+                           width="100%">
                         <thead>
                         <th>User</th>
                         <th>Competence</th>
+                        <th>Scope</th>
+                        <th>Competence Category</th>
                         <th>Due Date</th>
                         </thead>
                         {% for user in overdue[service] %}
@@ -250,7 +260,9 @@
                             <tr>
                                 <td>{{ user }}</td>
                                 <td>{{ competence }}</td>
-                                <td>{{ overdue[service][user][competence] }}</td>
+                                <td>{{ overdue[service][user][competence]["scope"] }}</td>
+                                <td>{{ overdue[service][user][competence]["comp_category"] }}</td>
+                                <td>{{ overdue[service][user][competence]["due_date"] }}</td>
                             </tr>
                             {% endfor %}
                         {% endfor %}
@@ -291,10 +303,12 @@
                             <div class="tab-pane" id="{{ service }}_activated_three_month">
                         {% endif %}
                     <table class="table table-striped table-condensed  dataTable dt-responsive expired"
-                           width="70%">
+                           width="100%">
                         <thead>
                         <th>User</th>
                         <th>Competence</th>
+                        <th>Scope</th>
+                        <th>Competence Category</th>
                         <th>Activation Date</th>
                         </thead>
                         {% for user in activated_three_month[service] %}
@@ -302,7 +316,9 @@
                             <tr>
                                 <td>{{ user }}</td>
                                 <td>{{ competence }}</td>
-                                <td>{{ activated_three_month[service][user][competence] }}</td>
+                                <td>{{ activated_three_month[service][user][competence]["scope"] }}</td>
+                                <td>{{ activated_three_month[service][user][competence]["comp_category"] }}</td>
+                                <td>{{ activated_three_month[service][user][competence]["date_activated"] }}</td>
                             </tr>
                             {% endfor %}
                         {% endfor %}

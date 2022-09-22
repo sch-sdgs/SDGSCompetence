@@ -1750,7 +1750,6 @@ def reporting():
     services = s.query(Service).all()
     for i in services:
         service = i.name.replace(" ", "")
-
         expired[service] = {}
         expiring[service] = {}
         overdue[service] = {}
@@ -1761,42 +1760,72 @@ def reporting():
             if i.user_id_rel.active == 1:
                 service = i.user_id_rel.service_rel.name.replace(" ", "")
                 fullname = i.user_id_rel.first_name + " " + i.user_id_rel.last_name
+                scope = i.ss_id_rel.c_id_rel.competence_detail[-1].scope
+                comp_category = i.ss_id_rel.c_id_rel.competence_detail[-1].category_rel.category
                 if i.date_expiry is not None:
-                    comp_title = i.ss_id_rel.c_id_rel.competence_detail[0].title
+                    comp_title = i.ss_id_rel.c_id_rel.competence_detail[-1].title
                     if datetime.date.today() > i.date_expiry:
                         if fullname not in expired[service]:
-                            expired[service][fullname] = {comp_title: i.date_expiry}
+                            expired[service][fullname] = {comp_title: {
+                                                                    "date_expiry": i.date_expiry,
+                                                                    "scope": scope,
+                                                                    "comp_category": comp_category}
+                                                        }
                         elif fullname in expired[service] and comp_title not in expired[service][fullname]:
-                            expired[service][fullname][comp_title] = i.date_expiry
+                            expired[service][fullname][comp_title] = {"date_expiry": i.date_expiry,
+                                                                    "scope": scope,
+                                                                    "comp_category": comp_category}
                         elif fullname in expired[service] and comp_title in expired[service][fullname]:
-                            if i.date_expiry < expired[service][fullname][comp_title]:
-                                expired[service][fullname][comp_title] = i.date_expiry
+                            if i.date_expiry < expired[service][fullname][comp_title]["date_expiry"]:
+                                expired[service][fullname][comp_title] = {"date_expiry": i.date_expiry,
+                                                                        "scope": scope,
+                                                                        "comp_category": comp_category}
 
 
                     elif datetime.date.today() + relativedelta(months=+1) > i.date_expiry:
                         if fullname not in expiring[service]:
-                            expiring[service][fullname] = {comp_title: i.date_expiry}
+                            expiring[service][fullname] = {comp_title: {
+                                                                    "date_expiry": i.date_expiry,
+                                                                    "scope": scope,
+                                                                    "comp_category": comp_category}
+                                                        }
                         elif fullname in expiring[service] and comp_title not in expiring[service][fullname]:
-                            expiring[service][fullname][comp_title] = i.date_expiry
+                            expiring[service][fullname][comp_title] = {"date_expiry": i.date_expiry,
+                                                                    "scope": scope,
+                                                                    "comp_category": comp_category}
                         elif fullname in expiring[service] and comp_title in expiring[service][fullname]:
-                            if i.date_expiry < expiring[service][fullname][comp_title]:
-                                expiring[service][fullname][comp_title] = i.date_expiry
+                            if i.date_expiry < expiring[service][fullname][comp_title]["date_expiry"]:
+                                expiring[service][fullname][comp_title] = {"date_expiry": i.date_expiry,
+                                                                    "scope": scope,
+                                                                    "comp_category": comp_category}
 
                 if i.status_rel.status in ["Active", "Assigned", "Failed", "Sign-Off"]:
                     if i.due_date < datetime.date.today():
-                        comp_title = i.ss_id_rel.c_id_rel.competence_detail[0].title
+                        comp_title = i.ss_id_rel.c_id_rel.competence_detail[-1].title
                         if fullname not in overdue[service]:
-                            overdue[service][fullname] = {comp_title: i.due_date}
+                            overdue[service][fullname] = {comp_title: {
+                                                                    "due_date": i.due_date,
+                                                                    "scope": scope,
+                                                                    "comp_category": comp_category}
+                                                        }
                         elif fullname in overdue[service] and comp_title not in overdue[service][fullname]:
-                            overdue[service][fullname][comp_title] = i.due_date
+                            overdue[service][fullname][comp_title] = {"due_date": i.due_date,
+                                                                    "scope": scope,
+                                                                    "comp_category": comp_category}
 
                 if i.status_rel.status == "Active":
                     if datetime.date.today() + relativedelta(months=-3) > i.date_activated:
-                        comp_title = i.ss_id_rel.c_id_rel.competence_detail[0].title
+                        comp_title = i.ss_id_rel.c_id_rel.competence_detail[-1].title
                         if fullname not in activated_three_month[service]:
-                            activated_three_month[service][fullname] = {comp_title: i.due_date}
+                            activated_three_month[service][fullname] = {comp_title: {
+                                                                    "date_activated": i.date_activated,
+                                                                    "scope": scope,
+                                                                    "comp_category": comp_category}
+                                                        }
                         elif fullname in activated_three_month[service] and comp_title not in activated_three_month[service][fullname]:
-                            activated_three_month[service][fullname][comp_title] = i.due_date
+                            activated_three_month[service][fullname][comp_title] = {"date_activated": i.date_activated,
+                                                                    "scope": scope,
+                                                                    "comp_category": comp_category}
 
 
     return [expired,expiring, overdue, activated_three_month]
@@ -1914,7 +1943,6 @@ def report_by_section():
     overdue_fig.update_xaxes(dtick="M1", tickformat="%e %b\n%Y")
     overdue_fig.update_layout(height=300, width=800, margin=dict(t=0, l=50, b=10, r=0), showlegend=True)
     overdue_plot = plot(overdue_fig, output_type="div")
-
 
     return render_template('competence_report_by_section.html', expired=expired,
                            expiring=expiring, overdue=overdue, activated_three_month=activated_three_month,
