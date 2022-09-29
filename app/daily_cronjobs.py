@@ -64,7 +64,7 @@ def main():
     assessments = get_assessments(c)
 
     print("I am checking for four year expiries!")
-    for id, date_four_year_expiry, status, user_id in assessments:
+    for id, date_four_year_expiry, date_expiry, status, user_id in assessments:
         if date_four_year_expiry is None:
             continue
         elif date_four_year_expiry <= todays_date:
