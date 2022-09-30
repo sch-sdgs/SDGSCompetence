@@ -11,8 +11,8 @@ def create_connection(db_file):
 
 def get_assessments(conn):
     """ Gets all assessments information from active users from database"""
-    sql = ''' SELECT assessments.id, assessments.date_four_year_expiry, assessment.date_expiry, 
-    assessment_status_ref.status, assessment.user_id
+    sql = ''' SELECT assessments.id, assessments.date_four_year_expiry, assessments.date_expiry, 
+    assessment_status_ref.status, assessments.user_id
     FROM assessments 
     INNER JOIN users ON assessments.user_id=users.id 
     INNER JOIN subsection ON assessments.ss_id=subsection.id 
@@ -64,7 +64,7 @@ def main():
     assessments = get_assessments(c)
 
     print("I am checking for four year expiries!")
-    for id, date_four_year_expiry, status, user_id in assessments:
+    for id, date_four_year_expiry, date_expiry, status, user_id in assessments:
         if date_four_year_expiry is None:
             continue
         elif date_four_year_expiry <= todays_date:
@@ -76,7 +76,7 @@ def main():
 
     ### Check for expiring and expired competencies - send emails to users
 
-    expiry_dates = get_expiry_dates()
+    expiry_dates = get_expiry_dates(c)
 
     print("I am checking for expired and expiring competencies!")
     for user_id, min_date_expiry, min_date_four_year_expiry, title in expiry_dates:

@@ -1,3 +1,4 @@
+import urllib.error
 from suds.client import Client
 from suds.sudsobject import asdict
 from suds.cache import NoCache
@@ -26,10 +27,13 @@ class QPulseWeb:
         :param docNumber:
         :return:
         """
-        params = {"username":username, "password":password, "docNumber":docNumber }
-        client = self._get_client()
-        response = client.service.GetDocByID(**params)
-        return response
+        try:
+            params = {"username":username, "password":password, "docNumber":docNumber }
+            client = self._get_client()
+            response = client.service.GetDocByID(**params)
+            return response
+        except urllib.error.URLError:
+            return "Error connecting to Q-Pulse"
 
     ### Looks as though the API is only querying the active register?
     # def check_doc_active(self, username, password, docNumber):

@@ -3,8 +3,13 @@ All notable changes to this project will be documented in this file from v1.0.0.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [v1.3.1] YYYY-MM-DD
+### Added
+- Reports: scope and competence type added to reports table
+### Fixed
+- Edited loop in email script
 
+## [v1.3.0] 2022-08-18
 ### Added
 - Reassessments: added capacity for four year reassessments including new evidence submission
 - Added error handling for 502 errors
@@ -14,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Reports: added additional graph to show competencies expiring within 30 days
 ### Fixed
 - Homepage: 'assigned by' now shows assigner, not user
+- Temporary Q-Pulse Workaround means pages still display
 ### Changed
 - CPD: Updated CPD event name to 200 characters
 - Competence List: Changed "Creator" column to "Owner"
