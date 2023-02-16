@@ -54,7 +54,7 @@ urllib3==1.26.6
 uuid==1.30
 weasyprint==0.42.3
 webencodings==0.5.1
-Werkzeug==2.0.1
+Werkzeug==2.2.3
 Whoosh==2.7.4
 WTForms==2.3.3
 zipp==3.5.0
