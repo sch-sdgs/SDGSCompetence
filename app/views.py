@@ -505,6 +505,8 @@ def assess_status_method(status):
         assess_status_html = '<span class="label label-default">Assigned</span>'
     elif status == "Four Year Due":
         assess_status_html = '<span class="label label-danger">Four Year Due</span>'
+    elif status == "Failed":
+        assess_status_html = '<span class="label label-danger">Failed</span>'
     elif status == "Not Required":
         assess_status_html = '<span class="label label-info">Partially Trained</span>'
     elif status == "Sign-Off":
