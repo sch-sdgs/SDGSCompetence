@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Fixed four year reassessment where competency had no common competencies (e.g. DSE)
 - Fixed user report where a user had failed a competency assessment. 
 
-## [v1.3.1] 2022-09-30
+## [v1.3.2] 2022-09-30
 ### Added
 - Reports: scope and competence type added to reports table
 ### Fixed
