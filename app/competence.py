@@ -48,7 +48,11 @@ def send_mail(user_id,subject,message):
         recipient_email = s.query(Users).filter(Users.id == int(user_id)).first().email
         msg = Message('CompetenceDB: '+subject, sender="notifications@competencedb.com", recipients=[recipient_email])
         msg.body = 'text body'
-        msg.html = '<b>You have a notification on CompetenceDB</b><br><br>'+message+'<br><br>View all your notifications <a href="'+request.url_root+'notifications">here</a>'
+        try:
+            msg.html = '<b>You have a notification on CompetenceDB</b><br><br>'+message+'<br><br>View all your notifications <a href="'+request.url_root+'notifications">here</a>'
+        # Catch if we are running outside of app context and just assume app url is the main one.
+        except RuntimeError:
+            msg.html = '<b>You have a notification on CompetenceDB</b><br><br>'+message+'<br><br>View all your notifications <a href="https://competencedb.sch.nhs.uk/notifications">here</a>'
         thr = Thread(target=send_async_email, args=[msg])
         thr.start()
 

@@ -1839,7 +1839,7 @@ def report_by_section():
     """
     expired, expiring, overdue, activated_three_month = reporting()
 
-    monthly_numbers = s.query(MonthlyReportNumbers).join(Service).order_by(desc(MonthlyReportNumbers.date))
+    monthly_numbers = s.query(MonthlyReportNumbers).join(Service).filter(Service.name != "Equivalence").order_by(desc(MonthlyReportNumbers.date))
     dates = []
     expired_dict = {}
     expiring_dict = {}
@@ -1852,7 +1852,7 @@ def report_by_section():
 
     colour_list=['rgb(2,16,176)', 'rgb(5,168,32)', 'rgb(5,179,232)']
     colour_dict={}
-    for count, service in enumerate(s.query(Service).all()):
+    for count, service in enumerate(s.query(Service).filter(Service.name != "Equivalence").all()):
         colour_dict[service.name] = colour_list[count]
 
     for entry in monthly_numbers:

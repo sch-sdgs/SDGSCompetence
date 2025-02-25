@@ -1595,9 +1595,13 @@ def select_subsections():
                 for i in list(section_list["custom"].items())[0][1]["subsections"]:
                     if i['status'] == "Complete" or i['status'] == "Four Year Due":
                         comp_section_ids.append(str(i['id']))
-                for i in list(section_list["constant"].items())[0][1]["subsections"]:
-                    if i['status'] == "Complete" or i['status'] == "Four Year Due":
-                        comp_section_ids.append(str(i['id']))
+                try:
+                    for i in list(section_list["constant"].items())[0][1]["subsections"]:
+                        if i['status'] == "Complete" or i['status'] == "Four Year Due":
+                            comp_section_ids.append(str(i['id']))
+                except IndexError:
+                    ### some competencies have no constant subsections
+                    pass
                 """Check if user has selected every complete subsection in the competency"""
                 id_check = all(id in ids for id in comp_section_ids)
                 if id_check is True:
